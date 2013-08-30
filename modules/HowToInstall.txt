@@ -1,0 +1,48 @@
+Installazione moduli
+
+PREREQUISITI:
+
+- ADA v2
+- Se l'installazione non supporta i moduli, si prega di aggiornare i seguenti file
+di installazione (prendendoli dall'ultima versione di ADA)
+
+* include/Forms/lib
+* include/layout_classes.inc.php
+* include/output_classes.inc.php
+* config/ada_config.inc.php
+* config/config_install.inc.php
+
+****************************************************
+
+INSTALLAZIONE:
+
+- Importare / Eseguire nel database common il file: ada_NOME_MODULO_module.sql
+
+- Copiare i file tutti i file contenuti in
+* modules/NOME_MODULO/*
+
+- Assicurarsi di creare una cartella layout per ogni layout esistente
+(o usato) nell'installazione
+
+
+****************************************************
+
+CONFIGURAZIONE:
+
+- Aggiungere (o creare) nel file config/config_modules.inc.php
+
+//es.: defines for modules test
+define('MODULES_TEST_PATH', ROOT_DIR.'/modules/test');
+if (file_exists(MODULES_TEST_PATH.'/index.php')
+ && file_exists(MODULES_TEST_PATH.'/edit_test.php')
+ && file_exists(MODULES_TEST_PATH.'/tutor.php')) {
+	require_once(MODULES_TEST_PATH.'/config/config.inc.php');
+
+	define('MODULES_TEST', true);
+	define('MODULES_TEST_HTTP', HTTP_ROOT_DIR.'/modules/test');
+}
+else {
+	define('MODULES_TEST', false);
+}
+
+****************************************************

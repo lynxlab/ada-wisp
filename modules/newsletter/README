@@ -1,0 +1,24 @@
+*************************
+ MODULO NEWSLETTER
+*************************
+
+features
+* editare/salvare/modificare/cancellare la newsletter
+  + id_newsletter
+  + data
+  + subject
+  + mittente
+  + testo HTML
+  + testo non HTML
+  + pubblicata
+
+* selezionare la newsletter da inviare
+
+* filtrare gli studenti a cui inviare la newsletter per:
+  + stato della registrazione degli utenti (confermato/non confermato) --> solo switcher del provider 0
+  + corsi frequentati
+  + istanze frequentate
+  + stato degli studenti nell'istanza (in visita/preiscritto/iscritto/rimosso/completato
+
+* inviare la newsletter
+
