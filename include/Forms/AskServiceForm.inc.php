@@ -13,62 +13,22 @@ require_once 'lib/classes/FForm.inc.php';
 /**
  *
  */
-class CourseModelForm extends FForm {
-    public function  __construct($authors, $languages) {
+class AskServiceForm extends FForm {
+    public function  __construct($services, $user_provider_id=NULL) {
         parent::__construct();
         //$authors = array_merge(array(0 => translateFN('Scegli un autore per il corso')), $authors);
         //$languages = array_merge(array(0 => translateFN('Scegli una lingua per il corso')), $languages);
 
-        $authors[0] = translateFN('Scegli un autore per il corso');
-        $languages[0] = translateFN('Scegli una lingua per il corso');
+        //$services[0] = translateFN('I need help for');
 
-
-        $this->addSelect('id_utente_autore',translateFN('Autore'),$authors,0)
-             ->setRequired()
-             ->setValidator(FormValidator::POSITIVE_NUMBER_VALIDATOR);
-
-        $this->addSelect('id_lingua', translateFN('Lingua del corso'),$languages,0)
-             ->setRequired()
-             ->setValidator(FormValidator::POSITIVE_NUMBER_VALIDATOR);
-
-        $this->addHidden('id_corso');
-
-        $this->addHidden('id_layout')->withData(0);
-
-        $this->addTextInput('nome', translateFN('Codice corso'))
+        $this->addSelect('id_service',translateFN('I need help for'),$services,0)
              ->setRequired()
              ->setValidator(FormValidator::NOT_EMPTY_STRING_VALIDATOR);
 
-        $this->addTextInput('titolo', translateFN('Titolo'))
-             ->setRequired()
-             ->setValidator(FormValidator::NOT_EMPTY_STRING_VALIDATOR);
+        $this->addHidden('user_provider_id')->withData($user_provider_id);
+        $this->addHidden('op')->withData('subscribe');
 
-        //$this->addTextInput('data_creazione', translateFN('Data creazione'));
-
-        //$this->addTextInput('data_pubblicazione', translateFN('Data pubblicazione'));
-
-        $this->addTextarea('descrizione', translateFN('Descrizione'))
+        $this->addTextarea('question', translateFN('your question'))
              ->setValidator(FormValidator::MULTILINE_TEXT_VALIDATOR);
-
-//        $this->addTextInput('id_nodo_iniziale', translateFN('Id nodo iniziale'))
-//             ->withData(0)
-//             ->setRequired()
-//             ->setValidator(FormValidator::NON_NEGATIVE_NUMBER_VALIDATOR);
-//
-//        $this->addTextInput('id_nodo_toc', translateFN('Id nodo toc'));
-//
-//        $this->addTextInput('media_path', translateFN('Media path'))
-//             ->withData(MEDIA_PATH_DEFAULT);
-//
-//        $this->addTextInput('static_mode', translateFN('Static mode'));
-
-        $this->addTextInput('crediti', translateFN('Crediti corso'))
-             ->setRequired()
-             ->setValidator(FormValidator::POSITIVE_NUMBER_VALIDATOR);
-
-        $this->addHidden('id_nodo_iniziale')->withData(0);
-        $this->addHidden('id_nodo_toc');
-        $this->addHidden('media_path');
-        $this->addHidden('static_mode');
     }
 }
