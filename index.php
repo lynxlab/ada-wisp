@@ -118,7 +118,7 @@ if ($newsmsg == ''){
         $newsmsg .= fread($fid,4096);
       fclose($fid);
     } else {
-       $newsmsg = translateFN("File news non trovato");
+       $newsmsg = '<p>'.translateFN("File news non trovato").'</p>';
     }
 }
 
@@ -129,7 +129,7 @@ if ($hlpmsg == ''){
         $hlpmsg .= fread($fid,4096);
       fclose($fid);
     } else {
-       $hlpmsg = translateFN("File help non trovato");
+       $hlpmsg = '<p>'.translateFN("File help non trovato").'</p>';
     }
 }
 
@@ -140,7 +140,7 @@ if ($infomsg == ''){
         $infomsg .= fread($fid,4096);
       fclose($fid);
     } else {
-       $infomsg = translateFN("File info non trovato");
+       $infomsg = '<p>'.translateFN("File info non trovato").'</p>';
     }
 }
 
@@ -224,12 +224,13 @@ $login = UserModuleHtmlLib::loginForm($form_action, $supported_languages,$login_
   		 */
   		$allTesters = $common_dh->get_all_testers ();
   		$addHtml = false;
+
   		foreach ($allTesters as $aTester)
-  		{
-  			$providerListUL = CDOMElement::create('ol');
+  		{  			
   			// skip testers having punatore like 'clientXXX'
   			if (!preg_match('/^(?:client)[0-9]{1,2}$/',$aTester['puntatore']) &&
   				is_dir (ROOT_DIR . '/clients/' .$aTester['puntatore'])) {
+  				if (!$addHtml) $providerListUL = CDOMElement::create('ol');
   				$addHtml = true;
 
   				$testerLink = CDOMElement::create('a','href:'.HTTP_ROOT_DIR.'/'.$aTester['puntatore']);
