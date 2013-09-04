@@ -232,6 +232,8 @@ class CommunicationModuleHtmlLib
     $select->addChild($option4);
     $type->addChild(new CText(translateFN('Tipo di appuntamento')));
     $type->addChild($select);
+    
+    $fullCalendarDIV = CDOMElement::create('div','id:fullcalendar');
 
     $date1  = CDOMElement::create('div','class:proposed_date');
     if(is_array($errors) && isset($errors['date1'])) {
@@ -331,6 +333,7 @@ class CommunicationModuleHtmlLib
     $form->addChild($subject);
     $form->addChild($type);
     $form->addChild($timezone);
+    $form->addChild($fullCalendarDIV);
     $form->addChild($date1);
     $form->addChild($date2);
     $form->addChild($date3);

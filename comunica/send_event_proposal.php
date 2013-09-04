@@ -13,6 +13,7 @@
 /**
  * Base config file
  */
+ini_set('display_errors', '0'); error_reporting(E_ALL);
 require_once realpath(dirname(__FILE__)).'/../config_path.inc.php';
 
 /**
@@ -207,7 +208,25 @@ else {
     $errors = array();
     $data = array();
   	$form = CommunicationModuleHtmlLib::getEventProposalForm($sess_id_user, $data, $errors, $sess_selected_tester);
+  	
+  	$layout_dataAr['JS_filename'] = array(
+  			JQUERY,
+  			JQUERY_UI,  			
+  			ROOT_DIR . '/js/include/jquery/fullcalendar/fullcalendar.min.js',
+  			JQUERY_NO_CONFLICT
+  	  	);   	 
   }
+  $optionsAr['onload_func'] = 'initDoc();';
+  /**
+   * if the jqueru-ui theme directory is there in the template family,
+   * import it. Else get the standard one
+   */
+  $jqueryLayoutCSS = ROOT_DIR.'/layout/'.$userObj->template_family.'/css/jquery-ui/jquery-ui-1.10.3.custom.min.css';
+  $layout_dataAr['CSS_filename'] = array(
+  		( (is_file($jqueryLayoutCSS)) ? $jqueryLayoutCSS :  JQUERY_UI_CSS),
+  		ROOT_DIR . '/js/include/jquery/fullcalendar/fullcalendar.css',
+  		ROOT_DIR . '/js/include/jquery/fullcalendar/fullcalendar.print.css'
+  );    
 }
 
 $title = translateFN('Invia proposta di appuntamento');
@@ -223,5 +242,5 @@ $content_dataAr = array(
 );
 
 
-ARE::render($layout_dataAr, $content_dataAr);
+ARE::render($layout_dataAr, $content_dataAr, NULL, (isset($optionsAr) ? $optionsAr : NULL));
 ?>
