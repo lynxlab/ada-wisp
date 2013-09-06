@@ -59,6 +59,40 @@ class AskServiceModuleHtmlLib {
         
     }
     
+    static public function getToSwitcherTextHtml($dataAr=array()) {
+        
+        $question = nl2br($dataAr['question']);
+        $link = HTTP_ROOT_DIR."/switcher/assign_practitioner.php";
+        $testo = translateFN("Gentile ");
+        $testo.= $dataAr['name']." ".$dataAr['surname']. ',<BR />';
+        $testo.= $dataAr['asking_name']." ".$dataAr['asking_surname'] . ' ('.$dataAr['asking_username'].')' ;
+        $testo.= translateFN(" ha chiesto aiuto a proposito di: ");
+        $testo.= $dataAr['service_name'].".".'<BR />';
+        $testo .= translateFN('Il testo della domanda è il seguente:') . ':<BR /> ' . $question.'<BR />'.'<BR />';
+        /*
+         * 
+        $testo.= translateFN("Per assegnare un practitioner all'utente segui il link:").'<BR />';
+        $testo.= $link.'<BR />';
+         * 
+         */
+        
 
+        $info_div = CDOMElement::create('DIV', 'id:info_div');
+        $info_div->setAttribute('class', 'info_div');
+        $label_text = CDOMElement::create('span','class:info');
+        $label_text->addChild(new CText($testo));
+        $info_div->addChild($label_text);
+        
+        $AssignLink = $link;
+        $link_span = CDOMElement::create('span','class:info_link');
+        $link_to_assign = BaseHtmlLib::link($AssignLink, translateFN("Assegna un practitioner all'utente prima possibile"));
+        $link_span->addChild($link_to_assign);
+        $info_div->addChild($link_span);
+        //$data = new CText(translateFN('La tua iscrizione è stata effettuata con successo.'));
+        return $info_div;
+        
+    }
+
+    
 }
 ?>
