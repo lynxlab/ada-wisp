@@ -158,11 +158,13 @@ switch ($op) {
           $MailText4User = AskServiceModuleHtmlLib::getFeedbackTextPlain($dataAr);
           $admtypeAr = array(AMA_TYPE_SWITCHER);
           //$admList = $common_dh->get_users_by_type($admtypeAr);
-          $admList = $provider_dh-> get_users_by_type($admtypeAr);
+          $admList = $provider_dh-> get_users_by_type($admtypeAr, true);
 
           if (!AMA_DataHandler::isError($admList)){
                         $adm_uname = $admList[0]['username'];
                         $adm_id = $admList[0]['id_utente'];
+                        $adm_name = $admList[0]['nome'];
+                        $adm_surname = $admList[0]['cognome'];
           } else {
                         $adm_uname = ""; // ??? FIXME: serve un superadmin nel file di config?
           }
@@ -200,10 +202,12 @@ switch ($op) {
          * + instance id
          * + Time (added by the method invocated)
          */
-        $helpRrequiredToken = AskService::generateQuestionToken($id_user, $adm_id,$id_instance);
+        $helpRequiredToken = AskService::generateQuestionToken($id_user, $adm_id,$id_instance);
     
 
           $MailText4User = AskServiceModuleHtmlLib::getFeedbackTextPlain($dataAr);
+          /*
+           * 
           $admtypeAr = array(AMA_TYPE_SWITCHER);
           //$admList = $common_dh->get_users_by_type($admtypeAr);
           $admList = $provider_dh-> get_users_by_type($admtypeAr);
@@ -213,18 +217,53 @@ switch ($op) {
           } else {
                         $adm_uname = ""; // ??? FIXME: serve un superadmin nel file di config?
           }
+           * 
+           */
+
         $subject = PORTAL_NAME . ': '.translateFN('Richiesta di servizio') .' '. $dataAr['service_name'];
-        $titolo = AskService::addMessageToken($helpRrequiredToken, $subject);
+        $titolo = AskService::addMessageToken($helpRequiredToken, $subject);
         
         $username = $userObj->getUserName();
         $recipientsAr =  array($adm_uname);
         $message_ha = array();
         $message_ha['titolo'] = $titolo;
-        $message_ha['testo'] = $data->getHtml(); //$MailText4User;
+        $message_ha['testo'] = $question;
+        $message_ha['destinatari'] = $recipientsAr;
+        $message_ha['data_ora'] = "now";
+        $message_ha['tipo'] = ADA_MSG_SIMPLE;
+        $message_ha['mittente'] = $username;
+
+        // delegate sending to the message handler
+        $res = $mh->send_message($message_ha);
+
+        if (AMA_DataHandler::isError($res)){
+          // $errObj = new WISP_Error($res,translateFN('Impossibile spedire il messaggio'),
+          //NULL,NULL,NULL,$error_page.'?err_msg='.urlencode(translateFN('Impossibile spedire il messaggio')));
+        }
+        
+        /*
+         * Reminder message to the switcher
+         */        
+        
+        $dataSwitcherText= array (
+            'question' => $question,
+            'name'=> $adm_name,
+            'surname'=>$adm_surname,
+            'service_name'=> $service_name,
+            'asking_name' => $name,
+            'asking_surname' => $surname,
+            'asking_username' => $username
+       );
+                        
+        $dataSwitcherText = AskServiceModuleHtmlLib::getToSwitcherTextHtml($dataSwitcherText);
+        $ReminderSubject = PORTAL_NAME . ': '.$name. ' '. $surname . ' ' . translateFN('ha richiesto aiuto per') .' '. $dataAr['service_name'];
+        $message_ha = array();
+        $message_ha['titolo'] = $ReminderSubject;
+        $message_ha['testo'] = $dataSwitcherText->getHtml(); //$MailText4User;
         $message_ha['destinatari'] = $recipientsAr;
         $message_ha['data_ora'] = "now";
         $message_ha['tipo'] = ADA_MSG_MAIL;
-        $message_ha['mittente'] = $adm_uname;
+        $message_ha['mittente'] = $username;
 
         // delegate sending to the message handler
         $res = $mh->send_message($message_ha);
