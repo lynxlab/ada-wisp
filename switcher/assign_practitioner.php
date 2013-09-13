@@ -34,8 +34,8 @@ $neededObjAr = array(
 );
 
 require_once ROOT_DIR . '/include/module_init.inc.php';
-//$self = whoami();
-$self =  'switcher';  // = switcher!
+$self = whoami();
+//$self =  'switcher';  // = switcher!
 include_once 'include/switcher_functions.inc.php';
 
 require_once ROOT_DIR .'/comunica/include/ChatRoom.inc.php';
