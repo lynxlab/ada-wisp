@@ -108,19 +108,19 @@ for ($i=0; $i < count($info_services_for_current_providerAr); $i++) {
 //print_r($info_durataHa);
 //print_r($info_services_for_current_providerAr);
 */
-$num_users = 0;
+$numRequiredHelp = 0;
 if ($op=='not_started' or $op=='all') {
     $not_startedAr = $dh->get_tester_services_not_started();
 
 
     if (is_array($not_startedAr) && sizeof($not_startedAr) > 0) {
       foreach($not_startedAr as $user_registration) {
-        $num_users ++;
+        $numRequiredHelp ++;
         $href = 'zoom_user.php?id='.$user_registration['id_utente'];
         $user_link = CDOMElement::create('a', "href:$href");
         $user_link->addChild(new CText($user_registration['nome'] .' '.$user_registration['cognome']));
 
-        $href = HTTP_ROOT_DIR.'/info.php?id_course='.$user_registration['id_corso'];
+        $href = HTTP_ROOT_DIR.'/browsing/service_info.php?id_course='.$user_registration['id_corso'];
         $service_link = CDOMElement::create('a',"href:$href");
         $service_link->addChild(new CText(translateFN($user_registration['titolo'])));
         $request_date = AMA_DataHandler::ts_to_date($user_registration['data_richiesta']);
@@ -152,12 +152,12 @@ if ($op=='started' || $op=='all' || $op=='open' || $op=='closed') {
 
         //print_r($user_registration);
         if (($op == 'closed' &&  time() >= $user_registration['data_fine']) || ($op == 'open' &&  time() < $user_registration['data_fine']) || ($op=='started') || ($op=='all')) {
-            $num_users ++;
+            $numRequiredHelp ++;
             $href = 'zoom_user.php?id='.$user_registration['id_utente'];
             $user_link = CDOMElement::create('a', "href:$href");
             $user_link->addChild(new CText($user_registration['nome'] .' '.$user_registration['cognome']));
 
-            $href = HTTP_ROOT_DIR.'/info.php?id_course='.$user_registration['id_corso'];
+            $href = HTTP_ROOT_DIR.'/browsing/service_info.php?id_course='.$user_registration['id_corso'];
             $service_link = CDOMElement::create('a',"href:$href");
             $service_link->addChild(new CText(translateFN($user_registration['titolo'])));
             $request_date = AMA_DataHandler::ts_to_date($user_registration['data_richiesta']);
@@ -191,7 +191,7 @@ $table = BaseHtmlLib::tableElement('id:table_users',$thead_data, $tbody_data);
 $banner = include ROOT_DIR.'/include/banner.inc.php';
 $label = translateFN('Coordinator Home Page');
 
-$help = translateFN('Users') .': ' . $num_users .' - '. translateFN("Da qui lo switcher puo' gestire gli assegnamenti client e-practitioner");
+$help = translateFN('Richieste') .': ' . $numRequiredHelp .' - '. translateFN("Da qui lo switcher puo' gestire gli assegnamenti client e-practitioner");
 $menu_01 = '<a href="list_lservices.php">'.translateFN('Vedi servizi').'</a>';
 $menu_02 = '<a href="add_lservice.php">'.translateFN('Aggiungi servizio').'</a>';
 

@@ -33,7 +33,7 @@ $neededObjAr = array(
   AMA_TYPE_SWITCHER => array('layout')
 );
 
-require_once ROOT_DIR.'/include/wisp_module_init.inc.php';
+require_once ROOT_DIR.'/include/module_init.inc.php';
 $self =  'switcher';  // = switcher!
 
 include_once 'include/'.$self.'_functions.inc.php';
@@ -52,7 +52,7 @@ if(isset($_SERVER['REQUEST_METHOD']) && $_SERVER['REQUEST_METHOD'] == 'POST'
   if($id_tutor_old != "no"){
     $result = $dh->course_instance_tutor_unsubscribe($id_instance, $id_tutor_old) ;
     if (AMA_DataHandler::isError($result)){
-      $errObj = new WISP_Error($result, translateFN('Errore nel disassociare il practitioner dal client'));
+      $errObj = new ADA_Error($result, translateFN('Errore nel disassociare il practitioner dal client'));
     }
   }
 
@@ -60,7 +60,7 @@ if(isset($_SERVER['REQUEST_METHOD']) && $_SERVER['REQUEST_METHOD'] == 'POST'
   if($id_tutor_new != "del") {
     $result = $dh->course_instance_tutor_subscribe($id_instance, $id_tutor_new) ;
     if (AMA_DataHandler::isError($result)) {
-      $errObj = new WISP_Error($result, translateFN('Errore durante assegnazione del practitioner al client'));
+      $errObj = new ADA_Error($result, translateFN('Errore durante assegnazione del practitioner al client'));
     }
     else {
       /*
@@ -80,7 +80,7 @@ if(isset($_SERVER['REQUEST_METHOD']) && $_SERVER['REQUEST_METHOD'] == 'POST'
         // End date is automatically set by method course_instance_set
         $result = $dh->course_instance_set($id_instance, $ci_info);
         if(AMA_DataHandler::isError($result)) {
-          $errObj = new WISP_Error($result, translateFN('Errore in aggiornamento dati assegnamento practitioner client'));
+          $errObj = new ADA_Error($result, translateFN('Errore in aggiornamento dati assegnamento practitioner client'));
         }
 
         /*
@@ -88,7 +88,7 @@ if(isset($_SERVER['REQUEST_METHOD']) && $_SERVER['REQUEST_METHOD'] == 'POST'
          */
         $result = $dh->course_instance_students_presubscribe_get_list($id_instance);
         if(AMA_DataHandler::isError($result)) {
-          $errObj = new WISP_Error($result, translateFN('Errore in ottenimento stato iscrizione utente'));
+          $errObj = new ADA_Error($result, translateFN('Errore in ottenimento stato iscrizione utente'));
         }
         // In WISP we have only one user subscribed to a course instance
         $id_student = $result[0]['id_utente_studente'];
@@ -96,9 +96,9 @@ if(isset($_SERVER['REQUEST_METHOD']) && $_SERVER['REQUEST_METHOD'] == 'POST'
         $tutoredUserObj = MultiPort::findUser($id_student);
         // FIXME: gestire errore
 
-        $result = $dh->course_instance_student_subscribe($id_instance, $id_student, WISP_STATUS_SUBSCRIBED);
+        $result = $dh->course_instance_student_subscribe($id_instance, $id_student, ADA_STATUS_SUBSCRIBED);
         if(AMA_DataHandler::isError($result)) {
-          $errObj = new WISP_Error($result, translateFN('Errore in aggiornamento stato iscrizione utente'));
+          $errObj = new ADA_Error($result, translateFN('Errore in aggiornamento stato iscrizione utente'));
         }
 
         /*
@@ -107,7 +107,7 @@ if(isset($_SERVER['REQUEST_METHOD']) && $_SERVER['REQUEST_METHOD'] == 'POST'
         $message_text = sprintf(translateFN('Dear practitioner, you have a new user (username: %s) assigned.'), $tutoredUserObj->getUserName());
 
         $message_ha = array(
-          'tipo'        => WISP_MSG_MAIL,
+          'tipo'        => ADA_MSG_MAIL,
           'data_ora'    => 'now',
           'mittente'    => $userObj->getUserName(),
           'destinatari' => array($tutorObj->getUserName()),
@@ -139,7 +139,7 @@ if(isset($_SERVER['REQUEST_METHOD']) && $_SERVER['REQUEST_METHOD'] == 'POST'
         $message_text = sprintf(translateFN('Dear switcher, you have assigned the user with username: %s to the following practitioner: %s.'), $tutoredUserObj->getUserName(), $tutorObj->getUserName());
 
         $message_ha = array(
-          'tipo'        => WISP_MSG_MAIL,
+          'tipo'        => ADA_MSG_MAIL,
           'data_ora'    => 'now',
           'mittente'    => $userObj->getUserName(),
           //'destinatari' => array($userObj->getUserName()),
@@ -167,7 +167,7 @@ else {
   $result = $dh->course_instance_tutor_get($id_instance) ;
   if (AMA_DataHandler::isError($result)){
     // FIXME: verificare che si venga redirezionati alla home page del'utente
-    $errObj = new WISP_Error($result, translateFN('Errore in lettura tutor'));
+    $errObj = new ADA_Error($result, translateFN('Errore in lettura tutor'));
   }
 
   if($result === false) {
@@ -181,7 +181,7 @@ else {
   $field_list_ar = array('nome','cognome');
   $tutors_ar = $dh->get_tutors_list($field_list_ar);
   if (AMA_DataHandler::isError($tutors_ar)){
-    $errObj = new WISP_Error($tutors_ar, translate('Errore in lettura dei tutor'));
+    $errObj = new ADA_Error($tutors_ar, translate('Errore in lettura dei tutor'));
   }
 
   // visualizzazione form di input
@@ -189,15 +189,15 @@ else {
   $dati = $op->course_instance_tutor_form('assign_practitioner.php','switcher.php',$id_instance,$id_tutor_old,$id_corso,$tutors_ar);
 }
 
-$title = translateFN('WISP - assegna epractitioner');
-$help   = translateFN('Da qui lo switcher WISP pu&ograve; assegnare un epractitioner ad un utente');
+$title = translateFN('ADA - assegna epractitioner');
+$help   = translateFN('Da qui lo switcher ADA pu&ograve; assegnare un epractitioner ad un utente');
 
 $status = translateFN('Assegnazione epractitioner');
 
 $banner = include ROOT_DIR.'/include/banner.inc.php';
 
 $content_dataAr = array(
-  'dati'      => $dati,
+  'data'      => $dati,
   'menu'      => $menu,
   'banner'    => $banner,
   'help'      => $help,
