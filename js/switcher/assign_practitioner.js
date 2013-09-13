@@ -6,7 +6,7 @@
 
 function initDoc( startingLabel, nothingFoundLabel )
 {
- $( "#dialog-message" ).dialog({
+ $j( "#dialog-message" ).dialog({
         modal: true,
         buttons: {
             Ok: function() {
