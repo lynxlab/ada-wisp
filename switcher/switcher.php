@@ -125,7 +125,7 @@ if ($op=='not_started' or $op=='all') {
         $service_link->addChild(new CText(translateFN($user_registration['titolo'])));
         $request_date = AMA_DataHandler::ts_to_date($user_registration['data_richiesta']);
 
-        $href = 'assign_practitioner.php?id_corso='.$user_registration['id_corso'].'&id_instance='.$user_registration['id_istanza_corso'];
+        $href = 'assign_practitioner.php?id_corso='.$user_registration['id_corso'].'&id_course_instance='.$user_registration['id_istanza_corso'].'&id_user='.$user_registration['id_utente'];
         $epractitioner_link = CDOMElement::create('a', "href:$href");
         $epractitioner_link->addChild(new CText(translateFN('Assegna')));
 
@@ -162,7 +162,7 @@ if ($op=='started' || $op=='all' || $op=='open' || $op=='closed') {
             $service_link->addChild(new CText(translateFN($user_registration['titolo'])));
             $request_date = AMA_DataHandler::ts_to_date($user_registration['data_richiesta']);
 
-            $href = 'assign_practitioner.php?id_corso='.$user_registration['id_corso'].'&id_instance='.$user_registration['id_istanza_corso'];
+            $href = 'assign_practitioner.php?id_corso='.$user_registration['id_corso'].'&id_course_instance='.$user_registration['id_istanza_corso'].'&id_user='.$user_registration['id_utente'];
             $epractitioner_link = CDOMElement::create('a', "href:$href");
             $epractitioner_link->addChild(new CText($user_registration['username_t'].' ('.$user_registration['nome_t'] .' '.$user_registration['cognome_t'].')'));
 
@@ -183,6 +183,16 @@ if ($op=='started' || $op=='all' || $op=='open' || $op=='closed') {
     }
 }
 
+$allServicesRequired = array_merge($not_startedAr,$startedAr);
+$numUsers = 0;
+$userRequiringTmp = array();
+foreach ($allServicesRequired as $oneService) {
+    if (!in_array($oneService['id_utente'], $userRequiringTmp)) {
+        array_push($userRequiringTmp, $oneService['id_utente']);
+    } 
+}
+$numUsers = count($userRequiringTmp);
+
 //$table = BaseHtmlLib::tableElement('class:sortable',$thead_data, $tbody_data);
 $table = BaseHtmlLib::tableElement('id:table_users',$thead_data, $tbody_data);
 
@@ -191,7 +201,7 @@ $table = BaseHtmlLib::tableElement('id:table_users',$thead_data, $tbody_data);
 $banner = include ROOT_DIR.'/include/banner.inc.php';
 $label = translateFN('Coordinator Home Page');
 
-$help = translateFN('Richieste') .': ' . $numRequiredHelp .' - '. translateFN("Da qui lo switcher puo' gestire gli assegnamenti client e-practitioner");
+$help = translateFN('Richieste') .': ' . $numRequiredHelp .', '. translateFN('Utenti'). ': '. $numUsers .' - '. translateFN("Da qui lo switcher puo' gestire gli assegnamenti client e-practitioner");
 $menu_01 = '<a href="list_lservices.php">'.translateFN('Vedi servizi').'</a>';
 $menu_02 = '<a href="add_lservice.php">'.translateFN('Aggiungi servizio').'</a>';
 
