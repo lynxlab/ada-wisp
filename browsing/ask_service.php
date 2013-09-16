@@ -324,6 +324,7 @@ switch ($op) {
 	}
         
         if(!AMA_Common_DataHandler::isError($publishedServices)) {
+            $serviceToSubscribeAr = array();
             foreach($publishedServices as $service) {
 
                    $serviceId = $service['id_servizio'];
@@ -333,7 +334,6 @@ switch ($op) {
                         $currentTesterId = 0;
                         $currentTester = '';
                         $provider_dh = null;
-                        $serviceToSubscribeAr = array();
                         foreach($coursesAr as $courseData) {
                             if (defined ('PUBLIC_COURSE_ID_FOR_NEWS') && intval(PUBLIC_COURSE_ID_FOR_NEWS)>0 && PUBLIC_COURSE_ID_FOR_NEWS!=$courseData['id_corso']) {
                                 $newTesterId = $courseData['id_tester'];

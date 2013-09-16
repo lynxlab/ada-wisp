@@ -40,11 +40,11 @@ class AskService
 
     /*
      * first match: tutored user id
-     * second match: switcher id
-     * third match: course instance id
+     * second match: course instance id
+     * third match: switcher id
      * fourth match: timestamp
      */
-    $pattern = '/(?:[1-9][0-9]*)_(?:[1-9][0-9]*)_([1-9][0-9]*)_(?:[1-9][0-9]+)/';
+    $pattern = '/(?:[1-9][0-9]*)_([1-9][0-9]*)_(?:[1-9][0-9]*)_(?:[1-9][0-9]+)/';
     $matches = array();
     if(preg_match($pattern, $message_token, $matches) == 1) {
       return $matches[1];
