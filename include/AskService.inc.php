@@ -23,8 +23,8 @@ class AskService
   static public function generateQuestionToken($id_tutored_user, $id_switcher, $id_course_instance) {
 
     $message_token = $id_tutored_user    . '_'
-                 . $id_switcher           . '_'
                  . $id_course_instance . '_'
+                 . $id_switcher           . '_'
                  . time()              ;
 
     return $message_token;

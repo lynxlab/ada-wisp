@@ -34,15 +34,16 @@ include_once 'include/browsing_functions.inc.php';
 /**
  * Redirecting on user type basis
  */
+print_r($userObj);
 if (is_object($userObj)){
   $homepage = $userObj->getHomepage();
   $msg =   translateFN("Ridirezionamento automatico");
-  header("Location: $homepage?err_msg=$msg");
+//  header("Location: $homepage?err_msg=$msg");
   exit;
 }  else {
      $homepage = $http_root_dir."/index.php";
      $msg =  urlencode($errObj->msg);
-     header("Location: $homepage?err_msg=$msg");
+//     header("Location: $homepage?err_msg=$msg");
      exit;
 
 }
