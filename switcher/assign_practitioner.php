@@ -73,6 +73,16 @@ if (isset($_SERVER['REQUEST_METHOD']) && $_SERVER['REQUEST_METHOD'] == 'POST'
               $tutorObj = MultiPort::findUser($id_tutor_new);
               // FIXME: gestire errore
 
+              $errorPhase = null;
+                $tutoredUserObj = MultiPort::findUser($id_student);
+                // FIXME: gestire errore
+
+                $result = $dh->course_instance_student_subscribe($id_course_instance, $id_student, ADA_STATUS_SUBSCRIBED);
+                if(AMA_DataHandler::isError($result)) {
+                  $errObj = new ADA_Error($result, translateFN('Errore in aggiornamento stato iscrizione utente'));
+                  $errorPhase = 'reading user';
+                }
+              
               $ci_info = $dh->course_instance_get($id_course_instance,true);
               if($ci_info['data_inizio'] == 0) {
                 /*
@@ -84,6 +94,8 @@ if (isset($_SERVER['REQUEST_METHOD']) && $_SERVER['REQUEST_METHOD'] == 'POST'
                 $result = $dh->course_instance_set($id_course_instance, $ci_info);
                 if(AMA_DataHandler::isError($result)) {
                   $errObj = new ADA_Error($result, translateFN('Errore in aggiornamento dati assegnamento practitioner client'));
+                  $errorPhase = 'phase 1';
+                  
                 }
 
                 /*
@@ -92,16 +104,18 @@ if (isset($_SERVER['REQUEST_METHOD']) && $_SERVER['REQUEST_METHOD'] == 'POST'
                 $result = $dh->course_instance_students_presubscribe_get_list($id_course_instance);
                 if(AMA_DataHandler::isError($result)) {
                   $errObj = new ADA_Error($result, translateFN('Errore in ottenimento stato iscrizione utente'));
+                  $errorPhase = 'phase 2';
                 }
                 // In WISP we have only one user subscribed to a course instance
                 $id_student = $result[0]['id_utente_studente'];
 
-                $tutoredUserObj = MultiPort::findUser($id_student);
+//                $tutoredUserObj = MultiPort::findUser($id_student);
                 // FIXME: gestire errore
 
                 $result = $dh->course_instance_student_subscribe($id_course_instance, $id_student, ADA_STATUS_SUBSCRIBED);
                 if(AMA_DataHandler::isError($result)) {
                   $errObj = new ADA_Error($result, translateFN('Errore in aggiornamento stato iscrizione utente'));
+                  $errorPhase = 'phase 3';
                 }
 
                 /*
@@ -114,7 +128,7 @@ if (isset($_SERVER['REQUEST_METHOD']) && $_SERVER['REQUEST_METHOD'] == 'POST'
                   'data_ora'    => 'now',
                   'mittente'    => $userObj->getUserName(),
                   'destinatari' => array($tutorObj->getUserName()),
-                  'titolo'      => 'eGos: ' . translateFN('a new user has been assigned to you.'),
+                  'titolo'      => PORTAL_NAME . ': ' . translateFN('a new user has been assigned to you.'),
                   'testo'       => $message_text
                 );
 
@@ -147,7 +161,7 @@ if (isset($_SERVER['REQUEST_METHOD']) && $_SERVER['REQUEST_METHOD'] == 'POST'
                   'mittente'    => $userObj->getUserName(),
                   //'destinatari' => array($userObj->getUserName()),
                   'destinatari' =>   $destinatari,
-                  'titolo'      => 'eGos: ' . translateFN('a new user has been assigned by you.'),
+                  'titolo'      => PORTAL_NAME .': '. translateFN('a new user has been assigned by you.'),
                   'testo'       => $message_text
                 );
 
@@ -191,7 +205,14 @@ if (isset($_SERVER['REQUEST_METHOD']) && $_SERVER['REQUEST_METHOD'] == 'POST'
     }
     
         $dialog_div = CDOMElement::create('DIV', 'id:dialog-message');
-        $dialogMessage = translateFN('Assegnazione riuscita');
+        $dialog_div->setAttribute('style', 'text-align:center');
+        if ($errorPhase != null) {
+            $dialogMessage = translateFN('Qualcosa è andato storto in') . ' ' .$errorPhase;
+            
+        } else {
+            $dialogMessage = translateFN('Utente') .' '. $tutoredUserObj->getFullName() .' ' . translateFN('assegnato a') . ' '. $tutorObj->getFullName();
+        } 
+            
         $dialog_div->addChild(new CText($dialogMessage));
         $optionsAr['onload_func'] = 'initDoc();';
         $dataDiv = $dialog_div;
@@ -237,47 +258,66 @@ if (isset($_SERVER['REQUEST_METHOD']) && $_SERVER['REQUEST_METHOD'] == 'POST'
         if ($id_tutor_old == 'no') {
             $tutors['no'] = translateFN('Nessun tutor');
         }
-
+        
+        $js = '<script type="text/javascript">';
+	$tooltips = '';
         foreach ($tutors_ar as $tutor) {
-			$ids_tutor[] = $tutor[0];
-			$nome = $tutor[1] . ' ' . $tutor[2];
-			$link = CDOMElement::create('a');
-			$link->setAttribute('id','tooltip'.$tutor[0]);
-			$link->setAttribute('href','javascript:void(0);');
-			$link->addChild(new CText($nome));
-            $tutors[$tutor[0]] = $link->getHtml();
-        }
+                $ids_tutor[] = $tutor[0];
+                $idSingleTutor = $tutor[0];
+                $nome = $tutor[1] . ' ' . $tutor[2];
+                $link = CDOMElement::create('a');
+                $link->setAttribute('id','tooltip'.$tutor[0]);
+                $link->setAttribute('href','javascript:void(0);');
+                $link->addChild(new CText($nome));
+                $tutors[$tutor[0]] = $link->getHtml();
 
-		$tutor_monitoring = $dh->get_tutors_assigned_course_instance($ids_tutor);
+//		$tutor_monitoring = $dh->get_tutors_assigned_course_instance($ids_tutor);
+		$tutor_monitoring = $dh->get_list_of_tutored_users($idSingleTutor);
 
+                
 		//create tooltips with tutor's assignments (html + javascript)
-		$tooltips = '';
-		$js = '<script type="text/javascript">';
+		$ul = CDOMElement::create('ul');
+                $studentsId = array();
 		foreach($tutor_monitoring as $k=>$v) {
-			$ul = CDOMElement::create('ul');
 			if (!empty($v)) {
-			foreach($v as $i=>$l) {
-					$nome_corso = $l['titolo'].(!empty($l['title'])?' - '.$l['title']:'');
-				$li = CDOMElement::create('li');
-				$li->addChild(new CText($nome_corso));
-				$ul->addChild($li);
-			}
+                            if (!in_array($v['id_utente'], $studentsId)) {
+                                array_push($studentsId, $v['id_utente']);
+                                $nome_corso = $v['nome'] .' ' . $v['cognome'].' - '. $v['titolo']; //.(!empty($l['title'])?' - '.$l['title']:'');
+                                $li = CDOMElement::create('li');
+                                $li->addChild(new CText($nome_corso));
+                                $ul->addChild($li);
+
+                                /*
+                                foreach($v as $i=>$l) {
+                                        print_r($l);
+                                        echo '<br />';
+                                        $nome_corso = $l[2].$l[3]; //.(!empty($l['title'])?' - '.$l['title']:'');
+                                        $li = CDOMElement::create('li');
+                                        $li->addChild(new CText($nome_corso));
+                                        $ul->addChild($li);
+                                }
+                                 * 
+                                 */
+                            }
 			}
 			else {
-				$nome_corso = translateFN('Nessun corso trovato');
+				$nome_corso = translateFN('Nessun utente');
 				$li = CDOMElement::create('li');
 				$li->addChild(new CText($nome_corso));
-				$ul->addChild($li);
 			}
 
-			$tip = CDOMElement::create('div','id:tooltipContent'.$k);
-			$tip->addChild(new CText(translateFN('Tutor assegnato ai seguenti corsi:<br />')));
-			$tip->addChild($ul);
-			$tooltips.=$tip->getHtml();
-			$js.= 'new Tooltip("tooltip'.$k.'", "tooltipContent'.$k.'", {DOM_uery: {parentId: "header"}, className: "tooltip", offset: {x:+15, y:0}, hook: {target:"rightMid", tip:"leftMid"}});'."\n";
 		}
+//                $ul->addChild($li);
+                $tip = CDOMElement::create('div','id:tooltipContent'.$idSingleTutor);
+//                $tip->setAttribute('class', 'toolTip');
+                $tip->addChild(new CText(translateFN('Tutor assegnato ai seguenti utenti').':<br />'));
+                $tip->addChild($ul);
+                $tooltips.=$tip->getHtml();
+                $js.= 'new Tooltip("tooltip'.$idSingleTutor.'", "tooltipContent'.$idSingleTutor.'", {DOM_uery: {parentId: "header"}, className: "tooltip", offset: {x:+15, y:0}, hook: {target:"rightMid", tip:"leftMid"}});'."\n";
+             }
+
 		$js.= '</script>';
-			$tooltips.=$js;
+		$tooltips.=$js;
 		//end
 
         $data = new TutorAssignmentForm($tutors, $id_tutor_old);
@@ -285,7 +325,8 @@ if (isset($_SERVER['REQUEST_METHOD']) && $_SERVER['REQUEST_METHOD'] == 'POST'
                 array(
                     'id_tutor_old' => $id_tutor_old,
                     'id_course_instance' => $courseInstanceObj->getId(),
-                    'id_course' => $id_corso
+                    'id_course' => $id_corso,
+                    'id_student' => $id_user
                 )
         );
 
@@ -339,7 +380,6 @@ if (isset($_SERVER['REQUEST_METHOD']) && $_SERVER['REQUEST_METHOD'] == 'POST'
         $serviceNameSpan = CDOMElement::create('span','class:strong_text'); 
         $serviceNameSpan->addchild(new CText($serviceName));
         $ServiceHTML = $serviceNameSpan->getHtml();
-        print_r($ServiceHTML);
         $headerText = $tutoredUserObj->nome . ' ' . $tutoredUserObj->cognome .' '. translateFN('ha chiesto aiuto per il servizio'). ' '. $ServiceHTML. ' ';
         $headerSpanText->addChild(new CText($headerText));
         $info_div->addChild($headerSpanText);
@@ -378,6 +418,19 @@ $layout_dataAr['JS_filename'] = array(
 		JQUERY_NO_CONFLICT,
                 HTTP_ROOT_DIR.'/js/switcher/assign_practitioner.js'
 );
+
+/**
+ * if the jqueru-ui theme directory is there in the template family,
+ * do not include the default jquery-ui theme but use the one imported
+ * in the edit_user.css file instead
+ */
+if (!is_dir(ROOT_DIR.'/layout/'.$userObj->template_family.'/css/jquery-ui'))
+{
+	$layout_dataAr['CSS_filename'] = array(
+			JQUERY_UI_CSS
+	);
+}
+
 
 $content_dataAr = array(
     'data' => $dataDiv->getHtml() . $tooltips,
