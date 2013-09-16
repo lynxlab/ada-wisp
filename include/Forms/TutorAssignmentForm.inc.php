@@ -31,5 +31,6 @@ class TutorAssignmentForm extends FForm
        $this->addHidden('id_tutor_old');
        $this->addHidden('id_course_instance');
        $this->addHidden('id_course');
+       $this->addHidden('id_student');
     }
 }
