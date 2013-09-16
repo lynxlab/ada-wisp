@@ -1,0 +1,43 @@
+@CHARSET "UTF-8";
+
+/**
+ * Form styling
+ */
+#top_container_form {
+	float: left;
+	margin-bottom: 30px;
+	width: 100%;
+}
+
+#left_proposal_form {
+	float: left;
+	width: 45%
+}
+
+#right_proposal_form {
+	float: right;
+	width: 45%
+}
+
+#hidden_form_controls {
+	display:none;
+}
+
+/**
+ * NOTE: all fullcalendar related properties must be marked as important
+ * because this css is included by ada rendering engine before the one
+ * from fullcalendar
+ */
+.holiday,.fc-agenda .holiday .fc-event-time,.holiday a {
+	background-color: green !important; /* background color */
+	border-color: green !important; /* border color */
+	color: white !important; /* text color */
+	padding: 5px;
+}
+
+.loadedEvents,.fc-agenda .loadedEvents .fc-event-time,.loadedEvents a {
+	background-color: lightgray !important; /* background color */
+	border-color: darkgray !important; /* border color */
+	color: black !important; /* text color */
+	padding: 2px;
+}

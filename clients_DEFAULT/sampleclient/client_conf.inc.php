@@ -25,6 +25,10 @@ if (!MULTIPROVIDER)
 	 * Provider default language
 	 */
 	define ('PROVIDER_LANGUAGE','it');	
+	/**
+	 * Provider holidays feed, to be show on fullcalendar. Sample is italian holidays feed
+	 */
+	define ('GCAL_HOLIDAYS_FEED','http://www.google.com/calendar/feeds/e327d6lm6r2kb555ce82ll4sbs@group.calendar.google.com/public/basic');	
 }
 
 /**

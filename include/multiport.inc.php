@@ -1194,7 +1194,9 @@ class MultiPort
      * Get messages sent from  this user from all the testers the user has subscribed to.
      */
 
-    $fields_list_Ar = array('id_mittente','data_ora', 'titolo', 'priorita','flags');
+    // ADA default: $fields_list_Ar = array('id_mittente','data_ora', 'titolo', 'priorita','flags');
+    // WISP modified:
+    $fields_list_Ar = array('id_mittente','data_ora', 'titolo', 'priorita', 'read_timestamp', 'flags','utente.username','utente.nome', 'utente.cognome','testo');
     $sort_field     = ' data_ora desc';
 
     //if($sess_selected_tester === NULL || $sess_selected_tester === ADA_PUBLIC_TESTER) {
@@ -1442,6 +1444,27 @@ class MultiPort
     return $result_Ar;
     //return self::getEventsAsTable($userObj, $result_Ar);
   }
+  
+  // MARK: restituire $result_Ar, rimuovere la chiamata a getEventsAsTable
+  static public function getTutorEventsProposed(ADAGenericUser $userObj) {
+  	// include_once ROOT_DIR.'/include/WISPHtmlLibrary/BaseHtmlLib.inc.php';
+  	if(!($userObj instanceof ADAUser || $userObj instanceof ADAPractitioner)) {
+  		return array();
+  	}
+  
+  	$user_type = $userObj->getType();
+  	if($user_type == AMA_TYPE_TUTOR) {
+  		$msgFlags = ADA_EVENT_PROPOSED;
+  		//      $msgFlags = ADA_EVENT_PROPOSAL_NOT_OK;
+  	}
+  	else {
+  		$msgFlags = ADA_EVENT_PROPOSED;
+  	}
+  	$result_Ar = self::get_sent_messages($userObj, ADA_MSG_AGENDA, $msgFlags);
+  
+  	return $result_Ar;
+  	//return self::getEventsAsTable($userObj, $result_Ar);
+  } 
 
     static public function getUserEventsNotRead(ADAGenericUser $userObj) {
     // include_once ROOT_DIR.'/include/HtmlLibrary/BaseHtmlLib.inc.php';

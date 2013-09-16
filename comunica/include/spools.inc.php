@@ -612,7 +612,7 @@ class Spool extends Abstract_AMA_DataHandler
    *          an AMA_Error object if something goes wrong
    *
    **/
-  public function &find_sent_messages($fields_list="", $clause="", $ordering="")
+  public function &find_sent_messages($fields_list="", $clause="", $ordering="", $tables="")
   {
 
     /* logger("entered Spool::find_sent_messages - ".
@@ -628,15 +628,15 @@ class Spool extends Abstract_AMA_DataHandler
 
     //prepare fields list
     if($fields_list != "") {
-      $fields = "id_messaggio, ".implode(",", $fields_list);
+      $fields = "messaggi.id_messaggio, ".implode(",", $fields_list);
     }
     else {
-      $fields = "id_messaggio";
+      $fields = "messaggi.id_messaggio";
     }
     // logger("fields_list: $fields", 4);
 
     // set where clause
-    $basic_clause = "id_mittente='$user_id' and tipo='$type' ";
+    $basic_clause = "messaggi.id_mittente='$user_id' and messaggi.tipo='$type' and DM.deleted='N' ";
     if ($clause == "") {
       $clause = $basic_clause;
     }
@@ -647,8 +647,13 @@ class Spool extends Abstract_AMA_DataHandler
     if ($ordering != "") {
       $ordering = "order by $ordering";
     }
+    
+    $basic_table = "messaggi, destinatari_messaggi as DM";
+    if ($tables == "") {
+    	$tables = $basic_tables;
+    }
 
-    $sql = "select $fields from messaggi ".
+    $sql = "select $fields from ". $tables .
                " where $clause $ordering";
     // logger("performing query: $sql", 4);
 
@@ -673,6 +678,23 @@ class Spool extends Abstract_AMA_DataHandler
     }
 
     // logger("query succeeded", 4);
+    
+    if(is_array($res_ar) && !empty($res_ar)) {
+    	foreach ($res_ar as $key => $value) {
+    		$id_mes = $key;
+    		$sql = 'SELECT U.id_utente, U.nome, U.cognome, DM.id_utente, DM.id_messaggio
+                FROM utente AS U, destinatari_messaggi AS DM
+                WHERE DM.id_messaggio =  ' . $key .
+                    ' AND DM.id_utente = U.id_utente';
+    		$recipients_Ha = $db->getAssoc($sql);
+    		//        var_dump($recipients_Ha);
+    
+    		if (!AMA_DB::isError($recipients_Ha)) {
+    			$res_ar[$key][] = $recipients_Ha;
+    		}
+    		//$recipients = self::get_recipients($id_mes, $mh);
+    	}
+    }
 
     return $res_ar;
   }

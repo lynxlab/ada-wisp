@@ -148,11 +148,17 @@ class CommunicationModuleHtmlLib
     }
 
     $form->addChild($idcourseinstance);
+    
+    $topContainerDIV = CDOMElement::create('div','id:top_container_form');
+    
+    $leftDIV = CDOMElement::create('div','id:left_proposal_form');
+    
+    $rightDIV = CDOMElement::create('div','id:right_proposal_form');
 
     $tutoredUserObj = MultiPort::findUser($id_user);
     $tutored_user_info = CDOMElement::create('div','class:proposal_title');
     $tutored_user_info->addChild(new CText(sprintf(translateFN("Proposta di appuntamento per l'utente: %s"), $tutoredUserObj->nome .' '.$tutoredUserObj->cognome)));
-    $form->addChild($tutored_user_info);
+    $leftDIV->addChild($tutored_user_info);
 
     $subject  = CDOMElement::create('div', 'class:proposal_title');
 
@@ -233,8 +239,13 @@ class CommunicationModuleHtmlLib
     $type->addChild(new CText(translateFN('Tipo di appuntamento')));
     $type->addChild($select);
     
+    
+    
     $fullCalendarDIV = CDOMElement::create('div','id:fullcalendar');
+    $fullCalendarDIV->setAttribute('style', 'margin-top:20px;');
 
+    
+    
     $date1  = CDOMElement::create('div','class:proposed_date');
     if(is_array($errors) && isset($errors['date1'])) {
       $date_error = CDOMElement::create('div','class:error');
@@ -330,15 +341,26 @@ class CommunicationModuleHtmlLib
     $buttons->addChild($submit);
     $buttons->addChild($reset);
 
-    $form->addChild($subject);
-    $form->addChild($type);
-    $form->addChild($timezone);
+    $leftDIV->addChild($subject);
+    $leftDIV->addChild($type);
+    $leftDIV->addChild($timezone);
+
+    $rightDIV->addChild($notes);
+    
+    $topContainerDIV->addChild ($leftDIV);
+    $topContainerDIV->addChild ($rightDIV);
+    
+    $form->addChild ($topContainerDIV);
+    
     $form->addChild($fullCalendarDIV);
-    $form->addChild($date1);
-    $form->addChild($date2);
-    $form->addChild($date3);
-    $form->addChild($notes);
-    $form->addChild($user_id);
+    
+    $hiddenFormElements = CDOMElement::create('div','id:hidden_form_controls');
+    $hiddenFormElements->addChild($date1);
+    $hiddenFormElements->addChild($date2);
+    $hiddenFormElements->addChild($date3);
+    $hiddenFormElements->addChild($user_id);
+    
+    $form->addChild ($hiddenFormElements);
     $form->addChild($buttons);
 
     return $form;

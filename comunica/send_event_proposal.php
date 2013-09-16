@@ -207,12 +207,54 @@ else {
      */
     $errors = array();
     $data = array();
-  	$form = CommunicationModuleHtmlLib::getEventProposalForm($sess_id_user, $data, $errors, $sess_selected_tester);
+  	$form = CommunicationModuleHtmlLib::getEventProposalForm($id_user, $data, $errors, $sess_selected_tester);
   	
+  	/**
+	 * It can become an AJAX call from here.... 
+  	 */
+  	$user_events_proposedAr = MultiPort::getTutorEventsProposed($userObj);  	
+  	foreach ($user_events_proposedAr as $eventElementAr)
+  	{
+  		// there shall be an array for each provider,
+  		// but in this platform there's going to be one provider only(?)
+  		$i=0;
+  		$proposedDateAndTimeAr = array();
+  		foreach ($eventElementAr as $eventElement)
+  		{
+  			$proposedDateAndTimeAr = array_merge($proposedDateAndTimeAr,ADAEventProposal::extractDateTimesFromEventProposalText($eventElement[9]));
+  		}  		
+  	}
+
+  	$json = array();
+  	
+  	foreach ($proposedDateAndTimeAr as $k=>$element)
+  	{
+  		list($dd, $mm, $yy) = explode("/", $element['date']);
+  		list($HH, $MM) = explode(":", $element['time']);
+  		
+  		$json[$k]['title'] = "Proposta #".($k+1)." caricata";
+  		$json[$k]['start'] = mktime ($HH, $MM ,0, $mm,$dd,$yy);
+  		$json[$k]['editable'] = false;
+  		$json[$k]['allDay'] = false;
+  		$json[$k]['className'] = 'loadedEvents';  		
+  	}
+  	
+  	$dateObj =  '<script type="text/javascript">';
+  	$dateObj .= "var loadedProposal = ".json_encode($json);
+  	$dateObj .=  '</script>';
+  	
+  	/**
+  	 * ...it can become an AJAX call down to here!
+  	 * need to carefully check the passed objects, date range displayed.....!
+  	 */
+  	
+  	// NOTE: if i18n file is not found it'll be discarded by the rendering engine
   	$layout_dataAr['JS_filename'] = array(
   			JQUERY,
   			JQUERY_UI,  			
-  			ROOT_DIR . '/js/include/jquery/fullcalendar/fullcalendar.min.js',
+  			ROOT_DIR . '/js/include/jquery/fullcalendar/fullcalendar.js',
+  			ROOT_DIR . '/js/include/jquery/fullcalendar/i18n/fullcalendar.'.$_SESSION['sess_user_language'].'.js',
+  			ROOT_DIR . '/js/include/jquery/fullcalendar/gcal.js',
   			JQUERY_NO_CONFLICT
   	  	);   	 
   }
@@ -225,7 +267,7 @@ else {
   $layout_dataAr['CSS_filename'] = array(
   		( (is_file($jqueryLayoutCSS)) ? $jqueryLayoutCSS :  JQUERY_UI_CSS),
   		ROOT_DIR . '/js/include/jquery/fullcalendar/fullcalendar.css',
-  		ROOT_DIR . '/js/include/jquery/fullcalendar/fullcalendar.print.css'
+  		// ROOT_DIR . '/js/include/jquery/fullcalendar/fullcalendar.print.css'
   );    
 }
 
@@ -237,7 +279,7 @@ $content_dataAr = array(
   'titolo'         => $titolo,
   'course_title'   => '<a href="../browsing/main_index.php">'.$course_title.'</a>',
   'status'         => $err_msg,
-  'data'	   => $form->getHtml(),
+  'data'	   => $form->getHtml() . $dateObj,
   'label'	   => $title
 );
 

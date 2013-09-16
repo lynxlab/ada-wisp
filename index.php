@@ -204,7 +204,9 @@ if(isset($p_login)) {
 /**
  * Show login page
  */
-$form_action = HTTP_ROOT_DIR .'/index.php';
+$form_action = HTTP_ROOT_DIR ;
+if (!MULTIPROVIDER && isset ($GLOBALS['user_provider']) && $GLOBALS['user_provider']!='') $form_action .= '/'.$GLOBALS['user_provider'];
+$form_action .= '/index.php';
 $login = UserModuleHtmlLib::loginForm($form_action, $supported_languages,$login_page_language_code, $login_error_message);
 
 //$login = UserModuleHtmlLib::loginForm($supported_languages,$login_page_language_code, $login_error_message);
