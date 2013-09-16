@@ -85,10 +85,11 @@ td.default_th a:hover {
 
 .tooltip {
 	border: 1px solid #AAAAAA;
-	background-color: #F0F0F0;
+	background-color: #EFF0EB;
 	color: #000000;
 	text-align:left;
 	padding:3px;
+        border-radius: 10px;
 }
 
 .tooltip ul {
