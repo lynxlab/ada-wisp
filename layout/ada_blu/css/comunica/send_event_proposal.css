@@ -20,7 +20,7 @@
 }
 
 #hidden_form_controls {
-	display:none;
+	/* display: none; */
 }
 
 /**
@@ -29,10 +29,10 @@
  * from fullcalendar
  */
 .holiday,.fc-agenda .holiday .fc-event-time,.holiday a {
-	background-color: green !important; /* background color */
-	border-color: green !important; /* border color */
-	color: white !important; /* text color */
-	padding: 5px;
+	background-color: lightgreen !important; /* background color */
+	border-color: darkgreen !important; /* border color */
+	color: black !important; /* text color */
+	padding: 2px;
 }
 
 .loadedEvents,.fc-agenda .loadedEvents .fc-event-time,.loadedEvents a {
@@ -40,4 +40,18 @@
 	border-color: darkgray !important; /* border color */
 	color: black !important; /* text color */
 	padding: 2px;
+	cursor: pointer !important;
+}
+
+/**
+ * details dialog
+ */
+#proposalDetails {
+	font-size: 0.9em;
+}
+
+#proposalUserDetails,#proposalNotes,#proposalTypeDetails {
+	font-weight: bold;
+	margin: 5px 0 15px 20px;
+	display: block;
 }

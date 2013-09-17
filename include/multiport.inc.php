@@ -1286,8 +1286,10 @@ class MultiPort
      * If we are retrieving messages representing events or events proposal,
      * filter them by flag too.
      * NOT USED ANYMORE --> Graffio 24/01/2011
+     * 
+     * USED AGAIN BY WISP --> giorgio 17/set/2013
      */
-    /*
+    
     if($msgType == ADA_MSG_AGENDA) {
       if(empty($msgFlags)) {
         $clause = 'flags & '.ADA_EVENT_CONFIRMED;
@@ -1299,9 +1301,8 @@ class MultiPort
     else {
       $clause = '';
     }
-     *
-     */
-    
+
+         
     /*
      * Get messagges not yet read
      */
@@ -1434,7 +1435,9 @@ class MultiPort
 
     $user_type = $userObj->getType();
     if($user_type == AMA_TYPE_TUTOR) {
-      $msgFlags = ADA_EVENT_PROPOSAL_NOT_OK;
+    	$msgFlags = ADA_EVENT_PROPOSED;
+      // giorgio 17/set/2013 was:
+      // $msgFlags = ADA_EVENT_PROPOSAL_NOT_OK;
     }
     else {
       $msgFlags = ADA_EVENT_PROPOSED;

@@ -135,7 +135,7 @@ class ADAEventProposal
    * @return string
    */
   static public function extractNotesFromEventProposalText($string) {
-    $pattern = '/<notes>(.*)<\/notes>/';
+    $pattern = '/<notes>(.*)<\/notes>/s';
     $matches = array();
     if(preg_match($pattern, $string, $matches) == 1) {
       return $matches[1];

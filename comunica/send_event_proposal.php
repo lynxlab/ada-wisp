@@ -13,7 +13,7 @@
 /**
  * Base config file
  */
-ini_set('display_errors', '0'); error_reporting(E_ALL);
+// ini_set('display_errors', '0'); error_reporting(E_ALL);
 require_once realpath(dirname(__FILE__)).'/../config_path.inc.php';
 
 /**
@@ -50,6 +50,9 @@ include_once 'include/comunica_functions.inc.php';
 
 //$success    = HTTP_ROOT_DIR.'/comunica/list_events.php';
 //$error_page = HTTP_ROOT_DIR.'/comunica/send_event.php';
+
+$includeJS = false;
+
 if (isset($_SERVER['REQUEST_METHOD']) && $_SERVER['REQUEST_METHOD'] == 'POST') {
   /*
    * Controllo validita' sui dati in arrivo dal form
@@ -102,6 +105,7 @@ if (isset($_SERVER['REQUEST_METHOD']) && $_SERVER['REQUEST_METHOD'] == 'POST') {
       'titolo' => $subject,
       'flags'  => $type
     );
+    $includeJS = true;
     $form = CommunicationModuleHtmlLib::getEventProposalForm($id_user, $data, $errors,$sess_selected_tester);
   }
   else {
@@ -179,8 +183,13 @@ if (isset($_SERVER['REQUEST_METHOD']) && $_SERVER['REQUEST_METHOD'] == 'POST') {
   }
 }
 else {
+
+		
   if(isset($msg_id)) {
     $data = MultiPort::getUserAppointment($userObj, $msg_id);
+    
+
+        
     if($data['flags'] & ADA_EVENT_PROPOSAL_OK) {
       /*
        * The user accepted one of the three proposed dates for the appointment.
@@ -196,6 +205,7 @@ else {
       $_SESSION['event_msg_id'] = $msg_id;
       $id_user = $data['id_mittente'];
       $errors = array();
+      $includeJS = true;
       $form = CommunicationModuleHtmlLib::getEventProposalForm($id_user, $data, $errors, $sess_selected_tester);
     }
   }
@@ -207,68 +217,9 @@ else {
      */
     $errors = array();
     $data = array();
+    $includeJS = true;
   	$form = CommunicationModuleHtmlLib::getEventProposalForm($id_user, $data, $errors, $sess_selected_tester);
-  	
-  	/**
-	 * It can become an AJAX call from here.... 
-  	 */
-  	$user_events_proposedAr = MultiPort::getTutorEventsProposed($userObj);  	
-  	foreach ($user_events_proposedAr as $eventElementAr)
-  	{
-  		// there shall be an array for each provider,
-  		// but in this platform there's going to be one provider only(?)
-  		$i=0;
-  		$proposedDateAndTimeAr = array();
-  		foreach ($eventElementAr as $eventElement)
-  		{
-  			$proposedDateAndTimeAr = array_merge($proposedDateAndTimeAr,ADAEventProposal::extractDateTimesFromEventProposalText($eventElement[9]));
-  		}  		
-  	}
-
-  	$json = array();
-  	
-  	foreach ($proposedDateAndTimeAr as $k=>$element)
-  	{
-  		list($dd, $mm, $yy) = explode("/", $element['date']);
-  		list($HH, $MM) = explode(":", $element['time']);
-  		
-  		$json[$k]['title'] = "Proposta #".($k+1)." caricata";
-  		$json[$k]['start'] = mktime ($HH, $MM ,0, $mm,$dd,$yy);
-  		$json[$k]['editable'] = false;
-  		$json[$k]['allDay'] = false;
-  		$json[$k]['className'] = 'loadedEvents';  		
-  	}
-  	
-  	$dateObj =  '<script type="text/javascript">';
-  	$dateObj .= "var loadedProposal = ".json_encode($json);
-  	$dateObj .=  '</script>';
-  	
-  	/**
-  	 * ...it can become an AJAX call down to here!
-  	 * need to carefully check the passed objects, date range displayed.....!
-  	 */
-  	
-  	// NOTE: if i18n file is not found it'll be discarded by the rendering engine
-  	$layout_dataAr['JS_filename'] = array(
-  			JQUERY,
-  			JQUERY_UI,  			
-  			ROOT_DIR . '/js/include/jquery/fullcalendar/fullcalendar.js',
-  			ROOT_DIR . '/js/include/jquery/fullcalendar/i18n/fullcalendar.'.$_SESSION['sess_user_language'].'.js',
-  			ROOT_DIR . '/js/include/jquery/fullcalendar/gcal.js',
-  			JQUERY_NO_CONFLICT
-  	  	);   	 
-  }
-  $optionsAr['onload_func'] = 'initDoc();';
-  /**
-   * if the jqueru-ui theme directory is there in the template family,
-   * import it. Else get the standard one
-   */
-  $jqueryLayoutCSS = ROOT_DIR.'/layout/'.$userObj->template_family.'/css/jquery-ui/jquery-ui-1.10.3.custom.min.css';
-  $layout_dataAr['CSS_filename'] = array(
-  		( (is_file($jqueryLayoutCSS)) ? $jqueryLayoutCSS :  JQUERY_UI_CSS),
-  		ROOT_DIR . '/js/include/jquery/fullcalendar/fullcalendar.css',
-  		// ROOT_DIR . '/js/include/jquery/fullcalendar/fullcalendar.print.css'
-  );    
+  }     
 }
 
 $title = translateFN('Invia proposta di appuntamento');
@@ -282,6 +233,37 @@ $content_dataAr = array(
   'data'	   => $form->getHtml() . $dateObj,
   'label'	   => $title
 );
+
+if ($includeJS)
+{
+	// NOTE: if i18n file is not found it'll be discarded by the rendering engine
+	$layout_dataAr ['JS_filename'] = array (
+			JQUERY,
+			JQUERY_UI,
+			ROOT_DIR . '/js/include/jquery/fullcalendar/fullcalendar.js',
+			ROOT_DIR . '/js/include/jquery/fullcalendar/i18n/fullcalendar.' . $_SESSION ['sess_user_language'] . '.js',
+			ROOT_DIR . '/js/include/jquery/fullcalendar/gcal.js',
+			JQUERY_NO_CONFLICT 
+	);
+	
+	if (isset($data))
+		$datetimesAr = ADAEventProposal::extractDateTimesFromEventProposalText($data['testo']);
+	else $datetimesAr = '';
+	
+	$optionsAr ['onload_func'] = 'initDoc(\''.htmlentities(json_encode($datetimesAr)).'\');';
+	
+	/**
+	 * if the jqueru-ui theme directory is there in the template family,
+	 * import it.
+	 * Else get the standard one
+	 */
+	$jqueryLayoutCSS = ROOT_DIR . '/layout/' . $userObj->template_family . '/css/jquery-ui/jquery-ui-1.10.3.custom.min.css';
+	$layout_dataAr ['CSS_filename'] = array (
+			((is_file ( $jqueryLayoutCSS )) ? $jqueryLayoutCSS : JQUERY_UI_CSS),
+			ROOT_DIR . '/js/include/jquery/fullcalendar/fullcalendar.css' 
+			// ROOT_DIR . '/js/include/jquery/fullcalendar/fullcalendar.print.css'
+		);
+}
 
 
 ARE::render($layout_dataAr, $content_dataAr, NULL, (isset($optionsAr) ? $optionsAr : NULL));

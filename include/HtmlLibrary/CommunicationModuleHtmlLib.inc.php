@@ -240,11 +240,30 @@ class CommunicationModuleHtmlLib
     $type->addChild($select);
     
     
-    
     $fullCalendarDIV = CDOMElement::create('div','id:fullcalendar');
     $fullCalendarDIV->setAttribute('style', 'margin-top:20px;');
-
     
+    $proposalDetailsDIV = CDOMElement::create('div','id:proposalDetails');
+    $proposalDetailsDIV->setAttribute('style', 'display:none;');
+    
+    $userLbl = CDOMElement::create('span');
+    $userLbl->setAttribute('style', 'display:block;');
+    $userLbl->addChild (new CText(translateFN("Proposta con l'utente").": "));
+    $userLbl->addChild (CDOMElement::create('span','id:proposalUserDetails'));
+    
+    $typeLbl = CDOMElement::create('span');
+    $typeLbl->setAttribute('style', 'display:block;');
+    $typeLbl->addChild (new CText(translateFN('Tipo di appuntamento').": "));
+    $typeLbl->addChild (CDOMElement::create('span','id:proposalTypeDetails'));
+    
+    $notesLbl = CDOMElement::create('span');
+    $notesLbl->setAttribute('style', 'display:block');
+    $notesLbl->addChild (new CText(translateFN("Note").": "));
+    $notesLbl->addChild (CDOMElement::create('span','id:proposalNotes'));
+    
+    $proposalDetailsDIV->addChild($userLbl);
+    $proposalDetailsDIV->addChild($typeLbl);
+    $proposalDetailsDIV->addChild($notesLbl);
     
     $date1  = CDOMElement::create('div','class:proposed_date');
     if(is_array($errors) && isset($errors['date1'])) {
@@ -353,6 +372,8 @@ class CommunicationModuleHtmlLib
     $form->addChild ($topContainerDIV);
     
     $form->addChild($fullCalendarDIV);
+    
+    $form->addChild ($proposalDetailsDIV);
     
     $hiddenFormElements = CDOMElement::create('div','id:hidden_form_controls');
     $hiddenFormElements->addChild($date1);

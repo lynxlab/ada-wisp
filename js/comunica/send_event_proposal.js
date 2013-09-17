@@ -2,6 +2,7 @@ document.write("<script type='text/javascript' src='../js/include/basic.js'></sc
 document.write("<script type='text/javascript' src='../js/include/menu_functions.js'></script>");
 document.write("<script type='text/javascript' src='../js/include/ts_picker.js'></script>");
 
+
 /**
  * JavaScript class to handle appointments
  * 
@@ -17,6 +18,22 @@ function Appointments (fullCalendar)
 	
 	this.titlesArray = new Array ("Prima Proposta","Seconda Proposta","Terza Proposta");
 	this.idsArray = new Array(0,0,0);
+    
+    this.fillWithDatas = function (initDatas) 
+    {
+    	if (initDatas != '')
+        {
+        	var data = JSON.parse(initDatas);
+        	for (var i=0; i< data.length; i++)
+        	{
+        		var dateArray = data[i].date.split("/");
+        		var timeArray = data[i].time.split(":");
+
+        		this.addAppointment(new Date (dateArray[2], dateArray[1]-1, dateArray[0], timeArray[0], timeArray[1]), null, false, null, null);
+        	}
+        }
+    };
+
 	
 	/**
 	 * adds a new appointment after user has completed the selecion action
@@ -45,7 +62,6 @@ function Appointments (fullCalendar)
 				};
 			
 			this.calendarObj.fullCalendar('renderEvent',newEvent,true);
-			this.currAppointment++;
 			this.updateForm();
 			retval = true;			
 		}
@@ -86,6 +102,7 @@ function Appointments (fullCalendar)
 	 * basically checks if the event is an event proposal and ask to remove it
 	 */
 	this.eventClick = function( event, jsEvent, view ) {
+				
 		if (in_array(event.id,this.idsArray) && confirm("Confermi la cancellazione della proposta?"))
 		{
 			this.calendarObj.fullCalendar ('removeEvents', event.id);			
@@ -95,11 +112,24 @@ function Appointments (fullCalendar)
 			if (index!=-1) this.idsArray[index] = 0;
 			this.updateForm();
 		}
+		else if (typeof event.source != 'undefined' && event.source.className=='loadedEvents')
+		{
+			$j('#proposalUserDetails').html(event.recipientFullName);
+			$j('#proposalNotes').html(event.notes);
+			$j('#proposalTypeDetails').html(event.type);
+			$j('#proposalDetails').dialog({ modal: true, 
+											title: event.title,
+											resizable: false,
+											buttons: { "Ok": function () { $j(this).dialog("close"); } } 
+										});
+		}
+
+		// returning false prevents event url from opening when clicked
+		return false;
 	};
 	
 	this.updateForm = function ()
 	{
-//		var eventsArray = this.calendarObj.fullCalendar('clientEvents');
 		for (var i=0; i< this.maxAppointments; i++)
 		{
 			formIndex = i+1;
@@ -163,15 +193,7 @@ function Appointments (fullCalendar)
 
 
 
-function initDoc() {
-	
-	// needed for sample events
-	// can safely delete from here...
-//	var date = new Date();
-//	var d = date.getDate();
-//	var m = date.getMonth();
-//	var y = date.getFullYear();
-	// .. to here	
+function initDoc(initDatas) {
 
     var fullcal = $j('#fullcalendar').fullCalendar({
         // put your options and callbacks here
@@ -184,14 +206,14 @@ function initDoc() {
     	selectable : true,
     	selectHelper : true,
     	defaultView : 'agendaWeek',
-    	select : function( startDate, endDate, allDay, jsEvent, view ) {
-    				appointments.addAppointment ( startDate, endDate, allDay, jsEvent, view );
+    	select :	function( startDate, endDate, allDay, jsEvent, view ) {
+    					appointments.addAppointment ( startDate, endDate, allDay, jsEvent, view );
     	},
-    	eventClick : function( event, jsEvent, view ) { 
-    				appointments.eventClick ( event, jsEvent, view );
+    	eventClick :function( event, jsEvent, view ) { 
+    					appointments.eventClick ( event, jsEvent, view );
     	},
-    	eventDrop: function( event, dayDelta, minuteDelta, allDay, revertFunc ) {
-    				appointments.moveAppointment ( event, dayDelta, minuteDelta, allDay, revertFunc ); 
+    	eventDrop:  function( event, dayDelta, minuteDelta, allDay, revertFunc ) {
+    					appointments.moveAppointment ( event, dayDelta, minuteDelta, allDay, revertFunc ); 
     	},
 		header: {
 			left: 'prev,next today',
@@ -201,57 +223,22 @@ function initDoc() {
 		eventSources : [  {
 		                	url : GCAL_HOLIDAYS_FEED,
 							className: 'holiday'
-						  }
-		                ],
-		events : loadedProposal
-		// set sample events
-//		events: [
-//					{
-//						title: 'All Day Event',
-//						start: new Date(y, m, 1),
-//					},
-//					{
-//						title: 'Long Event',
-//						start: new Date(y, m, d-5),
-//						end: new Date(y, m, d-2)
-//					},
-//					{
-//						id: 999,
-//						title: 'Repeating Event',
-//						start: new Date(y, m, d-3, 16, 0),
-//						allDay: false
-//					},
-//					{
-//						id: 999,
-//						title: 'Repeating Event',
-//						start: new Date(y, m, d+4, 16, 0),
-//						allDay: false
-//					},
-//					{
-//						title: 'Meeting',
-//						start: new Date(y, m, d, 10, 30),
-//						allDay: false
-//					},
-//					{
-//						title: 'Lunch',
-//						start: new Date(y, m, d, 12, 0),
-//						end: new Date(y, m, d, 14, 0),
-//						allDay: false
-//					},
-//					{
-//						title: 'Birthday Party',
-//						start: new Date(y, m, d+1, 19, 0),
-//						end: new Date(y, m, d+1, 22, 30),
-//						allDay: false
-//					},
-//					{
-//						title: 'Click for Google',
-//						start: new Date(y, m, 28),
-//						end: new Date(y, m, 29),
-//						url: 'http://google.com/'
-//					}
-//				]
-		// end sample events
+						  },
+						  {
+			                url : HTTP_ROOT_DIR + "/comunica/ajax/getProposals.php",
+			                className : 'loadedEvents',
+			                editable  : 	false,
+			                allDayDefault : false			                
+						  },
+						  {
+			                url : HTTP_ROOT_DIR + "/comunica/ajax/getProposals.php?type=C",
+			                className : 'loadedEvents',
+			                editable  : 	false,
+			                allDayDefault : false			                
+						  }	
+		                ]
     });
+    
     var appointments = new Appointments(fullcal);
+    appointments.fillWithDatas(initDatas);
 }
