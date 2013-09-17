@@ -593,15 +593,15 @@ class CommunicationModuleHtmlLib
     $javascript_ok = check_javascriptFN($_SERVER['HTTP_USER_AGENT']);
 
     $appointments_Ar = array();
-    /*
+    
     if($userObj instanceof ADAUser) {
       $module = 'event_proposal.php';
     }
     else {
       $module = 'send_event_proposal.php';
     }
-    */
-      $module = 'read_event.php';
+    
+    //  $module = 'read_event.php';
 
     foreach($data_Ar as $tester => $appointment_data_Ar) {
 
@@ -630,7 +630,12 @@ class CommunicationModuleHtmlLib
         $read_timestamp = $appointment_Ar[4];
         $data_msg        = AMA_DataHandler::ts_to_date($date_time, "%d/%m/%Y - %H:%M:%S");
 
-        $sender_username = $appointment_Ar[6];
+        // if full name is not null set username to full name
+        if ($appointment_Ar[7] != '') {
+            $sender_username = $appointment_Ar[7] . ' ' . $appointment_Ar[8];;
+        }else {
+            $sender_username = $appointment_Ar[6];
+        }
 
 
         //$msg_id = $tester_info_Ar[0].'_'.$appointment_id;
@@ -659,15 +664,14 @@ class CommunicationModuleHtmlLib
       foreach($appointments_Ar as $appointment) {
         $d = CDOMElement::create('div');
        // $d->addChild(new CText($appointment[0]));
-        /*
+        
         if($userObj instanceof ADAPractitioner) {
           $string = translateFN('Appointment proposal: %s, the user %s asks for new dates');
         }
         else {
           $string = translateFN('Proposta di appuntamento: %s, da %s');
         }
-        */
-          $string = translateFN('Nuovo appuntamento: %s, da %s');
+//          $string = translateFN('Nuovo appuntamento: %s, da %s');
 
         $subject_link = $appointment[1];
         $message = sprintf($string, $subject_link->getHtml(), $appointment[2]);
@@ -681,6 +685,105 @@ class CommunicationModuleHtmlLib
       return new CText('');
     }
   }
+  static public function getAppointmentsAsTable(ADAGenericUser $userObj, $data_Ar=array(), $testers_data_Ar=array()) {
+    if(empty($data_Ar)) {
+      return new CText('');
+    }
+
+    $common_dh = $GLOBALS['common_dh'];
+    $javascript_ok = check_javascriptFN($_SERVER['HTTP_USER_AGENT']);
+
+    $appointments_Ar = array();
+    if($userObj instanceof WISPUser) {
+      $module = 'read_event.php';
+    }
+    else {
+      $module = 'read_event.php';
+    }
+
+    foreach($data_Ar as $tester => $appointment_data_Ar) {
+
+      //$tester_info_Ar = $common_dh->get_tester_info_from_pointer($tester);
+      $tester_id = $testers_data_Ar[$tester];
+
+      if (AMA_Common_DataHandler::isError($tester_info_Ar)) {
+        /*
+         * Return a WISP_Error with delayed error handling.
+         */
+        return new WISP_Error($tester_info_Ar,translateFN('Errore in ottenimento informazioni tester'),
+                              NULL,NULL,NULL,NULL,TRUE);
+      }
+
+      foreach($appointment_data_Ar as $appointment_id => $appointment_Ar) {
+
+        // trasform message content into variable names
+        $sender_id      = $appointment_Ar[0];
+        $date_time      = $appointment_Ar[1];
+        /*
+         * Check if the subject has an internal identifier and remove it.
+         */
+        //$subject        = preg_replace('/[0-9]+#/','',$appointment_Ar[2],1);//$appointment_Ar[2];
+        $subject        = WISPEventProposal::removeEventToken($appointment_Ar[2]);
+        $priority       = $appointment_Ar[3];
+        $read_timestamp = $appointment_Ar[4];
+        $data_msg        = AMA_DataHandler::ts_to_date($date_time, "%d/%m/%Y - %H:%M:%S");
+
+        // if full name is not null set username to full name
+        if ($appointment_Ar[7] != '') {
+            $sender_username = $appointment_Ar[7] . ' ' . $appointment_Ar[8];;
+        }else {
+            $sender_username = $appointment_Ar[6];
+        }
+
+
+        //$msg_id = $tester_info_Ar[0].'_'.$appointment_id;
+        $msg_id = $tester_id.'_'.$appointment_id;
+
+        $url = HTTP_ROOT_DIR.'/comunica/'.$module.'?msg_id='.$msg_id;
+        if ($javascript_ok) {
+          $subject_link = CDOMElement::create('a');
+          $subject_link->setAttribute('href','#');
+          $subject_link->setAttribute('onclick',"openMessenger('$url',800,600);");
+          $subject_link->addChild(new CText($subject));
+        }
+        else {
+          $subject_link = CDOMElement::create('a',"href:$url, target:_blank");
+          $subject_link->addChild(new CText($subject));
+        }
+
+        $appointments_Ar[] = array($data_msg,$subject_link,$sender_username,$priority);
+      }
+    }
+    //$thead_data = array(translateFN('Data'),translateFN('Oggetto'), translateFN('Mittente'), translateFN('Priorita'));
+    if(count($appointments_Ar) > 0) {
+      //$table = BaseHtmlLib::tableElement('',NULL, $appointments_Ar);
+      //return $table;
+      $div = CDOMElement::create('div', 'id:events');
+      foreach($appointments_Ar as $appointment) {
+        $d = CDOMElement::create('div');
+       // $d->addChild(new CText($appointment[0]));
+        if($userObj instanceof WISPPractitioner) {
+          $string = translateFN('Appointment: %s, the user %s asks for new dates');
+        }
+        else {
+          $string = translateFN('Appuntamento: %s, da %s');
+        }
+
+        $subject_link = $appointment[1];
+        $message = sprintf($string, $subject_link->getHtml(), $appointment[2]);
+
+        $d->addChild(new CText($message));
+        $div->addChild($d);
+      }
+      return $div;
+    }
+    else {
+      return new CText('');
+    }
+  }
+
+
+
 // MARK: Messages
 /*
  * Methods used to display Messages user interfaces
@@ -712,6 +815,7 @@ class CommunicationModuleHtmlLib
 
   static private function getSentMessagesFormContent($data_Ar= array(), $testers_dataAr = array()) {
 
+    $data_Ar = self::getRecipientsFromMessagges($data_Ar);
     foreach($data_Ar as $tester => $message_dataAr) {
 
       $tester_id = $testers_dataAr[$tester];
@@ -733,7 +837,7 @@ class CommunicationModuleHtmlLib
  		$zone 			= translateFN("Time zone:") . " " . $tester_TimeZone;
         $data_msg        = AMA_DataHandler::ts_to_date($date_time_zone, "%d/%m/%Y - %H:%M:%S") ." " . $zone;
 
-        //$addressee_username = $appointment_Ar[6];
+        $addressee_fullname = $message_Ar[10];
 
         $msg_id = $tester_id.'_'.$message_id;
         $url = HTTP_ROOT_DIR.'/comunica/read_message.php?msg_id='.$msg_id;
@@ -747,7 +851,7 @@ class CommunicationModuleHtmlLib
         $delete = CDOMElement::create('checkbox',"name:form[del][$msg_id] value:$msg_id");
         $action_link = CDOMElement::create('a', "href:list_messages.php?del_msg_id=$msg_id");
 
-        $messages_Ar[] = array(/*$addressee_username, */ $data_msg, $subject_link, $delete, $action_link);
+        $messages_Ar[] = array($addressee_fullname, $data_msg, $subject_link, $delete, $action_link);
       }
     }
     return $messages_Ar;
@@ -770,6 +874,7 @@ class CommunicationModuleHtmlLib
         // trasform message content into variable names
         $sender_id      = $message_Ar[0];
         $date_time      = $message_Ar[1];
+        $read_timestamp = $message_Ar[4];
         /*
          * Check if the subject has an internal identifier and remove it.
          */
@@ -828,7 +933,7 @@ class CommunicationModuleHtmlLib
 
 
    if(count($messages_Ar) > 0) {
-      $table = BaseHtmlLib::tableElement('',$thead_dataAr, $messages_Ar);
+      $table = BaseHtmlLib::tableElement('id:sort_message',$thead_dataAr, $messages_Ar);
       $form = CDOMElement::create('form',"name:form, method:post, action:$module");
       $form->addChild($table);
       $div = CDOMElement::create('div','id:buttons');
@@ -860,7 +965,7 @@ class CommunicationModuleHtmlLib
     $messages_Ar  = self::getReceivedMessagesFormContent($data_Ar, $testers_dataAr);
 
     if(count($messages_Ar) > 0) {
-      $table = BaseHtmlLib::tableElement('',$thead_dataAr, $messages_Ar);
+      $table = BaseHtmlLib::tableElement('class:sortable',$thead_dataAr, $messages_Ar);
       $form = CDOMElement::create('form',"name:form, method:post, action:$module");
       $form->addChild($table);
       $div = CDOMElement::create('div','id:buttons');
@@ -873,10 +978,67 @@ class CommunicationModuleHtmlLib
     }
   }
 
+static public function getRecipientsFromMessagges ($data_Ar) {
+
+    /* getRecipientsFromMessagges
+    /* change sender with the first recipients
+     * to print in the tables
+     */
+    foreach ($data_Ar as $client => $messagges) {
+        foreach ($messagges as $id_mes => $value_mes) {
+            $last_el = count($value_mes) - 1; // it contains the array of recipients of the message/agenda/event proposal
+            $recipients_Ar = end($value_mes);
+            foreach ($recipients_Ar as $key => $value) {
+                $recipient_name = $value[0];
+                $recipient_surname = $value[1];
+                $data_Ar[$client][$id_mes][10] = $recipient_name . ' ' . $recipient_surname;
+//                $data_Ar[$client][$id_mes][11] = $recipients_surname;
+                break;
+            }
+        }
+    }
+    return $data_Ar;
+    /*
+    /* END change sender with the first recipients
+     */
+}
+
   // MARK: Agenda
+
+static public function getRecipientsFromAgenda($data_Ar) {
+
+/*
+    /* change sender with the first recipients
+     * to print in the tables
+     */
+    foreach ($data_Ar as $client => $messagges) {
+        foreach ($messagges as $id_mes => $value_mes) {
+            $last_el = count($value_mes) - 1; // it contains the array of recipients of the message/agenda/event proposal
+            $recipients_Ar = end($value_mes);
+
+            $recipients_name = $recipients_Ar[0];
+            $recipients_surname = $recipients_Ar[1];
+            $data_Ar[$client][$id_mes][7] = $recipients_name;
+            $data_Ar[$client][$id_mes][8] = $recipients_surname;
+        }
+    }
+    return $data_Ar;
+    /*
+    /* END change sender with the first recipients
+     */
+}
+
+
 /*
  * Methods used to display Agenda user interfaces
  */
+  static public function getEventsProposedAsTable($data_Ar=array(), $testers_dataAr=array()) {
+    if(empty($data_Ar)) {
+      return new CText(translateFN('Non sono presenti appuntamenti'));
+    }
+    $data_Ar = self::getRecipientsFromAgenda($data_Ar);
+    return self::display_messages_as_table($data_Ar, WISP_MSG_AGENDA, $testers_dataAr);
+  }
 
   static public function getAgendaAsTable($data_Ar=array(), $testers_dataAr=array()) {
     if(empty($data_Ar)) {
@@ -892,6 +1054,18 @@ class CommunicationModuleHtmlLib
     return self::display_messages_as_form($data_Ar, ADA_MSG_AGENDA, $testers_dataAr);
   }
 
+/*
+ * Methods used to display  user interfaces
+ */
+  static public function getEventsProposedAsForm($data_Ar=array(), $testers_dataAr=array()) {
+    if(empty($data_Ar)) {
+      return new CText(translateFN('Non sono presenti appuntamenti'));
+    }
+    $data_Ar = self::getRecipientsFromAgenda($data_Ar);
+    return self::display_messages_as_form($data_Ar, WISP_MSG_AGENDA, $testers_dataAr);
+  }
+  
+  
   static private function display_messages_as_table($data_Ar=array(), $message_type = ADA_MSG_SIMPLE, $testers_dataAr=array()) {
     $common_dh = $GLOBALS['common_dh'];
     $javascript_ok = check_javascriptFN($_SERVER['HTTP_USER_AGENT']);
@@ -924,6 +1098,14 @@ class CommunicationModuleHtmlLib
 
       foreach($appointment_data_Ar as $appointment_id => $appointment_Ar) {
 
+        /*
+         *  If message type is WISP_MSG_AGENDA and it is a proposal the appointement id has a suffix.
+         *  The suffix has to be removed in order to create the correct link to the message.
+         */
+        if (is_string($appointment_id)) {
+            $appointment_id_Ar = explode("_", $appointment_id);
+            $appointment_id = $appointment_id_Ar[0];
+        }
         // trasform message content into variable names
         $sender_id      = $appointment_Ar[0];
         $date_time      = $appointment_Ar[1];
@@ -935,20 +1117,18 @@ class CommunicationModuleHtmlLib
         $subject        = ADAEventProposal::removeEventToken($appointment_Ar[2]);
         $priority       = $appointment_Ar[3];
         $read_timestamp = $appointment_Ar[4];
+        $read_msg       = AMA_DataHandler::ts_to_date($read_timestamp, "%d/%m/%Y - %H:%M:%S") ." " . $zone;
+        if ($read_timestamp == 0) $read_msg= '';
+
         $date_time_zone = $date_time + $offset;
  		$zone 			= translateFN("Time zone:") . " " . $tester_TimeZone;
         $data_msg        = AMA_DataHandler::ts_to_date($date_time_zone, "%d/%m/%Y - %H:%M:%S") ." " . $zone;
 
-        // transform sender's id into sender's name
-//        $res_ar = $udh->find_users_list(array("username"), "id_utente=$sender_id");
-//        if (AMA_DataHandler::isError($res_ar)) {
-//          $sender_username = '';
-//        }
-//        else {
-//          $sender_username = $res_ar[0][1];
-//        }
-        $sender_username = $appointment_Ar[6];
-
+        if ($appointment_Ar[7] != '') {
+            $sender_username = $appointment_Ar[7] . ' ' . $appointment_Ar[8];;
+        }else {
+            $sender_username = $appointment_Ar[6];
+        }
         //$msg_id = $tester_info_Ar[0].'_'.$appointment_id;
         $msg_id = $tester_id.'_'.$appointment_id;
         $url = HTTP_ROOT_DIR.'/comunica/'.$module.'?msg_id='.$msg_id;
@@ -964,12 +1144,14 @@ class CommunicationModuleHtmlLib
           $subject_link->addChild(new CText($subject));
         }
 
-        $appointments_Ar[] = array($data_msg,$subject_link,$sender_username,$priority);
+        $appointments_Ar[] = array($data_msg,$subject_link,$sender_username,$read_msg);
       }
     }
-    //$thead_data = array(translateFN('Data'),translateFN('Oggetto'), translateFN('Mittente'), translateFN('Priorita'));
+    $thead_data = array(translateFN('Data'),translateFN('Oggetto'), translateFN('User'), translateFN('Letto'));
     if(count($appointments_Ar) > 0) {
-      $table = BaseHtmlLib::tableElement('', NULL, $appointments_Ar);
+//      $table = BaseHtmlLib::tableElement('class:sortable', NULL, $appointments_Ar);
+      $table = BaseHtmlLib::tableElement('class:sortable', $thead_data, $appointments_Ar);
+      $table->setAttribute('class', 'sortable com_tools_sortable');
       return $table;
     }
     else {
@@ -987,6 +1169,7 @@ class CommunicationModuleHtmlLib
     $appointments_Ar = array();
 
     if($message_type == ADA_MSG_SIMPLE) {
+      $author = translateFN('Autore');
       $list_module = 'list_messages.php';
       $read_module = 'read_message.php';
 
@@ -994,12 +1177,20 @@ class CommunicationModuleHtmlLib
       $del_img->setAttribute('alt', translateFN('Rimuovi il messaggio'));
       $del_text = translateFN('Cancella');
     }
-    else {
+    elseif ($message_type == ADA_MSG_AGENDA) {
+      $list_module = 'list_events.php';
+      $read_module = 'read_event.php';
+      $del_text ='';
+    } else {
+      $author = translateFN('Autore');
       $list_module = 'list_events.php';
       $read_module = 'read_event.php';
       $del_text ='';
     }
 
+    $time=translateFN('Data ed ora');
+    $subject=translateFN('Oggetto');
+    $priority_link=translateFN('Priorit&agrave;');
 
     $order_by_author_link = CDOMElement::create('a',"href:$list_module?sort_field=id_mittente");
     $order_by_author_link->addChild(new CText(translateFN('Autore')));
@@ -1010,6 +1201,7 @@ class CommunicationModuleHtmlLib
     $order_by_priority_link = CDOMElement::create('a',"href:$list_module?sort_field=priorita");
     $order_by_priority_link->addChild(new CText(translateFN('Priorit&agrave;')));
 
+/*
     $thead_data = array(
       $order_by_author_link,
       $order_by_time_link,
@@ -1019,13 +1211,29 @@ class CommunicationModuleHtmlLib
       translateFN('Letto'),
       ''
     );
+ *
+ */
+
+      $thead_data = array(
+      $author,
+      $time,
+      $subject,
+      $priority,
+      $del_text,
+      translateFN('Letto'),
+      ''
+    );
 
     foreach($data_Ar as $tester => $appointment_data_Ar) {
 
       //$udh = UserDataHandler::instance(self::getDSN($tester));
 
-      //$tester_info_Ar = $common_dh->get_tester_info_from_pointer($tester);
-      $tester_id = $testers_dataAr[$tester];
+      if (!isset($testers_dataAr) || ($testers_dataAr == null)) {
+          $tester_dataAr = $common_dh->get_tester_info_from_pointer($tester);
+          $tester_id = $tester_dataAr[0];
+      }else {
+          $tester_id = $testers_dataAr[$tester];
+      }
 //      if (AMA_Common_DataHandler::isError($tester_info_Ar)) {
 //        /*
 //         * Return a ADA_Error with delayed error handling.
@@ -1056,18 +1264,23 @@ class CommunicationModuleHtmlLib
 
 //        $data_msg        = AMA_DataHandler::ts_to_date($date_time, "%d/%m/%Y - %H:%M:%S");
 
-        // transform sender's id into sender's name
-//        $res_ar = $udh->find_users_list(array("username"), "id_utente=$sender_id");
-//        if (AMA_DataHandler::isError($res_ar)) {
-//          $sender_username = '';
-//        }
-//        else {
-//          $sender_username = $res_ar[0][1];
-//        }
-        $sender_username = $appointment_Ar[6];
+        if ($appointment_Ar[7] != '') {
+            $sender_username = $appointment_Ar[7] . ' ' . $appointment_Ar[8];;
+        }else {
+            $sender_username = $appointment_Ar[6];
+        }
 
         //$msg_id = $tester_info_Ar[0].'_'.$appointment_id;
         $msg_id = $tester_id.'_'.$appointment_id;
+
+        /*
+         * check if the message id is in a correct form otherwise delete the last element
+         */
+        $msg_idAr = explode('_', $msg_id);
+        if (count($msg_idAr) > 2) {
+            $msg_id = $msg_idAr[0].'_'.$msg_idAr[1];
+        }
+
         $url = HTTP_ROOT_DIR.'/comunica/'.$read_module.'?msg_id='.$msg_id;
         $subject_link = CDOMElement::create('a',"href:$url");
         $subject_link->addChild(new CText($subject));
@@ -1087,15 +1300,13 @@ class CommunicationModuleHtmlLib
 
           // PROVA, POI RIMETTERE A POSTO
           $userObj = $_SESSION['sess_userObj'];
-          /*
+          
           if($userObj instanceof ADAPractitioner) {
             $event_token = ADAEventProposal::extractEventToken($appointment_Ar[2]);
             $href = HTTP_ROOT_DIR . '/tutor/eguidance_tutor_form.php?event_token=' . $event_token;
             $action_link = CDOMElement::create('a', "href:$href");
             $action_link->addChild(new CText(translateFN('View eguidance session data')));
           }
-           *
-           */
 
         }
         $read   = CDOMElement::create('checkbox', "name:form[read][$msg_id] value:$msg_id");
