@@ -1299,15 +1299,14 @@ class MultiPort
       }
     }
     else {
-      $clause = '';
+      $clause = '1';
     }
-
          
     /*
      * Get messagges not yet read
      */
     if ($retrieve_only_unread_events) {
-        $clause = 'read_timestamp <= 0';
+        $clause .= ' AND read_timestamp <= 0';
     }
 
     /*

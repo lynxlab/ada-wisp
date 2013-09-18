@@ -239,31 +239,110 @@ class CommunicationModuleHtmlLib
     $type->addChild(new CText(translateFN('Tipo di appuntamento')));
     $type->addChild($select);
     
-    
     $fullCalendarDIV = CDOMElement::create('div','id:fullcalendar');
     $fullCalendarDIV->setAttribute('style', 'margin-top:20px;');
     
     $proposalDetailsDIV = CDOMElement::create('div','id:proposalDetails');
     $proposalDetailsDIV->setAttribute('style', 'display:none;');
     
-    $userLbl = CDOMElement::create('span');
-    $userLbl->setAttribute('style', 'display:block;');
-    $userLbl->addChild (new CText(translateFN("Proposta con l'utente").": "));
-    $userLbl->addChild (CDOMElement::create('span','id:proposalUserDetails'));
+	    // this shall become the button label inside the dialog
+    	$detailsButton = CDOMElement::create('span','class:buttonLbl');
+    	$detailsButton->setAttribute('style','display:none;');
+    	$detailsButton->addChild (new CText(translateFN('Chiudi')));
     
-    $typeLbl = CDOMElement::create('span');
-    $typeLbl->setAttribute('style', 'display:block;');
-    $typeLbl->addChild (new CText(translateFN('Tipo di appuntamento').": "));
-    $typeLbl->addChild (CDOMElement::create('span','id:proposalTypeDetails'));
+	    $userLbl = CDOMElement::create('span');
+	    $userLbl->setAttribute('style', 'display:block;');
+	    $userLbl->addChild (new CText(translateFN("Proposta con l'utente").": "));
+	    $userLbl->addChild (CDOMElement::create('span','id:proposalUserDetails'));
+	    
+	    $typeLbl = CDOMElement::create('span');
+	    $typeLbl->setAttribute('style', 'display:block;');
+	    $typeLbl->addChild (new CText(translateFN('Tipo di appuntamento').": "));
+	    $typeLbl->addChild (CDOMElement::create('span','id:proposalTypeDetails'));
+	    
+	    $notesLbl = CDOMElement::create('span');
+	    $notesLbl->setAttribute('style', 'display:block');
+	    $notesLbl->addChild (new CText(translateFN("Note").": "));
+	    $notesLbl->addChild (CDOMElement::create('span','id:proposalNotes'));
     
-    $notesLbl = CDOMElement::create('span');
-    $notesLbl->setAttribute('style', 'display:block');
-    $notesLbl->addChild (new CText(translateFN("Note").": "));
-    $notesLbl->addChild (CDOMElement::create('span','id:proposalNotes'));
-    
+	$proposalDetailsDIV->addChild($detailsButton);	    
     $proposalDetailsDIV->addChild($userLbl);
     $proposalDetailsDIV->addChild($typeLbl);
     $proposalDetailsDIV->addChild($notesLbl);
+    
+    $maximumProposalReachedModal = CDOMElement::create('div','id:maximumProposalReachedModal');
+    $maximumProposalReachedModal->setAttribute('style', 'display:none;');
+    $maximumProposalReachedModal->setAttribute('title', translateFN('Invia proposta di appuntamento'));
+    	$maximumText = CDOMElement::create('span');
+    	$maximumText->setAttribute('style', 'width:99%; text-align:center; display:inline-block; margin-top:15px;');
+    	$maximumText->addChild (new CText(translateFN('Massimo').' '));    	    	
+    	$maximumText->addChild (CDOMElement::create('span','id:maximumProposalNumber'));
+    	$maximumText->addChild (new CText(' '.translateFN('proposte')));
+    	
+    	// this shall become the button label inside the dialog
+    	$maximumButton = CDOMElement::create('span','class:buttonLbl');
+    	$maximumButton->setAttribute('style','display:none;');
+    	$maximumButton->addChild (new CText(translateFN('Ok')));
+    	 
+    $maximumProposalReachedModal->addChild($maximumText);
+    $maximumProposalReachedModal->addChild($maximumButton);
+    
+    $noProposalInThePastModal = CDOMElement::create('div','id:noProposalInThePastModal');
+    $noProposalInThePastModal->setAttribute('style', 'display:none; text-align:center;');
+    $noProposalInThePastModal->setAttribute('title', translateFN('Invia proposta di appuntamento'));
+    	$proposalInThePastSPAN = CDOMElement::create('span');
+    	$proposalInThePastSPAN->setAttribute('style', 'margin-top: 10px; display: inline-block;');
+    	$proposalInThePastSPAN->addChild(new CText(translateFN('Non si possono fare proposte nel passato')));
+    	// this shall become the button label inside the dialog
+    	$proposalButton = CDOMElement::create('span','class:buttonLbl');
+    	$proposalButton->setAttribute('style','display:none;');
+    	$proposalButton->addChild (new CText(translateFN('Ok')));
+    	
+    $noProposalInThePastModal->addChild ($proposalButton);
+    $noProposalInThePastModal->addChild ($proposalInThePastSPAN);    
+    
+    $confirmDIV = CDOMElement::create('div','id:confirmDialog');
+    $confirmDIV->setAttribute('style', 'display:none; text-align:center;');
+    $confirmDIV->setAttribute('title', translateFN('Invia proposta di appuntamento'));
+	    $confirmSPAN = CDOMElement::create('span');
+	    $confirmSPAN->setAttribute('style', 'margin-top: 10px; display: inline-block;');
+	    $confirmSPAN->addChild(new CText(translateFN("Confermi la cancellazione della proposta?")));	
+	    // this shall become the ok button label inside the dialog
+	    $confirmOK = CDOMElement::create('span','class:confirmOKLbl');
+	    $confirmOK->setAttribute('style','display:none;');
+	    $confirmOK->addChild (new CText(translateFN('Si')));
+	    // this shall become the cancel button label inside the dialog
+	    $confirmCancel = CDOMElement::create('span','class:confirmCancelLbl');
+	    $confirmCancel->setAttribute('style', 'display:none;');
+	    $confirmCancel->addChild (new CText(translateFN('No')));
+    $confirmDIV->addChild($confirmOK);
+    $confirmDIV->addChild($confirmCancel);
+    $confirmDIV->addChild($confirmSPAN);
+    
+    $confirmDIV = CDOMElement::create('div','id:confirmDialog');
+    $confirmDIV->setAttribute('style', 'display:none; text-align:center;');
+    $confirmDIV->setAttribute('title', translateFN('Invia proposta di appuntamento'));
+    $confirmDelSPAN = CDOMElement::create('span','id:questionDelete');
+    $confirmDelSPAN->setAttribute('style', 'margin-top: 10px; display: inline-block;');
+    $confirmDelSPAN->addChild(new CText(translateFN("Confermi la cancellazione della proposta?")));
+    
+    $confirmResetSPAN = CDOMElement::create('span','id:questionReset');
+    $confirmResetSPAN->setAttribute('style', 'margin-top: 10px; display: inline-block;');
+    $confirmResetSPAN->addChild(new CText(translateFN("Confermi il ripristino della pagina?")));
+    
+    // this shall become the ok button label inside the dialog
+    $confirmOK = CDOMElement::create('span','class:confirmOKLbl');
+    $confirmOK->setAttribute('style','display:none;');
+    $confirmOK->addChild (new CText(translateFN('Si')));
+    // this shall become the cancel button label inside the dialog
+    $confirmCancel = CDOMElement::create('span','class:confirmCancelLbl');
+    $confirmCancel->setAttribute('style', 'display:none;');
+    $confirmCancel->addChild (new CText(translateFN('No')));
+    $confirmDIV->addChild($confirmOK);
+    $confirmDIV->addChild($confirmCancel);
+    $confirmDIV->addChild($confirmDelSPAN);
+    $confirmDIV->addChild($confirmResetSPAN);
+    
     
     $date1  = CDOMElement::create('div','class:proposed_date');
     if(is_array($errors) && isset($errors['date1'])) {
@@ -366,14 +445,38 @@ class CommunicationModuleHtmlLib
 
     $rightDIV->addChild($notes);
     
+    $legendDIV = CDOMElement::create('div','id:proposalLegend');
+    
+    $legendLabel = CDOMElement::create('span','class:proposalLegendLbl');
+    $legendLabel->addChild (new CText(translateFN('Legenda')));
+    
+    $notConfirmedBox = CDOMElement::create('div','class:legendBox proposal');    
+    $notConfirmedBox->addChild(new CText(translateFN('Proposta').' '.translateFN('non confermata')));
+    
+    $confirmedBox = CDOMElement::create('div','class:legendBox confirmed');
+    $confirmedBox->addChild(new CText(translateFN('Proposta').' '.translateFN('confermata')));
+    
+    $proposedBox = CDOMElement::create('div','class:legendBox fc-event');
+    $proposedBox->addChild(new CText(translateFN('Proposta').' '.translateFN('inserita')));
+    
+    $legendDIV->addChild ($legendLabel);
+    $legendDIV->addChild ($notConfirmedBox);
+    $legendDIV->addChild ($confirmedBox);
+    $legendDIV->addChild ($proposedBox);
+    
     $topContainerDIV->addChild ($leftDIV);
     $topContainerDIV->addChild ($rightDIV);
+    $topContainerDIV->addChild ($legendDIV);
     
     $form->addChild ($topContainerDIV);
     
     $form->addChild($fullCalendarDIV);
     
     $form->addChild ($proposalDetailsDIV);
+    
+    $form->addChild ($maximumProposalReachedModal);
+    $form->addChild ($noProposalInThePastModal);
+    $form->addChild ($confirmDIV);
     
     $hiddenFormElements = CDOMElement::create('div','id:hidden_form_controls');
     $hiddenFormElements->addChild($date1);

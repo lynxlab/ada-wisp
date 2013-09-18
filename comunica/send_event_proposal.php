@@ -242,8 +242,8 @@ if ($includeJS)
 			JQUERY_UI,
 			ROOT_DIR . '/js/include/jquery/fullcalendar/fullcalendar.js',
 			ROOT_DIR . '/js/include/jquery/fullcalendar/i18n/fullcalendar.' . $_SESSION ['sess_user_language'] . '.js',
-			ROOT_DIR . '/js/include/jquery/fullcalendar/gcal.js',
-			JQUERY_NO_CONFLICT 
+			ROOT_DIR . '/js/include/jquery/fullcalendar/gcal.js',			
+			JQUERY_NO_CONFLICT
 	);
 	
 	if (isset($data))
