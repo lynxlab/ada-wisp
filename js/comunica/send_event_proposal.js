@@ -1,6 +1,6 @@
-document.write("<script type='text/javascript' src='../js/include/basic.js'></script>");
-document.write("<script type='text/javascript' src='../js/include/menu_functions.js'></script>");
-document.write("<script type='text/javascript' src='../js/include/ts_picker.js'></script>");
+//document.write("<script type='text/javascript' src='../js/include/basic.js'></script>");
+//document.write("<script type='text/javascript' src='../js/include/menu_functions.js'></script>");
+//document.write("<script type='text/javascript' src='../js/include/ts_picker.js'></script>");
 
 
 /**
@@ -18,6 +18,10 @@ function Appointments (fullCalendar)
 	
 	this.titlesArray = new Array ("Prima Proposta","Seconda Proposta","Terza Proposta");
 	this.idsArray = new Array(0,0,0);
+	this.maximumProposalReachedModalTitle = $j('#maximumProposalReachedModal').attr('title'); 
+	this.noProposalInThePastModalTitle = $j('#noProposalInThePastModal').attr('title');
+	
+	$j('#maximumProposalNumber').html(this.maxAppointments);	
     
     this.fillWithDatas = function (initDatas) 
     {
@@ -44,8 +48,8 @@ function Appointments (fullCalendar)
 		var index = findIndex (0, this.idsArray);
 		
 		if (this.currAppointment>=this.maxAppointments || index==-1)
-		{			
-			alert ("Massimo "+this.maxAppointments + " proposte");			
+		{	
+			showDialogByID('#maximumProposalReachedModal',this.maximumProposalReachedModalTitle);			
 		}
 		else if (this.startDateAndTimeOk(allDay, startDate))
 		{
@@ -63,6 +67,7 @@ function Appointments (fullCalendar)
 			
 			this.calendarObj.fullCalendar('renderEvent',newEvent,true);
 			this.updateForm();
+			this.currAppointment++;
 			retval = true;			
 		}
 		this.calendarObj.fullCalendar('unselect');
@@ -90,11 +95,28 @@ function Appointments (fullCalendar)
 		}
 		else if (startDate.getTime() < now.getTime())
 		{
-			alert ("Non si possono fare proposte nel passato");
+			showDialogByID('#noProposalInThePastModal', this.noProposalInThePastModalTitle);
 		}
 		else retval = true;
 		
 		return retval;
+    };
+    
+    this.deleteAppointment = function (eventID) {
+    	this.calendarObj.fullCalendar ('removeEvents', eventID);			
+		this.currAppointment--;			
+		var index = findIndex(eventID,this.idsArray); 			
+		// remove the delete index for the array of ids
+		if (index!=-1) this.idsArray[index] = 0;
+		this.updateForm();
+    };
+    
+    this.resetAppointments = function()
+    {
+    	for (var i=0; i<this.maxAppointments; i++)
+    	{
+    		if (this.idsArray[i]!=0) this.deleteAppointment(this.idsArray[i]);
+    	}
     };
 	
 	/**
@@ -102,26 +124,16 @@ function Appointments (fullCalendar)
 	 * basically checks if the event is an event proposal and ask to remove it
 	 */
 	this.eventClick = function( event, jsEvent, view ) {
-				
-		if (in_array(event.id,this.idsArray) && confirm("Confermi la cancellazione della proposta?"))
+		if (in_array(event.id,this.idsArray))
 		{
-			this.calendarObj.fullCalendar ('removeEvents', event.id);			
-			this.currAppointment--;			
-			var index = findIndex(event.id,this.idsArray); 			
-			// remove the delete index for the array of ids
-			if (index!=-1) this.idsArray[index] = 0;
-			this.updateForm();
+			jQueryConfirm('#confirmDialog', '#questionDelete', function() { that.deleteAppointment (event.id); });
 		}
-		else if (typeof event.source != 'undefined' && event.source.className=='loadedEvents')
+		else if (typeof event.source != 'undefined' && event.source.className[0]=="loadedEvents")
 		{
 			$j('#proposalUserDetails').html(event.recipientFullName);
 			$j('#proposalNotes').html(event.notes);
 			$j('#proposalTypeDetails').html(event.type);
-			$j('#proposalDetails').dialog({ modal: true, 
-											title: event.title,
-											resizable: false,
-											buttons: { "Ok": function () { $j(this).dialog("close"); } } 
-										});
+			showDialogByID ('#proposalDetails', event.title);
 		}
 
 		// returning false prevents event url from opening when clicked
@@ -163,7 +175,7 @@ function Appointments (fullCalendar)
 		do {
 			// generates a random string of 5 chars, thanks stackoverflow!
 			candidate = (Math.random()+1).toString(36).substr(2,5);			
-		} while (in_array(candidate,this.idsArray));
+		} while (in_array(candidate,that.idsArray));
 		return candidate;
 	}
 	
@@ -188,7 +200,9 @@ function Appointments (fullCalendar)
 			if (haystack[i] == needle) return i;
 		}
 		return -1;
-	}		
+	}
+	
+	var that=this;
 }
 
 
@@ -226,13 +240,13 @@ function initDoc(initDatas) {
 						  },
 						  {
 			                url : HTTP_ROOT_DIR + "/comunica/ajax/getProposals.php",
-			                className : 'loadedEvents',
+			                className : 'loadedEvents proposal',
 			                editable  : 	false,
 			                allDayDefault : false			                
 						  },
 						  {
 			                url : HTTP_ROOT_DIR + "/comunica/ajax/getProposals.php?type=C",
-			                className : 'loadedEvents',
+			                className : 'loadedEvents confirmed',
 			                editable  : 	false,
 			                allDayDefault : false			                
 						  }	
@@ -241,4 +255,63 @@ function initDoc(initDatas) {
     
     var appointments = new Appointments(fullcal);
     appointments.fillWithDatas(initDatas);
+    
+    $j('input:reset').button();
+    $j('input:reset').click (  function ( event ){
+    	// not stopping event propagation will cause the form reset PLUS
+    	// the function specified
+    	event.preventDefault();
+    	jQueryConfirm('#confirmDialog', '#questionReset', function() {
+    		// reset form fields
+    		$j('input:reset').closest('form')[0].reset();
+    		// reset proposed appointments on the calendar
+    		appointments.resetAppointments(); 
+    		});    	
+    } );
+    
+    $j('input:submit').button();
+}
+
+
+
+function showDialogByID(id, title)
+{	
+	var buttonLbl = $j(id+' .buttonLbl').html();
+	$j(id).dialog({ modal: true, 
+		title: title,
+		resizable: false,
+		buttons: [ { text: buttonLbl ,click: function () { $j(this).dialog("close"); } } ] 
+	});	
+}
+
+function jQueryConfirm(id, questionId, OKcallback)
+{
+			var okLbl = $j(id+' .confirmOKLbl').html();
+			var cancelLbl = $j(id+' .confirmCancelLbl').html();
+			
+			// hides all possible questions
+			$j(id+' span').hide();
+			// show passed question id
+			$j(questionId).show();
+			
+		    $j( id ).dialog({
+		      resizable: false,
+		      height:140,
+		      modal: true,
+		      buttons: [
+		           {
+		        	   text : okLbl,
+		        	   click : function() {
+				    		OKcallback();
+				    		$j( this ).dialog( "close" );
+				    	}
+		           },
+		           {
+		        	   text : cancelLbl,
+		        	   click : function() {
+		 		          $j( this ).dialog( "close" );
+				        }
+		           }
+		               ] 
+		    });
 }

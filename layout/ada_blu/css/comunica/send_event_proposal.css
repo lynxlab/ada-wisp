@@ -11,16 +11,16 @@
 
 #left_proposal_form {
 	float: left;
-	width: 45%
+	width: 40%
 }
 
 #right_proposal_form {
-	float: right;
-	width: 45%
+	float: left;
+	width: 40%
 }
 
 #hidden_form_controls {
-	/* display: none; */
+	display: none;
 }
 
 /**
@@ -35,7 +35,7 @@
 	padding: 2px;
 }
 
-.loadedEvents,.fc-agenda .loadedEvents .fc-event-time,.loadedEvents a {
+.proposal,.fc-agenda .proposal .fc-event-time,.proposal a {
 	background-color: lightgray !important; /* background color */
 	border-color: darkgray !important; /* border color */
 	color: black !important; /* text color */
@@ -43,10 +43,50 @@
 	cursor: pointer !important;
 }
 
+.confirmed,.fc-agenda .confirmed .fc-event-time,.confirmed a {
+	background-color: red !important; /* background color */
+	border-color: darkorange !important; /* border color */
+	color: white !important; /* text color */
+	padding: 2px;
+	cursor: pointer !important;
+}
+
 /**
- * details dialog
+ * legend box
  */
-#proposalDetails {
+#proposalLegend {
+	float: right;
+	width: 18%;
+	border: 1px dotted lightgray;
+	padding: 5px;
+}
+
+.proposalLegendLbl {
+	border: 1px dotted lightgray;
+	padding: 3px 10px 3px 10px;
+	margin-top: -20px;
+	display: inline-block;
+	background: #fff;
+}
+
+.legendBox.proposal,.legendBox.confirmed,.legendBox.fc-event {
+	border: inherit;
+	margin: 5px;
+	font-size: inherit;
+	padding: 5px;
+	cursor: default;
+	border-style : solid;
+}
+
+/**
+ * details and alert dialogs
+ */
+#proposalDetails,
+#maximumProposalReachedModal,
+#noProposalInThePastModal,
+#confirmDialog,
+.ui-dialog-titlebar,
+.ui-button-text {
 	font-size: 0.9em;
 }
 
