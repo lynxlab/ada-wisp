@@ -965,7 +965,7 @@ class CommunicationModuleHtmlLib
     $messages_Ar  = self::getReceivedMessagesFormContent($data_Ar, $testers_dataAr);
 
     if(count($messages_Ar) > 0) {
-      $table = BaseHtmlLib::tableElement('class:sortable',$thead_dataAr, $messages_Ar);
+      $table = BaseHtmlLib::tableElement('id:sortable',$thead_dataAr, $messages_Ar);
       $form = CDOMElement::create('form',"name:form, method:post, action:$module");
       $form->addChild($table);
       $div = CDOMElement::create('div','id:buttons');
@@ -1094,7 +1094,7 @@ static public function getRecipientsFromAgenda($data_Ar) {
                               NULL,NULL,NULL,NULL,TRUE);
       }
       $tester_TimeZone = MultiPort::getTesterTimeZone($tester);
-	  $offset = get_timezone_offset($tester_TimeZone,SERVER_TIMEZONE);
+      $offset = get_timezone_offset($tester_TimeZone,SERVER_TIMEZONE);
 
       foreach($appointment_data_Ar as $appointment_id => $appointment_Ar) {
 
@@ -1117,12 +1117,12 @@ static public function getRecipientsFromAgenda($data_Ar) {
         $subject        = ADAEventProposal::removeEventToken($appointment_Ar[2]);
         $priority       = $appointment_Ar[3];
         $read_timestamp = $appointment_Ar[4];
-        $read_msg       = AMA_DataHandler::ts_to_date($read_timestamp, "%d/%m/%Y - %H:%M:%S") ." " . $zone;
+        $read_msg       = AMA_DataHandler::ts_to_date($read_timestamp, "%d/%m/%Y - %H:%M:%S");// ." " . $zone;
         if ($read_timestamp == 0) $read_msg= '';
 
         $date_time_zone = $date_time + $offset;
- 		$zone 			= translateFN("Time zone:") . " " . $tester_TimeZone;
-        $data_msg        = AMA_DataHandler::ts_to_date($date_time_zone, "%d/%m/%Y - %H:%M:%S") ." " . $zone;
+ 	$zone 		= translateFN("Time zone:") . " " . $tester_TimeZone;
+        $data_msg       = AMA_DataHandler::ts_to_date($date_time_zone, "%d/%m/%Y - %H:%M:%S");// ." " . $zone;
 
         if ($appointment_Ar[7] != '') {
             $sender_username = $appointment_Ar[7] . ' ' . $appointment_Ar[8];;
@@ -1150,7 +1150,7 @@ static public function getRecipientsFromAgenda($data_Ar) {
     $thead_data = array(translateFN('Data'),translateFN('Oggetto'), translateFN('User'), translateFN('Letto'));
     if(count($appointments_Ar) > 0) {
 //      $table = BaseHtmlLib::tableElement('class:sortable', NULL, $appointments_Ar);
-      $table = BaseHtmlLib::tableElement('class:sortable', $thead_data, $appointments_Ar);
+      $table = BaseHtmlLib::tableElement('id:sortable', $thead_data, $appointments_Ar);
       $table->setAttribute('class', 'sortable com_tools_sortable');
       return $table;
     }
