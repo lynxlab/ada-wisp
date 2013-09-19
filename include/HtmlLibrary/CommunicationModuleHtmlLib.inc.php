@@ -452,7 +452,8 @@ class CommunicationModuleHtmlLib
     $topContainerDIV->addChild ($rightDIV);
     $topContainerDIV->addChild ($legendDIV);
     
-    $form->addChild ($topContainerDIV);    
+    $form->addChild ($topContainerDIV);
+    $form->addChild (CDOMElement::create('div','class:clearfix'));
     $form->addChild ($fullCalendarDIV);    
     $form->addChild ($proposalDetailsDIV);
     $form->addChild ($alertDIV);
