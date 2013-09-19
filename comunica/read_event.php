@@ -78,7 +78,7 @@ if(MultiPort::isUserBrowsingThePublicTester()) {
 /*
  * In base a event_msg_id, ottenere connessione al tester appropriato
  */
-  $data_Ar = MultiPort::geTesterAndMessageId($msg_id);
+  $data_Ar = MultiPort::getTesterAndMessageId($msg_id);
   $tester  = $data_Ar['tester'];
 }
 else {

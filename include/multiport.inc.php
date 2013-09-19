@@ -1624,7 +1624,7 @@ class MultiPort
 
     // TODO: refactor
     foreach ($appointmentsIdsAr as $appointment_id) {
-      $data_Ar = self::geTesterAndMessageId($appointment_id);
+      $data_Ar = self::getTesterAndMessageId($appointment_id);
 
       $mh = MessageHandler::instance(self::getDSN($data_Ar['tester']));
       $result = $mh->set_messages($user_id, array($data_Ar['message_id']),'R');
@@ -1644,7 +1644,7 @@ class MultiPort
 
     // TODO: refactor
     foreach ($appointmentsIdsAr as $appointment_id) {
-      $data_Ar = self::geTesterAndMessageId($appointment_id);
+      $data_Ar = self::getTesterAndMessageId($appointment_id);
 
       $mh = MessageHandler::instance(self::getDSN($data_Ar['tester']));
       $result = $mh->set_messages($user_id, array($data_Ar['message_id']),'N');
@@ -1686,7 +1686,7 @@ class MultiPort
 
     // TODO: refactor
     foreach ($appointmentsIdsAr as $appointment_id) {
-      $data_Ar = self::geTesterAndMessageId($appointment_id);
+      $data_Ar = self::getTesterAndMessageId($appointment_id);
 
       $mh = MessageHandler::instance(self::getDSN($data_Ar['tester']));
       $result = $mh->remove_messages($user_id, array($data_Ar['message_id']));
@@ -1716,8 +1716,7 @@ class MultiPort
   // MARK: NON MODIFICARE
   static public function getUserAppointment(ADALoggableUser $userObj, $appointment_id) {
 
-
-    $data_Ar = self::geTesterAndMessageId($appointment_id);
+  	$data_Ar = self::getTesterAndMessageId($appointment_id);
 
     $mh = MessageHandler::instance(self::getDSN($data_Ar['tester']));
 
@@ -1755,13 +1754,8 @@ class MultiPort
    * @param  string $appointment_id
    * @return array
    */
-  // wrapper for next function with a strange name ...
-   static public function getTesterAndMessageId($appointment_id) {
-    return self::geTesterAndMessageId($appointment_id);
-   }
-
   // MARK: NON MODIFICARE
-  static public function geTesterAndMessageId($appointment_id) {
+   static public function getTesterAndMessageId($appointment_id) {
     /*
      * First, check if appointment is in the form <number> or <number1>_<number2>.
      * In the first case, read the appointment with id = number from $sess_selected_tester.

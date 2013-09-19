@@ -13,6 +13,7 @@
 /**
  * Base config file
  */
+// ini_set('display_errors', '1'); error_reporting(E_ALL);
 require_once realpath(dirname(__FILE__)).'/../config_path.inc.php';
 
 /**
@@ -93,7 +94,7 @@ if(isset($_SERVER['REQUEST_METHOD']) && $_SERVER['REQUEST_METHOD'] == 'POST') {
   /*
    * In base a event_msg_id, ottenere connessione al tester appropriato
    */
-    $data_Ar = MultiPort::geTesterAndMessageId($msg_id);
+    $data_Ar = MultiPort::getTesterAndMessageId($msg_id);
     $tester  = $data_Ar['tester'];
   }
   else {
@@ -365,7 +366,7 @@ else if(isset($msg_id)) {
   /*
    * In base a event_msg_id, ottenere connessione al tester appropriato
    */
-    $data_Ar = MultiPort::geTesterAndMessageId($msg_id);
+    $data_Ar = MultiPort::getTesterAndMessageId($msg_id);
     $tester  = $data_Ar['tester'];
   }
   else {
