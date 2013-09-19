@@ -11,16 +11,22 @@
 
 #left_proposal_form {
 	float: left;
-	width: 40%
+	width: 50%
 }
 
 #right_proposal_form {
 	float: left;
-	width: 40%
+	width: 50%
 }
 
 #hidden_form_controls {
 	display: none;
+}
+
+#subject {
+	width: 75%;
+	float: right;
+	margin-right: 10px;
 }
 
 /**
@@ -55,18 +61,20 @@
  * legend box
  */
 #proposalLegend {
-	float: right;
-	width: 18%;
+	float: left;
+	width: 100%;
 	border: 1px dotted lightgray;
 	padding: 5px;
+	margin: 20px 0 -20px 0;
 }
 
 .proposalLegendLbl {
 	border: 1px dotted lightgray;
 	padding: 3px 10px 3px 10px;
 	margin-top: -20px;
-	display: inline-block;
+	display: block;
 	background: #fff;
+	width: 8%;
 }
 
 .legendBox.proposal,.legendBox.confirmed,.legendBox.fc-event {
@@ -75,17 +83,16 @@
 	font-size: inherit;
 	padding: 5px;
 	cursor: default;
-	border-style : solid;
+	border-style: solid;
+	width: 30%;
+	float: left;
 }
 
 /**
  * details, alert and confirm dialogs
  */
-#proposalDetails,
-#alertDialog,
-#confirmDialog,
-.ui-dialog-titlebar,
-.ui-button-text {
+#proposalDetails,#alertDialog,#confirmDialog,.ui-dialog-titlebar,.ui-button-text
+	{
 	font-size: 0.9em;
 }
 
