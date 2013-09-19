@@ -235,7 +235,7 @@ $content_dataAr = array(
 );
 
 if ($includeJS)
-{
+{	
 	// NOTE: if i18n file is not found it'll be discarded by the rendering engine
 	$layout_dataAr ['JS_filename'] = array (
 			JQUERY,
@@ -250,7 +250,11 @@ if ($includeJS)
 		$datetimesAr = ADAEventProposal::extractDateTimesFromEventProposalText($data['testo']);
 	else $datetimesAr = '';
 	
-	$optionsAr ['onload_func'] = 'initDoc(\''.htmlentities(json_encode($datetimesAr)).'\');';
+	$inputProposalNames = array( translateFN("Prima Proposta"),
+								 translateFN("Seconda Proposta"),
+								 translateFN("Terza Proposta") );
+	
+	$optionsAr ['onload_func'] = 'initDoc(\''.htmlentities(json_encode($datetimesAr)).'\',\''.htmlentities(json_encode($inputProposalNames)).'\');';
 	
 	/**
 	 * if the jqueru-ui theme directory is there in the template family,
@@ -264,7 +268,6 @@ if ($includeJS)
 			// ROOT_DIR . '/js/include/jquery/fullcalendar/fullcalendar.print.css'
 		);
 }
-
 
 ARE::render($layout_dataAr, $content_dataAr, NULL, (isset($optionsAr) ? $optionsAr : NULL));
 ?>

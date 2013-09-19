@@ -10,19 +10,29 @@
  * @param fullCalendar
  * @returns
  */
-function Appointments (fullCalendar)
+function Appointments (fullCalendar, inputProposalNames)
 {	
 	this.maxAppointments = 3;
 	this.currAppointment = 0;
 	this.calendarObj = fullCalendar;
 	
-	this.titlesArray = new Array ("Prima Proposta","Seconda Proposta","Terza Proposta");
-	this.idsArray = new Array(0,0,0);
-	this.maximumProposalReachedModalTitle = $j('#maximumProposalReachedModal').attr('title'); 
-	this.noProposalInThePastModalTitle = $j('#noProposalInThePastModal').attr('title');
+	this.titlesArray = JSON.parse(inputProposalNames);
+	this.idsArray = new Array(0,0,0);	
+	this.alertTitle = $j('#alertDialog').attr('title'); 
 	
-	$j('#maximumProposalNumber').html(this.maxAppointments);	
+	$j('#varMaximumProposalNumber').html(this.maxAppointments);
+	
+	var that=this;
+	/*
+	 * By convention, we make a private that variable. This is used to make the object available to the private methods.
+	 * This is a workaround for an error in the ECMAScript Language Specification which causes this to be set incorrectly for inner functions.
+	 * (see http://javascript.crockford.com/private.html)
+	 */
+	
     
+	/**
+	 * fills and render the appointment passed as json_encoded
+	 */
     this.fillWithDatas = function (initDatas) 
     {
     	if (initDatas != '')
@@ -49,7 +59,7 @@ function Appointments (fullCalendar)
 		
 		if (this.currAppointment>=this.maxAppointments || index==-1)
 		{	
-			showDialogByID('#maximumProposalReachedModal',this.maximumProposalReachedModalTitle);			
+			showDialogByID('#alertDialog', this.alertTitle,'#maximumProposal');			
 		}
 		else if (this.startDateAndTimeOk(allDay, startDate))
 		{
@@ -74,17 +84,22 @@ function Appointments (fullCalendar)
 		return retval;
 	};
 	
+	/**
+	 * moves an appointment by checking if it has been moved in the past
+	 */
 	this.moveAppointment = function(event,dayDelta,minuteDelta,allDay,revertFunc) {
 		if (!this.startDateAndTimeOk(allDay, event.start)) {
 			revertFunc();
 		}
 		else {
 			this.updateForm();
-		}
-		
+		}		
 		this.calendarObj.fullCalendar('unselect');
     };
     
+    /**
+     * checks if start date and time of appointments are ok for our needs
+     */
     this.startDateAndTimeOk = function  (allDay, startDate) {
     	var retval = false;
 		var now = new Date();
@@ -95,13 +110,16 @@ function Appointments (fullCalendar)
 		}
 		else if (startDate.getTime() < now.getTime())
 		{
-			showDialogByID('#noProposalInThePastModal', this.noProposalInThePastModalTitle);
+			showDialogByID('#alertDialog', this.alertTitle,'#pastProposal');
 		}
 		else retval = true;
 		
 		return retval;
     };
     
+    /**
+     * deletes the appointment associated to the passed eventID
+     */
     this.deleteAppointment = function (eventID) {
     	this.calendarObj.fullCalendar ('removeEvents', eventID);			
 		this.currAppointment--;			
@@ -111,6 +129,9 @@ function Appointments (fullCalendar)
 		this.updateForm();
     };
     
+    /**
+     * called after the form has been reset to reset the appointments in the calendar
+     */
     this.resetAppointments = function()
     {
     	for (var i=0; i<this.maxAppointments; i++)
@@ -122,6 +143,7 @@ function Appointments (fullCalendar)
 	/**
 	 * handles event click:
 	 * basically checks if the event is an event proposal and ask to remove it
+	 * and if it's a loaded event it will show the details dialog box
 	 */
 	this.eventClick = function( event, jsEvent, view ) {
 		if (in_array(event.id,this.idsArray))
@@ -135,11 +157,13 @@ function Appointments (fullCalendar)
 			$j('#proposalTypeDetails').html(event.type);
 			showDialogByID ('#proposalDetails', event.title);
 		}
-
 		// returning false prevents event url from opening when clicked
 		return false;
 	};
 	
+	/**
+	 * updates the associated form with the appointments from fullcalendar
+	 */
 	this.updateForm = function ()
 	{
 		for (var i=0; i< this.maxAppointments; i++)
@@ -200,14 +224,12 @@ function Appointments (fullCalendar)
 			if (haystack[i] == needle) return i;
 		}
 		return -1;
-	}
-	
-	var that=this;
+	}	
 }
 
 
 
-function initDoc(initDatas) {
+function initDoc(initDatas, inputProposalNames) {
 
     var fullcal = $j('#fullcalendar').fullCalendar({
         // put your options and callbacks here
@@ -253,7 +275,7 @@ function initDoc(initDatas) {
 		                ]
     });
     
-    var appointments = new Appointments(fullcal);
+    var appointments = new Appointments(fullcal,inputProposalNames);
     appointments.fillWithDatas(initDatas);
     
     $j('input:reset').button();
@@ -273,11 +295,21 @@ function initDoc(initDatas) {
 }
 
 
+function setModalDialogText (windowId, spanId)
+{
+	// hides all spans that do not contain a variable
+	$j(windowId + ' span').not('[id^="var"]').hide();
+	// shows the passed span that holds the message to be shown
+	$j(spanId).show();
+}
 
-function showDialogByID(id, title)
+function showDialogByID(id, title, messageId)
 {	
+	if (messageId) setModalDialogText (id, messageId);
+	
 	var buttonLbl = $j(id+' .buttonLbl').html();
-	$j(id).dialog({ modal: true, 
+	$j(id).dialog({ 
+		modal: true, 
 		title: title,
 		resizable: false,
 		buttons: [ { text: buttonLbl ,click: function () { $j(this).dialog("close"); } } ] 
@@ -286,32 +318,26 @@ function showDialogByID(id, title)
 
 function jQueryConfirm(id, questionId, OKcallback)
 {
-			var okLbl = $j(id+' .confirmOKLbl').html();
-			var cancelLbl = $j(id+' .confirmCancelLbl').html();
-			
-			// hides all possible questions
-			$j(id+' span').hide();
-			// show passed question id
-			$j(questionId).show();
-			
-		    $j( id ).dialog({
-		      resizable: false,
-		      height:140,
-		      modal: true,
-		      buttons: [
-		           {
-		        	   text : okLbl,
-		        	   click : function() {
-				    		OKcallback();
-				    		$j( this ).dialog( "close" );
-				    	}
-		           },
-		           {
-		        	   text : cancelLbl,
-		        	   click : function() {
-		 		          $j( this ).dialog( "close" );
-				        }
-		           }
-		               ] 
-		    });
+	var okLbl = $j(id + ' .confirmOKLbl').html();
+	var cancelLbl = $j(id + ' .confirmCancelLbl').html();
+
+	setModalDialogText(id, questionId);
+
+	$j(id).dialog({
+		resizable : false,
+		height : 140,
+		modal : true,
+		buttons : [ {
+			text : okLbl,
+			click : function() {
+				OKcallback();
+				$j(this).dialog("close");
+			}
+		}, {
+			text : cancelLbl,
+			click : function() {
+				$j(this).dialog("close");
+			}
+		} ]
+	});
 }

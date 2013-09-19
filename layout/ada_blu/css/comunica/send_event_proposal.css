@@ -79,11 +79,10 @@
 }
 
 /**
- * details and alert dialogs
+ * details, alert and confirm dialogs
  */
 #proposalDetails,
-#maximumProposalReachedModal,
-#noProposalInThePastModal,
+#alertDialog,
 #confirmDialog,
 .ui-dialog-titlebar,
 .ui-button-text {
