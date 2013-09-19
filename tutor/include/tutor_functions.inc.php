@@ -79,6 +79,15 @@ $user_agenda     = CommunicationModuleHtmlLib::getAgendaAsTable($user_agendaAr, 
   $user_eventsAr = MultiPort::getUserEventsNotRead($userObj);
   $user_events    = CommunicationModuleHtmlLib::getEventsAsTable($userObj, $user_eventsAr, $testers_dataAr);
 
+
+$user_events_proposedAr = MultiPort::getTutorEventsProposed($userObj);
+
+$user_events_proposed_exploded = ADAEventProposal::explodeAgendaMessageFromEventProposal($user_events_proposedAr); // FIXME
+//$user_events_proposed   = CommunicationModuleHtmlLib::getAgendaAsTable($user_events_proposed_exploded, $testers_dataAr);
+$user_events_proposed   = CommunicationModuleHtmlLib::getEventsProposedAsTable($user_events_proposed_exploded, $testers_dataAr);
+
+  
+
 /*$user_eventsAr = MultiPort::getUserEvents($userObj);
 $user_events    = CommunicationModuleHtmlLib::getEventsAsTable($userObj, $user_eventsAr, $testers_dataAr);
  * 

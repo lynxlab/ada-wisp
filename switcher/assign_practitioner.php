@@ -347,8 +347,8 @@ if (isset($_SERVER['REQUEST_METHOD']) && $_SERVER['REQUEST_METHOD'] == 'POST'
            */
           $id_switcher = $userObj->getId();
           $messageTokenPart =  $id_user    . '_'
-                 . $id_switcher . '_'
-                 . $id_course_instance . '_';
+                 . $id_course_instance . '_'                  
+                 . $id_switcher . '_';
                   
           $fields_list_Ar = array('data_ora', 'titolo', 'testo');
           $clause         = ' titolo like \'%' . $messageTokenPart . '%\'';
@@ -369,7 +369,7 @@ if (isset($_SERVER['REQUEST_METHOD']) && $_SERVER['REQUEST_METHOD'] == 'POST'
           } else { 
 //              print_r();
             foreach ($msgs_ha as $singleMsg) {
-                  $helpRequiredMessage = $singleMsg[2];
+                  $helpRequiredMessage = nl2br($singleMsg[2]);
               }    
           }
 
