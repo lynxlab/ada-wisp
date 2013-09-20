@@ -778,7 +778,7 @@ class CommunicationModuleHtmlLib
     $javascript_ok = check_javascriptFN($_SERVER['HTTP_USER_AGENT']);
 
     $appointments_Ar = array();
-    if($userObj instanceof WISPUser) {
+    if($userObj instanceof ADAUser) {
       $module = 'read_event.php';
     }
     else {
@@ -792,9 +792,9 @@ class CommunicationModuleHtmlLib
 
       if (AMA_Common_DataHandler::isError($tester_info_Ar)) {
         /*
-         * Return a WISP_Error with delayed error handling.
+         * Return a ADA_Error with delayed error handling.
          */
-        return new WISP_Error($tester_info_Ar,translateFN('Errore in ottenimento informazioni tester'),
+        return new ADA_Error($tester_info_Ar,translateFN('Errore in ottenimento informazioni tester'),
                               NULL,NULL,NULL,NULL,TRUE);
       }
 
@@ -807,7 +807,7 @@ class CommunicationModuleHtmlLib
          * Check if the subject has an internal identifier and remove it.
          */
         //$subject        = preg_replace('/[0-9]+#/','',$appointment_Ar[2],1);//$appointment_Ar[2];
-        $subject        = WISPEventProposal::removeEventToken($appointment_Ar[2]);
+        $subject        = ADAEventProposal::removeEventToken($appointment_Ar[2]);
         $priority       = $appointment_Ar[3];
         $read_timestamp = $appointment_Ar[4];
         $data_msg        = AMA_DataHandler::ts_to_date($date_time, "%d/%m/%Y - %H:%M:%S");
@@ -846,7 +846,7 @@ class CommunicationModuleHtmlLib
       foreach($appointments_Ar as $appointment) {
         $d = CDOMElement::create('div');
        // $d->addChild(new CText($appointment[0]));
-        if($userObj instanceof WISPPractitioner) {
+        if($userObj instanceof ADAPractitioner) {
           $string = translateFN('Appointment: %s, the user %s asks for new dates');
         }
         else {
@@ -1121,7 +1121,7 @@ static public function getRecipientsFromAgenda($data_Ar) {
       return new CText(translateFN('Non sono presenti appuntamenti'));
     }
     $data_Ar = self::getRecipientsFromAgenda($data_Ar);
-    return self::display_messages_as_table($data_Ar, WISP_MSG_AGENDA, $testers_dataAr);
+    return self::display_messages_as_table($data_Ar, ADA_MSG_AGENDA, $testers_dataAr);
   }
 
   static public function getAgendaAsTable($data_Ar=array(), $testers_dataAr=array()) {
@@ -1146,7 +1146,7 @@ static public function getRecipientsFromAgenda($data_Ar) {
       return new CText(translateFN('Non sono presenti appuntamenti'));
     }
     $data_Ar = self::getRecipientsFromAgenda($data_Ar);
-    return self::display_messages_as_form($data_Ar, WISP_MSG_AGENDA, $testers_dataAr);
+    return self::display_messages_as_form($data_Ar, ADA_MSG_AGENDA, $testers_dataAr);
   }
   
   
@@ -1183,7 +1183,7 @@ static public function getRecipientsFromAgenda($data_Ar) {
       foreach($appointment_data_Ar as $appointment_id => $appointment_Ar) {
 
         /*
-         *  If message type is WISP_MSG_AGENDA and it is a proposal the appointement id has a suffix.
+         *  If message type is ADA_MSG_AGENDA and it is a proposal the appointement id has a suffix.
          *  The suffix has to be removed in order to create the correct link to the message.
          */
         if (is_string($appointment_id)) {

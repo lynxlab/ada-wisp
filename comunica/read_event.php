@@ -170,5 +170,30 @@ $content_dataAr = array(
   'menu_03'        => $menu_03
 );
 
-ARE::render($layout_dataAr, $content_dataAr);
+/**
+ * @author giorgio 20/set/2013
+ * jquery and countdown inclusion
+ */
+$layout_dataAr ['JS_filename'] = array (
+		JQUERY,
+		JQUERY_UI,
+		ROOT_DIR . '/js/include/jquery/countdown/jquery.countdown.min.js',
+		ROOT_DIR . '/js/include/jquery/countdown/jquery.countdown-' . $_SESSION ['sess_user_language'] . '.js',
+		JQUERY_NO_CONFLICT
+);
+
+/**
+ * if the jqueru-ui theme directory is there in the template family,
+ * import it.
+ * Else get the standard one
+ */
+$jqueryLayoutCSS = ROOT_DIR . '/layout/' . $userObj->template_family . '/css/jquery-ui/jquery-ui-1.10.3.custom.min.css';
+$layout_dataAr ['CSS_filename'] = array (
+		((is_file ( $jqueryLayoutCSS )) ? $jqueryLayoutCSS : JQUERY_UI_CSS),
+		ROOT_DIR . '/js/include/jquery/countdown/jquery.countdown.css'
+);
+
+$optionsAr ['onload_func'] = 'initDoc();';
+
+ARE::render($layout_dataAr, $content_dataAr, NULL, (isset($optionsAr) ? $optionsAr : NULL));
 ?>

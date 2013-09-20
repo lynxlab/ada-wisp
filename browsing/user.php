@@ -264,7 +264,7 @@ if (!$displayWhatsNew)
 	    'data' => $data->getHtml(),
 	    'messages' => $user_messages->getHtml(),
 	    'agenda' => $user_agenda->getHtml(),
-	    'events' => $user_events->getHtml(),
+	    'events' => $user_events_2->getHtml().$user_events->getHtml(),
 	    'submenu_actions' => $submenu_actions,
 	    'status' => $status
 	);

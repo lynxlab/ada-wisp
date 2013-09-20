@@ -95,7 +95,7 @@ if (is_array($clients_list) && sizeof($clients_list) > 0) {
     $user_link->addChild(new CText($user_data['nome'] . ' ' . $user_data['cognome']));
 
     $id_course = $user_data['id_corso'];
-    $id_node   = $id_course.'_'.WISP_DEFAULT_NODE;
+    $id_node   = $id_course.'_'.ADA_DEFAULT_NODE;
     $href = HTTP_ROOT_DIR.'/browsing/view.php?id_course='.$id_course.'&id_node='.$id_node.'&id_course_instance='.$id_course_instance;
     $service_link = CDOMElement::create('a',"href:$href");
     $service_link->addChild(new CText(translateFN($user_data['titolo'])));

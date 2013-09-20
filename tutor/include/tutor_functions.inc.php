@@ -76,7 +76,9 @@ $user_messages   = CommunicationModuleHtmlLib::getMessagesAsTable($user_messages
 $user_agendaAr   = MultiPort::getUserAgenda($userObj);
 $user_agenda     = CommunicationModuleHtmlLib::getAgendaAsTable($user_agendaAr, $testers_dataAr);
 
-  $user_eventsAr = MultiPort::getUserEventsNotRead($userObj);
+  // ada default: $user_eventsAr = MultiPort::getUserEventsNotRead($userObj);
+  // wisp:
+  $user_eventsAr = MultiPort::getUserEvents($userObj);
   $user_events    = CommunicationModuleHtmlLib::getEventsAsTable($userObj, $user_eventsAr, $testers_dataAr);
 
 

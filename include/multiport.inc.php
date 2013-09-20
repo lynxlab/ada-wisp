@@ -1261,7 +1261,7 @@ class MultiPort
    * @param  $ADAUser $userObj
    * @return $msgs_ha array
    */
-  static private function get_messages(ADALoggableUser $userObj, $msgType = ADA_MSG_SIMPLE, $msgFlags=array(),$retrieve_only_unread_events=false){//,$field_ar,$clause) {
+  static private function get_messages(ADALoggableUser $userObj, $msgType = ADA_MSG_SIMPLE, $msgFlags=array(),$retrieve_only_unread_events=false,$past=1){//,$field_ar,$clause) {
 
     $messages_Ar = array();
     $user_id = $userObj->getId();
@@ -1299,7 +1299,13 @@ class MultiPort
       }
     }
     else {
-      $clause = '1';
+      $clause = '';
+    }
+    
+    if ($past != 1) {
+    	$today_timestamp = time();
+    	$time_yesterday = $today_timestamp - 24*60*60;
+    	$clause .= ' AND data_ora > ' . $time_yesterday;
     }
          
     /*
@@ -1415,13 +1421,14 @@ class MultiPort
    */
   // MARK: restituire $result_Ar, rimuovere tutto lo switch($display_mode)
   // e il passaggio del parametro display_mode
-  static public function getUserAgenda(ADAGenericUser $userObj, $display_mode=1) {
+  static public function getUserAgenda(ADAGenericUser $userObj, $past=1, $display_mode=1) {
 
     if($userObj instanceof ADAGuest) {
       //return new CText(translateFN('Non sono presenti appuntamenti'));
       return  array();
     }
-    $result_Ar = self::get_messages($userObj, ADA_MSG_AGENDA);
+    $msgFlags=array();
+    $result_Ar = self::get_messages($userObj, ADA_MSG_AGENDA,$msgFlags,false,$past);
 
     return $result_Ar;
   }
