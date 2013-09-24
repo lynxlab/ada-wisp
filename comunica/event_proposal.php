@@ -376,14 +376,11 @@ else if(isset($msg_id)) {
     $tester = $sess_selected_tester;
   }
 
-  if(($value = ADAEventProposal::canProposeThisDateTime($userObj,$datetimesAr[0]['date'], $datetimesAr[0]['time'], $tester)) !== TRUE) {
-    $errors['date1'] = $value;
-  }
-  if(($value = ADAEventProposal::canProposeThisDateTime($userObj,$datetimesAr[1]['date'], $datetimesAr[1]['time'], $tester)) !== TRUE) {
-    $errors['date2'] = $value;
-  }
-  if(($value = ADAEventProposal::canProposeThisDateTime($userObj,$datetimesAr[2]['date'], $datetimesAr[2]['time'], $tester)) !== TRUE) {
-    $errors['date3'] = $value;
+  foreach ($datetimesAr as $k=>$datetimeEl)
+  {
+  	if(($value = ADAEventProposal::canProposeThisDateTime($userObj,$datetimeEl['date'], $datetimeEl[0]['time'], $tester)) !== TRUE) {
+  		$errors['date'.($k+1)] = $value;
+  	}
   }
 
   $form = CommunicationModuleHtmlLib::getProposedEventForm($data, $errors, $tester);

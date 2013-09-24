@@ -35,10 +35,23 @@ class ADAEvent
     	 *
     	 * if action is empty, a countdown is needed
     	 */
-    	if (empty($action)) $clean_message .= self::generateCountDownCode($message_ha);
+		$time = time();
+		
+    	if (empty($action) && $message_ha['data_ora']>=$time) $clean_message .= self::generateCountDownCode($message_ha);
+    	else if ($message_ha['data_ora']<$time) $clean_message .= self::generateExpiredAppointmentMessage();
     	
     }
     return $clean_message;
+  }
+  
+  private static function generateExpiredAppointmentMessage()
+  {
+  	$expiredDIV = CDOMElement::create('div','id:expiredAppointmentMessage');
+  		$expiredSPAN = CDOMElement::create('span','class:expiredAppointment');
+  		$expiredSPAN->addChild(new CText(translateFN('Attenzione: l\'appuntamento è scaduto!')));  	
+  	$expiredDIV->addChild($expiredSPAN);
+  	
+  	return CDOMElement::create ( 'div', 'class:clearfix' )->getHtml() . $expiredDIV->getHtml();
   }
   
   /**
@@ -96,7 +109,6 @@ class ADAEvent
 		// already checked in parseMessageText, but let's double check
 		// just in case this is being called from somewherew else
 		if ($message_ha ['flags'] & ADA_EVENT_CONFIRMED) {
-			$clearfix = CDOMElement::create ( 'div', 'class:clearfix' );
 			$wrapperDIV = CDOMElement::create ( 'div', 'id:countdownWrapper' );
 			// text above the countdown
 			$aboveTextSPAN = CDOMElement::create ( 'span', 'class:countdownMessage above' );
@@ -119,7 +131,7 @@ class ADAEvent
 			$wrapperDIV->addChild ( $countdownDIV );
 			$wrapperDIV->addChild ( $belowTextSPAN );
 			
-			return $clearfix->getHtml () . $wrapperDIV->getHtml ();
+			return CDOMElement::create ( 'div', 'class:clearfix' )->getHtml() . $wrapperDIV->getHtml ();
 		} else
 			return '';
   }

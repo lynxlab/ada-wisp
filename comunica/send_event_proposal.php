@@ -79,23 +79,14 @@ if (isset($_SERVER['REQUEST_METHOD']) && $_SERVER['REQUEST_METHOD'] == 'POST') {
   if(DataValidator::validate_not_empty_string($subject) === FALSE) {
     $errors['subject'] = ADA_EVENT_PROPOSAL_ERROR_SUBJECT;
   }
-
-  if(($value = ADAEventProposal::canProposeThisDateTime($userObj, $date1, $time1, $sess_selected_tester)) !== TRUE) {
-    $errors['date1'] = $value;
+  
+  for ($i=0;$i<MAX_PROPOSAL_COUNT;$i++)
+  {
+  	if(($value = ADAEventProposal::canProposeThisDateTime($userObj, $date[$i], $time[$i], $sess_selected_tester)) !== TRUE) {
+  		$errors['date'.($i+1)] = $value;
+  	}
+  	$datetimesAr[$i] = array( 'date'=>$date[$i], 'time'=>$time[$i]  );
   }
-  if(($value = ADAEventProposal::canProposeThisDateTime($userObj, $date2, $time2, $sess_selected_tester)) !== TRUE) {
-    $errors['date2'] = $value;
-  }
-  if(($value = ADAEventProposal::canProposeThisDateTime($userObj, $date3, $time3, $sess_selected_tester)) !== TRUE) {
-    $errors['date3'] = $value;
-  }
-
-
-  $datetimesAr = array(
-    array('date' => $date1, 'time' => $time1),
-    array('date' => $date2, 'time' => $time2),
-    array('date' => $date3, 'time' => $time3)
-  );
 
   $message_content = ADAEventProposal::generateEventProposalMessageContent($datetimesAr, $id_course_instance, $notes);
 
@@ -250,11 +241,9 @@ if ($includeJS)
 		$datetimesAr = ADAEventProposal::extractDateTimesFromEventProposalText($data['testo']);
 	else $datetimesAr = '';
 	
-	$inputProposalNames = array( translateFN("Prima Proposta"),
-								 translateFN("Seconda Proposta"),
-								 translateFN("Terza Proposta") );
+	for ($i=0; $i<MAX_PROPOSAL_COUNT; $i++) $inputProposalNames[$i] = translateFN('Proposta').' #'.($i+1);
 	
-	$optionsAr ['onload_func'] = 'initDoc(\''.htmlentities(json_encode($datetimesAr)).'\',\''.htmlentities(json_encode($inputProposalNames)).'\');';
+	$optionsAr ['onload_func'] = 'initDoc(\''.htmlentities(json_encode($datetimesAr)).'\',\''.htmlentities(json_encode($inputProposalNames)).'\','.MAX_PROPOSAL_COUNT.');';
 	
 	/**
 	 * if the jqueru-ui theme directory is there in the template family,

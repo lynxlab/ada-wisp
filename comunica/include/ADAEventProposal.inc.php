@@ -166,6 +166,13 @@ class ADAEventProposal
 
   static public function canProposeThisDateTime(ADALoggableUser $userObj, $date, $time, $tester = NULL) {
 
+  	/**
+	 * @author giorgio 23/set/2013
+	 * for appointment proposal purposes, a date is considered valid even if it's empty
+	 * so that the tutor can propose a MAXIMUM of 3 appointments
+	 * 
+  	 */
+  	if (empty($date)) return TRUE;
     $date = DataValidator::validate_date_format($date);
     if($date === FALSE) {
       return ADA_EVENT_PROPOSAL_ERROR_DATE_FORMAT;

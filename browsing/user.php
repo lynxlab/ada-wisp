@@ -262,9 +262,9 @@ if (!$displayWhatsNew)
 	//    'corsi' => $corsi,
 	//    'profilo' => $profilo,
 	    'data' => $data->getHtml(),
-	    'messages' => $user_messages->getHtml(),
-	    'agenda' => $user_agenda->getHtml(),
-	    'events' => $user_events_2->getHtml().$user_events->getHtml(),
+	    'messages' => $user_messages->getHtml(), // footer messages
+	    'agenda' => $user_agenda->getHtml(), // appointments display in the footer
+	    'events' => $user_events_2->getHtml().$user_events->getHtml(), // events 'pop-up'
 	    'submenu_actions' => $submenu_actions,
 	    'status' => $status
 	);

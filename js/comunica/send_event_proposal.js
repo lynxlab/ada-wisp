@@ -10,17 +10,18 @@
  * @param fullCalendar
  * @returns
  */
-function Appointments (fullCalendar, inputProposalNames)
+function Appointments (fullCalendar, inputProposalNames, max_proposal_count)
 {	
-	this.maxAppointments = 3;
+	this.maxAppointments = max_proposal_count;
 	this.currAppointment = 0;
 	this.calendarObj = fullCalendar;
 	
 	this.titlesArray = JSON.parse(inputProposalNames);
-	this.idsArray = new Array(0,0,0);	
+	this.idsArray = new Array();	
 	this.alertTitle = $j('#alertDialog').attr('title'); 
 	
 	$j('#varMaximumProposalNumber').html(this.maxAppointments);
+	for (var i=0;  i< this.maxAppointments; i++) this.idsArray[i]=0;
 	
 	var that=this;
 	/*
@@ -229,7 +230,7 @@ function Appointments (fullCalendar, inputProposalNames)
 
 
 
-function initDoc(initDatas, inputProposalNames) {
+function initDoc(initDatas, inputProposalNames, max_proposal_count) {
 
     var fullcal = $j('#fullcalendar').fullCalendar({
         // put your options and callbacks here
@@ -275,7 +276,7 @@ function initDoc(initDatas, inputProposalNames) {
 		                ]
     });
     
-    var appointments = new Appointments(fullcal,inputProposalNames);
+    var appointments = new Appointments(fullcal,inputProposalNames, max_proposal_count);
     appointments.fillWithDatas(initDatas);
     
     $j('input:reset').button();
@@ -292,6 +293,14 @@ function initDoc(initDatas, inputProposalNames) {
     } );
     
     $j('input:submit').button();
+    $j('input:submit').closest('form').submit( function ( event ) {
+    	if (appointments.currAppointment<=0)
+    	{
+    		event.preventDefault();
+    		showDialogByID('#alertDialog', appointments.alertTitle,'#oneProposalAtLeast');
+    	}    	
+    } );
+    
 }
 
 

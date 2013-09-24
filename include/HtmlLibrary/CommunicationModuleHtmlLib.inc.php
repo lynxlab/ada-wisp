@@ -248,13 +248,12 @@ class CommunicationModuleHtmlLib
     /**
 	 * proposal detail modal dialog div
      */    
-    $proposalDetailsDIV = CDOMElement::create('div','id:proposalDetails');
-    $proposalDetailsDIV->setAttribute('style', 'display:none;');    
+    $proposalDetailsDIV = CDOMElement::create('div','id:proposalDetails');    
 	// this shall become the button label inside the dialog
     $detailsButton = CDOMElement::create('span','class:buttonLbl');
     $detailsButton->setAttribute('style','display:none;');
     $detailsButton->addChild (new CText(translateFN('Chiudi')));
-    // label and placeholder (filled by send_event_proposal.js) for user name
+    // label and placeholder (filled by send_event_proposal.js) for appointment user name
 	$userLbl = CDOMElement::create('span');
 	$userLbl->setAttribute('style', 'display:block;');
 	$userLbl->addChild (new CText(translateFN("Proposta con l'utente").": "));
@@ -279,18 +278,18 @@ class CommunicationModuleHtmlLib
      * alert dialog box
      */
     $alertDIV = CDOMElement::create('div','id:alertDialog');
-    $alertDIV->setAttribute('style', 'display:none;');
     $alertDIV->setAttribute('title', translateFN('Invia proposta di appuntamento'));
     // maximum proposal count reached message
     $maximumText = CDOMElement::create('span','id:maximumProposal');
-    $maximumText->setAttribute('style', 'width:99%; text-align:center; display:inline-block; margin-top:15px;');
     $maximumText->addChild (new CText(translateFN('Massimo').' '));
     $maximumText->addChild (CDOMElement::create('span','id:varMaximumProposalNumber'));
     $maximumText->addChild (new CText(' '.translateFN('proposte')));
     // proposal in the past message
     $pastProposalText = CDOMElement::create('span','id:pastProposal');
-    $pastProposalText->setAttribute('style', 'margin-top: 10px; display: inline-block;');
     $pastProposalText->addChild(new CText(translateFN('Non si possono fare proposte nel passato')));
+    // one proposal at least message
+    $oneAtLeastText = CDOMElement::create('span','id:oneProposalAtLeast');
+    $oneAtLeastText->addChild(new CText(translateFN('Inserire almeno una proposta')));    
     // this shall become the button label inside the dialog
     $alertButton = CDOMElement::create('span','class:buttonLbl');
     $alertButton->setAttribute('style','display:none;');
@@ -298,21 +297,19 @@ class CommunicationModuleHtmlLib
     // add elements to the div
     $alertDIV->addChild($maximumText);
     $alertDIV->addChild($pastProposalText);
+    $alertDIV->addChild($oneAtLeastText);
     $alertDIV->addChild($alertButton);
     
     /**
 	 * confirm dialog box
      */
     $confirmDIV = CDOMElement::create('div','id:confirmDialog');
-    $confirmDIV->setAttribute('style', 'display:none; text-align:center;');
     $confirmDIV->setAttribute('title', translateFN('Invia proposta di appuntamento'));
     // question for proposal deleting
     $confirmDelSPAN = CDOMElement::create('span','id:questionDelete');
-    $confirmDelSPAN->setAttribute('style', 'margin-top: 10px; display: inline-block;');
     $confirmDelSPAN->addChild(new CText(translateFN("Confermi la cancellazione della proposta?")));
     // question for form reset
     $confirmResetSPAN = CDOMElement::create('span','id:questionReset');
-    $confirmResetSPAN->setAttribute('style', 'margin-top: 10px; display: inline-block;');
     $confirmResetSPAN->addChild(new CText(translateFN("Confermi il ripristino della pagina?")));    
     // this shall become the ok button label inside the dialog
     $confirmOK = CDOMElement::create('span','class:confirmOKLbl');
@@ -328,84 +325,38 @@ class CommunicationModuleHtmlLib
     $confirmDIV->addChild($confirmDelSPAN);
     $confirmDIV->addChild($confirmResetSPAN);
     
-    $date1  = CDOMElement::create('div','class:proposed_date');
-    if(is_array($errors) && isset($errors['date1'])) {
-      $date_error = CDOMElement::create('div','class:error');
-      $date_error->addChild(new CText($error_messages[$errors['date1']]));
-      $date1->addChild($date_error);
-    }
-    $input1 = CDOMElement::create('text','id:date1, name:date1,maxlength:10, size:10,  class:date_input');
-    if($modify) {
-      $input1->setAttribute('value', $datetimesAr[0]['date']);
-      $time1 = self::getEventProposalFormHoursSelect('time1', $datetimesAr[0]['time']);
-    }
-    else {
-      $time1 = self::getEventProposalFormHoursSelect('time1');
-    }
-    $date1->addChild(new CText(translateFN('Prima proposta in data (dd/mm/yyyy)')));
-    $date1->addChild($input1);
-
-
     $calendar_icon = CDOMElement::create('img','src:img/cal.png');
     $calendar_icon->setAttribute('alt', translateFN('Scegli una data'));
-
-    $calendar1 = CDOMElement::create('a');
-    $calendar1->setAttribute('href',"javascript:show_calendar('document.send_event_proposal_form.date1', document.send_event_proposal_form.date1.value);");
-    $calendar1->addChild($calendar_icon);//new CText(translateFN('Scegli')));
-    $date1->addChild($calendar1);
-
-    $date1->addChild(new CText(translateFN('alle ore')));
-    $date1->addChild($time1);
-
-    $date2  = CDOMElement::create('div','class:proposed_date');
-    if(is_array($errors) && isset($errors['date2'])) {
-      $date_error = CDOMElement::create('div','class:error');
-      $date_error->addChild(new CText($error_messages[$errors['date2']]));
-      $date2->addChild($date_error);
+    
+    if (!defined(MAX_PROPOSAL_COUNT)) define ('MAX_PROPOSAL_COUNT',3);
+    
+    for ($i=0;$i<MAX_PROPOSAL_COUNT;$i++)
+    {
+    	$date[$i] = CDOMElement::create('div','class:proposed_date');
+    	if(is_array($errors) && isset($errors['date'.($i+1)])) {
+    		$date_error = CDOMElement::create('div','class:error');
+    		$date_error->addChild(new CText($error_messages[$errors['date'.($i+1)]]));
+    		$date[$i]->addChild($date_error);
+    	}
+    	$dateInput[$i] = CDOMElement::create('text','id:date'.($i+1).', name:date[],maxlength:10, size:10,  class:date_input');
+    	if($modify) {
+    		$dateInput[$i]->setAttribute('value', $datetimesAr[$i]['date']);
+    		$time[$i] = self::getEventProposalFormHoursSelect('time', $datetimesAr[$i]['time'],$i+1);
+    	}
+    	else {
+      		$time[$i] = self::getEventProposalFormHoursSelect('time',NULL,$i+1);
+    	}
+    	$date[$i]->addChild(new CText(sprintf(translateFN('Proposta #%s in data (dd/mm/yyyy)'),($i+1))));
+    	$date[$i]->addChild($dateInput[$i]);
+    	
+    	$calendar[$i] = CDOMElement::create('a');
+    	$calendar[$i]->setAttribute('href',"javascript:show_calendar('document.send_event_proposal_form.date".($i+1).", document.send_event_proposal_form.date".($i+1).".value);");
+    	$calendar[$i]->addChild($calendar_icon);//new CText(translateFN('Scegli')));
+    	$date[$i]->addChild($calendar[$i]);
+    	
+    	$date[$i]->addChild(new CText(translateFN('alle ore')));
+    	$date[$i]->addChild($time[$i]);
     }
-    $input2 = CDOMElement::create('text','id:date2, name:date2,maxlength:10, size:10, class:date_input');
-    if($modify) {
-      $input2->setAttribute('value', $datetimesAr[1]['date']);
-      $time2 = self::getEventProposalFormHoursSelect('time2', $datetimesAr[1]['time']);
-    }
-    else {
-      $time2 = self::getEventProposalFormHoursSelect('time2');
-    }
-    $date2->addChild(new CText(translateFN('Seconda proposta in data (dd/mm/yyyy)')));
-    $date2->addChild($input2);
-
-    $calendar2 = CDOMElement::create('a');
-    $calendar2->setAttribute('href',"javascript:show_calendar('document.send_event_proposal_form.date2', document.send_event_proposal_form.date2.value);");
-    $calendar2->addChild($calendar_icon);//new CText(translateFN('Scegli')));
-    $date2->addChild($calendar2);
-
-    $date2->addChild(new CText(translateFN('alle ore')));
-    $date2->addChild($time2);
-
-    $date3  = CDOMElement::create('div','class:proposed_date');
-    if(is_array($errors) && isset($errors['date3'])) {
-      $date_error = CDOMElement::create('div','class:error');
-      $date_error->addChild(new CText($error_messages[$errors['date3']]));
-      $date3->addChild($date_error);
-    }
-    $input3 = CDOMElement::create('text','id:date3, name:date3,maxlength:10, size:10, class:date_input');
-    if($modify) {
-      $input3->setAttribute('value', $datetimesAr[2]['date']);
-      $time3 = self::getEventProposalFormHoursSelect('time3', $datetimesAr[2]['time']);
-    }
-    else {
-      $time3 = self::getEventProposalFormHoursSelect('time3');
-    }
-    $date3->addChild(new CText(translateFN('Terza proposta in data (dd/mm/yyyy)')));
-    $date3->addChild($input3);
-
-    $calendar3 = CDOMElement::create('a');
-    $calendar3->setAttribute('href',"javascript:show_calendar('document.send_event_proposal_form.date3', document.send_event_proposal_form.date3.value);");
-    $calendar3->addChild($calendar_icon);//new CText(translateFN('Scegli')));
-    $date3->addChild($calendar3);
-
-    $date3->addChild(new CText(translateFN('alle ore')));
-    $date3->addChild($time3);
 
     $notes  = CDOMElement::create('div');
     $input4 = CDOMElement::create('textarea','id:notes, name:notes');
@@ -460,9 +411,10 @@ class CommunicationModuleHtmlLib
     $form->addChild ($confirmDIV);
     
     $hiddenFormElements = CDOMElement::create('div','id:hidden_form_controls');
-    $hiddenFormElements->addChild($date1);
-    $hiddenFormElements->addChild($date2);
-    $hiddenFormElements->addChild($date3);
+    for ($i=0; $i<MAX_PROPOSAL_COUNT;$i++) $hiddenFormElements->addChild($date[$i]);
+//     $hiddenFormElements->addChild($date1);
+//     $hiddenFormElements->addChild($date2);
+//     $hiddenFormElements->addChild($date3);
     $hiddenFormElements->addChild($user_id);
     
     $form->addChild ($hiddenFormElements);
@@ -538,63 +490,37 @@ class CommunicationModuleHtmlLib
     $descriptive_text->addChild(new CText(translateFN("Seleziona una delle possibilit&agrave; qui di seguito:")));
 
     $needs_to_be_checked = TRUE;
-
-    $proposal1 = CDOMElement::create('div','class:radio_button');
-    if(is_array($errors) && isset($errors['date1'])) {
-      $date_error = CDOMElement::create('div','class:error');
-      $date_error->addChild(new CText($error_messages[$errors['date1']]));
-      $proposal1->addChild($date_error);
-      $proposal1->addChild(new CText($datetimesAr[0]['date'] . ' ' . $datetimesAr[0]['time']));
-    }
-    else {
-      $radio1 = CDOMElement::create('radio','name:date,checked:checked,value:'.$datetimesAr[0]['date'].'_'.$datetimesAr[0]['time']);
-      $proposal1->addChild($radio1);
-      $proposal1->addChild(new CText($datetimesAr[0]['date'] . ' ' . $datetimesAr[0]['time']));
-
-      $needs_to_be_checked = FALSE;
-    }
-
-    $proposal2 = CDOMElement::create('div','class:radio_button');
-    if(is_array($errors) && isset($errors['date2'])) {
-      $date_error = CDOMElement::create('div','class:error');
-      $date_error->addChild(new CText($error_messages[$errors['date2']]));
-      $proposal2->addChild($date_error);
-      $proposal2->addChild(new CText($datetimesAr[1]['date'] . ' ' . $datetimesAr[1]['time']));
-    }
-    else {
-      $radio2 = CDOMElement::create('radio','name: date, value:'.$datetimesAr[1]['date'].'_'.$datetimesAr[1]['time']);
-      if($needs_to_be_checked) {
-        $radio2->setAttribute('checked','checked');
-        $needs_to_be_checked = FALSE;
-      }
-      $proposal2->addChild($radio2);
-      $proposal2->addChild(new CText($datetimesAr[1]['date'] . ' ' . $datetimesAr[1]['time']));
-    }
-
-    $proposal3 = CDOMElement::create('div','class:radio_button');
-    if(is_array($errors) && isset($errors['date3'])) {
-      $date_error = CDOMElement::create('div','class:error');
-      $date_error->addChild(new CText($error_messages[$errors['date3']]));
-      $proposal3->addChild($date_error);
-      $proposal3->addChild(new CText($datetimesAr[2]['date'] . ' ' . $datetimesAr[2]['time']));
-    }
-    else {
-      $radio3 = CDOMElement::create('radio','name:date, value:'.$datetimesAr[2]['date'].'_'.$datetimesAr[2]['time']);
-      if($needs_to_be_checked) {
-        $radio3->setAttribute('checked','checked');
-        $needs_to_be_checked = FALSE;
-      }
-      $proposal3->addChild($radio3);
-      $proposal3->addChild(new CText($datetimesAr[2]['date'] . ' ' . $datetimesAr[2]['time']));
-    }
-    $proposal4 = CDOMElement::create('div','id:refuse_proposal, class:radio_button');
-    $radio4 = CDOMElement::create('radio','name:date, value:0');
+    
+	if (is_array($datetimesAr) && !empty($datetimesAr)) {
+			foreach ( $datetimesAr as $k => $datetimesEl ) {
+				$proposal[$k] = CDOMElement::create ( 'div', 'class:radio_button' );
+				if (is_array ( $errors ) && isset ( $errors ['date' . $k] )) {
+					$date_error = CDOMElement::create ( 'div', 'class:error' );
+					$date_error->addChild ( new CText ( $error_messages [$errors ['date' . $k]] ) );
+					$proposal[$k]->addChild ( $date_error );
+					$proposal[$k]->addChild ( new CText ( $datetimesEl ['date'] . ' ' . $datetimesEl ['time'] ) );
+				} else {
+					$radio[$k] = CDOMElement::create ( 'radio', 'name:date,value:' . $datetimesEl ['date'] . '_' . $datetimesEl ['time'] );
+					if ($needs_to_be_checked) {
+						$radio[$k]->setAttribute ( 'checked', 'checked' );
+						$needs_to_be_checked = FALSE;
+					}
+					$proposal[$k]->addChild ( $radio [$k] );
+					$proposal[$k]->addChild ( new CText ( $datetimesEl ['date'] . ' ' . $datetimesEl ['time'] ) );
+				}
+			}
+	} else {
+		$k=-1; // needs to be -1 because of the pre-increment below
+	}
+    
+    $proposal[++$k] = CDOMElement::create('div','id:refuse_proposal, class:radio_button');
+    $radio[$k] = CDOMElement::create('radio','name:date, value:0');
     if($needs_to_be_checked) {
-      $radio4->setAttribute('checked','checked');
+      $radio[$k]->setAttribute('checked','checked');
       $needs_to_be_checked = FALSE;
     }
-    $proposal4->addChild($radio4);
-    $proposal4->addChild(new CText(translateFN('Nessuna tra le date proposte')));
+    $proposal[$k]->addChild($radio[$k]);
+    $proposal[$k]->addChild(new CText(translateFN('Nessuna tra le date proposte')));
 
     $notes = CDOMElement::create('div','id:practitioner_notes');
     if(strlen(trim($practitioner_notes)) > 0) {
@@ -612,10 +538,7 @@ class CommunicationModuleHtmlLib
     $form->addChild($timezone);
     $form->addChild($type);
     $form->addChild($descriptive_text);
-    $form->addChild($proposal1);
-    $form->addChild($proposal2);
-    $form->addChild($proposal3);
-    $form->addChild($proposal4);
+    foreach ($proposal as $prop) $form->addChild($prop);
     $form->addChild($notes);
     $form->addChild($buttons);
     return $form;
@@ -1438,12 +1361,12 @@ static public function getRecipientsFromAgenda($data_Ar) {
     $div->addChild($link);
     return $div;
   }
-  static private function getEventProposalFormHoursSelect($select_id, $preselect_time_value=NULL) {
+  static private function getEventProposalFormHoursSelect($select_id, $preselect_time_value=NULL, $count=0) {
     $start_hour = 8;
     $end_hour   = 24;
     $increment_minutes_by = 15;
 
-    $select = CDOMElement::create('select',"id: $select_id, name: $select_id");
+    $select = CDOMElement::create('select',"id: ".$select_id.$count.", name: ".$select_id."[]");
 
     for($hours = $start_hour; $hours < $end_hour; $hours++) {
       $minutes = 0;

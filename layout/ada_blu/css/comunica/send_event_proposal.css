@@ -57,6 +57,19 @@
 	cursor: pointer !important;
 }
 
+.fc-event:hover {
+	background-color: lightsteelblue !important;
+}
+
+.confirmed:hover {
+	background-color: yellow !important;
+	color: black !important;
+}
+
+.proposal:hover {
+	background-color: #efefef !important;
+}
+
 /**
  * legend box
  */
@@ -96,8 +109,22 @@
 	font-size: 0.9em;
 }
 
+#proposalDetails,#alertDialog,#confirmDialog {
+	display: none;
+}
+
+#alertDialog,#confirmDialog {
+	text-align: center;
+}
+
 #proposalUserDetails,#proposalNotes,#proposalTypeDetails {
 	font-weight: bold;
 	margin: 5px 0 15px 20px;
 	display: block;
+}
+
+#maximumProposal,#pastProposal,#oneProposalAtLeast,#questionDelete,#questionReset
+	{
+	display: inline-block;
+	margin-top: 15px;
 }

@@ -44,10 +44,9 @@ $neededObjAr = array ();
  * Performs basic controls before entering this module
  */
 require_once ROOT_DIR . '/include/module_init.inc.php';
-$self = whoami ();
+
 
 include_once ROOT_DIR . '/comunica/include/comunica_functions.inc.php';
-require_once ROOT_DIR . '/include/HtmlLibrary/CommunicationModuleHtmlLib.inc.php';
 
 $proposedDateAndTimeAr = array ();
 
