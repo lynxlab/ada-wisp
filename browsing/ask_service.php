@@ -38,6 +38,8 @@ $neededObjAr = array(
 
 require_once ROOT_DIR . '/include/module_init.inc.php';
 require_once ROOT_DIR . '/browsing/include/browsing_functions.inc.php';
+require_once ROOT_DIR . '/comunica/include/ChatRoom.inc.php';
+
 
 require_once ROOT_DIR . '/include/Forms/AskServiceForm.inc.php';
 require_once ROOT_DIR . '/include/HtmlLibrary/AskServiceModuleHtmlLib.inc.php';
@@ -78,6 +80,9 @@ switch ($op) {
        * creating course/service instance
        */
       
+      /*
+       * FIXME: durata must be received from service parameter
+       */
       $istanza_ha = array(
             'data_inizio'=>$start_date1,
             'durata'=>'365',
@@ -203,7 +208,33 @@ switch ($op) {
          * + Time (added by the method invocated)
          */
         $helpRequiredToken = AskService::generateQuestionToken($id_user, $adm_id,$id_instance);
-    
+
+      /* ****************************
+       * add chatroom to the instance
+       */
+            $data_inizio_previsto = $istanza_ha['data_inizio'];
+            $durata = $istanza_ha['durata'];
+            $data_fine = $dh->add_number_of_days($durata,$data_inizio);
+            $id_istanza_corso = $result;
+//            $chatroom_ha['id_chat_owner']= $userObj->id_user; The owner will be set in the tutor assignment process
+            $chatroom_ha['chat_title'] = translateFN('chat '). $helpRequiredToken;
+            $chatroom_ha['chat_topic'] = translateFN('Chat');
+            $chatroom_ha['welcome_msg'] = translateFN('Benvenut* nella chat');
+            $chatroom_ha['max_users']= 99;
+            $chatroom_ha['start_time']= $data_inizio_previsto;
+            $chatroom_ha['end_time']= $data_fine;
+            $chatroom_ha['id_course_instance']= $id_instance;
+
+            // add chatroom_ha to the database
+            $chatroom = Chatroom::add_chatroomFN($chatroom_ha);
+            if ((AMA_DataHandler::isError($chatroom)) && ($chatroom->code != AMA_ERR_UNIQUE_KEY)){
+                $message = urlencode(translateFN("Errore nella creazione della chat:"). ' '. $chatroom->code);
+                $errorObj = new ADA_Error($res_inst_add,$message,NULL,NULL,NULL,$error_page.'?message='.$message);
+            }
+      /* ****************************
+       * ChatRoom creation ended
+       */
+        
 
           $MailText4User = AskServiceModuleHtmlLib::getFeedbackTextPlain($dataAr);
           /*
