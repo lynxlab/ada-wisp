@@ -167,7 +167,7 @@ if (isset($_SERVER['REQUEST_METHOD']) && $_SERVER['REQUEST_METHOD'] == 'POST') {
       NULL,NULL,NULL,$error_page.'?err_msg='.urlencode(translateFN('Impossibile spedire il messaggio')));
     }
 
-    $text = translateFN("La proposta di appuntamento è stata inviata con successo all'utente ") . $addresseeObj->getFullName() . ".";
+    $text = translateFN("La proposta di appuntamento è stata inviata con successo all'utente")." ". $addresseeObj->getFullName() . ".";
     $form = CommunicationModuleHtmlLib::getOperationWasSuccessfullView($text);
     //header('Location: '.HTTP_ROOT_DIR.'/comunica/list_events.php');
     //exit();
