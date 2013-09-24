@@ -24,10 +24,10 @@ function performEnterEventSteps(event, id_course, id_course_instance) {
 }
 
 function initDoc() {	
-	if ($j('#enter_appointment').length > 0) $j('#enter_appointment').hide();
-	
 	if ($j('#appointmentCountdown').length >0 )
 	{
+		if ($j('#enter_appointment').length > 0) $j('#enter_appointment').hide();
+		
 		// conversion from unix timestamp to JS date
 		// is done by multiplying by 1000
 		var until = parseInt($j('#countdownUntil').html())*1000;		

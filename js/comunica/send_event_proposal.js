@@ -19,6 +19,7 @@ function Appointments (fullCalendar, inputProposalNames, max_proposal_count)
 	this.titlesArray = JSON.parse(inputProposalNames);
 	this.idsArray = new Array();	
 	this.alertTitle = $j('#alertDialog').attr('title'); 
+	this.confirmedEvents = null;
 	
 	$j('#varMaximumProposalNumber').html(this.maxAppointments);
 	for (var i=0;  i< this.maxAppointments; i++) this.idsArray[i]=0;
@@ -113,9 +114,29 @@ function Appointments (fullCalendar, inputProposalNames, max_proposal_count)
 		{
 			showDialogByID('#alertDialog', this.alertTitle,'#pastProposal');
 		}
+		else if (this.checkOverlappingEvents(startDate))
+		{
+			showDialogByID('#alertDialog', this.alertTitle,'#overlappingProposal');
+		}
 		else retval = true;
 		
 		return retval;
+    };
+    
+    /**
+     * checks if startdate overlaps with some event
+     */
+    this.checkOverlappingEvents = function (startDate) {
+    	
+    	// loads confirmed appointments
+    	loadConfirmedEvents();
+    	
+    	for (var i=0; i< this.confirmedEvents.length; i++)
+    	{
+    		if (this.confirmedEvents[i].start.getTime() == startDate.getTime()) return true;    		
+    	}
+    	
+    	return false;    	
     };
     
     /**
@@ -153,6 +174,7 @@ function Appointments (fullCalendar, inputProposalNames, max_proposal_count)
 		}
 		else if (typeof event.source != 'undefined' && event.source.className[0]=="loadedEvents")
 		{
+			// prepares and shows the details dialog
 			$j('#proposalUserDetails').html(event.recipientFullName);
 			$j('#proposalNotes').html(event.notes);
 			$j('#proposalTypeDetails').html(event.type);
@@ -186,6 +208,27 @@ function Appointments (fullCalendar, inputProposalNames, max_proposal_count)
 			$j('#time'+formIndex).val (setTime);			
 		}
 	};
+	
+	/**
+	 * loads confirmed events into object property
+	 */
+	function loadConfirmedEvents ()
+	{ 
+		if (that.confirmedEvents===null) {
+			loadEvents ('confirmed');
+		}		
+	}
+	
+	/**
+	 * loads passed type of events into object property
+	 */
+	function loadEvents (eventType)
+	{ 
+		that.confirmedEvents = that.calendarObj.fullCalendar('clientEvents', function (eventObj) { 
+								return (typeof eventObj.source.className != 'undefined' && 
+												eventObj.source.className.length>1 && 
+												eventObj.source.className[1]==eventType); });
+	}
 	
 	/**
 	 * generates a random id and returns it if it's not
@@ -263,12 +306,14 @@ function initDoc(initDatas, inputProposalNames, max_proposal_count) {
 						  },
 						  {
 			                url : HTTP_ROOT_DIR + "/comunica/ajax/getProposals.php",
+			                // WARNING: js code is based on these classnmes, do not change them!
 			                className : 'loadedEvents proposal',
 			                editable  : 	false,
 			                allDayDefault : false			                
 						  },
 						  {
 			                url : HTTP_ROOT_DIR + "/comunica/ajax/getProposals.php?type=C",
+			                // WARNING: js code is based on these classnmes, do not change them!			                
 			                className : 'loadedEvents confirmed',
 			                editable  : 	false,
 			                allDayDefault : false			                

@@ -228,7 +228,8 @@ if(isset($_SERVER['REQUEST_METHOD']) && $_SERVER['REQUEST_METHOD'] == 'POST') {
 
       if(ADA_CHAT_EVENT & $practitioner_proposal['flags']) {
         $event_flag = ADA_CHAT_EVENT;
-
+/*
+		LA CHAT E' CREATA AL MOMENTO DELLA RICHIESTA DEL SERVIZIO (ask_service.php) 
         $end_time = $data_ora + $service_infoAr[7]; //durata_max_incontro
 
         $chatroom_ha = array(
@@ -250,7 +251,7 @@ if(isset($_SERVER['REQUEST_METHOD']) && $_SERVER['REQUEST_METHOD'] == 'POST') {
           $errObj = new ADA_Error($id_chatroom,
                                    translateFN("Si è verificato un errore nella creazione della chatroom. L'appuntamento non è stato creato."),
                                    NULL, NULL, NULL, $userObj->getHomePage());
-        }
+        } */
       }
       else {
         $event_flag = ADA_VIDEOCHAT_EVENT;
@@ -378,7 +379,7 @@ else if(isset($msg_id)) {
 
   foreach ($datetimesAr as $k=>$datetimeEl)
   {
-  	if(($value = ADAEventProposal::canProposeThisDateTime($userObj,$datetimeEl['date'], $datetimeEl[0]['time'], $tester)) !== TRUE) {
+  	if(($value = ADAEventProposal::canProposeThisDateTime($userObj,$datetimeEl['date'], $datetimeEl['time'], $tester)) !== TRUE) {
   		$errors['date'.($k+1)] = $value;
   	}
   }

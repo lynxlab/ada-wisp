@@ -289,7 +289,10 @@ class CommunicationModuleHtmlLib
     $pastProposalText->addChild(new CText(translateFN('Non si possono fare proposte nel passato')));
     // one proposal at least message
     $oneAtLeastText = CDOMElement::create('span','id:oneProposalAtLeast');
-    $oneAtLeastText->addChild(new CText(translateFN('Inserire almeno una proposta')));    
+    $oneAtLeastText->addChild(new CText(translateFN('Inserire almeno una proposta')));
+    // cannot make overlapping proposal
+    $overlappingProposal = CDOMElement::create('span','id:overlappingProposal');
+    $overlappingProposal->addChild(new CText(translateFN('Impossibile sovrapporre una proposta con un appuntamento')));
     // this shall become the button label inside the dialog
     $alertButton = CDOMElement::create('span','class:buttonLbl');
     $alertButton->setAttribute('style','display:none;');
@@ -298,6 +301,7 @@ class CommunicationModuleHtmlLib
     $alertDIV->addChild($maximumText);
     $alertDIV->addChild($pastProposalText);
     $alertDIV->addChild($oneAtLeastText);
+    $alertDIV->addChild($overlappingProposal);
     $alertDIV->addChild($alertButton);
     
     /**
@@ -494,9 +498,9 @@ class CommunicationModuleHtmlLib
 	if (is_array($datetimesAr) && !empty($datetimesAr)) {
 			foreach ( $datetimesAr as $k => $datetimesEl ) {
 				$proposal[$k] = CDOMElement::create ( 'div', 'class:radio_button' );
-				if (is_array ( $errors ) && isset ( $errors ['date' . $k] )) {
+				if (is_array ( $errors ) && isset ( $errors ['date' . ($k+1)] )) {
 					$date_error = CDOMElement::create ( 'div', 'class:error' );
-					$date_error->addChild ( new CText ( $error_messages [$errors ['date' . $k]] ) );
+					$date_error->addChild ( new CText ( $error_messages [$errors ['date' . ($k+1)]] ) );
 					$proposal[$k]->addChild ( $date_error );
 					$proposal[$k]->addChild ( new CText ( $datetimesEl ['date'] . ' ' . $datetimesEl ['time'] ) );
 				} else {

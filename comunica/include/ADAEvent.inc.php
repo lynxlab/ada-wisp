@@ -1,6 +1,8 @@
 <?php
 class ADAEvent
 {
+  private static $tolerance = 1800;
+	
   public static function generateEventMessageAction($event_type, $id_course, $id_course_instance) {
     $text = '<event_data>'
   		  . "<event_type>$event_type</event_type>"
@@ -33,9 +35,9 @@ class ADAEvent
     	/**
     	 * giorgio 20/set/2013
     	 *
-    	 * if action is empty, a countdown is needed
+    	 * if action is empty and event has not expired, a countdown is needed
     	 */
-		$time = time();
+		$time = time() - self::$tolerance;
 		
     	if (empty($action) && $message_ha['data_ora']>=$time) $clean_message .= self::generateCountDownCode($message_ha);
     	else if ($message_ha['data_ora']<$time) $clean_message .= self::generateExpiredAppointmentMessage();
@@ -106,7 +108,7 @@ class ADAEvent
   private static function generateCountDownCode($message_ha = array())
   {
 		// if message is not confirmed, do not generate the countdown
-		// already checked in parseMessageText, but let's double check
+		// this is already checked in parseMessageText, but let's double check
 		// just in case this is being called from somewherew else
 		if ($message_ha ['flags'] & ADA_EVENT_CONFIRMED) {
 			$wrapperDIV = CDOMElement::create ( 'div', 'id:countdownWrapper' );
@@ -124,7 +126,7 @@ class ADAEvent
 			$untilSPAN->addChild ( new CText ( $message_ha ['data_ora'] ) );
 			// add items to the div
 			$countdownDIV->addChild ( $untilSPAN );
-			// adds links to the div, will be show when countdown expires
+			// adds links to the div, will be shown when countdown expires
 			$countdownDIV->addChild ( new CText ( self::appendAction ( self::extractActionFromEventMessage ( $message_ha, true ) ) ) );
 			
 			$wrapperDIV->addChild ( $aboveTextSPAN );
@@ -161,7 +163,7 @@ class ADAEvent
   private static function createTheEnterLink($message_ha = array()) {
     $event_timestamp   = $message_ha['data_ora'];
     $current_timestamp = time();
-    $round = 1800;
+    $round = self::$tolerance;
 
     if($current_timestamp > $event_timestamp
     && $current_timestamp < $event_timestamp + $round) {

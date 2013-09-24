@@ -20,7 +20,7 @@
 }
 
 #hidden_form_controls {
-	display: none;
+	/* display: none; */
 }
 
 #subject {
@@ -55,19 +55,6 @@
 	color: white !important; /* text color */
 	padding: 2px;
 	cursor: pointer !important;
-}
-
-.fc-event:hover {
-	background-color: lightsteelblue !important;
-}
-
-.confirmed:hover {
-	background-color: yellow !important;
-	color: black !important;
-}
-
-.proposal:hover {
-	background-color: #efefef !important;
 }
 
 /**
@@ -123,8 +110,9 @@
 	display: block;
 }
 
-#maximumProposal,#pastProposal,#oneProposalAtLeast,#questionDelete,#questionReset
-	{
+#maximumProposal,#pastProposal,#oneProposalAtLeast,#overlappingProposal,#questionDelete,#questionReset {
+	text-align: center;
 	display: inline-block;
 	margin-top: 15px;
+	overflow:none;
 }
