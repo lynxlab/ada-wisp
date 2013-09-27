@@ -326,7 +326,21 @@ $content_dataAr = array(
 );
 
 /**
+ * @author giorgio 26/set/2013
+ * 
+ * if you have some widget in the page and need to
+ * pass some parameter to it, you can do it this way:
+ * 
+ * $layout_dataAr['widgets']['<template_field_name>'] = array ("<param_name>"=>"<param_value>");
+ */
+
+/**
  * Sends data to the rendering engine
+ * 
+ * @author giorgio 25/set/2013
+ * REMEMBER!!!! If there's a widgets/main/index.xml file
+ * and the index.tpl has some template_field for the widget
+ * it will be AUTOMAGICALLY filled in!!
  */
 ARE::render($layout_dataAr,$content_dataAr);
 ?>

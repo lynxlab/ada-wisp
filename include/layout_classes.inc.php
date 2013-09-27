@@ -24,6 +24,10 @@ class Layout {
     var $error_msg;
     var $full;
 	var $external_module = false;
+	// @author giorgio 25/set/2013
+	// widgets configuration file name and dir
+	var $WIDGET_filename;
+	var $WIDGET_dir;
 
     //constructor
     function Layout($user_type,$node_type,$family="",$node_author_id="",$node_course_id="",$module_dir="") {
@@ -69,6 +73,11 @@ class Layout {
 	$this->JS_filename = $JSObj->JS_filename;
 	$this->JS_dir = $JSObj->JS_dir;
 	//$this->debug();
+	
+	// Widgets
+	$pageWidgetObj = new PageWidget($this->template);
+	$this->WIDGET_dir = $pageWidgetObj->pageWidgetsDir;
+	$this->WIDGET_filename = $pageWidgetObj->pageWidgets;
 
     }//end function Layout
 
@@ -379,5 +388,88 @@ class JS {
         $this->JS_filename = implode(';',$JS_files);
         $this->JS_dir = $JS_dir;
     } //end function JS
+}
+
+
+/**
+ * class for setting the needed XML for the page widget, if any.
+ *
+ * @author giorgio 25/set/2013
+ */
+class PageWidget
+{
+	/**
+	 * holds widgets configuration file full pathname or null on error
+	 * @var string
+	 */
+	var $pageWidgets;
+	
+	/**
+	 * holds widgets configuration file full dirname or null on error
+	 * @var string
+	 */	
+	var $pageWidgetsDir;
+	
+	/**
+	 * hold error string if any
+	 * @var string
+	 */
+	var $error;
+	
+	/**
+	 * default widget configuration file extension
+	 * @var string
+	 */
+	private static $widgetConfFileExtension = '.xml';
+	
+	/**
+	 * where to start looking for dirname.
+	 * e.g. assuming template is in ROOT_DIR .'layout/ada_blu/templates/main/default.tpl'
+	 * it'll extract the dir starting AND NOT INCLUDING the value of the variable.
+	 * e.g. 'main/'
+	 * 
+	 * @var string
+	 */	
+	private static $extractPathStartingFrom = 'templates/';
+	
+    /**
+     * PageWidget constructor, the XML filename is the same as the template, but with xml
+     * extension. If one with same name is found inside the currently active provider, that
+     * one is preferred over the standard one.
+     * 
+     * @param string $filename template file name used to build widget xml file name
+     */
+    public function __construct($filename)
+    {    	
+    	$this->pageWidgets = null;
+    	$this->pageWidgetsDir = null;
+    	$this->error = '';
+    	
+    	$extractStringFrom = strpos($filename, self::$extractPathStartingFrom) + strlen (self::$extractPathStartingFrom);
+    	$extractLength  = strrpos($filename, '/') - $extractStringFrom + 1 ; 
+    	
+    	$dirname = substr ($filename, $extractStringFrom, $extractLength);
+    	$filename = preg_replace('/\..*$/', self::$widgetConfFileExtension, basename($filename));
+
+    	$widgets_filename = '';
+    	
+    	if (!MULTIPROVIDER)
+    	{
+    		$widgets_dir = ROOT_DIR."/clients/".$GLOBALS['user_provider']."/widgets/$dirname";
+    		$widgets_filename = $widgets_dir.$filename;
+    	}
+    	
+    	if (!file_exists($widgets_filename))
+    	{
+    		$widgets_dir = ROOT_DIR . "/widgets/$dirname";
+    		$widgets_filename = $widgets_dir.$filename;
+    		if (!file_exists($widgets_filename)) {
+    			$widgets_dir = $widgets_filename = null;
+    			$this->error = "$widgets_filename not found";    		
+    		}
+    	}    	
+    	$this->pageWidgets = $widgets_filename;
+    	$this->pageWidgetsDir = $widgets_dir;    	
+    }
 }
 ?>
