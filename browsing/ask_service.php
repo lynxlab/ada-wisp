@@ -50,7 +50,7 @@ $op = DataValidator::validate_string($op);
 $today_date = today_dateFN();
 if ($op == false) $op = 'default';
 //$self = 'list_chatrooms'; // x template
-//$self = whoami();
+$self = whoami();
 
 if(!$userObj instanceof ADAUser) {
     header('Location: ' . HTTP_ROOT_DIR . '/login_required.php');
