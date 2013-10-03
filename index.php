@@ -71,9 +71,6 @@ require_once ROOT_DIR.'/include/module_init.inc.php';
 $self = whoami(); // index
 include_once 'include/'.$self.'_functions.inc.php';
 
-// if module_init did not set a new provider in session
-// and a saved provider is set, redirect to saved provider index
-if (!isset($_SESSION['sess_user_provider']) && isset($saved_provider)) { header ('Location: '.$saved_provider.'/index.php'); exit(); }
 
 // non serve più...
 // require_once ROOT_DIR.'/include/aut/login.inc.php';
@@ -174,27 +171,37 @@ if(isset($p_login)) {
       $status = $userObj->getStatus();
 	  if ($status == ADA_STATUS_REGISTERED)
       {
+      	$user_default_tester = $userObj->getDefaultTester();
+      	
+      	if (!MULTIPROVIDER && $userObj->getType()!=AMA_TYPE_ADMIN) 
+      	{
+      		if ($user_default_tester!=$GLOBALS['user_provider'])
+      		{
+      			// if the user is trying to login in a provider
+      			// that is not his/her own,
+      			// redirect to his/her own provider home page      			
+      			$redirectURL = preg_replace("/(http[s]?:\/\/)(\w+)[.]{1}(\w+)/", "$1".$user_default_tester.".$3", $userObj->getHomePage());
+      			header('Location:'.$redirectURL);
+		  		exit();
+      		}      		       		
+      	}
+      	
         // user is a ADAuser with status set to 0 OR
         // user is admin, author or switcher whose status is by default = 0
-    	  $_SESSION['sess_user_language'] = $p_selected_language;
-		  $_SESSION['sess_id_user'] = $userObj->getId();
-		  $GLOBALS['sess_id_user']  = $userObj->getId();
-		  $_SESSION['sess_id_user_type'] = $userObj->getType();
-		  $GLOBALS['sess_id_user_type']  = $userObj->getType();
-		  $_SESSION['sess_userObj'] = $userObj;
-		  $user_default_tester = $userObj->getDefaultTester();
-		  
-		  if($user_default_tester !== NULL) {
-		    $_SESSION['sess_selected_tester'] = $user_default_tester;
+    	$_SESSION['sess_user_language'] = $p_selected_language;
+		$_SESSION['sess_id_user'] = $userObj->getId();
+		$GLOBALS['sess_id_user']  = $userObj->getId();
+		$_SESSION['sess_id_user_type'] = $userObj->getType();
+		$GLOBALS['sess_id_user_type']  = $userObj->getType();
+	    $_SESSION['sess_userObj'] = $userObj;
 
-			// sets var for non multiprovider environment
-		    $_SESSION['sess_user_provider'] = $user_default_tester;
-		    $GLOBALS['user_provider'] = $_SESSION['sess_user_provider'];
-		    // if it's not set, set a cookie that shall expire in one year
-		    if (isset($GLOBALS['user_provider'])) setcookie('ada_provider',$GLOBALS['user_provider'],+time()+ 86400 *365 ,'/');
+		if($user_default_tester !== NULL) {
+					$_SESSION ['sess_selected_tester'] = $user_default_tester;
+					// sets var for non multiprovider environment
+					$GLOBALS ['user_provider'] = $user_default_tester;		    
 		  }
-
-		  header('Location:'.$userObj->getHomePage());
+		  $redirectURL = $userObj->getHomePage();      	
+		  header('Location:'.$redirectURL);
 		  exit();
 		}
 		else {
@@ -217,7 +224,6 @@ if(isset($p_login)) {
  * Show login page
  */
 $form_action = HTTP_ROOT_DIR ;
-if (!MULTIPROVIDER && isset ($GLOBALS['user_provider']) && $GLOBALS['user_provider']!='') $form_action .= '/'.$GLOBALS['user_provider'];
 $form_action .= '/index.php';
 $login = UserModuleHtmlLib::loginForm($form_action, $supported_languages,$login_page_language_code, $login_error_message);
 
@@ -230,13 +236,12 @@ $login = UserModuleHtmlLib::loginForm($form_action, $supported_languages,$login_
   {
   	if (isset($GLOBALS['user_provider']) && !empty($GLOBALS['user_provider']))
   	{
-		$linkPath = '/'.$GLOBALS['user_provider'];
 		$testerName = $GLOBALS['user_provider'];
   	} else {
   		/**
   		 * overwrite $newsmsg with generated available providers listing
   		 */
-  		$allTesters = $common_dh->get_all_testers ();
+  		$allTesters = $common_dh->get_all_testers (array('nome'));
   		$addHtml = false;
 
   		foreach ($allTesters as $aTester)
@@ -244,28 +249,26 @@ $login = UserModuleHtmlLib::loginForm($form_action, $supported_languages,$login_
   			// skip testers having punatore like 'clientXXX'
   			if (!preg_match('/^(?:client)[0-9]{1,2}$/',$aTester['puntatore']) &&
   				is_dir (ROOT_DIR . '/clients/' .$aTester['puntatore'])) {
+  				
   				if (!$addHtml) $providerListUL = CDOMElement::create('ol');
   				$addHtml = true;
-
-  				$testerLink = CDOMElement::create('a','href:'.HTTP_ROOT_DIR.'/'.$aTester['puntatore']);
-  				$testerLink->addChild (new CText($aTester['puntatore']));
+  				$testerLink = CDOMElement::create('a','href:'.preg_replace("/(http[s]?:\/\/)(\w+)[.]{1}(\w+)/", "$1".$aTester['puntatore'].".$3", HTTP_ROOT_DIR));
+  				$testerLink->addChild (new CText($aTester['nome']));
 
   				$providerListElement = CDOMElement::create('li');
   				$providerListElement->addChild ($testerLink);
-
   				$providerListUL->addChild ($providerListElement);
   			}
   		}
   		$newsmsg = $addHtml ? $providerListUL->getHtml() : translateFN ('Nessun fornitore di servizi &egrave; stato configurato');
   	}
   } else  {
-  	$linkPath = '';
   	$testers = $_SESSION['sess_userObj']->getTesters();
   	$testerName = $testers[0];
   } // end if (!MULTIPROVIDER)
 
   $forget_div  = CDOMElement::create('div');
-  $forget_linkObj = CDOMElement::create('a', 'href:'.HTTP_ROOT_DIR.$linkPath.'/browsing/forget.php?lan='.$_SESSION['sess_user_language']);
+  $forget_linkObj = CDOMElement::create('a', 'href:'.HTTP_ROOT_DIR.'/browsing/forget.php?lan='.$_SESSION['sess_user_language']);
   $forget_linkObj->addChild(new CText(translateFN("Did you forget your password?")));
   $forget_link = $forget_linkObj->getHtml();
 //  $status = translateFN('Explore the web site or register and ask for a practitioner');
@@ -296,13 +299,33 @@ if (isset($testerName))
 		foreach ( $newscontent as $num=>$aNews )
 		{
 			$aNewsDIV = CDOMElement::create('div','class:news,id:news-'.($num+1));
-			$aNewsTitle = CDOMElement::create('a', 'class:newstitle,href:'.HTTP_ROOT_DIR.$linkPath.'/browsing/view.php?id_course='.
+			$aNewsTitle = CDOMElement::create('a', 'class:newstitle,href:'.HTTP_ROOT_DIR.'/browsing/view.php?id_course='.
 					PUBLIC_COURSE_ID_FOR_NEWS.'&id_node='.$aNews[0]);
 			$aNewsTitle->addChild (new CText($aNews[1]));
 			$aNewsDIV->addChild ($aNewsTitle);
 
-			// strip off HTML
-			$newstext = strip_tags($aNews[2]);
+			// @author giorgio 01/ott/2013
+			// remove unwanted div ids: tabs
+			// NOTE: slider MUST be removed BEFORE tabs because tabs can contain slider and not viceversa
+			$removeIds = array ('slider','tabs');
+			
+			$html = new DOMDocument('1.0', 'UTF-8');
+			$html->loadHTML(utf8_decode($aNews[2]));
+
+			foreach ($removeIds as $removeId)
+			{
+				$removeElement = $html->getElementById($removeId);
+				if (!is_null($removeElement)) $removeElement->parentNode->removeChild($removeElement);				
+			}
+			
+			// output in newstext only the <body> of the generated html
+			$newstext = '';
+			foreach ($html->getElementsByTagName('body')->item(0)->childNodes as $child)
+			{
+				$newstext .= $html->saveXML($child);
+			}
+			// strip off html tags
+			$newstext = strip_tags($newstext);
 			// check if content is too long...
 			if (strlen($newstext) > $maxLength)
 			{
@@ -316,7 +339,7 @@ if (isset($testerName))
 
 			if ($addContinueLink)
 			{
-				$contLink = CDOMElement::create('a', 'class:continuelink,href:'.HTTP_ROOT_DIR.$linkPath.'/browsing/view.php?id_course='.
+				$contLink = CDOMElement::create('a', 'class:continuelink,href:'.HTTP_ROOT_DIR.'/browsing/view.php?id_course='.
 						PUBLIC_COURSE_ID_FOR_NEWS.'&id_node='.$aNews[0]);
 				$contLink->addChild (new CText(translateFN('Continua...')));
 				$aNewsDIV->addChild ($contLink);

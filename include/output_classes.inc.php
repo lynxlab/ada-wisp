@@ -203,7 +203,7 @@ class ARE
         if (!is_null($layoutObj->WIDGET_filename))
         {
         	$widgets_dataAr = $html_renderer->fillin_widgetsFN($layoutObj->WIDGET_filename,$layout_dataAr['widgets']);
-        	if (!ADA_Error::isError($widgets_dataAr)) 
+        	if (!ADA_Error::isError($widgets_dataAr))
         		$content_dataAr = array_merge ($content_dataAr, $widgets_dataAr);		
         }                
         $html_renderer->fillin_templateFN($content_dataAr);
@@ -1105,8 +1105,8 @@ EOT;
   		 * depending on the erorr phase / severity something will happen...
   		 */
   		return new ADA_Error(NULL,'Widget configuration XML is not valid',__METHOD__,ADA_ERROR_ID_XML_PARSING);
-  		
-  	}
+  	
+  	}  	
   	$widgets = $widgetAr['widget'];
   	$retArray = array();
   	
