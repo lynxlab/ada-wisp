@@ -13,6 +13,14 @@
  * @link					
  * @version		0.1
  */
+
+/**
+ * Redirect to services list for STAY-IN/WISP version
+ */
+
+header('Location: list_lservices.php');
+exit();
+
 /**
  * Base config file 
  */

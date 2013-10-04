@@ -169,11 +169,6 @@
                         <i18n>agisci</i18n>
                     </a>
                 </li>
-                <li id="ancora_menuright">
-                    <a href="../info.php">
-                        <i18n>corsi</i18n>
-                    </a>
-                </li>
 <!--
                 <li id="ancora_menuright" onClick="toggleElementVisibility('menuright', 'right');">
                     <a>
