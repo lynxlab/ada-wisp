@@ -26,7 +26,9 @@
             <div class="sx">
                 <div class="wellcome">
                 <template_field class="template_field" name="message">message</template_field>
-                <template_field class="template_field" name="newsmsg">newsmsg</template_field>                                
+                <template_field class="template_field" name="newsmsg">newsmsg</template_field>       
+                <template_field class="template_field" name="fbRSS">fbRSS</template_field>       
+                
                 </div>
             </div>
             <div class="dx">
@@ -41,9 +43,13 @@
 		</div>
 		<div class="helpcont">
 		  <template_field class="template_field" name="helpmsg">helpmsg</template_field>
-		  <!-- widget sample 
-		  <template_field class="template_field" name="widgetSample">widgetSample</template_field>
-		   -->
+                  <div class="lynxRSS">Notizie dal mondo Lynx
+                    <template_field class="template_field" name="lynxRSS">lynxRSS</template_field>
+                  </div>
+                  <div class="TwitterTimeLine">Il mondo in 140 caratteri
+                    <template_field class="template_field" name="twitterTimeLine">twitterTimeLine</template_field>
+                  </div>
+                  
             </div>
          </div>
          </div>
@@ -67,8 +73,8 @@
 				</a>
 		</li>
 		<li id="tools" class="unselectedtools">
-				<a href="info.php">
-           			 <i18n>informazioni</i18n>
+				<a href="browsing/ask_service.php">
+           			 <i18n>Chiedi aiuto</i18n>
 			        </a>
 	 </li>
         <li id="question_mark" class="unselectedquestion_mark">

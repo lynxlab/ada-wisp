@@ -97,7 +97,7 @@ if(is_array($usersAR) && count($usersAR) > 0) {
         $service_link = CDOMElement::create('a',"href:$href");
         $service_link->addChild(new CText(translateFN($user_registration['titolo'])));
 
-        $href = 'assign_practitioner.php?id_corso='.$course_id.'&id_instance='.$id_course_instance;
+        $href = 'assign_practitioner.php?id_corso='.$course_id.'&id_course_instance='.$id_course_instance.'&id_user='.$id_user;
         $epractitioner_link = CDOMElement::create('a', "href:$href");
         if (isset($tutor[0]['id_utente_tutor']) AND $tutor[0]['id_utente_tutor'] != '') {
             $epractitioner_link->addChild(new CText($tutor[0]['username'].' ('.$tutor[0]['nome'] .' '.$turor[0]['cognome_t'].')'));

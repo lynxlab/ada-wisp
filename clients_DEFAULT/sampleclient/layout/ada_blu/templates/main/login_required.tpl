@@ -28,6 +28,7 @@
                         <i18n>home</i18n>
                     </a>
                 </li>
+                <!--
                 <li id="question_mark" class="unselectedquestion_mark">
                     <a href="help.php" target="_blank">
                         <i18n>aiuto</i18n>
@@ -38,6 +39,7 @@
                         <i18n>esci</i18n>
                     </a>
                 </li>
+                -->
             </ul>
 			       </div>
         <!-- / menu a tendina -->

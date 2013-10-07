@@ -74,6 +74,7 @@
                           		 		 		<template_field class="template_field_disabled" name="author">author</template_field>
                           		 		 	</span>
                 					    </li-->
+                                        <!-- 
                                         <li>
                                         <i18n>livello nodo:</i18n>
                                         <span>
@@ -86,6 +87,7 @@
                                             <template_field class="template_field" name="keywords">keywords</template_field>
                                         </span>
                                         </li>
+                                        -->
                                     </ul>
                                     <!--div class="dattilo" id="dattilo">
                                       <template_field class="template_field_disabled" name="dattilo">dattilo</template_field>
@@ -121,11 +123,13 @@
 			    <!--h3><i18n>Approfondimenti:</i18n></h3-->
 			    <!--template_field class="template_field" name="index">index</template_field-->
 		  </div>
+                    <!-- 
 		  <div id="exercises_in_text">
 		      <h3><i18n>note personali</i18n></h3>
 		       <template_field class="template_field" name="personal">personal</template_field>
-			<!--template_field class="template_field" name="exercises">exercises</template_field-->
+			<template_field class="template_field" name="exercises">exercises</template_field>
 		  </div>
+                    -->
 
                 </div>
                 <div id="bottomcont">
@@ -261,11 +265,13 @@
                         <i18n>Naviga</i18n>
                     </a>
                 </li>
+                <!--
                 <li id="question_mark" class="unselectedquestion_mark" onClick="toggleElementVisibility('submenu_question_mark','up'); return false;">
                     <a>
                         <i18n>Help</i18n>
                     </a>
                 </li>
+                            -->
                 <li id="esc">
                     <a href="../index.php">
                         <i18n>esci</i18n>
@@ -325,6 +331,7 @@
                                     <i18n>diario</i18n>
                                 </a>
                             </li>
+                            <!--
                             <li>
                                 <a href="history.php">
                                     <i18n>cronologia</i18n>
@@ -339,18 +346,19 @@
 							<li>
                                 <template_field class="template_field" name="survey_history">survey_history</template_field>
                             </li>
+                            -->
                             <!--
                             <li>
                                 <a href="lemming.php">
                                     <i18n>lessico</i18n>
                                 </a>
                             </li>
-                            -->
                             <li>
                                 <a href="search.php">
                                     <i18n>cerca</i18n>
                                 </a>
                             </li>
+                            -->
                             <li>
                             <template_field class="template_field" name="go_print">go_print</template_field>
                             </li>
@@ -376,14 +384,16 @@
                             <template_field class="template_field" name="send_media">send_media</template_field>
                             </li>
                             <li>
-                            <template_field class="template_field" name="add_bookmark">add_bookmark</template_field>
-                            </li>
-                            <li>
                             <template_field class="template_field" name="add_node">add_node</template_field>
+                            </li>
+                            <!--
+                            <li>
+                            <template_field class="template_field" name="add_bookmark">add_bookmark</template_field>
                             </li>
                             <li>
                             <template_field class="template_field" name="add_word">add_word</template_field>
                             </li>
+                            -->
                             <li>
                             <template_field class="template_field" name="edit_node">edit_node</template_field>
                             </li>

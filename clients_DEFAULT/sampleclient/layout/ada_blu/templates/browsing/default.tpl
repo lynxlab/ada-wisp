@@ -140,23 +140,18 @@
                         <i18n>agisci</i18n>
                     </a>
                 </li>
-                <li id="ancora_menuright">
-                    <a href="../info.php">
-                        <i18n>corsi</i18n>
-                    </a>
-                </li>
 <!--
                 <li id="ancora_menuright" onClick="toggleElementVisibility('menuright', 'right');">
                     <a>
                         <i18n>Naviga</i18n>
                     </a>
                 </li>
--->
                 <li id="question_mark" class="unselectedquestion_mark" onClick="toggleElementVisibility('submenu_question_mark','up'); return false;">
                     <a>
                         <i18n>Help</i18n>
                     </a>
                 </li>
+-->
                 <li id="esc">
                     <a href="../index.php">
                         <i18n>esci</i18n>

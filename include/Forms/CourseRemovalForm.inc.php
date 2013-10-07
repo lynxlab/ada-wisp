@@ -14,11 +14,17 @@ require_once 'lib/classes/FForm.inc.php';
  * 
  */
 class CourseRemovalForm extends FForm {
-    public function  __construct($courseObj) {
+    public function  __construct($courseObj,$notice='') {
         parent::__construct();
+        if ($notice != '') {
+            $noticeText = $notice . ' ' .
+                sprintf(translateFN('Vuoi davvero eliminare il corso: "%s"?'), $courseObj->getTitle());
+        } else {
+            $noticeText = sprintf(translateFN('Vuoi davvero eliminare il corso: "%s"?'), $courseObj->getTitle());
+        }
         $this->addRadios(
                 'deleteCourse',
-                sprintf(translateFN('Vuoi davvero eliminare il corso: "%s"?'), $courseObj->getTitle()),
+                $noticeText,
                 array(0 => translateFN('No'), 1 => translateFN('Si')),
                 0);
         $this->addHidden('id_course')

@@ -99,4 +99,40 @@ class Course_instance extends Course_instance_Old
         return $this->open_subscription;
     }
 
+    static public function add_instance($id_course, $course_instanceAr) {
+        $dh = $GLOBALS['dh'];
+        $result = $dh->course_instance_add($id_course, $course_instanceAr);
+        if(AMA_DataHandler::isError($result)) {
+            //$form = new CText(translateFN('Si è verificato un errore durante la creazione della nuova istanza'));
+        }
+        return $result;
+    }        
+
+    static public function add_chatRoom($id_course_instance, $course_instanceAr) { 
+            /*
+             * Creazione della chat
+             */
+            require_once ROOT_DIR .'/comunica/include/ChatRoom.inc.php';
+            
+            $dh = $GLOBALS['dh'];
+            $data_inizio_previsto = $course_instanceAr['data_inizio_previsto'];
+            $data_inizio = $course_instanceAr['data_inizio_previsto'];
+            $durata = $course_instanceAr['durata'];
+            $data_fine = $dh->add_number_of_days($durata,$data_inizio);
+
+            $chatroom_ha['id_chat_owner']= $userObj->id_user;
+            $chatroom_ha['chat_title'] = $course_instanceAr['title']; 
+//            $chatroom_ha['chat_title'] = translateFN('Chat di classe'); // $_POST['chat_title'];
+            $chatroom_ha['chat_topic'] = $course_instanceAr['title']; 
+            $chatroom_ha['welcome_msg'] = translateFN('Benvenut* in chat');
+            $chatroom_ha['max_users']= 999;
+            $chatroom_ha['start_time']= $data_inizio_previsto;
+            $chatroom_ha['end_time']= $data_fine;
+            $chatroom_ha['id_course_instance']= $id_course_instance;
+
+            // add chatroom_ha to the database
+            $chatroom = Chatroom::add_chatroomFN($chatroom_ha);
+            return $chatroom;
+        }        
+    
 }

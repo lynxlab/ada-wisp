@@ -52,7 +52,7 @@ form em {
   color: #f00;
 }
 form label {
-  width: 120px; /* Width of labels */
+  width: 320px; /* Width of labels */
 }
 form fieldset fieldset label {
   margin-left: 123px; /* Width plus 3 (html space) */
