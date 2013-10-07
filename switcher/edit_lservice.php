@@ -77,7 +77,8 @@ if (isset($_SERVER['REQUEST_METHOD']) && $_SERVER['REQUEST_METHOD'] == 'POST') {
             'media_path' => $_POST['media_path'],
             'id_lingua' => $_POST['id_lingua'],
             'static_mode' => $_POST['static_mode'],
-            'crediti' => $_POST['crediti']
+            'crediti' => $_POST['crediti'],
+            'common_area' => $_POST['common_area']
         );
         $result = $dh->set_course($_POST['id_corso'], $course);
 
@@ -97,9 +98,31 @@ if (isset($_SERVER['REQUEST_METHOD']) && $_SERVER['REQUEST_METHOD'] == 'POST') {
                 if (AMA_Common_DataHandler::isError($result)) {
                      $form = new CText("Si è verificato un errore durante l'aggiornamento dei dati del corso");
                 } else {
-                    // AGGIORNARE l'oggetto corso in sessione e poi fare il redirect a view_course.php
-                    //header('Location: view_course.php?id_course=' . $_POST['id_corso']);
-                    header('Location: list_courses.php');
+                    /* *
+                     * if needed it creates the instance and chat...
+                     */
+                    $fieldsAr = array('data_inizio', 'data_inizio_previsto', 'durata', 'data_fine', 'title');
+                    $id_course = $_POST['id_corso'];
+                    $instancesAr = $dh->course_instance_get_list($fieldsAr, $id_course);
+                    if ($_POST['common_area'] && !AMA_DataHandler::isError($instancesAr) && count($instancesAr==0)) {
+                        $course_instanceAr = array(
+                            'data_inizio_previsto' => time(), // dt2tsFN($_POST['data_inizio_previsto']),
+                            'durata' => '730', /* two years*/ // $_POST['durata'],
+                            'price' => '0',
+                            'self_instruction' => '0',
+                            'self_registration' => '1',
+                            'title' => $_POST['titolo'],
+                            'duration_subscription' => '730', //$_POST['duration_subscription'],
+                            'start_level_student' => '99', //$_POST['start_level_student'],
+                            'open_subscription' => '1' // $_POST['open_subscription']
+                        );
+                        $id_instance_course = Course_instance::add_instance($id_course, $course_instanceAr);
+                        if(!AMA_DataHandler::isError($result)) {
+                            $id_chatroom = Course_instance::add_chatRoom($id_course, $course_instanceAr);
+                        }
+                    }
+                    
+                    header('Location: list_lservices.php');
                     exit();
                 }
             }            
@@ -124,6 +147,13 @@ if (isset($_SERVER['REQUEST_METHOD']) && $_SERVER['REQUEST_METHOD'] == 'POST') {
         foreach ($availableLanguages as $language) {
             $languages[$language['id_lingua']] = $language['nome_lingua'];
         }
+        $fieldsAr = array('data_inizio', 'data_inizio_previsto', 'durata', 'data_fine', 'title');
+        $instancesAr = $dh->course_instance_get_list($fieldsAr, $courseObj->getId());
+        $common_area = 0;
+        if (!AMA_DataHandler::isError($instancesAr) && count($instancesAr>0)) {
+            $common_area = 1;
+        }
+
 
         $form = new ServiceModelForm($authors, $languages);
 
@@ -142,6 +172,7 @@ if (isset($_SERVER['REQUEST_METHOD']) && $_SERVER['REQUEST_METHOD'] == 'POST') {
                 'static_mode' => $courseObj->getStaticMode(),
                 'data_creazione' => $courseObj->getCreationDate(),
                 'data_pubblicazione' => $courseObj->getPublicationDate(),
+                'common_area' => $common_area,
                 'crediti' =>  $courseObj->getCredits() // modifica in Course
             );
             $form->fillWithArrayData($formData);
@@ -151,8 +182,8 @@ if (isset($_SERVER['REQUEST_METHOD']) && $_SERVER['REQUEST_METHOD'] == 'POST') {
     }
 }
 
-$label = translateFN('Modifica dei dati del corso');
-$help = translateFN('Da qui il provider admin può modificare un corso esistente');
+$label = translateFN('Modifica dei dati del servizio');
+$help = translateFN('Da qui il provider admin può modificare un servizio esistente');
 
 $content_dataAr = array(
     'user_name' => $user_name,
