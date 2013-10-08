@@ -101,7 +101,7 @@ if (isset($_SERVER['REQUEST_METHOD']) && $_SERVER['REQUEST_METHOD'] == 'POST') {
           $service_dataAr = array(
             'service_name' => $_POST['titolo'],
             'service_description' => $_POST['descrizione'],
-            'service_level' => 1,
+            'service_level' => $_POST['common_area'], 
             'service_duration'=> 0,
             'service_min_meetings' => 0,
             'service_max_meetings' => 0,

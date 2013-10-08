@@ -18,7 +18,10 @@ class ServiceModelForm extends FForm {
         parent::__construct();
         //$authors = array_merge(array(0 => translateFN('Scegli un autore per il corso')), $authors);
         //$languages = array_merge(array(0 => translateFN('Scegli una lingua per il corso')), $languages);
-
+        $this->setName('formEditService');
+        $this->setSubmitValue(translateFN('Salva'));
+        
+        
         $authors[0] = translateFN('Scegli un autore per i contenuti del servizio');
         $languages[0] = translateFN('Scegli una lingua per i contenuti del servizio');
 
@@ -69,11 +72,11 @@ class ServiceModelForm extends FForm {
          * 
          */
         
-        $desc = translateFN('Attivazione area comune');
+        $desc = translateFN('Livello servizio:');
         $this->addRadios(
                 'common_area',
                 $desc,
-                array(0 => translateFN('No'), 1 => translateFN('Si')),
+                array(0 => translateFN('Help per studente'), 1 => translateFN('Area di interazione per utenti registrati')),
                 0);
         
         $this->addHidden('id_nodo_iniziale')->withData(0);
