@@ -19,6 +19,7 @@ class ServiceModelForm extends FForm {
         //$authors = array_merge(array(0 => translateFN('Scegli un autore per il corso')), $authors);
         //$languages = array_merge(array(0 => translateFN('Scegli una lingua per il corso')), $languages);
         $this->setName('formEditService');
+        $this->setId('formEditService');
         $this->setSubmitValue(translateFN('Salva'));
         
         
