@@ -125,6 +125,10 @@ abstract class FForm
 		}
     }
 
+    protected function setId($id) {
+        $this->_id = $id;
+    }
+
     protected function setAction($action) {
         $this->_action = $action;
     }
