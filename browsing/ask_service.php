@@ -357,42 +357,24 @@ switch ($op) {
         if(!AMA_Common_DataHandler::isError($publishedServices)) {
             $serviceToSubscribeAr = array();
             foreach($publishedServices as $service) {
-
-                   $serviceId = $service['id_servizio'];
-                   $serviceName = $service['nome'];
-                   $coursesAr = $common_dh->get_courses_for_service($serviceId); 
-                   if (!AMA_DataHandler::isError($coursesAr)) {
-                        $currentTesterId = 0;
-                        $currentTester = '';
-                        $provider_dh = null;
-                        foreach($coursesAr as $courseData) {
-                            if (defined ('PUBLIC_COURSE_ID_FOR_NEWS') && intval(PUBLIC_COURSE_ID_FOR_NEWS)>0 && PUBLIC_COURSE_ID_FOR_NEWS!=$courseData['id_corso']) {
-                                $newTesterId = $courseData['id_tester'];
-                                $courseId = $newTesterId . '_' . $courseData['id_corso'];
-                                $serviceToSubscribeAr[$courseId] = $serviceName;
-                            }
-                            /*
-                             * 
-                            if($newTesterId != $currentTesterId) { // stesso corso su altro tester ?
-                                $testerInfoAr = $common_dh->get_tester_info_from_id($newTesterId); 
-                                if(!AMA_Common_DataHandler::isError($testerInfoAr)) {
-                                    $tester = $testerInfoAr[10];
-                                    $provider_dh = AMA_DataHandler::instance(MultiPort::getDSN($tester)); 
-                                    $currentTesterId = $newTesterId;
-                                    $course_dataHa = $tester_dh->get_course($courseId);
-                                    if (!AMA_DataHandler::isError($course_dataHa)) {
-                                        $credits =  $course_dataHa['crediti']; 
-                                        // supponiamo che tutti i corsi di un servizio (su tester diversi) abbiano lo stesso numero di crediti
-                                        // quindi prendiamo solo l'ultimo
-                                    } else {
-                                        $credits = 1;       // should be ADA_DEFAULT_COURSE_CREDITS
-                                    }    
+                   if ($service['livello'] == ADA_SERVICE_HELP) {
+                       
+                       $serviceId = $service['id_servizio'];
+                       $serviceName = $service['nome'];
+                       $coursesAr = $common_dh->get_courses_for_service($serviceId); 
+                       if (!AMA_DataHandler::isError($coursesAr)) {
+                            $currentTesterId = 0;
+                            $currentTester = '';
+                            $provider_dh = null;
+                            foreach($coursesAr as $courseData) {
+                                if (defined ('PUBLIC_COURSE_ID_FOR_NEWS') && intval(PUBLIC_COURSE_ID_FOR_NEWS)>0 && PUBLIC_COURSE_ID_FOR_NEWS!=$courseData['id_corso']) {
+                                    $newTesterId = $courseData['id_tester'];
+                                    $courseId = $newTesterId . '_' . $courseData['id_corso'];
+                                    $serviceToSubscribeAr[$courseId] = $serviceName;
                                 }
-                            }
-                             * 
-                             */
-                        }   
-                   }
+                            }   
+                       }
+                  } 
 
             }
             $data = new AskServiceForm($serviceToSubscribeAr,$user_provider_id);
