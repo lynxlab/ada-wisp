@@ -59,6 +59,7 @@ if(is_array($coursesAr) && count($coursesAr) > 0) {
 
     foreach($coursesAr as $course) {
         $courseId = $course[0];
+        if ($courseId == PUBLIC_COURSE_ID_FOR_NEWS) continue;
 
 //        $edit_link = BaseHtmlLib::link("edit_lservice.php?id_course=$courseId", $edit_img->getHtml());
         $edit_link = BaseHtmlLib::link("edit_lservice.php?id_course=$courseId", translateFN('Edit'));
