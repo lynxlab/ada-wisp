@@ -28,7 +28,11 @@ class AjaxRemoteContent {
 	 */
 	private static $placeholder = '[CONTENTPLACEHOLDER]';
 	function __construct(Widget $widgetObj) {
-		$content = "<div id='$widgetObj->generatedDIVId' class='ADAwidget'>" . self::$placeholder . "</div>";
+		$content = "<div class='ADAwidget _".$widgetObj->generatedDIVId ."' >"; 
+                if (isset($widgetObj->title) && $widgetObj->title != '') {
+                    $content .= "<div class='WidgetTitle'>". translateFN($widgetObj->title) . "</div>";
+                }
+		$content .= "<div id='$widgetObj->generatedDIVId'>" . self::$placeholder . "</div></div>";
 		
 		if ($widgetObj->ajaxModule) {
 			$replacement = translateFN ( 'Loading' ) . '...';

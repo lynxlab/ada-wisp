@@ -1111,6 +1111,7 @@ EOT;
   	$retArray = array();
   	
   	foreach ( $widgets as $widget ) {
+        if (isset($optionsArray[$widget ['field']]['active'])) $widget ['active'] = $optionsArray[$widget ['field']]['active'];
   		$wobj = new Widget ( $widget );
   		/**
 		 * if there are some params passed in, tell it to the widget

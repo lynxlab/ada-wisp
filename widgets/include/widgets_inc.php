@@ -71,12 +71,20 @@ class Widget {
 	 * @var numeric
 	 */
 	var $asyncMode;
-	
+
+	/**
+	 * Title of widget
+	 *
+	 * @var string
+	 */
+	var $title;
+        
 	function __construct($widget) {
 		$this->templateField = $widget ['field'];
 		$this->generatedDIVId = $widget ['id'];
 		$this->isActive = isset ( $widget ['active'] ) ? $widget ['active'] : 1;
 		$this->asyncMode = isset ( $widget ['async'] ) ? $widget ['async'] : ADA_WIDGET_ASYNC_MODE;
+		$this->title = isset ( $widget ['title'] ) ? $widget ['title'] : '';
 		$this->optionsArr = array ();
 		
 		if (is_file ( ADA_WIDGET_AJAX_ROOTDIR . '/' . $widget ['module'] )) {
