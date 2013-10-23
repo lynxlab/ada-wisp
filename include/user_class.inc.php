@@ -186,7 +186,7 @@ abstract class ADAGenericUser {
     }
 
     public function getSerialNumber() {
-        return $this->setSerialNumber;
+        return $this->SerialNumber;
     }
 
     public function getAvatar() {
