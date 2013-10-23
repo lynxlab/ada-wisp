@@ -4,7 +4,7 @@
  *
  * PHP version 5
  *
- * @package   Default
+ * @package   user
  * @author    vito <vito@lynxlab.com>
  * @copyright Copyright (c) 2010-2010, Lynx s.r.l.
  * @license   http://www.gnu.org/licenses/gpl-2.0.html GNU Public License v.2
@@ -20,6 +20,8 @@ class AskServiceForm extends FForm {
         //$languages = array_merge(array(0 => translateFN('Scegli una lingua per il corso')), $languages);
 
         //$services[0] = translateFN('I need help for');
+        $action = HTTP_ROOT_DIR. "/browsing/ask_service.php";
+        $this->setAction($action);
 
         $this->addSelect('id_service',translateFN('I need help for'),$services,0)
              ->setRequired()
