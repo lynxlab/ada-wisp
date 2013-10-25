@@ -10333,7 +10333,7 @@ public function get_updates_nodes($userObj, $pointer)
     				 *     so:			
     				 */
     				
-    				$sql = 'SELECT id_nodo, ID_ISTANZA, nome, testo from nodo where data_creazione >= '. $last_time_visited_class .
+    				$sql = 'SELECT id_nodo, ID_ISTANZA, nome, testo, tipo from nodo where data_creazione >= '. $last_time_visited_class .
     				' AND id_nodo LIKE \''.$instance[id_corso].'_%\' AND livello <=' . $studentlevel . 
     				' AND tipo IN (' . implode (", ", $nodeTypesArray) .') ORDER BY data_creazione, tipo
     						 DESC LIMIT '. $maxNodes;
