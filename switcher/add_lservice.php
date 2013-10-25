@@ -124,6 +124,7 @@ if (isset($_SERVER['REQUEST_METHOD']) && $_SERVER['REQUEST_METHOD'] == 'POST') {
                     if ($_POST['common_area']) {
                         $course_instanceAr = array(
                             'data_inizio_previsto' => time(), // dt2tsFN($_POST['data_inizio_previsto']),
+                            'data_inizio' => time(), // dt2tsFN($_POST['data_inizio_previsto']),
                             'durata' => '730', /* two years*/ // $_POST['durata'],
                             'price' => '0',
                             'self_instruction' => '0',

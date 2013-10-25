@@ -53,8 +53,10 @@ $head_desc_user = translateFN("utente");
 $head_desc_service = translateFN("servizio");
 $head_desc_date = translateFN("date of request");
 $head_desc_epract = translateFN("epractitioner");
+$head_desc_instance = translateFN("instanza");
 
-$thead_data = array($head_desc_user,$head_desc_service,$head_desc_date,$head_desc_epract);
+
+$thead_data = array($head_desc_user,$head_desc_service,$head_desc_date,$head_desc_epract,$head_desc_instance);
 $tbody_data = array();
 
 switch ($op) {
@@ -129,11 +131,16 @@ if ($op=='not_started' or $op=='all') {
         $epractitioner_link = CDOMElement::create('a', "href:$href");
         $epractitioner_link->addChild(new CText(translateFN('Assegna')));
 
+        $href = 'edit_instance.php?id_course_instance='.$user_registration['id_istanza_corso'];
+        $instance_link = CDOMElement::create('a', "href:$href");
+        $instance_link->addChild(new CText(translateFN('edit')));
+
         $tbody_data[] = array(
           $user_link,
           $service_link,
           $request_date,
-          $epractitioner_link
+          $epractitioner_link,
+          $instance_link
         );
       }
     }
@@ -166,11 +173,16 @@ if ($op=='started' || $op=='all' || $op=='open' || $op=='closed') {
             $epractitioner_link = CDOMElement::create('a', "href:$href");
             $epractitioner_link->addChild(new CText($user_registration['username_t'].' ('.$user_registration['nome_t'] .' '.$user_registration['cognome_t'].')'));
 
+            $href = 'edit_instance.php?id_course_instance='.$user_registration['id_istanza_corso'];
+            $instance_link = CDOMElement::create('a', "href:$href");
+            $instance_link->addChild(new CText(translateFN('edit')));
+            
             $tbody_data[] = array(
               $user_link,
               $service_link,
               $request_date,
-              $epractitioner_link
+              $epractitioner_link,
+              $instance_link
             );
         }
       }
