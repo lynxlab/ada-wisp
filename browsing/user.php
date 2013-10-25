@@ -104,6 +104,7 @@ if(!AMA_DataHandler::isError($courseInstances)) {
                      */
                     $courseId = $c['id_corso'];
                     $courseDataAr = $dh->get_course($courseId);
+                    $divNews = '';
                     if (!AMA_DataHandler::isError($courseDataAr)) {
                         $courseName = $courseDataAr['nome'];
                         $nodeId = $courseId . '_0';
@@ -139,21 +140,22 @@ if(!AMA_DataHandler::isError($courseInstances)) {
                                 /* ***********************
                                  * get new nodes for each instance
                                  */
-                                
                                 $nodeTypesArray = array ( ADA_LEAF_TYPE, ADA_GROUP_TYPE, ADA_NOTE_TYPE );
                                 $instancesArray[0]['id_istanza_corso'] = $courseInstanceId;
                                 $new_nodes = $dh->get_new_nodes($userObj->getId(), $maxNodes = 3, $nodeTypesArray,$instancesArray);
                                 if (!AMA_DataHandler::isError($new_nodes) && sizeof($new_nodes) > 0) {
-                                    
+                                    $ulNews = '';
                                     foreach ($new_nodes as $new_node) {
                                         $courseOfNewNodeAr = explode('_',$new_node['id_nodo']);
                                         if ($courseId == $courseOfNewNodeAr[0]) {
-                                            if (!is_object($ulNews)) $ulNews = CDOMElement::create('ul','class:ulNews');
-                                            $liNews = CDOMElement::create('li');
-                                            $link_news = CDOMElement::create('a','href:sview.php?id_node='.$new_node['id_nodo'].'&id_course='.$courseId.'&id_course_instance='.$courseInstanceId);
-                                            $link_news->addChild(new CText($new_node['nome']));
-                                            $liNews->addChild($link_news);
-                                            $ulNews->addChild($liNews);
+                                            if ($new_node['tipo'] == ADA_NOTE_TYPE && $new_node['ID_ISTANZA'] == $courseInstanceId) {
+                                                if (!is_object($ulNews)) $ulNews = CDOMElement::create('ul','class:ulNews');
+                                                $liNews = CDOMElement::create('li');
+                                                $link_news = CDOMElement::create('a','href:sview.php?id_node='.$new_node['id_nodo'].'&id_course='.$courseId.'&id_course_instance='.$courseInstanceId);
+                                                $link_news->addChild(new CText($new_node['nome']));
+                                                $liNews->addChild($link_news);
+                                                $ulNews->addChild($liNews);
+                                            }
                                         }
                                     }
                                     if (is_object($ulNews)) {
@@ -161,7 +163,6 @@ if(!AMA_DataHandler::isError($courseInstances)) {
                                         $newsText = translateFN('Novità');
                                         $divNews->addChild(new CText('<h4>'.$newsText.'</h4>'));
                                         $divNews->addChild($ulNews);
-                                        
                                     }
 
                                 }
@@ -201,6 +202,7 @@ if(!AMA_DataHandler::isError($courseInstances)) {
                     /* ***********************
                      * INFO for each instance 
                      */
+                    $divCommonNews = '';
                     $courseId = $singleCommonArea['id_corso'];
                     $courseDataAr = $dh->get_course($courseId);
                     if (!AMA_DataHandler::isError($courseDataAr)) {
@@ -239,7 +241,7 @@ if(!AMA_DataHandler::isError($courseInstances)) {
                                 /* ***********************
                                  * get new nodes for each instance
                                  */
-                                
+                                $ulNews = '';
                                 $nodeTypesArray = array ( ADA_LEAF_TYPE, ADA_GROUP_TYPE, ADA_NOTE_TYPE );
                                 $instancesArray[0]['id_istanza_corso'] = $courseInstanceId;
                                 $new_nodes = $dh->get_new_nodes($userObj->getId(), $maxNodes = 3, $nodeTypesArray,$instancesArray);
