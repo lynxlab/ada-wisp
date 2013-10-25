@@ -74,7 +74,7 @@ if(!AMA_DataHandler::isError($courseInstances)) {
                     } 
                 }
             }
-            if (count($courseInstanceHelpAr) > 0) {
+            if (count($courseInstanceHelpAr) > 0 && $userObj->getSerialNumber() != '') {
                 /*
                  * disable the widget (to be used only for generic registered users)
                  */
@@ -88,13 +88,13 @@ if(!AMA_DataHandler::isError($courseInstances)) {
                 $serviceDOM = CDOMElement::create('div','id:servicesRequired');
                 if (is_object($user_events) || is_object($user_events_2)) {
                     $divAppointments = CDOMElement::create('div','class:appointments');
-                    $divAppointments->addChild(new CText('<h3>'.translateFN('Appuntamenti').'</h3>'));
+//                    $divAppointments->addChild(new CText('<h3>'.translateFN('Appuntamenti').'</h3>'));
                     if ($user_events->getHtml() != '') $divAppointments->addChild($user_events);
                     if ($user_events_2->getHtml() != '') $divAppointments->addChild($user_events_2);
                     if ($user_events_2->getHtml() == '' && $user_events->getHtml() == '') {
                         $divAppointments->addChild(new CText(translateFN('Non ci sono appuntamenti')));
                     }
-                    $content_dataAr['bloccoUnoAppuntamenti'] = $divAppointments->getHtml();
+                    $content_dataAr['bloccoUnoAppuntamenti'] = '<h3>'.translateFN('Appuntamenti').'</h3>'.$divAppointments->getHtml();
                 }   
                 
                 foreach($courseInstanceHelpAr as $c) {
@@ -117,7 +117,7 @@ if(!AMA_DataHandler::isError($courseInstances)) {
 
                         $service = CDOMElement::create('div','id:serviceRequired'.$courseInstanceId);
                         $service->setAttribute('class', 'single_service');
-                        $service->addChild(new CText('<h3>'.translateFN('Aiuto per '). $courseName.'</h3>'));
+//                        $service->addChild(new CText('<h3>'.translateFN('Aiuto per '). $courseName.'</h3>'));
 
                         $access_link = BaseHtmlLib::link("#", translateFN('Attendi che ti contatti un consulente...'));
 
@@ -174,6 +174,7 @@ if(!AMA_DataHandler::isError($courseInstances)) {
                         $service->addChild($access_link);
                         if (is_object($divNews)) $service->addChild($divNews);
 //                        $serviceDOM->addChild($divAppointments)
+                        $serviceDOM->addChild(new CText('<h3>'.translateFN('Aiuto per '). $courseName.'</h3>'));
                         $serviceDOM->addChild($service);
                         
                     }
@@ -217,7 +218,6 @@ if(!AMA_DataHandler::isError($courseInstances)) {
 
                         $service = CDOMElement::create('div','id:serviceRequired'.$courseInstanceId);
                         $service->setAttribute('class', 'single_service');
-                        $service->addChild(new CText('<h3>'. $courseName.'</h3>'));
 
                         $access_link = BaseHtmlLib::link("#", translateFN('Non sei ancora abilitato a partecipare...'));
 
@@ -276,6 +276,7 @@ if(!AMA_DataHandler::isError($courseInstances)) {
                         $service->addChild($access_link);
                         if (is_object($divCommonNews)) $service->addChild($divCommonNews);
 //                        $serviceDOM->addChild($divAppointments)
+                        $CommonAreaDOM->addChild(new CText('<h3>'. $courseName.'</h3>'));
                         $CommonAreaDOM->addChild($service);
                         
                     }
@@ -441,11 +442,11 @@ if(!AMA_DataHandler::isError($courseInstances)) {
             $askServiceHelp = translateFN('Se non hai ancora chiesto aiuto puoi farlo ora!');
             $askServiceDiv = CDOMElement::create('div','id:Askservice');
             $askServiceDiv->setAttribute('class', 'single_service');
-            $askServiceDiv->addChild(new CText('<h3>'.translateFN('Chiedi aiuto').'</h3>'));
+//            $askServiceDiv->addChild(new CText('<h3>'.translateFN('Chiedi aiuto').'</h3>'));
             $askServiceDiv->addChild(new CText($askServiceHelp));
             $askServiceDiv->addChild(new CText($AskServiceForm->getHtml()));
                     
-            $content_dataAr['bloccoUnoAskService'] = $askServiceDiv->getHtml();
+            $content_dataAr['bloccoUnoAskService'] = '<h3>'.translateFN('Chiedi aiuto').'</h3>'.$askServiceDiv->getHtml();
             //print_r($content_dataAr);
             
             
@@ -523,8 +524,13 @@ if(!AMA_DataHandler::isError($courseInstances)) {
 	$content_dataAr['message'] = $message;
 	$content_dataAr['course_title'] = translateFN("Home dell'utente");
 	$content_dataAr['submenu_actions'] =  $submenu_actions;
-	$content_dataAr['bloccoUnoContenuto'] =  $serviceDOM->getHtml();
-	$content_dataAr['bloccoUnoTitolo'] =  $HelpTitle;
+        if (is_object($serviceDOM)) {
+            $content_dataAr['bloccoUnoContenuto'] =  $serviceDOM->getHtml();
+            $content_dataAr['bloccoUnoTitolo'] =  $HelpTitle;
+        } else {
+            $content_dataAr['bloccoUnoTitolo'] =  '<h2>'.translateFN('Le ultime notizie').'</h2>';
+            $content_dataAr['bloccoUnoH3Widget'] =  '<h3>'.translateFN('Twitter').'</h3>';
+        }
 	$content_dataAr['status'] = $status;
 //        $content_dataAr['events'] = $user_events_2->getHtml().$user_events->getHtml();
 
@@ -543,11 +549,13 @@ if(!AMA_DataHandler::isError($courseInstances)) {
 		$layout_dataAr['JS_filename'] = array(
 				JQUERY,
 				JQUERY_UI,
-				JQUERY_NO_CONFLICT,
-				ROOT_DIR . "/js/main/index.js"
+				JQUERY_NO_CONFLICT
 		);
-		$optionsAr['onload_func'] = '';
-//		$optionsAr['onload_func'] = 'initDoc();';
+                $layout_dataAr['CSS_filename'] = array (
+                    JQUERY_UI_CSS,
+                    );
+//		$optionsAr['onload_func'] = '';
+		$optionsAr['onload_func'] = 'initDoc();';
 ARE::render($layout_dataAr, $content_dataAr, NULL, (isset($optionsAr) ? $optionsAr : NULL) );        
 //ARE::render($layout_dataAr,$content_dataAr);
 
