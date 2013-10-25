@@ -4694,6 +4694,31 @@ abstract class AMA_Tester_DataHandler extends Abstract_AMA_DataHandler {
         return true;
     }
 
+    /**
+     * Directly subscribe a student without presubscription
+     * 
+     * @param $id_course_instance
+     * @param $student
+     * @param $status
+     * @param int $user_level 
+     * @return unknown_type
+     */
+    public function course_instance_student_subscribe_add($id_course_instance, $student,$status=2, $user_level=1) {
+        $db =& $this->getConnection();
+        if ( AMA_DB::isError( $db ) ) return $db;
+
+        // insert a row into table iscrizioni
+        $sql1 =  "insert into iscrizioni (id_utente_studente, id_istanza_corso, livello, status)";
+        $sql1 .= " values ($student, $id_course_instance, $user_level, $status);";
+        $res = $db->query($sql1);
+        // FIXME: usare executeCritical?
+        if (AMA_DB::isError($res)) {// || $db->affectedRows()==0)
+            return new AMA_Error(AMA_ERR_ADD);
+        }
+        return true;
+
+    }
+    
 
     /**
      * Unsubscribe a set of students from an instance course.
@@ -10267,6 +10292,8 @@ public function get_updates_nodes($userObj, $pointer)
     	 *
     	 * @param userId user id to get new nodes for
     	 * @param maxNodes : maximum number of nodes to get, gets all nodes if zero or not passed
+         * @param array $instancesArray the ids of the instances to get news nodes or NULL for all new nodes 
+         * @param array $nodeTypesArray
     	 * 
     	 * @author giorgio 29/apr/2013
     	 *
@@ -10274,14 +10301,16 @@ public function get_updates_nodes($userObj, $pointer)
     	 * 
     	 * on success, an AMA_Error object on failure
     	 */
-    	public function get_new_nodes($userId, $maxNodes = 3) {
+    	public function get_new_nodes($userId, $maxNodes = 3, $nodeTypesArray = array ( ADA_LEAF_TYPE, ADA_GROUP_TYPE ), $instancesArray=array()) {
     		
-    		$nodeTypesArray = array ( ADA_LEAF_TYPE, ADA_GROUP_TYPE );
+    		//$nodeTypesArray = array ( ADA_LEAF_TYPE, ADA_GROUP_TYPE );
     		
     		$db =& $this->getConnection();
     		if ( AMA_DB::isError( $db ) ) return $db;
     		
-    		$instancesArray = $this->get_course_instances_active_for_this_student ($userId);
+                if (count($instancesArray) == 0) { 
+        		$instancesArray = $this->get_course_instances_active_for_this_student ($userId);
+                }
     		
     		$result = array();
     		
@@ -10304,9 +10333,9 @@ public function get_updates_nodes($userObj, $pointer)
     				 *     so:			
     				 */
     				
-    				$sql = 'SELECT id_nodo, ID_ISTANZA, nome from nodo where data_creazione >= '. $last_time_visited_class .
+    				$sql = 'SELECT id_nodo, ID_ISTANZA, nome, testo from nodo where data_creazione >= '. $last_time_visited_class .
     				' AND id_nodo LIKE \''.$instance[id_corso].'_%\' AND livello <=' . $studentlevel . 
-    				' AND tipo IN (' . implode (", ", $nodeTypesArray) .') ORDER BY data_creazione
+    				' AND tipo IN (' . implode (", ", $nodeTypesArray) .') ORDER BY data_creazione, tipo
     						 DESC LIMIT '. $maxNodes;
     				
     				$tmpresults = $db->getAll($sql, null, AMA_FETCH_ASSOC );
