@@ -61,8 +61,8 @@ $courseInstanceCommonAreaAr = array();
 $courseInstanceHelpAr = array();
 if(!AMA_DataHandler::isError($courseInstances)) {
     $found = count($courseInstances);
-    if ($found > 0) 
-    {
+//    if ($found > 0) 
+//    {
             foreach($courseInstances as $c) {
                 $courseId = $c['id_corso'];
                 $serviceForInstanceAr = $common_dh->get_service_info_from_course($courseId);
@@ -74,7 +74,8 @@ if(!AMA_DataHandler::isError($courseInstances)) {
                     } 
                 }
             }
-            if (count($courseInstanceHelpAr) > 0 && $userObj->getSerialNumber() != '') {
+//            if (count($courseInstanceHelpAr) > 0 && $userObj->getSerialNumber() != '') {
+            if ($userObj->getSerialNumber() != '') {
                 /*
                  * disable the widget (to be used only for generic registered users)
                  */
@@ -323,7 +324,7 @@ if(!AMA_DataHandler::isError($courseInstances)) {
                          $divSingleAreaToSubscribe = CDOMElement::create('div','id:commonToSubscribe'.$instanceIdToSub);
                          $divSingleAreaToSubscribe->setAttribute('class', 'single_service');
 //                         $divSingleAreaToSubscribe->addChild(new CText('<h3>'.translateFN('Area comune '). $courseName.'</h3>'));
-                         $divSingleAreaToSubscribe->addChild(new CText('<h3>'. $courseName.'</h3>'));
+//                         $divSingleAreaToSubscribe->addChild(new CText('<h3>'. $courseName.'</h3>'));
                          $AreaCommonPreview = substr($courseInfoTmp['descr'], 0, 50).'...';
                          $divSingleAreaToSubscribe->addChild(new CText($AreaCommonPreview.'<br />'));
                          $link = CDOMElement::create('a','href:student_service_instance_subscribe.php?&id_course='.$courseIdToSub.'&id_course_instance='.
@@ -331,6 +332,7 @@ if(!AMA_DataHandler::isError($courseInstances)) {
                          $link->addChild(new CText(translateFN('Entra nell\'area comune')));
                          $divSingleAreaToSubscribe->addChild($link);
                      }
+                     $divCommonToSubscribe->addChild(new CText('<h3>'. $courseName.'</h3>'));
                      $divCommonToSubscribe->addChild($divSingleAreaToSubscribe);
                  }
                  $content_dataAr['bloccoDueIscrizione'] = $divCommonToSubscribe->getHtml();
@@ -355,11 +357,13 @@ if(!AMA_DataHandler::isError($courseInstances)) {
             }
          * 
          */
-
+/*
      } else
      {
                 $data = new CText(translateFN('Non sei iscritto a nessuna classe'));
      }
+ * 
+ */
 } 
                 
         
