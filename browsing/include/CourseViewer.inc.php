@@ -1242,14 +1242,14 @@ class CourseViewer
 
     $http_root_dir = $GLOBALS['http_root_dir'];
     
-    $spanH3 = CDOMElement::create('span','class:conversation');
+    $spanH3 = CDOMElement::create('div','class:conversation');
     $nodeIdForAnchor = $params['node']['id_nodo'];
     $h3 = '<a name="'.$nodeIdForAnchor.'"></a><h3>'.$params['node']['nome_nodo'];
     if ($params['node']['formNuovo']) $h3 .= ' - '.translateFn('Nuovo argomento');
     $h3 .='</h3>';
 
     $spanH3->addChild(new CText($h3));
-    $list_item = CDOMElement::create('div','class:conversation');
+    $list_item = CDOMElement::create('div','class:conversationSingle');
     /*
     $list_item->addChild(self::getElement($params, $external_params));
     if ($external_params['show_icons'] == TRUE) {
@@ -1266,8 +1266,11 @@ class CourseViewer
 //    $link_to_note = CDOMElement::create('a',"href:$http_root_dir/browsing/view.php?id_node={$params['node']['id_nodo']}");
 
     $divNodeObj = CDOMElement::create('div', 'id:Node'.$params['node']['id_nodo']);
-    
     if (!$params['node']['formNuovo']) {
+        $dateInsertDiv = CDOMElement::create('span','class:dateInsert');
+        $dateInsert = AMA_DataHandler::ts_to_date($params['node']['data_creazione'], "%d/%m/%Y %H:%M");
+        $dateInsertDiv->addChild(new CText(translateFN('Inserito il'). ' ' . $dateInsert));
+
         $username = CDOMElement::create('span', 'class:username');
         $imgAvatar = $params['node']['avatar'];
         if (file_exists(ADA_UPLOAD_PATH.$params['node']['id_utente'].'/'.$imgAvatar)) {
@@ -1278,7 +1281,8 @@ class CourseViewer
         $avatar = CDOMElement::create('img','src:'.$imgAvatar);
         $avatar->setAttribute('class', 'img_user_avatar');    
         $username->addChild($avatar);
-        $username->addChild(new CText($params['node']['username']));
+        $username->addChild($dateInsertDiv);
+        $username->addChild(new CText(' ' . translateFN('da'). ' ' . $params['node']['nome']. ' ' .$params['node']['cognome']));
     //    $link_to_note->addChild(new CText($params['node']['title']));
     //    $list_item->addChild($link_to_note);
     //    $list_item->addChild(new CText($h3));

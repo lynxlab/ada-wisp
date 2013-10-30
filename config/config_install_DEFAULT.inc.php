@@ -63,7 +63,12 @@ define('ADA_DEFAULT_AVATAR','default_avatar.png');
  * URL
  * DO NOT REMOVE the trailing // *js_import*
  */
-define('HTTP_ROOT_DIR','http://ada20.lynxlab.com'); // *js_import*
+if (!defined('HTTP_ROOT_DIR')) define('HTTP_ROOT_DIR','http://guidance.stay-in.org'); // *js_import*
+
+/**
+ * portal name string - displayed in window titlebar
+ */
+if (!defined('PORTAL_NAME')) define('PORTAL_NAME','guidance.stay-in.org');
 
 
 /**

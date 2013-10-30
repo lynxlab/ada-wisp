@@ -128,7 +128,7 @@ if(!AMA_DataHandler::isError($courseInstances)) {
                                 $access_link->addChild(new CText($tutorText . ' '));
                                 $access_link->addChild(new CText('<br /> '));
                                 $link = CDOMElement::create('a');
-                                $link->setAttribute('href','sview.php?id_node='.$nodeId.'&id_course='.$courseId.'&id_course_instance='.$courseInstanceId.'#'.$nodeId);
+                                $link->setAttribute('href','sview.php?id_node='.$nodeId.'&id_course='.$courseId.'&id_course_instance='.$courseInstanceId);
                                 $link->addChild(new CText(translateFN('Accedi per continuare...')));
                                 $access_link->addChild($link);
 
@@ -147,7 +147,7 @@ if(!AMA_DataHandler::isError($courseInstances)) {
                                                 if (!is_object($ulNews)) $ulNews = CDOMElement::create('ul','class:ulNews');
                                                 $liNews = CDOMElement::create('li');
                                                 $link_news = CDOMElement::create('a');
-                                                $link_news->setAttribute('href','sview.php?id_node='.$new_node['id_nodo'].'&id_course='.$courseId.'&id_course_instance='.$courseInstanceId.'#'.$nodeId);
+                                                $link_news->setAttribute('href','sview.php?id_node='.$new_node['id_nodo'].'&id_course='.$courseId.'&id_course_instance='.$courseInstanceId.'#'.$new_node['id_nodo']);
                                                 $link_news->addChild(new CText($new_node['nome']));
                                                 $liNews->addChild($link_news);
                                                 $ulNews->addChild($liNews);
@@ -302,7 +302,7 @@ if(!AMA_DataHandler::isError($courseInstances)) {
                      $courseIdToSub = $singleServiceInstanceAr[1];
                      $serviceForInstanceAr = $common_dh->get_service_info_from_course($courseIdToSub);
                      if (!AMA_DataHandler::isError($serviceForInstanceAr)) {
-                         if ($serviceForInstanceAr[3] == COMMON_AREA_SERVICE) {
+                         if ($serviceForInstanceAr[3] == ADA_SERVICE_COMMON) {
                              array_push($commonAreaToSubscibeAr, $singleServiceInstanceAr);
                          }
                      }
