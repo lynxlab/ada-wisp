@@ -190,9 +190,13 @@ abstract class ADAGenericUser {
     }
 
     public function getAvatar() {
-        return $this->avatar;
+        if ($this->avatar != '' && file_exists(ADA_UPLOAD_PATH.$this->id_user.'/'.$this->avatar)) {
+            $imgAvatar = HTTP_UPLOAD_PATH.$this->id_user.'/'.$this->avatar;
+        } else {
+            $imgAvatar = HTTP_UPLOAD_PATH.ADA_DEFAULT_AVATAR; 
+        }        
+        return $imgAvatar;
     }
-    
     
     public function getTesters() {
         if(is_array($this->testers)) {
