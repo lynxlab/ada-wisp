@@ -106,6 +106,7 @@ define('ADA_COURSEINSTANCE_STATUS_PUBLIC',   2);
  */
 define('ADA_SERVICE_HELP', 0);
 define('ADA_SERVICE_COMMON', 1);
+define('ADA_SERVICE_COURSE',2);
 
 /**
  * ADA token
