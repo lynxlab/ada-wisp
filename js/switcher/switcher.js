@@ -13,13 +13,13 @@ function dataTablesExec() {
 //		'bProcessing': true,
 		'bDeferRender': true,
  
-//                'aoColumnDefs': [{ "bSortable": false, "aTargets": [ 3 ] } ],
+                'aoColumnDefs': [{ "bSortable": false, "aTargets": [ 3 ] } ],
 
                 'aoColumns': [
-//                                { "sType": "numeric" },
+                                { "sType": "numeric" },
                                 null,
                                 null,
-                                { 'sType': "date-eu" },
+                                null,
                                 null
                             ],
          
@@ -27,7 +27,33 @@ function dataTablesExec() {
 //		'sPaginationType': 'full_numbers'
 	}).show();
         
-	var datatable = $j('#sortable').dataTable( {
+	var datatable = $j('#table_users_for_service').dataTable( {
+//		'sScrollX': '100%',
+                'bLengthChange': false,
+		//'bScrollCollapse': true,
+//		'iDisplayLength': 50,
+                "bFilter": true,
+                "bInfo": false,
+                "bSort": true,
+                "bAutoWidth": true,
+//		'bProcessing': true,
+		'bDeferRender': true,
+ 
+                'aoColumnDefs': [{ "bSortable": false, "aTargets": [ 4 ] } ],
+
+                'aoColumns': [
+                                null,
+                                null,
+                                { 'sType': "date-eu" },
+                                null,
+                                null
+                            ],
+         
+                'bPaginate': false
+//		'sPaginationType': 'full_numbers'
+	}).show();
+
+    var datatable = $j('#sortable').dataTable( {
 //		'sScrollX': '100%',
                 'bLengthChange': false,
 		//'bScrollCollapse': true,
