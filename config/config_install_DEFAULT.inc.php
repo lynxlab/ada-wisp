@@ -204,7 +204,7 @@ $http_root_dir = HTTP_ROOT_DIR;
 $root_dir      = ROOT_DIR;
 $modules_dir   = MODULES_DIR;
 
-define('ADA_DEFAULT_EMAIL_FOOTER', 'This message has been sent to you by ADA. For additional information please visit the following address: ' . HTTP_ROOT_DIR);
+define('ADA_DEFAULT_EMAIL_FOOTER', 'This message has been sent to you by Stay-In. For additional information please visit the following address');
 /**
  * default author upload path
  */
