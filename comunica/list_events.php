@@ -189,6 +189,9 @@ if (!isset($course_title)) {
 else {
   $course_title = '<a href="../browsing/main_index.php">'.$course_title.'</a>';
 }
+$imgAvatar = $userObj->getAvatar();
+$avatar = CDOMElement::create('img','src:'.$imgAvatar);
+$avatar->setAttribute('class', 'img_user_avatar');
 
 $content_dataAr = array(
   'banner'       => $banner,
@@ -196,6 +199,7 @@ $content_dataAr = array(
   'go_back'      => $go_back,
   'user_name'    => $user_name,
   'user_type'    => $user_type,
+  'user_avatar'  => $avatar,
   'messages'     => $messages->getHtml(),
   'status'       => $status,
   'chat_users'   => $online_users,

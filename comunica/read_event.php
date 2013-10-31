@@ -152,11 +152,16 @@ $node_title = ""; // empty
 //$menu_02 = "<a href=\"read_event.php?del_msg_id=" . $msg_id . "\">" . translateFN("Cancella") . "</a>";
 $menu_03 = ""; //"<a href=\"send_event.php?op=replay_all\">" . translateFN("Rispondi a tutti") . "</A>";
 
+$imgAvatar = $userObj->getAvatar();
+$avatar = CDOMElement::create('img','src:'.$imgAvatar);
+$avatar->setAttribute('class', 'img_user_avatar');
+
 $content_dataAr = array(
   'course_title'   => '<a href="../browsing/main_index.php">'.$course_title.'</a>',
   'status'         => $status,
   'user_name'      => $user_name,
   'user_type'      => $user_type,
+  'user_avatar'    => $avatar->getHtml(),  
   'level'          => $user_level,
   'go_back'        => $go_back,
   'go_print'       => $go_print,  // OR ELSE AN ARRAY OF PLACEHOLDERS?

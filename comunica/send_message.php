@@ -340,6 +340,10 @@ if (!isset($testo)) {
 
 $ada_address_book = MessagesAddressBook::create($userObj);
 
+$imgAvatar = $userObj->getAvatar();
+$avatar = CDOMElement::create('img','src:'.$imgAvatar);
+$avatar->setAttribute('class', 'img_user_avatar');
+
 $content_dataAr = array(
   'user_name'      => $user_name,
   'level'          => $user_level,

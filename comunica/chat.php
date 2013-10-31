@@ -185,12 +185,16 @@ else {
   // pass 0 to close the chat window
   $exit_chat->setAttribute('onclick','exitChat(0,0);');
 }
+$imgAvatar = $userObj->getAvatar();
+$avatar = CDOMElement::create('img','src:'.$imgAvatar);
+$avatar->setAttribute('class', 'img_user_avatar');
 
 $content_dataAr = array(
   'chat'      => $chat->getHtml(),
   'exit_chat' => $exit_chat->getHtml(),
   'user_name' => $user_name,
   'user_type' => $user_type,
+  'user_avatar' => $avatar, 
   'status' => translateFN('Chatroom')
 );
 
