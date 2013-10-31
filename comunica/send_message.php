@@ -349,6 +349,7 @@ $content_dataAr = array(
   'level'          => $user_level,
   'titolo'         => $titolo,
   'user_type'      => $user_type,
+  'user_avatar'    => $avatar->getHtml(),
   'testo'          => trim($testo),
   'destinatari'    => $destinatari,
   //'student_button' => $student_button,

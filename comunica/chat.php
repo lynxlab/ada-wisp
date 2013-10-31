@@ -194,7 +194,7 @@ $content_dataAr = array(
   'exit_chat' => $exit_chat->getHtml(),
   'user_name' => $user_name,
   'user_type' => $user_type,
-  'user_avatar' => $avatar, 
+  'user_avatar' => $avatar->getHtml(), 
   'status' => translateFN('Chatroom')
 );
 

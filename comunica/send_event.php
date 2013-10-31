@@ -251,7 +251,7 @@ $avatar->setAttribute('class', 'img_user_avatar');
 $content_dataAr = array(
   'user_name'      => $user_name,
   'user_type'      => $user_type,
-  'user_avatar'    => $avatar,
+  'user_avatar'    => $avatar->getHtml(),
   'level'          => $user_level,
   'titolo'         => $titolo,
   'testo'          => trim($testo),

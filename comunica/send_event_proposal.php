@@ -222,7 +222,7 @@ $avatar->setAttribute('class', 'img_user_avatar');
 $content_dataAr = array(
   'user_name'      => $user_name,
   'user_type'      => $user_type,
-  'user_avatar'    => $avatar,
+  'user_avatar'    => $avatar->getHtml(),
   'titolo'         => $titolo,
   'course_title'   => '<a href="../browsing/main_index.php">'.$course_title.'</a>',
   'status'         => $err_msg,

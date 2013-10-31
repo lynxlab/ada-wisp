@@ -140,7 +140,7 @@ $content_dataAr = array(
   'course_title'   => '<a href="../browsing/main_index.php">'.$course_title.'</a>',
   'user_name'      => $user_name,
   'user_type'      => $user_type,
-  'user_avatar'    => $avatar,
+  'user_avatar'    => $avatar->getHtml(),
   'level'          => $user_level,
   'go_print'       => $go_print,  // OR ELSE AN ARRAY OF PLACEHOLDERS?
   'mittente'       => $mittente,
