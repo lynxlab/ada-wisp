@@ -46,7 +46,6 @@ if (!isset($_SESSION['sess_user_language'])) {
 }
 $supported_languages = Translator::getSupportedLanguages();
 
-
 if(isset($_SERVER['REQUEST_METHOD']) && $_SERVER['REQUEST_METHOD'] == 'POST') {
     /*
      * The user is associated by default to the public tester.
@@ -112,18 +111,18 @@ if(isset($_SERVER['REQUEST_METHOD']) && $_SERVER['REQUEST_METHOD'] == 'POST') {
         $title = PORTAL_NAME.': ' . translateFN('ti chiediamo di confermare la registrazione.');
 
 
-        $text = sprintf(translateFN('Gentile %s, ti chiediamo di confermare la registrazione ai %s.'),
+        $text = sprintf(translateFN('Gentile %s, ti chiediamo di confermare la registrazione a %s.'),
                     $userObj->getFullName(), PORTAL_NAME)
               . PHP_EOL . PHP_EOL
               . translateFN('Il tuo nome utente è il seguente:')
               . ' ' . $userObj->getUserName()
               . PHP_EOL . PHP_EOL
-              . sprintf(translateFN('Puoi confermare la tua registrazione ai %s seguendo questo link:'),
+              . sprintf(translateFN('Puoi confermare la tua registrazione a %s seguendo questo link:'),
                         PORTAL_NAME)
               . PHP_EOL
               . ' ' . HTTP_ROOT_DIR."/browsing/confirm.php?uid=$id_user&tok=$token"
               . PHP_EOL . PHP_EOL
-              . translateFN('La segreteria dei Corsi ICoN di Lingua italiana');
+              . translateFN('La segreteria di') . ' '. PORTAL_NAME;
 
         $message_ha = array(
             'titolo' => $title,
@@ -187,7 +186,7 @@ if(isset($_SERVER['REQUEST_METHOD']) && $_SERVER['REQUEST_METHOD'] == 'POST') {
     /*
      * Display the registration form.
      */
-    $help = translateFN('Da questa pagina puoi effettuare la registrazione ad ADA');
+    $help = translateFN('Da questa pagina puoi effettuare la registrazione');
     $form = new UserRegistrationForm();
     $data = $form->render();
 }
