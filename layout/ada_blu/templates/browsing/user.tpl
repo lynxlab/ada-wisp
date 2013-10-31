@@ -27,6 +27,9 @@
             <!--dati utente-->
             <div id="status_bar">
             <div id="user_data" class="user_data_default">
+                <span class="avatar_user">
+                    <template_field class="template_field" name="user_avatar">user_avatar</template_field>
+                </span>   
                 <i18n>utente: </i18n>
                 <span>
                     <template_field class="template_field" name="user_name">user_name</template_field>
@@ -70,39 +73,39 @@
                 <div id="contentcontent" class="contentcontent_default">
                     <!-- start tre blocchi grafici homepage -->
 
-			<div id="trebox">
+			<div id="twobox">
 				<!-- blocco1 -->
 				<div id="blocco_uno">
-					<div id="cosacedinuovo"><i18n>Cosa c'&egrave; di nuovo?</i18n></div>
-					<ul id="lista_blocco_uno">
-						<li id="new_nodes"><i18n>Contenuti aggiornati</i18n>:&nbsp;<template_field class="template_field" name="new_nodes_links">new_nodes_links</template_field></li>						
-					</ul>
+					<div id="bloccoUnoTitoloContenitore">
+                                                <template_field class="template_field" name="bloccoUnoTitolo">bloccoUnoTitolo</template_field>
+                                        </div>
+ 					<div id="content_blocco_uno">
+                                                <template_field class="template_field" name="bloccoUnoAppuntamenti">bloccoUnoAppuntamenti</template_field>
+                                                <template_field class="template_field" name="bloccoUnoContenuto">bloccoUnoContenuto</template_field>
+                                                <template_field class="template_field" name="bloccoUnoAskService">bloccoUnoAskService</template_field>
+                                                <template_field class="template_field" name="bloccoUnoH3Widget">bloccoUnoH3Widget</template_field>
+                                                <template_field class="template_field" name="bloccoUnoContenutoWidget">bloccoUnoContenutoWidget</template_field>
+					</div>
 				</div>
 				<!-- blocco1 end -->
 				<!-- blocco2 -->
 				<div id="blocco_due">
-					<div id="corsodilingua"><i18n>Il corso</i18n></div>
-						<ul id="lista_blocco_due">
-							<li id="gostart"><template_field class="template_field" name="gostart">gostart</template_field></li>		
-							<li id="gocontinue"><template_field class="template_field" name="gocontinue">gocontinue</template_field></li>		
-							<li id="goindex"><template_field class="template_field" name="goindex">goindex</template_field></li>
-						</ul>
+					<div id="bloccoDueTitoloContenitore">
+                                                <template_field class="template_field" name="bloccoDueTitolo">bloccoDueTitolo</template_field>
+                                        </div>
+					<div id="content_blocco_due">
+                                                <template_field class="template_field" name="bloccoDueContenuto">bloccoDueContenuto</template_field>
+                                                <template_field class="template_field" name="bloccoDueIscrizione">bloccoDueIscrizione</template_field>
+                                        </div>
 				</div>
 				<!-- blocco2 end -->
-				<!-- blocco3 -->
-					<div id="blocco_tre">	
-					<div id="laclasse"><i18n>La classe</i18n></div>	
-						<ul id="lista_blocco_tre">
-							<li id="goclasse"><template_field class="template_field" name="goclasse">goclasse</template_field></li>		
-							<li id="goforum"><template_field class="template_field" name="goforum">goforum</template_field></li>
-							<li id="msg_forum"><i18n>Nuove note</i18n>:&nbsp;<template_field class="template_field" name="msg_forum">msg_forum</template_field></li>															
-						</ul>
-					</div>
-				<!-- blocco3 end -->
 			</div>
-			<!-- end tre blocchi grafici homepage -->
+			<!-- end due blocchi grafici homepage -->
+                        <br class="clearfix">
+                 </div>
             </div>
             <!--  / contenuto -->
+            <br class="clearfix">
             
             
             
@@ -167,11 +170,6 @@
                 <li id="actions" class="unselectedactions" onClick="toggleElementVisibility('submenu_actions','up')">
                     <a>
                         <i18n>agisci</i18n>
-                    </a>
-                </li>
-                <li id="ancora_menuright">
-                    <a href="../info.php">
-                        <i18n>corsi</i18n>
                     </a>
                 </li>
 <!--

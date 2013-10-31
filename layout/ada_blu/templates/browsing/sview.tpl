@@ -28,6 +28,9 @@
             <!--dati utente-->
             <div id="status_bar">
             <div id="user_data" class="user_data_default">
+                <span class="avatar_user">
+                    <template_field class="template_field" name="user_avatar">user_avatar</template_field>
+                </span>   
                 <i18n>utente: </i18n>
                 <span>
                     <template_field class="template_field" name="user_name">user_name</template_field>
@@ -101,43 +104,44 @@
             <!-- contenuto -->
             <div id="content_view">
                 <div id="contentcontent" class="contentcontent_view">
-                    <div id="info_nodo">
-                        <span>
-                            <template_field class="template_field" name="bookmark">bookmark</template_field>
-                        </span>
-                    </div>
                     <div class="firstnode">
                         <template_field class="template_field" name="text">text</template_field>
                     </div>
+                    <!-- blocco2 -->
+                    <div id="blocco_due">
+                        
+                        <div class="online_user">
+                            <h3><i18n>chi e' online </i18n></h3>
+                                 <template_field class="template_field" name="chat_users">chat_users</template_field>
+                        </div>
+                        <div class="user_messages">
+                             <h3><i18n>messaggi per te </i18n></h3>
+                             <template_field class="template_field" name="messages">messages</template_field>
+                        </div>
+                        <div class="user_agenda">
+                             <h3><i18n>i tuoi appuntamenti</i18n></h3>
+                             <template_field class="template_field" name="agenda">agenda</template_field>
+                        </div>                        
+                        
+                        
+                    </div>
+                    <!-- blocco2 end -->
+			</div>
+			<!-- end due blocchi grafici homepage -->
+                        <br class="clearfix">
+                    
 
-                    <div id="go_next">
-						<template_field class="template_field" name="go_next">go_next</template_field>
-					</div>
 
 		    <hr>
-		    <div id="index_in_text">
-		      <h3><i18n>note di classe</i18n></h3>
-                            <template_field class="template_field" name="notes">notes</template_field>
-			    <!--h3><i18n>Approfondimenti:</i18n></h3-->
-			    <!--template_field class="template_field" name="index">index</template_field-->
-		  </div>
-		  <div id="exercises_in_text">
-		      <h3><i18n>note personali</i18n></h3>
-		       <template_field class="template_field" name="personal">personal</template_field>
-			<!--template_field class="template_field" name="exercises">exercises</template_field-->
-		  </div>
-
                 </div>
                 <div id="bottomcont">
                 </div>
             </div>
+            
             <!--  / contenuto -->
             <!-- com_tools -->
             <div id="com_tools">
                 <div id="topcom_t">
-                </div>
-                <div id="com_toolscontent">
-                    <template_field class="microtemplate_field" name="com_tools">com_tools</template_field>
                 </div>
                 <div id="bottomcom_t">
                 </div>
