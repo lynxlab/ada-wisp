@@ -206,7 +206,7 @@ foreach ($allServicesRequired as $oneService) {
 $numUsers = count($userRequiringTmp);
 
 //$table = BaseHtmlLib::tableElement('class:sortable',$thead_data, $tbody_data);
-$table = BaseHtmlLib::tableElement('id:table_users',$thead_data, $tbody_data);
+$table = BaseHtmlLib::tableElement('id:table_users_for_service',$thead_data, $tbody_data);
 
 // SERVICE:  BANNER, HELP, STATUS
 

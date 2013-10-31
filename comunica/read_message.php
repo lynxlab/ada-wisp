@@ -132,10 +132,15 @@ foreach($testo_ar as $riga) {
 
 $testo = str_replace("\r\n", '<br />', $message_text);
 
+$imgAvatar = $userObj->getAvatar();
+$avatar = CDOMElement::create('img','src:'.$imgAvatar);
+$avatar->setAttribute('class', 'img_user_avatar');
+
 $content_dataAr = array(
   'course_title'   => '<a href="../browsing/main_index.php">'.$course_title.'</a>',
   'user_name'      => $user_name,
   'user_type'      => $user_type,
+  'user_avatar'    => $avatar->getHtml(),
   'level'          => $user_level,
   'go_print'       => $go_print,  // OR ELSE AN ARRAY OF PLACEHOLDERS?
   'mittente'       => $mittente,

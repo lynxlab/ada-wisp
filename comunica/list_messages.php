@@ -214,6 +214,9 @@ if (!isset($status)) {
 if (!isset($chat_link)) {
   $chat_link = "";
 }
+$imgAvatar = $userObj->getAvatar();
+$avatar = CDOMElement::create('img','src:'.$imgAvatar);
+$avatar->setAttribute('class', 'img_user_avatar');
 
 $content_dataAr = array(
   'chat_link'    => $chat_link,
@@ -222,10 +225,11 @@ $content_dataAr = array(
   'go_back'      => $go_back,
   'user_name'    => $user_name,
   'user_type'    => $user_type,
+  'user_avatar'  => $avatar,
   'messages'     => $messages->getHtml(),
   'status'       => $status,
   'chat_users'   => $online_users,
-  'label'        => $label,
+  'label'        => $label->getHtml(),
   'menu_01'      => $menu_01,
   'menu_02'      => $menu_02->getHtml(),
   'menu_03'      => $menu_03

@@ -385,10 +385,14 @@ switch ($op) {
         break;
 }
 $title = translateFN('Chiedi aiuto');
-$help = '';
+$help = translateFN('Da questa pagina puoi chiedere aiuto ai professionisti di') . ' '. PORTAL_NAME;
 $homeUser = $userObj->getHomePage();
-$link_to_home = BaseHtmlLib::link($homeUser, translateFN('Home'));
+$imgAvatar = $userObj->getAvatar();
+$avatar = CDOMElement::create('img','src:'.$imgAvatar);
+$avatar->setAttribute('class', 'img_user_avatar');
 
+$link_to_home = BaseHtmlLib::link($homeUser, translateFN('Home'));
+$status = translateFN('registrato');
 $content_dataAr = array(
     'course_title' => $title,
     'user_name' => $user_name,
@@ -398,6 +402,7 @@ $content_dataAr = array(
     'message' => $message,
     'help' => $help,
     'data' => $data->getHtml(),
+    'user_avatar'=>$avatar->getHtml(),
     'home' => $link_to_home->getHtml()
 );
 

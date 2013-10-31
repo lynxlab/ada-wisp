@@ -21,22 +21,8 @@
             <!-- / percorso -->
             <div id="status_bar">
                 <!--dati utente-->
-                <div id="user_data" class="user_data_default">
-
-                    <span>
-                        <template_field class="template_field" name="message">message</template_field>
-                    </span>
-                    <i18n>utente: </i18n>
-                    <span>
-                        <template_field class="template_field" name="user_name">user_name</template_field>
-                    </span>
-                    <div class="status">
-                    <i18n>status: </i18n>
-                    <span>
-                        <template_field class="template_field" name="status">status</template_field>
-                    </span>
-                </div>
-                </div> <!-- / dati utente -->
+                   <template_field class="microtemplate_field" name="user_data_micro">user_data_micro</template_field>
+                 <!-- / dati utente -->
                 <!-- label -->
                 <div id="label">
                     <div class="topleft">
@@ -44,7 +30,7 @@
                             <div class="bottomleft">
                                 <div class="bottomright">
                                     <div class="contentlabel">
-                                        <i18n>Registrazione</i18n>
+                                        <!--<i18n>Registrazione</i18n>-->
                                     </div>
                                 </div>
                             </div>

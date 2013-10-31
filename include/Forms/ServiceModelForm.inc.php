@@ -27,7 +27,7 @@ class ServiceModelForm extends FForm {
         $languages[0] = translateFN('Scegli una lingua per i contenuti del servizio');
 
 
-        $this->addSelect('id_utente_autore',translateFN('Autore'),$authors,0)
+        $this->addSelect('id_utente_autore',translateFN('Autore per i contenuti del servizio'),$authors,0)
              ->setRequired()
              ->setValidator(FormValidator::POSITIVE_NUMBER_VALIDATOR);
 

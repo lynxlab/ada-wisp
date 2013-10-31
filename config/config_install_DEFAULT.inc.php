@@ -35,32 +35,40 @@ define('ADA_DEFAULT_TESTER_DB_USER',  'root');
 define('ADA_DEFAULT_TESTER_DB_PASS',  '');
 define('ADA_DEFAULT_TESTER_DB_HOST',  'localhost');
 
+/**
+ * sets multiprovider flag, true is the default
+ * multiprovider behaviour, false is single provider
+ * each with its own home page and anonymous pages
+ */
+define ('MULTIPROVIDER',false);
+
 if (MULTIPROVIDER) {
 	/**
 	 * In a single provider environment, each one
-	 * shall have these set in its own config file
+	 * shall have theese set in its own config file
 	 */
-	
 	/**
 	 * ID of the public course to get the latest news
 	 */
 	define ('PUBLIC_COURSE_ID_FOR_NEWS', 1);
 	/**
 	 * How many news to get from the above mentioned course
-	 */
+	*/
 	define ('NEWS_COUNT', 3);
 }
+
+define('ADA_DEFAULT_AVATAR','default_avatar.png');
 
 /**
  * URL
  * DO NOT REMOVE the trailing // *js_import*
  */
-if (!defined('HTTP_ROOT_DIR')) define('HTTP_ROOT_DIR','http://ada.lynxlab.com/ada20'); // *js_import*
+if (!defined('HTTP_ROOT_DIR')) define('HTTP_ROOT_DIR','http://guidance.stay-in.org'); // *js_import*
 
 /**
  * portal name string - displayed in window titlebar
-*/
-if (!defined('PORTAL_NAME')) define('PORTAL_NAME','ADA 2.1');
+ */
+if (!defined('PORTAL_NAME')) define('PORTAL_NAME','guidance.stay-in.org');
 
 
 /**
@@ -134,12 +142,6 @@ define('MAX_WIDTH', "200");
 define('MAX_HEIGHT', "200");
 
 /*
- * default video width and height
-*/
-define('DEFAULT_VIDEO_WIDTH', 290);
-define('DEFAULT_VIDEO_HEIGHT', 250);
-
-/*
  * size of Avatar image reduction
  */
 define('AVATAR_MAX_WIDTH', "600");
@@ -151,6 +153,11 @@ define('AVATAR_MAX_HEIGHT', "500");
 define('ADA_ADMIN_MAIL_ADDRESS','graffio@lynxlab.com');
 
 /**
+ *
+ */
+define('PORTAL_NAME','Stay-in guidance service');
+
+/**
  * ADA version
  */
 define('ADA_VERSION','2.1alpha0');
@@ -159,6 +166,8 @@ define('ADA_VERSION','2.1alpha0');
  * URL
  * DO NOT REMOVE the trailing // *js_import*
  */
+//define('HTTP_ROOT_DIR','http://ada20.lynxlab.com'); // *js_import*
+//define('HTTP_ROOT_DIR','http://localhost/ada20'); // *js_import*
 define('MODULES_DIR',ROOT_DIR.'/modules'); // *js_import*
 
 /**
@@ -195,7 +204,7 @@ $http_root_dir = HTTP_ROOT_DIR;
 $root_dir      = ROOT_DIR;
 $modules_dir   = MODULES_DIR;
 
-define('ADA_DEFAULT_EMAIL_FOOTER', 'This message has been sent to you by ADA. For additional information please visit the following address: ' . HTTP_ROOT_DIR);
+define('ADA_DEFAULT_EMAIL_FOOTER', 'This message has been sent to you by Stay-In. For additional information please visit the following address');
 /**
  * default author upload path
  */

@@ -1593,7 +1593,7 @@ class Mailer
                  . "\n"
                  . '-----'
                  . "\n"
-                 . translateFN('This message has been sent to you by ADA. For additional information please visit the following address: ')
+                 . translateFN(ADA_DEFAULT_EMAIL_FOOTER).':'
                  . "\n"
                  . HTTP_ROOT_DIR;
 

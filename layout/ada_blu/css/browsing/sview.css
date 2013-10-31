@@ -1,0 +1,35 @@
+.firstnode {
+    float: left;
+    width: 45%;
+}
+.forum_nodes_text {
+float: left;
+width: 100%;
+}
+.courseNode li {
+    list-style-type: none;
+}
+.courseNodeView {
+    padding:5px;
+}
+.conversation {
+/*    background-color: red;*/
+    border-radius: 5px;
+    margin-left: 10px;
+    display: block;    
+}
+
+#blocco_due {
+/*    
+    background-color: #E0E2FF;
+    min-height: 400px;
+*/
+position: relative;
+border-radius: 10px;
+width: 45%;
+/*height: 300px;
+margin-top: 70px;
+*/
+margin-left: 10px;
+float: right;
+}

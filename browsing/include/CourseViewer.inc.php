@@ -1087,4 +1087,354 @@ class CourseViewer
 
     return $list_item;
   }
+
+  /**
+   * function getDisclosureElement
+   *
+   * @param  array  $params          - an array of parameters
+   * @param  array  $external_params - an array with additional parameters
+   * @return string $list_item       - an html string for a course index item
+   */
+  function getElement($params = array(), $external_params = array()) {
+    print_r(array($params,$external_params));
+    
+/*    
+    if (!isset($params['show_hide_span']) || $params['show_hide_span'] == FALSE) {
+      $list_item = CDOMElement::create('span');
+      return $list_item;
+    }
+ * 
+ */
+
+    if ($params['expand_index'] == 0 || $params['level'] >= $params['expand_index']) {
+      $hide_span = TRUE;
+    }
+    else {
+      $hide_span = FALSE;
+    }
+
+
+    if (($params['node']['tipo'] == ADA_GROUP_TYPE && $hide_span)
+         || ($params['node']['tipo'] == ADA_NOTE_TYPE && $hide_span)) {
+      $span_css_classname = 'hideNodeChildren selectable';
+      $disclosure_element = '+';
+    }
+    else if(!$hide_span) {
+      $span_css_classname = 'viewNodeChildren selectable';
+      $disclosure_element = '-';
+    }
+
+	$list_item = CDOMElement::create('span','id:s'.$params['node']['id_nodo']);
+	$list_item->setAttribute('class',$external_params['container_div'].' '.$span_css_classname);
+//	if (!$params['node']['root'])
+//	{
+
+		$list_item->setAttribute('onclick',"toggleVisibilityByClassName('".$external_params['container_div']."','".$params['node']['id_nodo']."');");
+//	}
+    $list_item->addChild(new CText($disclosure_element));
+
+    return $list_item;
+  }
+
+  
+    /**
+   * function displayForumNodes
+   * build the forum nodes in facebook comment style
+   *
+   * @param  object  $userObj
+   * @param  integer $id_course
+   * @param  integer $expand_index
+   * @param  string  $order
+   * @param  integer $id_course_instance
+   * @param  string  $container_div_name
+   * @return string  -
+   */
+  function displayForumNodes($userObj, $id_course, $expand_index, $order, $id_course_instance, $container_div_name=NULL) {
+//           displayForumNodes($userObj, $sess_id_course, $expand, 'struct', $sess_id_course_instance, 'structIndex')
+    $dh = $GLOBALS['dh'];
+    /**
+     *
+     */
+    if (!isset($id_course_instance)) {
+      //return "";
+      return new CText('');
+    }
+    // vito, 3 ottobre 2008
+    $container_div = "";
+    if($container_div_name != NULL) {
+      $container_div = $container_div_name;
+    }
+    else {
+      $container_div = 'id_forum_nodes';
+    }
+
+    $params = array('container_div'=>$container_div);
+
+    if ($order == 'chrono' || $order == 'struct') {
+            $order_by_date = TRUE;
+    }
+    else {
+            $order_by_date = FALSE;
+    }
+
+    $params['user_id'] = $userObj->getId();
+    $forum_data = $dh->get_notes_for_this_course_instance($id_course_instance, $userObj->id_user, $order_by_date, $show_visits);
+
+    if (AMA_DataHandler::isError($forum_data)) {
+      return $forum_data;
+    }
+    else { //retrieving data about nodes' visits
+        //first: retrieve visits data about all nodes of selected course and arrange them into an associative array
+        $someone_there_data = array();
+        $tmp_someone_there_data = ADALoggableUser::is_someone_there_courseFN($id_course_instance);
+        if (!empty($tmp_someone_there_data)) {
+                foreach($tmp_someone_there_data as $v) {
+                        $someone_there_data[$v['id_nodo']][] = $v;
+                }
+        }
+        unset($tmp_someone_there_data); //free memory
+
+        foreach($forum_data as $k=>$v) //foreach node...
+        {
+                //let's check if there are records for the node
+                if (isset($someone_there_data[$v['id_nodo']])) {
+                        $forum_data[$k]['is_someone_there'] = (count($someone_there_data[$v['id_nodo']])>=1);
+                }
+                else {
+                        $forum_data[$k]['is_someone_there'] = false;
+                }
+        }
+        unset($someone_there_data); //free memory
+    }
+
+    /*
+     * Attach the subtrees containing notes to the root node for this course instance.
+     * This is required in order to display the index.
+     */
+    $forum_root_node = $id_course.'_'.ADA_DEFAULT_NODE;
+    $notes_parent_nodes = array();
+
+    // First, save all the parent ids for the notes in the forum
+    foreach($forum_data as $note) {
+      $notes_parent_nodes[$note['id_nodo']] = TRUE;
+    }
+    // Then, if a note has a parent id which is not a note, attach it to
+    // forum_root_node
+    for ($i = 0; $i < count($forum_data); $i++) {
+      if(!isset($notes_parent_nodes[$forum_data[$i]['id_nodo_parent']])) {
+        $forum_data[$i]['id_nodo_parent'] = $forum_root_node;
+      }
+    }
+
+    $index = CDOMElement::create('div', "id:$container_div");
+
+    if ($order == 'chrono') {
+      $index->addChild(self::orderedNotes($forum_data, $callback, $callback_params, $forum_root_node));
+    }
+    else {
+      $index->addChild(self::structuredNotes($forum_data, $forum_root_node, $expand_index, $params));
+    }
+    return $index;
+  }
+  
+
+  function NotesHtml($params=array(), $external_params=array()) {
+
+    $http_root_dir = $GLOBALS['http_root_dir'];
+    
+    $spanH3 = CDOMElement::create('div','class:conversation');
+    $nodeIdForAnchor = $params['node']['id_nodo'];
+    $h3 = '<a name="'.$nodeIdForAnchor.'"></a><h3>'.$params['node']['nome_nodo'];
+    if ($params['node']['formNuovo']) $h3 .= ' - '.translateFn('Nuovo argomento');
+    $h3 .='</h3>';
+
+    $spanH3->addChild(new CText($h3));
+    $list_item = CDOMElement::create('div','class:conversationSingle');
+    /*
+    $list_item->addChild(self::getElement($params, $external_params));
+    if ($external_params['show_icons'] == TRUE) {
+//      $note_icon = self::forumGetNoteIcon($params['node'], $external_params['class_tutor_id']);
+//      $icon = CDOMElement::create('img');
+//      $icon->setAttribute('src',"img/$note_icon");
+//      $list_item->addChild($icon);
+      $list_item->setAttribute('class',$css_classname);
+    }
+     * 
+     */
+
+//    $list_item->addChild(new CText('<h3>'.));
+//    $link_to_note = CDOMElement::create('a',"href:$http_root_dir/browsing/view.php?id_node={$params['node']['id_nodo']}");
+
+    $divNodeObj = CDOMElement::create('div', 'id:Node'.$params['node']['id_nodo']);
+    if (!$params['node']['formNuovo']) {
+        $dateInsertDiv = CDOMElement::create('span','class:dateInsert');
+        $dateInsert = AMA_DataHandler::ts_to_date($params['node']['data_creazione'], "%d/%m/%Y %H:%M");
+        $dateInsertDiv->addChild(new CText(translateFN('Inserito il'). ' ' . $dateInsert));
+
+        $username = CDOMElement::create('span', 'class:username');
+        $imgAvatar = $params['node']['avatar'];
+        if (file_exists(ADA_UPLOAD_PATH.$params['node']['id_utente'].'/'.$imgAvatar)) {
+            $imgAvatar = HTTP_UPLOAD_PATH.$params['node']['id_utente'].'/'.$imgAvatar;
+        } else {
+            $imgAvatar = HTTP_UPLOAD_PATH.ADA_DEFAULT_AVATAR;
+        }
+        $avatar = CDOMElement::create('img','src:'.$imgAvatar);
+        $avatar->setAttribute('class', 'img_user_avatar');    
+        $username->addChild($avatar);
+        $username->addChild($dateInsertDiv);
+        $username->addChild(new CText(' ' . translateFN('da'). ' ' . $params['node']['nome']. ' ' .$params['node']['cognome']));
+    //    $link_to_note->addChild(new CText($params['node']['title']));
+    //    $list_item->addChild($link_to_note);
+    //    $list_item->addChild(new CText($h3));
+        $divNodeObj->addChild($username);
+    }
+
+    /*
+     * Display student visits to this node if required.
+     */
+    if (isset($show_visits) && $show_visits == TRUE) {
+      $visits = 0;
+
+      if ($params['node']['numero_visite'] > 0) {
+        $visits = $params['node']['numero_visite'];
+      }
+      $list_item->addChild(new CText(translateFN("Visite") . " $visits"));
+    }
+
+    /*
+    if ($params['node']['is_someone_there'] >= 1) {
+      $image = CDOMElement::create('img','name:altri, src:img/_student.png');
+      $list_item->addChild($image);
+    }
+     * 
+     */
+    if (!empty($params['node']['testo'])) {
+		$div_text = CDOMElement::create('div', 'id:textNode'.$params['node']['id_nodo']);
+		$div_text->setAttribute('class', 'forum_nodes_text');
+//		$div_text->setAttribute('style', 'display:none;');
+		$text = $params['node']['testo'];
+              /*
+		$char_limit = 525;
+		$text = strip_tags($params['node']['testo']);
+		if (strlen($text)>$char_limit) {
+			$add_link = true;
+			$text = substr_gentle($text,$char_limit);
+		}
+		else {
+			$add_link = false;
+		}
+                 * 
+                 */
+		$div_text->addChild(new CText($text));
+
+		if ($add_link) {
+			$link_to_note = CDOMElement::create('a',"href:$http_root_dir/browsing/view.php?id_node={$params['node']['id_nodo']}");
+			$link_to_note->setAttribute('title',translateFN('Visualizza messaggio completo'));
+			$link_to_note->addChild(new CText(translateFN('(leggi tutto)')));
+			$div_text->addChild(new CText(' '));
+			$div_text->addChild($link_to_note);
+		}
+		$divNodeObj->addChild($div_text);
+	}
+    $list_item->addChild($divNodeObj);
+//    print_r($params);
+     $userId = $_SESSION['sess_userObj']->id_user;
+    if ($params['node']['formNuovo']) {
+        $divForm = CDOMElement::create('div','class:noteForm');
+        $noteForm = new AddNoteForm($userId, $instanceId, $params['node']['id_nodo']);
+        $divForm->addChild(new CText($noteForm->getHtml()));
+        $list_item->addChild($divForm);
+    } else {
+        $divForm = CDOMElement::create('div','class:noteForm');
+        $subject = $params['node']['nome_nodo'];
+        $noteForm = new AddNoteForm($userId, $instanceId, $params['node']['id_nodo'],$subject);
+        $divForm->addChild(new CText($noteForm->getHtml()));
+        $list_item->addChild($divForm);
+    }
+    $spanH3->addChild($list_item);
+//    return $list_item;
+    return $spanH3;
+  }
+
+  
+  /**
+   * function structuredNotes:
+   *
+   * @param unknown_type $course_data
+   * @param unknown_type $id_toc
+   * @param unknown_type $expand_index
+   * @param unknown_type $callback
+   * @param unknown_type $callback_params
+   * @return unknown
+   */
+  function structuredNotes($course_data, $id_toc, $expand_index, $params=array()) {
+    $lda = self::buildLda($course_data);
+    $s   = array();
+    $list = array();
+    /*
+     * Ottiene le informazioni sul nodo principale
+     */
+    $dh = $GLOBALS['dh'];
+    $node_info = $dh->get_node_info($id_toc);
+    if(!AMA_DataHandler::isError($node_info)) {
+      $principale = array('id_nodo' => $id_toc, 'id_nodo_parent' => $id_toc, 'nome_nodo' => $node_info['name'], 'tipo' => ADA_GROUP_TYPE, 'icona'=> $node_info['icon'],'root'=>true, 'testo'=>$node_info['testo'],'formNuovo'=>true);
+    }
+    else {
+      $principale = array('id_nodo' => $id_toc, 'id_nodo_parent' => $id_toc, 'nome_nodo' => translateFN('Principale'), 'tipo' => ADA_GROUP_TYPE, 'icona'=> 'group.png','root'=>true, 'testo'=>$node_info['testo'],'formNuovo'=>true);
+    }
+
+    $r = self::NotesHtml(array('node' => $principale, 'level'=>sizeof($s), 'expand_index'=>$expand_index, 'show_hide_span' => $show_hide_span), $params);
+    $divNode = CDOMElement::create('div','class:courseNodeView');
+    $divNode->addChild($r);
+    array_push($list,$divNode);
+
+    $divNode_1 = CDOMElement::create('div', "id:{$principale['id_nodo']}");
+    $divNode_1->setAttribute('class', $params['container_div']);
+
+    array_push($list, $divNode_1);
+    array_push($s,$id_toc);
+
+    while (!empty($s)) {
+      $top_node = end($s);
+      
+
+      if (empty($lda[$top_node])) {
+        array_pop($s);
+
+        /*
+         * ci sono sempre almeno 3 elementi nella pila
+         */
+//        $current_ul = array_pop($list);
+        $current_Node = array_pop($list);
+
+        $parent_Node = array_pop($list);
+        $parent_Node->addChild($current_Node);
+        /*
+         * se nella pila non ci sono altri elementi, allora
+         * ho terminato di visitare l'albero, quindi restituisco
+         * l'oggetto CORE ul
+         */
+        if (count($list) == 0) {
+          return $parent_Node;
+        }
+        else {
+          array_push($list,$parent_Node);
+        }
+      }
+      else {
+        $nodo = array_shift($lda[$top_node]);
+        $level = sizeof($s);
+
+        if (($r = self::NotesHtml(array('node'=>$nodo, 'level'=> $level, 'expand_index' => $expand_index, 'show_hide_span' => $show_hide_span), $params)) != NULL) {
+          array_push($list, $r);
+
+        }
+//            print_r(array('r è vuoto, la pila è finita',$nodo['id_nodo']));
+        array_push($s, $nodo['id_nodo']);
+      }
+    }
+//    return $html;
+  }
+    
+  
 }

@@ -244,9 +244,14 @@ $ada_address_book = EventsAddressBook::create($userObj);
 $tester_TimeZone = MultiPort::getTesterTimeZone($sess_selected_tester);
 $time = time() + get_timezone_offset($tester_TimeZone, SERVER_TIMEZONE);
 
+$imgAvatar = $userObj->getAvatar();
+$avatar = CDOMElement::create('img','src:'.$imgAvatar);
+$avatar->setAttribute('class', 'img_user_avatar');
+
 $content_dataAr = array(
   'user_name'      => $user_name,
   'user_type'      => $user_type,
+  'user_avatar'    => $avatar->getHtml(),
   'level'          => $user_level,
   'titolo'         => $titolo,
   'testo'          => trim($testo),
