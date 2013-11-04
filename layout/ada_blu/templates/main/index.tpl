@@ -1,7 +1,6 @@
 <!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
 <html>
 <head>
-			<link rel="stylesheet" href="../../../css/main/masterstudio_stabile/default.css" type="text/css">
 </head>
 <body >
 <a name="top">
@@ -24,23 +23,62 @@
 <div id="contentcontent">
          <div class="first">
             <div class="sx">
-                <div class="wellcome">
-                <template_field class="template_field" name="message">message</template_field>
-                <template_field class="template_field" name="newsmsg">newsmsg</template_field>                                
+                <div class="column">
+                    <!-- <div class="portlet">
+                        <div class"portlet-header"><i18n>messaggi</i18n></div>
+                        <template_field class="template_field" name="message">message</template_field>
+                    </div>
+                    -->
+                    <div class="portlet">
+                        <div class="portlet-header"><i18n>News</i18n></div>
+                        <div class="portlet-content">
+                             <template_field class="template_field" name="newsmsg">newsmsg</template_field>
+                        </div>
+                    </div>    
+                </div>
+                <div class="column">
+                    <div class="portlet">
+                        <div class="portlet-header"><i18n>facebook</i18n></div>
+                        <div class="portlet-content">
+                            <template_field class="template_field" name="fbRSS">fbRSS</template_field>       
+                        </div>
+                    </div>    
                 </div>
             </div>
             <div class="dx">
-                <div class="login">
-                <template_field class="template_field" name="form">form</template_field>
-		    		<!--div class="forget">
-				<a href="browsing/forget.php">
-					 <i18n>Did you forget your password?</i18n>
-				</a>		
-
-                </div-->
-		</div>
-		<div class="helpcont">
-		  <template_field class="template_field" name="helpmsg">helpmsg</template_field>
+                <div class="column">
+                <div class="login portlet">
+                    <div class="portlet-header"><i18n>login</i18n></div>
+                    <div class="portlet-content">
+                        <template_field class="template_field" name="form">form</template_field>
+                    </div>
+    		</div>
+                </div>    
+		<div class="helpcont column">
+                    <div class="portlet">
+                        <div class="portlet-header">&nbsp;</div>
+                    <div class="portlet-content">
+                      <template_field class="template_field" name="helpmsg">helpmsg</template_field>
+                    </div>  
+                    </div>  
+                </div>    
+		<div class="helpcont column">
+                  <div class="lynxRSS portlet">
+                    <div class="portlet-header">RSS Notizie dal mondo Lynx</div>
+                    <div class="portlet-content">
+                        <template_field class="template_field" name="lynxRSS">lynxRSS</template_field>
+                    </div>
+                  </div>
+                </div>
+		<div class="helpcont column">
+                  <div class="TwitterTimeLine portlet">
+                    <div class="portlet-header">Twitter</div>
+                    <div class="portlet-content">
+                    <template_field class="template_field" name="twitterTimeLine">twitterTimeLine</template_field>
+                  </div>
+                  </div>
+                </div>
+  
             </div>
          </div>
          </div>
@@ -64,8 +102,8 @@
 				</a>
 		</li>
 		<li id="tools" class="unselectedtools">
-				<a href="info.php">
-           			 <i18n>informazioni</i18n>
+				<a href="browsing/ask_service.php">
+           			 <i18n>Chiedi aiuto</i18n>
 			        </a>
 	 </li>
         <li id="question_mark" class="unselectedquestion_mark">

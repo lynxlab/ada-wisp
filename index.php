@@ -354,7 +354,7 @@ $content_dataAr = array(
 	'form' => $login->getHtml().$forget_link,
 	'newsmsg' => $newsmsg,
 	'helpmsg' => $hlpmsg,
-    'infomsg' => $infomsg,
+        'infomsg' => $infomsg,
 	'bottomnews' => $bottomnewscontent,
 	'status' => $status,
 	'message' => $message->getHtml()
@@ -384,6 +384,9 @@ $content_dataAr = array(
 				JQUERY_NO_CONFLICT,
 				ROOT_DIR . "/js/main/index.js"
 		);
+                $layout_dataAr['CSS_filename'] = array (
+                    JQUERY_UI_CSS,
+                    );
 		$optionsAr['onload_func'] = 'initDoc();';
 ARE::render($layout_dataAr, $content_dataAr, NULL, (isset($optionsAr) ? $optionsAr : NULL) );
 ?>
