@@ -100,7 +100,7 @@ if(!AMA_DataHandler::isError($courseInstances)) {
                     $courseDataAr = $dh->get_course($courseId);
                     $divNews = '';
                     if (!AMA_DataHandler::isError($courseDataAr)) {
-                        $courseName = $courseDataAr['nome'];
+                        $courseName = $courseDataAr['titolo'];
                         $nodeId = $courseId . '_0';
                         $courseInstanceId = $c['id_istanza_corso'];
                         $subscription_status = $c['status'];

@@ -375,6 +375,8 @@ switch ($op){
 				JQUERY,
 				JQUERY_UI,
 				JQUERY_NIVOSLIDER,
+                                JQUERY_DATATABLE,
+                                JQUERY_DATATABLE_DATE,
 				JQUERY_NO_CONFLICT,
 				ROOT_DIR. '/external/mediaplayer/flowplayer-5.4.3/flowplayer.js'
 		);		
@@ -392,8 +394,9 @@ switch ($op){
 					JQUERY_UI_CSS
 			);
 		} else $layout_dataAR['CSS_filename'] = array();
-
-		array_push ($layout_dataAR['CSS_filename'],ROOT_DIR.'/external/mediaplayer/flowplayer-5.4.3/skin/minimalist.css');
+                
+                array_push($layout_dataAR['CSS_filename'], JQUERY_DATATABLE_CSS);
+                array_push ($layout_dataAR['CSS_filename'],ROOT_DIR.'/external/mediaplayer/flowplayer-5.4.3/skin/minimalist.css');
 		array_push ($layout_dataAR['CSS_filename'], JQUERY_NIVOSLIDER_CSS);
 		array_push ($layout_dataAR['CSS_filename'],ROOT_DIR.'/js/include/jquery/nivo-slider/themes/default/default.css');
 		

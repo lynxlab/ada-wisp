@@ -6,6 +6,7 @@
 function initDoc() {
     initRight();
     initForum();
+    initMessages();
 }     
       
 function initRight() {
@@ -47,4 +48,53 @@ function initForum() {
       .addClass("ui-accordion-content  ui-helper-reset ui-widget-content ui-corner-bottom")
       .show();
 
+}
+
+function initMessages() {
+	var datatable = $j('.sortable_A').dataTable( {
+//		'sScrollX': '100%',
+                'bLengthChange': false,
+		//'bScrollCollapse': true,
+//		'iDisplayLength': 50,
+                "bFilter": false,
+                "bInfo": false,
+                "bSort": true,
+                "bAutoWidth": true,
+//		'bProcessing': true,
+		'bDeferRender': true,
+         
+                
+                'aoColumns': [
+                                { 'sType': "date-euro" },
+                                null,
+                                null
+                            ],
+         
+                'bPaginate': false
+//		'sPaginationType': 'full_numbers'
+	}).show();
+
+	var datatable = $j('.sortable_S').dataTable( {
+//		'sScrollX': '100%',
+                'bLengthChange': false,
+		//'bScrollCollapse': true,
+//		'iDisplayLength': 50,
+                "bFilter": false,
+                "bInfo": false,
+                "bSort": true,
+                "bAutoWidth": true,
+//		'bProcessing': true,
+		'bDeferRender': true,
+         
+                
+                'aoColumns': [
+                                { 'sType': "date-euro" },
+                                null,
+                                null
+                            ],
+         
+                'bPaginate': false
+//		'sPaginationType': 'full_numbers'
+	}).show();
+    
 }

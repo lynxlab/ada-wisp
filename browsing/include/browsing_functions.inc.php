@@ -136,11 +136,12 @@ else {
 
   $testers_dataAr = MultiPort::getTestersPointersAndIds();
 
+  $showRead = false;
   $user_messagesAr = MultiPort::getUserMessages($userObj);
-  $user_messages   = CommunicationModuleHtmlLib::getMessagesAsTable($user_messagesAr, $testers_dataAr);
+  $user_messages   = CommunicationModuleHtmlLib::getMessagesAsTable($user_messagesAr, $testers_dataAr,$showRead);
 
   $user_agendaAr   = MultiPort::getUserAgenda($userObj);
-  $user_agenda     = CommunicationModuleHtmlLib::getAgendaAsTable($user_agendaAr, $testers_dataAr);
+  $user_agenda     = CommunicationModuleHtmlLib::getAgendaAsTable($user_agendaAr, $testers_dataAr,$showRead);
 		
     // $user_eventsAr = MultiPort::getUserEvents($userObj);
 	
