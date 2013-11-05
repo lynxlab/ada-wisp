@@ -10,7 +10,7 @@
  */
 function performEnterEventSteps(event, id_course, id_course_instance) {
 		
-	var windowOpenerLocationHref = HTTP_ROOT_DIR + '/browsing/view.php'
+	var windowOpenerLocationHref = HTTP_ROOT_DIR + '/browsing/sview.php'
 	                       + '?id_node=' + id_course + '_0'
 	                       + '&id_course=' + id_course
 	                       + '&id_course_instance=' + id_course_instance;

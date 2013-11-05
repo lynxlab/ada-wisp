@@ -1543,14 +1543,16 @@ class MultiPort
           //$message_internal_identifier = $matches[1];
 
           $event_token = ADAEventProposal::extractEventToken($one_date[2]);
-
+          /*
           $cdh = ChatDataHandler::instance(MultiPort::getDSN($_SESSION['sess_selected_tester']));
           $id_chatroom = $cdh->get_chatroom_with_title_prefixFN($event_token);
           if(AMA_DataHandler::isError($id_chatroom)) {
             return FALSE;
           }
           return $id_chatroom;
-          //return TRUE;
+           * 
+           */
+          return $event_token;
         }
       }
     }
