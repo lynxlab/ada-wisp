@@ -52,7 +52,7 @@ $data = CDOMElement::create('div');
 $head_desc_user = translateFN("utente");
 $head_desc_service = translateFN("servizio");
 $head_desc_date = translateFN("date of request");
-$head_desc_epract = translateFN("epractitioner");
+$head_desc_epract = translateFN("consulente");
 $head_desc_instance = translateFN("instanza");
 
 
@@ -213,7 +213,7 @@ $table = BaseHtmlLib::tableElement('id:table_users_for_service',$thead_data, $tb
 $banner = include ROOT_DIR.'/include/banner.inc.php';
 $label = translateFN('Coordinator Home Page');
 
-$help = translateFN('Richieste') .': ' . $numRequiredHelp .', '. translateFN('Utenti'). ': '. $numUsers .' - '. translateFN("Da qui lo switcher puo' gestire gli assegnamenti client e-practitioner");
+$help = translateFN('Richieste') .': ' . $numRequiredHelp .', '. translateFN('Utenti'). ': '. $numUsers .' - '. translateFN("Qui puoi vedere le richieste di servizio in corso e gestire il lavoro del team di Consulenti");
 $menu_01 = '<a href="list_lservices.php">'.translateFN('Vedi servizi').'</a>';
 $menu_02 = '<a href="add_lservice.php">'.translateFN('Aggiungi servizio').'</a>';
 

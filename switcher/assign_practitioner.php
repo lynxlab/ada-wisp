@@ -210,7 +210,8 @@ if (isset($_SERVER['REQUEST_METHOD']) && $_SERVER['REQUEST_METHOD'] == 'POST'
             $dialogMessage = translateFN('Qualcosa è andato storto in') . ' ' .$errorPhase;
             
         } else {
-            $dialogMessage = translateFN('Utente') .' '. $tutoredUserObj->getFullName() .' ' . translateFN('assegnato a') . ' '. $tutorObj->getFullName();
+//            $dialogMessage = translateFN('Utente') .' '. $tutoredUserObj->getFullName() .' ' . translateFN('assegnato a') . ' '. $tutorObj->getFullName();
+            $dialogMessage = $tutorObj->getFullName() .' ' . translateFN('assegnato a') . ' '. translateFN('Utente') .' '. $tutoredUserObj->getFullName();
         } 
             
         $dialog_div->addChild(new CText($dialogMessage));
@@ -310,7 +311,7 @@ if (isset($_SERVER['REQUEST_METHOD']) && $_SERVER['REQUEST_METHOD'] == 'POST'
 //                $ul->addChild($li);
                 $tip = CDOMElement::create('div','id:tooltipContent'.$idSingleTutor);
 //                $tip->setAttribute('class', 'toolTip');
-                $tip->addChild(new CText(translateFN('Tutor assegnato ai seguenti utenti').':<br />'));
+                $tip->addChild(new CText(translateFN('Consulente assegnato ai seguenti utenti').':<br />'));
                 $tip->addChild($ul);
                 $tooltips.=$tip->getHtml();
                 $js.= 'new Tooltip("tooltip'.$idSingleTutor.'", "tooltipContent'.$idSingleTutor.'", {DOM_uery: {parentId: "header"}, className: "tooltip", offset: {x:+15, y:0}, hook: {target:"rightMid", tip:"leftMid"}});'."\n";
@@ -405,8 +406,8 @@ if (isset($_SERVER['REQUEST_METHOD']) && $_SERVER['REQUEST_METHOD'] == 'POST'
 
 }
 
-$title = translateFN('Assegnazione di un epractitioner ad un utente');
-$help = translateFN('Da qui il Provider Admin può assegnare un practitioner ad un utente');
+$title = translateFN('Assegna il consulente alla richiesta dell\'utente');
+$help = translateFN('Qui puoi assegnare un Consulente al servizio richiesto dall\'utente');
 $status = translateFN('Assegnazione epractitioner');
 
 

@@ -53,7 +53,7 @@ function dataTablesExec() {
 //		'sPaginationType': 'full_numbers'
 	}).show();
 
-    var datatable = $j('#sortable').dataTable( {
+    var datatable = $j('#sortable_S').dataTable( {
 //		'sScrollX': '100%',
                 'bLengthChange': false,
 		//'bScrollCollapse': true,
@@ -69,11 +69,10 @@ function dataTablesExec() {
 
                 'aoColumns': [
 //                                { "sType": "numeric" },
-//                                { 'sType': "date-eu" },
+                                { 'sType': "date-euro" },
                                 null,
                                 null,
-                                null,
-                                null
+                                { 'sType': "date-euro" }
                             ],
          
                 'bPaginate': false
