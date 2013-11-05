@@ -15,6 +15,7 @@ function initDoc() {
             $j( this ).parents( ".portlet:first" ).find( ".portlet-content" ).toggle();
         });
 //        $j( ".column" ).disableSelection();
+        $j("select, input, a.button, button").uniform();
     });    
     
     /*

@@ -7,6 +7,7 @@ function initDoc() {
     initRight();
     initForum();
     initMessages();
+    $j("select, input, a.button, button, textarea").uniform();
 }     
       
 function initRight() {
