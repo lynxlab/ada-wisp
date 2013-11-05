@@ -22,40 +22,9 @@
             <!-- / percorso -->
             <!--dati utente-->
              <div id="status_bar">
-            <div id="user_data" class="user_data_default">
-                <i18n>utente: </i18n>
-                <span>
-                    <template_field class="template_field" name="user_name">user_name</template_field>
-                </span>
-                <i18n>tipo: </i18n>
-                <span>
-                    <template_field class="template_field" name="user_type">user_type</template_field>
-                </span>
-                <div class="status">
-                    <i18n>status: </i18n>
-                    <span>
-                        <template_field class="template_field" name="status">status</template_field>
-                    </span>
-                </div>
-            </div>
-            <!-- / dati utente -->
-                <!-- label -->
-                <!--div id="label">
-                    <div class="topleft">
-                        <div class="topright">
-                            <div class="bottomleft">
-                                <div class="bottomright">
-                                    <div class="contentlabel">
-                                        <h1>
-                                            <i18n>Practitioner</i18n>
-                                        </h1>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                </div-->
-                <!-- /label -->
+                <!--dati utente-->
+                   <template_field class="microtemplate_field" name="user_data_mini_micro">user_data_mini_micro</template_field>
+                 <!-- / dati utente -->
              </div>
 
             <!-- contenuto -->
@@ -65,7 +34,36 @@
                         <div id="help">
                         <template_field class="template_field" name="help">help</template_field>
                         </div>
-                        <template_field class="template_field" name="dati">dati</template_field>
+                        
+			<div id="twobox">
+				<!-- blocco1 -->
+				<div id="blocco_uno">
+					<div id="bloccoUnoTitoloContenitore">
+                                                <template_field class="template_field" name="bloccoUnoTitolo">bloccoUnoTitolo</template_field>
+                                        </div>
+ 					<div id="content_blocco_uno">
+                                                <template_field class="template_field" name="dati">dati</template_field>
+ 
+					</div>
+				</div>
+				<!-- blocco1 end -->
+				<!-- blocco2 -->
+				<div id="blocco_due">
+					<div id="bloccoDueTitoloContenitore">
+                                                <template_field class="template_field" name="bloccoDueTitolo">bloccoDueTitolo</template_field>
+                                        </div>
+					<div id="content_blocco_due">
+                                                <template_field class="template_field" name="bloccoDueAppuntamenti">bloccoDueAppuntamenti</template_field>
+                                                <template_field class="template_field" name="bloccoDueContenuto">bloccoDueContenuto</template_field>
+                                                <template_field class="template_field" name="bloccoDueH3Widget">bloccoDueH3Widget</template_field>
+                                                <template_field class="template_field" name="bloccoDueContenutoWidget">bloccoDueContenutoWidget</template_field>
+                                               <template_field class="template_field" name="bloccoDueContenuto">bloccoDueMessaggi</template_field>
+                                        </div>
+				</div>
+				<!-- blocco2 end -->
+			</div>
+                        <br class="clearfix">
+                        
                     </div>
                 </div>
                 <div id="bottomcont"> </div>

@@ -68,8 +68,8 @@ else {
  */
 
 $clients_list = $dh->get_list_of_tutored_users($userObj->getId());
-
-$thead_data = array(translateFN('utente'),translateFN('azioni'),translateFN('servizio'),translateFN('stato'),translateFN('data inizio'),translateFN('durata servizio'), translateFN('data fine'));
+$thead_data = array(translateFN('utente'),translateFN('azioni'),translateFN('servizio'),translateFN('stato'),translateFN('data inizio'));
+//$thead_data = array(translateFN('utente'),translateFN('azioni'),translateFN('servizio'),translateFN('stato'),translateFN('data inizio'),translateFN('durata servizio'), translateFN('data fine'));
 $tbody_data = array();
 if (is_array($clients_list) && sizeof($clients_list) > 0) {
 
@@ -140,9 +140,9 @@ if (is_array($clients_list) && sizeof($clients_list) > 0) {
       $actions,
       $service_link,
       $status,
-      ts2dFN($user_data['data_inizio']),
-      $user_data['durata'],
-      ts2dFN($user_data['data_fine'])
+      ts2dFN($user_data['data_inizio'])
+//      $user_data['durata'],
+//      ts2dFN($user_data['data_fine'])
     );
   }
   $table = BaseHtmlLib::tableElement('class:sortable',$thead_data,$tbody_data);
@@ -160,21 +160,51 @@ else {
 
 $banner = include ROOT_DIR.'/include/banner.inc.php';
 
-//$questionaire = "<a href=http://egos.ict.bg/ESMISProject/Questionnaires/Questionnaire.aspx?Id=".$sess_id_user. "&amp;Code=Q001&amp;Cript=false";
-//$questionaire .= " target=\"_blank\" title=\"".translateFN("Questionaire")."\">".translateFN("Questionaire") ."</a>";
+     /* ***********************
+     * Appointment for all instances
+     * $user_events are valorized in tutor_function.inc.php
+     */
+    if (is_object($user_events)) {
+        $divAppointments = CDOMElement::create('div','class:appointments');
+//                    $divAppointments->addChild(new CText('<h3>'.translateFN('Appuntamenti').'</h3>'));
+        if (is_object($user_events) && $user_events->getHtml() != '') $divAppointments->addChild($user_events);
+        if ($user_events->getHtml() == '') {
+            $divAppointments->addChild(new CText(translateFN('Non ci sono appuntamenti')));
+        }
+    }   
 
-$questionaire_url = urlencode("http://egos.ict.bg/ESMISProject/Questionnaires/Questionnaire.aspx?Id=".$sess_id_user. "&Code=Q001&Cript=false");
-$questionaire = "<a href=$http_root_dir/browsing/external_link.php?url=".$questionaire_url;
-$questionaire .= " target=\"_blank\" title=\"".translateFN("Questionaire")."\">".translateFN("Questionaire") ."</a>";
+
+     /* ***********************
+     * proposal for all instances
+     * $user_events are valorized in browsing_function.inc.php
+     */
+    if (is_object($user_events_proposed)) {
+        $divAppointmentsProposed = CDOMElement::create('div','class:appointments');
+        if (is_object($user_events_proposed) && $user_events_proposed->getHtml() != '') $divAppointmentsProposed->addChild($user_events_proposed);
+        if ($user_events_proposed->getHtml() == '') {
+            $divAppointmentsProposed->addChild(new CText(translateFN('Non ci sono appuntamenti')));
+        }
+    }   
+
+
+$imgAvatar = $userObj->getAvatar();
+$avatar = CDOMElement::create('img','src:'.$imgAvatar);
+$avatar->setAttribute('class', 'img_user_avatar');
+
+$bloccoUnoTitolo = '<h2>'.translateFN('utenti che seguo').'</h2>';
+$bloccoDueTitolo = '<h2>'.translateFN('Interazioni').'</h2>';
 
 $content_dataAr = array(
   'banner'          => $banner,
+  'bloccoUnoTitolo' => $bloccoUnoTitolo,
+  'bloccoDueTitolo'  => $bloccoDueTitolo,
   'user_name'       => $user_name,
   'user_type'       => $user_type,
   'level'           => $user_level,
-  'messages'        => $user_messages->getHtml(),
-  'agenda'          => $user_agenda->getHtml(),
-  'events'          => $user_events->getHtml(),
+//  'messages'        => $user_messages->getHtml(),
+//  'agenda'          => $user_agenda->getHtml(),
+//  'events'          => $user_events->getHtml(),
+  'user_avatar'     => $avatar->getHtml(),
   'events_proposed' => $user_events_proposed->getHtml(),
   'course_title'    => translateFN("Practitioner's home"),
   'dati'            => $data,
@@ -188,9 +218,31 @@ $content_dataAr = array(
   'menu_08'         => ''
 );
 
+$content_dataAr['bloccoDueAppuntamenti'] = '<h3>'.translateFN('Appuntamenti').'</h3>';
+//$content_dataAr['bloccoDueAppuntamenti'] .= $divAppointments->getHtml();
+$content_dataAr['bloccoDueAppuntamenti'] .= $user_agenda->getHtml();
 
+$content_dataAr['bloccoDueAppuntamenti'] .= '<h3>'.translateFN('Proposte di appuntamento').'</h3>';
+$content_dataAr['bloccoDueAppuntamenti'] .= $divAppointmentsProposed->getHtml();
+
+$content_dataAr['bloccoDueAppuntamenti'] .= '<h3>'.translateFN('Messaggi ricevuti').'</h3>';
+$content_dataAr['bloccoDueAppuntamenti'] .= $user_messages->getHtml();
+
+$layout_dataAr['JS_filename'] = array(
+		JQUERY,
+		JQUERY_DATATABLE,
+                JQUERY_DATATABLE_DATE,
+		JQUERY_NO_CONFLICT
+	);
+
+$layout_dataAr['CSS_filename']= array(
+		JQUERY_DATATABLE_CSS,
+                JQUERY_UI_CSS
+	);
+  $render = null;
+  $options['onload_func'] = 'initDoc()';
+  
 /**
-* Sends data to the rendering engine
-*/
-ARE::render($layout_dataAr,$content_dataAr);
-?>
+ * Sends data to the rendering engine
+ */
+ARE::render($layout_dataAr, $content_dataAr, $render, $options);
