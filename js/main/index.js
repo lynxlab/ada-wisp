@@ -1,7 +1,8 @@
 function initDoc() {
      $j(function() {
         $j( ".column" ).sortable({
-            connectWith: ".column"
+            connectWith: ".column",
+//            handle: ".porlet-header"
         });
         $j( ".portlet" ).addClass( "ui-widget ui-widget-content ui-helper-clearfix ui-corner-all" )
             .find( ".portlet-header" )
@@ -13,7 +14,7 @@ function initDoc() {
             $j( this ).toggleClass( "ui-icon-minusthick" ).toggleClass( "ui-icon-plusthick" );
             $j( this ).parents( ".portlet:first" ).find( ".portlet-content" ).toggle();
         });
-        $j( ".column" ).disableSelection();
+//        $j( ".column" ).disableSelection();
     });    
     
     /*
