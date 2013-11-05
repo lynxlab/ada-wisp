@@ -5346,6 +5346,8 @@ abstract class AMA_Tester_DataHandler extends Abstract_AMA_DataHandler {
         if ( AMA_DB::isError( $db ) ) return $db;
 
         // prepare values
+        $data_fine = $this->or_null($istanza_ha['data_fine']);
+        
         $data_inizio = $this->or_null($istanza_ha['data_inizio']);
         $durata = $this->or_zero($istanza_ha['durata']);
         $data_inizio_previsto = $this->or_zero($istanza_ha['data_inizio_previsto']);
@@ -5365,12 +5367,14 @@ abstract class AMA_Tester_DataHandler extends Abstract_AMA_DataHandler {
 
         }
 
-        $data_fine = 0;
-        if($data_inizio == "NULL") {
-            $data_fine = $this->add_number_of_days($durata,$data_inizio_previsto);
-        }
-        else {
-            $data_fine = $this->add_number_of_days($durata,$data_inizio);
+        if ($data_fine != "NULL") { // graffio 05/11/2013
+            $data_fine = 0;
+            if($data_inizio == "NULL") {
+                $data_fine = $this->add_number_of_days($durata,$data_inizio_previsto);
+            }
+            else {
+                $data_fine = $this->add_number_of_days($durata,$data_inizio);
+            }
         }
 
         // verify that the record exists

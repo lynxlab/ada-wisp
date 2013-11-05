@@ -61,7 +61,10 @@ include_once ROOT_DIR.'/include/HtmlLibrary/BaseHtmlLib.inc.php';
 include_once ROOT_DIR.'/include/HtmlLibrary/TutorModuleHtmlLib.inc.php';
 include_once ROOT_DIR.'/comunica/include/ADAEventProposal.inc.php';
 
-if(isset($_SERVER['REQUEST_METHOD']) && $_SERVER['REQUEST_METHOD'] == 'POST') {
+  $status_opened     = 0;
+  $status_closed     = 1;
+
+  if(isset($_SERVER['REQUEST_METHOD']) && $_SERVER['REQUEST_METHOD'] == 'POST') {
   // Genera CSV a partire da contenuto $_POST
   // e crea CSV forzando il download
 
@@ -93,6 +96,12 @@ if(isset($_SERVER['REQUEST_METHOD']) && $_SERVER['REQUEST_METHOD'] == 'POST') {
       $errObj = new ADA_Error($result);
     }
   }
+  $id_course_instance = $eguidance_dataAr['id_istanza_corso'];
+  if ($eguidance_dataAr['status_service'] == $status_closed) {
+      $istanza_ha['data_fine'] = time();
+      $resultUpdateInstance  = $dh->course_instance_set($id, $istanza_ha);
+  }
+      
   //createCSVFileToDownload($_POST);
 
   //$text = translateFN('The eguidance session data were correctly saved.');
@@ -130,11 +139,20 @@ else {
   /*
    * Get service info
    */
+  /*
   $id_course = $dh->get_course_id_for_course_instance($id_course_instance);
   if(AMA_DataHandler::isError($id_course)) {
     $errObj = new ADA_Error(NULL,translateFN("Errore nell'ottenimento dell'id del servzio"),
                              NULL,NULL,NULL,$userObj->getHomePage());
   }
+   * 
+   */
+  $instanceInfoAr = $dh->course_instance_get($id_course_instance);
+  if(AMA_DataHandler::isError($instanceInfoAr)) {
+    $errObj = new ADA_Error(NULL,translateFN("Errore nell'ottenimento dell'id del servzio"),
+                             NULL,NULL,NULL,$userObj->getHomePage());
+  }
+  $id_course = $instanceInfoAr['id_corso'];
 
   $service_infoAr = $common_dh->get_service_info_from_course($id_course);
   if(AMA_Common_DataHandler::isError($service_infoAr)) {
@@ -164,6 +182,27 @@ else {
 
   $service_infoAr['id_istanza_corso'] = $id_course_instance;
   $service_infoAr['event_token']      = $event_token;
+  
+  /*
+   * data chiusura e apertura istanza
+   */
+  $status_opened_label     = translateFN('In corso');
+  $status_closed_label     = translateFN('Terminato');
+  $status = $status_closed_label;  
+
+  if($instanceInfoAr['data_inizio'] > 0 && $instanceInfoAr['data_fine'] > 0
+   && $current_timestamp > $instanceInfoAr['data_inizio']
+   && $current_timestamp < $instanceInfoAr['data_fine']) {
+      $status = $status_opened_label;  
+  }
+
+  $service_infoAr['instance_status']      = $status;
+  /*
+  $service_infoAr['status_opened_label']      = $status_opened_label;
+  $service_infoAr['status_closed_label']      = $status_closed_label;
+   * 
+   */
+  $service_infoAr['avalaible_status']      = array($status_opened_label,$status_closed_label);
 
   /*
    * Check if an eguidance session with this event_token exists. In this case,

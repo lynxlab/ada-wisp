@@ -96,7 +96,7 @@ if (is_array($clients_list) && sizeof($clients_list) > 0) {
 
     $id_course = $user_data['id_corso'];
     $id_node   = $id_course.'_'.ADA_DEFAULT_NODE;
-    $href = HTTP_ROOT_DIR.'/browsing/view.php?id_course='.$id_course.'&id_node='.$id_node.'&id_course_instance='.$id_course_instance;
+    $href = HTTP_ROOT_DIR.'/browsing/sview.php?id_course='.$id_course.'&id_node='.$id_node.'&id_course_instance='.$id_course_instance;
     $service_link = CDOMElement::create('a',"href:$href");
     $service_link->addChild(new CText(translateFN($user_data['titolo'])));
     $current_timestamp = time();
