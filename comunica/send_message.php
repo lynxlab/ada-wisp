@@ -362,6 +362,21 @@ $content_dataAr = array(
   'status'         => $err_msg
 );
 
-$options_Ar = array('onload_func' => 'load_addressbook();');
+/**
+ * @author giorgio 06/nov/2013
+ * 
+ * form is not built using an FForm object, must attach jquery uniform by hand
+ * 
+ */
+$layout_dataAr['JS_filename'] = array(
+		JQUERY,
+		JQUERY_UNIFORM,
+		JQUERY_NO_CONFLICT
+);
+
+$layout_dataAr['CSS_filename'][] = JQUERY_UNIFORM_CSS;
+
+
+$options_Ar = array('onload_func' => 'initDoc(); load_addressbook();');
 ARE::render($layout_dataAr, $content_dataAr, NULL, $options_Ar);
 ?>
