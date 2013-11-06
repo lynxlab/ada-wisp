@@ -194,10 +194,15 @@ if(isset($_SERVER['REQUEST_METHOD']) && $_SERVER['REQUEST_METHOD'] == 'POST') {
 $layout_dataAr['JS_filename'] = array(
 		JQUERY,
 		JQUERY_MASKEDINPUT,
-		JQUERY_NO_CONFLICT		
+		JQUERY_UNIFORM,
+		JQUERY_NO_CONFLICT
 );
 
-$optionsAr['onload_func'] = 'initDateField();';
+$layout_dataAr['CSS_filename'][] = JQUERY_UNIFORM_CSS;
+
+
+$optionsAr['onload_func'] = 'initDoc(); initDateField();';
+
 
 $title = translateFN('Informazioni');
 
