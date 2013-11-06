@@ -5,6 +5,6 @@ document.write("<script type='text/javascript' src='../js/include/tablekit/table
 
 function initDoc() {
 	$j(document).ready(function() {
-		if ($j().uniform) $j("select, input, a.button, button").uniform();
+		if ($j().uniform) $j("select, input, a.button, button, textarea").uniform();
 	});
 }
