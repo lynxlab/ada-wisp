@@ -386,6 +386,9 @@ class TutorModuleHtmlLib
     $hidden_user_fullname = CDOMElement::create('hidden', 'id:user_fullname, name: user_fullname');
     $hidden_user_fullname->setAttribute('value', $user_fullname);
 
+    $hidden_previous_instance_status = CDOMElement::create('hidden', 'id:previous_instance_status, name: previous_instance_status');
+    $hidden_previous_instance_status->setAttribute('value', $service_infoAr['instance_status_previous']);
+   
     $hidden_user_country = CDOMElement::create('hidden', 'id:user_country, name:user_country');
     $hidden_user_country->setAttribute('value', $user_country);
     $hidden_service_duration = CDOMElement::create('hidden','id:service_duration, name:service_duration');
@@ -406,6 +409,7 @@ class TutorModuleHtmlLib
     $form->addChild($hidden_user_birthdate);
     $form->addChild($hidden_user_gender);
     $form->addChild($hidden_user_foreign_culture);
+    $form->addChild($hidden_previous_instance_status);
 
 //    $ufc_thead = array(translateFN("Dati utente"),'');
 //    $ufc_tbody = array(
@@ -464,7 +468,8 @@ class TutorModuleHtmlLib
     //FIXME: qui passo $form_dataAr['tipo_eguidance'], ma dovrei passare $form_dataAr['type_of_guidance']
 //    print_r($service_infoAr);
     $toe_thead = '';
-    $instance_status = $service_infoAr['instance_status'];
+    $instance_status = $service_infoAr['instance_status_value'];
+    print_r($service_infoAr);
     $avalaibleStatusAr = array($status_opened_label,$status_closed_label); 
     $toe_tbody = array(
       array(BaseHtmlLib::selectElement2('id:status_service, name:status_service',$service_infoAr['avalaible_status'],$instance_status))

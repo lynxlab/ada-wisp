@@ -5367,7 +5367,7 @@ abstract class AMA_Tester_DataHandler extends Abstract_AMA_DataHandler {
 
         }
 
-        if ($data_fine != "NULL") { // graffio 05/11/2013
+        if ($data_fine == "NULL") { // graffio 05/11/2013
             $data_fine = 0;
             if($data_inizio == "NULL") {
                 $data_fine = $this->add_number_of_days($durata,$data_inizio_previsto);

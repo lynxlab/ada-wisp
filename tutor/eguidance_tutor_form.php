@@ -97,11 +97,19 @@ include_once ROOT_DIR.'/comunica/include/ADAEventProposal.inc.php';
     }
   }
   $id_course_instance = $eguidance_dataAr['id_istanza_corso'];
-  if ($eguidance_dataAr['status_service'] == $status_closed) {
-      $istanza_ha['data_fine'] = time();
-      $resultUpdateInstance  = $dh->course_instance_set($id, $istanza_ha);
-  }
-      
+  if ($eguidance_dataAr['status_service'] != $eguidance_dataAr['previous_instance_status']) {
+      $instanceInfoAr = $dh->course_instance_get($id_course_instance);
+      if(!AMA_DataHandler::isError($instanceInfoAr)) {
+          if ($eguidance_dataAr['status_service'] == $status_closed) {
+              $instanceInfoAr['data_fine'] = time();
+          }
+          elseif ($eguidance_dataAr['status_service'] == $status_opened) {
+              $instanceInfoAr['data_fine'] = NULL;
+          }
+      }
+      $updateInstance = $dh->course_instance_set($id_course_instance,$instanceInfoAr);
+}
+ 
   //createCSVFileToDownload($_POST);
 
   //$text = translateFN('The eguidance session data were correctly saved.');
@@ -110,7 +118,6 @@ include_once ROOT_DIR.'/comunica/include/ADAEventProposal.inc.php';
    * Redirect the practitioner to user service detail
    */
   $tutored_user_id    = $eguidance_dataAr['id_utente'];
-  $id_course_instance = $eguidance_dataAr['id_istanza_corso'];
   header('Location: user_service_detail.php?id_user='.$tutored_user_id.'&id_course_instance='.$id_course_instance.$href_suffix);
   exit();
 }
@@ -188,21 +195,28 @@ else {
    */
   $status_opened_label     = translateFN('In corso');
   $status_closed_label     = translateFN('Terminato');
-  $status = $status_closed_label;  
-
+  $status_instance = $status_closed_label;  
+  $status_instance_value = 1;
+  $current_timestamp = time();
+  
   if($instanceInfoAr['data_inizio'] > 0 && $instanceInfoAr['data_fine'] > 0
    && $current_timestamp > $instanceInfoAr['data_inizio']
    && $current_timestamp < $instanceInfoAr['data_fine']) {
-      $status = $status_opened_label;  
+      $status_instance = $status_opened_label;
+      $status_instance_value = 0;
   }
 
-  $service_infoAr['instance_status']      = $status;
+  $service_infoAr['instance_status']      = $status_instance;
+  $service_infoAr['instance_status_previous'] = $status_instance;
+  $service_infoAr['instance_status_value']      = $status_instance_value;
+  
   /*
   $service_infoAr['status_opened_label']      = $status_opened_label;
   $service_infoAr['status_closed_label']      = $status_closed_label;
    * 
    */
   $service_infoAr['avalaible_status']      = array($status_opened_label,$status_closed_label);
+  $service_infoAr['instance'] = $instanceInfoAr;
 
   /*
    * Check if an eguidance session with this event_token exists. In this case,
