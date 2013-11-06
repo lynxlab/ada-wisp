@@ -469,7 +469,6 @@ class TutorModuleHtmlLib
 //    print_r($service_infoAr);
     $toe_thead = '';
     $instance_status = $service_infoAr['instance_status_value'];
-    print_r($service_infoAr);
     $avalaibleStatusAr = array($status_opened_label,$status_closed_label); 
     $toe_tbody = array(
       array(BaseHtmlLib::selectElement2('id:status_service, name:status_service',$service_infoAr['avalaible_status'],$instance_status))
