@@ -198,6 +198,22 @@ $content_dataAr = array(
   'status' => translateFN('Chatroom')
 );
 
+/**
+ * @author giorgio 06/nov/2013
+ *
+ * form is not built using an FForm object, must attach jquery uniform by hand
+ *
+ */
+$layout_dataAr['JS_filename'] = array(
+		JQUERY,
+		JQUERY_UNIFORM,
+		JQUERY_NO_CONFLICT
+);
+
+$layout_dataAr['CSS_filename'][] = JQUERY_UNIFORM_CSS;
+
+if (isset ($optionsAr['onload_func'])) $optionsAr['onload_func'] = 'initDoc(); '.$optionsAr['onload_func'];
+else $optionsAr['onload_func'] = 'initDoc();';
 
 ARE::render($layout_dataAr, $content_dataAr, NULL, $optionsAr);
 ?>
