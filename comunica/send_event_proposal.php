@@ -230,38 +230,46 @@ $content_dataAr = array(
   'label'	   => $title
 );
 
+$layout_dataAr ['JS_filename'] = array (
+		JQUERY,
+		JQUERY_UI,
+		JQUERY_UNIFORM );
+
+/**
+ * if the jqueru-ui theme directory is there in the template family,
+ * import it.
+ * Else get the standard one
+ */
+$jqueryLayoutCSS = ROOT_DIR . '/layout/' . $userObj->template_family . '/css/jquery-ui/jquery-ui-1.10.3.custom.min.css';
+$layout_dataAr ['CSS_filename'] = array (
+		((is_file ( $jqueryLayoutCSS )) ? $jqueryLayoutCSS : JQUERY_UI_CSS),		
+		JQUERY_UNIFORM_CSS
+		// ROOT_DIR . '/js/include/jquery/fullcalendar/fullcalendar.print.css'
+);
+
 if ($includeJS)
 {	
 	// NOTE: if i18n file is not found it'll be discarded by the rendering engine
-	$layout_dataAr ['JS_filename'] = array (
-			JQUERY,
-			JQUERY_UI,
-			ROOT_DIR . '/js/include/jquery/fullcalendar/fullcalendar.js',
-			ROOT_DIR . '/js/include/jquery/fullcalendar/i18n/fullcalendar.' . $_SESSION ['sess_user_language'] . '.js',
-			ROOT_DIR . '/js/include/jquery/fullcalendar/gcal.js',			
-			JQUERY_NO_CONFLICT
-	);
-	
+	array_push($layout_dataAr['JS_filename'], ROOT_DIR . '/js/include/jquery/fullcalendar/fullcalendar.js');
+	array_push($layout_dataAr['JS_filename'], ROOT_DIR . '/js/include/jquery/fullcalendar/i18n/fullcalendar.' . $_SESSION ['sess_user_language'] . '.js');
+	array_push($layout_dataAr['JS_filename'], ROOT_DIR . '/js/include/jquery/fullcalendar/gcal.js');			
+
 	if (isset($data))
 		$datetimesAr = ADAEventProposal::extractDateTimesFromEventProposalText($data['testo']);
 	else $datetimesAr = '';
 	
 	for ($i=0; $i<MAX_PROPOSAL_COUNT; $i++) $inputProposalNames[$i] = translateFN('Proposta').' #'.($i+1);
+
+	array_push($layout_dataAr['CSS_filename'], ROOT_DIR . '/js/include/jquery/fullcalendar/fullcalendar.css' );
 	
-	$optionsAr ['onload_func'] = 'initDoc(\''.htmlentities(json_encode($datetimesAr)).'\',\''.htmlentities(json_encode($inputProposalNames)).'\','.MAX_PROPOSAL_COUNT.');';
-	
-	/**
-	 * if the jqueru-ui theme directory is there in the template family,
-	 * import it.
-	 * Else get the standard one
-	 */
-	$jqueryLayoutCSS = ROOT_DIR . '/layout/' . $userObj->template_family . '/css/jquery-ui/jquery-ui-1.10.3.custom.min.css';
-	$layout_dataAr ['CSS_filename'] = array (
-			((is_file ( $jqueryLayoutCSS )) ? $jqueryLayoutCSS : JQUERY_UI_CSS),
-			ROOT_DIR . '/js/include/jquery/fullcalendar/fullcalendar.css' 
-			// ROOT_DIR . '/js/include/jquery/fullcalendar/fullcalendar.print.css'
-		);
+	$optionsAr ['onload_func'] = 'initDoc(\''.htmlentities(json_encode($datetimesAr)).'\',\''.htmlentities(json_encode($inputProposalNames)).'\','.MAX_PROPOSAL_COUNT.');';	
 }
+else
+{
+	$optionsAr ['onload_func'] = 'initDoc();';
+}
+
+array_push($layout_dataAr['JS_filename'], JQUERY_NO_CONFLICT);
 
 ARE::render($layout_dataAr, $content_dataAr, NULL, (isset($optionsAr) ? $optionsAr : NULL));
 ?>

@@ -275,6 +275,10 @@ function Appointments (fullCalendar, inputProposalNames, max_proposal_count)
 
 function initDoc(initDatas, inputProposalNames, max_proposal_count) {
 
+	$j(document).ready(function() {
+		if ($j().uniform) $j("select, input, a.button, button, textarea").uniform();
+	});
+	
     var fullcal = $j('#fullcalendar').fullCalendar({
         // put your options and callbacks here
     	theme 	 : true,	// enables jQuery UI theme
