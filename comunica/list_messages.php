@@ -185,7 +185,7 @@ if(isset($_GET['messages']) && $_GET['messages'] == 'sent') {
 }
 else {
   $dataAr   = MultiPort::getUserMessages($userObj);
-  print_r($messages);
+  // print_r($messages);
   $messages = CommunicationModuleHtmlLib::getReceivedMessagesAsForm($dataAr, $testers_dataAr);
   $label   = translateFN('Messaggi ricevuti');
 
