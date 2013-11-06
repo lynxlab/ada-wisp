@@ -1266,6 +1266,7 @@ class CourseViewer
 //    $link_to_note = CDOMElement::create('a',"href:$http_root_dir/browsing/view.php?id_node={$params['node']['id_nodo']}");
 
     $divNodeObj = CDOMElement::create('div', 'id:Node'.$params['node']['id_nodo']);
+    $divNodeObj->setAttribute('class', 'commentContainer');
     if (!$params['node']['formNuovo']) {
         $dateInsertDiv = CDOMElement::create('span','class:dateInsert');
         $dateInsert = AMA_DataHandler::ts_to_date($params['node']['data_creazione'], "%d/%m/%Y %H:%M");
@@ -1333,8 +1334,9 @@ class CourseViewer
 			$link_to_note->addChild(new CText(translateFN('(leggi tutto)')));
 			$div_text->addChild(new CText(' '));
 			$div_text->addChild($link_to_note);
-		}
+		}		
 		$divNodeObj->addChild($div_text);
+		$divNodeObj->addChild(CDOMElement::create('div','class:clearfix'));
 	}
     $list_item->addChild($divNodeObj);
 //    print_r($params);
@@ -1343,12 +1345,14 @@ class CourseViewer
         $divForm = CDOMElement::create('div','class:noteForm');
         $noteForm = new AddNoteForm($userId, $instanceId, $params['node']['id_nodo']);
         $divForm->addChild(new CText($noteForm->getHtml()));
+        $list_item->addChild(CDOMElement::create('div','class:clearfix'));
         $list_item->addChild($divForm);
     } else {
         $divForm = CDOMElement::create('div','class:noteForm');
         $subject = $params['node']['nome_nodo'];
         $noteForm = new AddNoteForm($userId, $instanceId, $params['node']['id_nodo'],$subject);
         $divForm->addChild(new CText($noteForm->getHtml()));
+        $list_item->addChild(CDOMElement::create('div','class:clearfix'));
         $list_item->addChild($divForm);
     }
     $spanH3->addChild($list_item);
