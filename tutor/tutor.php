@@ -78,7 +78,7 @@ if (is_array($clients_list) && sizeof($clients_list) > 0) {
   $appointment_link_label  = translateFN('Proponi appuntamento');
   $status_opened_label     = translateFN('In corso');
   $status_closed_label     = translateFN('Terminato');
-  $eguidance_session_summary_link_label = translateFN('Eguidance summary');
+  $timeline_link_label = translateFN('Entra nella timeline');
 
   foreach($clients_list as $user_data) {
     $id_course_instance = $user_data['id_istanza_corso'];
@@ -95,15 +95,18 @@ if (is_array($clients_list) && sizeof($clients_list) > 0) {
     $user_link->addChild(new CText($user_data['nome'] . ' ' . $user_data['cognome']));
 
     $id_course = $user_data['id_corso'];
-    $id_node   = $id_course.'_'.ADA_DEFAULT_NODE;
-    $href = HTTP_ROOT_DIR.'/browsing/sview.php?id_course='.$id_course.'&id_node='.$id_node.'&id_course_instance='.$id_course_instance;
+    $href = HTTP_ROOT_DIR.'/tutor/service_info.php?id_course='.$id_course.'&id_user='.$user_data['id_utente'].'&id_course_instance='.$id_course_instance;
     $service_link = CDOMElement::create('a',"href:$href");
     $service_link->addChild(new CText(translateFN($user_data['titolo'])));
-    $current_timestamp = time();
 
     $user_history_link = CDOMElement::create('a', 'href:user_service_detail.php?id_user='.$user_data['id_utente'].'&id_course_instance='.$id_course_instance);
     $user_history_link->addChild(new CText($user_history_link_label));
 
+    $id_node   = $id_course.'_'.ADA_DEFAULT_NODE;
+    $href = HTTP_ROOT_DIR.'/browsing/sview.php?id_course='.$id_course.'&id_node='.$id_node.'&id_course_instance='.$id_course_instance;
+    $timeline_link = CDOMElement::create('a', "href:$href");
+    $timeline_link->addChild(new CText($timeline_link_label));
+    $current_timestamp = time();
 
     if($user_data['data_inizio'] > 0 && $user_data['data_fine'] > 0
        && $current_timestamp > $user_data['data_inizio']
@@ -117,22 +120,13 @@ if (is_array($clients_list) && sizeof($clients_list) > 0) {
       $appointment_link->setAttribute('onclick',$onclick);
       $appointment_link->addChild(new CText($appointment_link_label));
 
-
-      $href = 'eguidance_sessions_summary.php?id_user='.$user_data['id_utente'].'&id_course_instance='.$id_course_instance;
-      $eguidance_session_summary_link = CDOMElement::create('a', "href:$href");
-      $eguidance_session_summary_link->addChild(new CText($eguidance_session_summary_link_label));
-
-      $actions = BaseHtmlLib::plainListElement('class:actions',array($appointment_link, $eguidance_session_summary_link, $user_history_link));
+      $actions = BaseHtmlLib::plainListElement('class:actions',array($appointment_link, $timeline_link, $user_history_link));
 
     }
     else {
       $status = $status_closed_label;
 
-      $href = 'eguidance_sessions_summary.php?id_user='.$user_data['id_utente'].'&id_course_instance='.$id_course_instance;
-      $eguidance_session_summary_link = CDOMElement::create('a', "href:$href");
-      $eguidance_session_summary_link->addChild(new CText($eguidance_session_summary_link_label));
-
-      $actions = BaseHtmlLib::plainListElement('class:actions', array($eguidance_session_summary_link, $user_history_link));
+      $actions = BaseHtmlLib::plainListElement('class:actions', array($timeline_link, $user_history_link));
     }
 
     $tbody_data[] = array(

@@ -36,16 +36,17 @@ $neededObjAr = array(
 require_once ROOT_DIR . '/include/module_init.inc.php';
 $self = whoami();
 include_once 'include/tutor_functions.inc.php';
+require_once ROOT_DIR . '/include/FileUploader.inc.php';
 
 /*
  * YOUR CODE HERE
  */
-require_once ROOT_DIR . '/include/Forms/UserProfileForm.inc.php';
+require_once ROOT_DIR . '/include/Forms/TutorProfileForm.inc.php';
 
 $languages = Translator::getLanguagesIdAndName();
 
 if (isset($_SERVER['REQUEST_METHOD']) && $_SERVER['REQUEST_METHOD'] == 'POST') {
-    $form = new UserProfileForm($languages, true);
+    $form = new TutorProfileForm($languages, true);
     $form->fillWithPostData();
 
     if ($form->isValid()) {
@@ -73,7 +74,7 @@ if (isset($_SERVER['REQUEST_METHOD']) && $_SERVER['REQUEST_METHOD'] == 'POST') {
         exit();
     }
 } else {
-    $form = new UserProfileForm($languages, true);
+    $form = new TutorProfileForm($languages, true);
     $user_dataAr = $userObj->toArray();
     unset($user_dataAr['password']);
     $user_dataAr['email'] = $user_dataAr['e_mail'];
@@ -87,11 +88,22 @@ $help = translateFN('Modifica dati utente');
 
 $layout_dataAr['JS_filename'] = array(
 		JQUERY,
+		JQUERY_UI,
 		JQUERY_MASKEDINPUT,
-		JQUERY_NO_CONFLICT
+		JQUERY_NO_CONFLICT,
+		ROOT_DIR.'/js/include/jquery/pekeUpload/pekeUpload.js'
 );
 
-$optionsAr['onload_func'] = 'initDateField();';
+$layout_dataAr['CSS_filename'] = array(
+		JQUERY_UI_CSS,
+		ROOT_DIR.'/js/include/jquery/pekeUpload/pekeUpload.css'
+);
+
+$maxFileSize = (int) (ADA_FILE_UPLOAD_MAX_FILESIZE / (1024*1024));
+
+$optionsAr['onload_func'] = 'initDoc('.$maxFileSize.','. $userObj->getId().');';
+
+//$optionsAr['onload_func'] = 'initDateField();';
 
 $content_dataAr = array(
     'user_name' => $user_name,

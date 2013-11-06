@@ -25,17 +25,21 @@ class TutorModuleHtmlLib
   // MARK: methods used to display forms and data for the eguidance session
 
   static public function getServiceDataTable($service_dataAr) {
-
+      
+      $avalaibleServiceTypeAr = array(translateFN('Help per studenti'),translateFN('Area comune'), translateFN('Area comune studenti'));
    // S.nome, S.descrizione, S.livello, S.durata_servizio, S.min_incontri, S.max_incontri, S.durata_max_incontro
     $thead = array(translateFN('Service data'),'');
     $tbody = array(
       array(translateFN('Name'), $service_dataAr[1]),
       array(translateFN('Description'), $service_dataAr[2]),
-      array(translateFN('Level'), $service_dataAr[3]),
+      array(translateFN('Level'), $avalaibleServiceTypeAr[$service_dataAr[3]])
+/*        
       array(translateFN('Duration'), $service_dataAr[4]),
       array(translateFN('Min incontri'), $service_dataAr[5]),
       array(translateFN('Max incontri')       , $service_dataAr[6]),
       array(translateFN('Durata max incontro'), $service_dataAr[7])
+ * 
+ */
     );
     return BaseHtmlLib::tableElement('', $thead, $tbody);
   }

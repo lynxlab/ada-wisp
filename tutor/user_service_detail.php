@@ -197,7 +197,7 @@ $content_dataAr = array(
   'status'    => $status,
   'path'      => $module,
   'label'     => $label,
-  'dati'      => $data
+  'data'      => $data
 );
 
 ARE::render($layout_dataAr, $content_dataAr);
