@@ -21,8 +21,9 @@ html,body {
 }
 
 #submenubanner {
-	background: #FFA400;
+	background: #bf236c;
 	color: #FFFFFF;
+	padding: 0 5px;
 }
 
 #newscont {
@@ -31,18 +32,23 @@ html,body {
 }
 
 #newscont .news {
-	width: 30%;
+	width: 28%;
 	float: left;
-	background: #9da5b8;
-	color: #fff;
-	margin-right: 5px;
-	padding: 10px;
-	height: 175px;
+	color: #000000;
+	min-height: 310px;
 	position: relative;
+	background: none repeat scroll 0 0 #EAEAEA;
+    border: 1px dotted #F5F5DC;
+    border-radius: 10px 10px 10px 10px;
+    box-shadow: 0 5px 15px 0 rgba(120, 120, 120, 0.4);
+    margin: 5px 20px 20px 0;
+    padding: 20px;
+	
+	
 }
 
 #newscont .news .newstitle {
-	font-size: 150%;
+	font-size: 125%;
 	font-weight: bold;
 }
 

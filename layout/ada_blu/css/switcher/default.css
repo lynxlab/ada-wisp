@@ -10,7 +10,7 @@ ul.inline_menu li {
 ul.inline_menu li a:link,
 ul.inline_menu li a:visited{
     color:#222;
-    background:#f0f0f0;
+    background:#b7b7b7;
     padding:1px;
     display:block;
     padding:2px;
@@ -19,7 +19,7 @@ ul.inline_menu li a:visited{
 
 ul.inline_menu li a:hover {
     color:#222;
-    background:#d0d0d0;
+    background:#bf236C;
     padding:1px;
     display:block;
     padding:2px;

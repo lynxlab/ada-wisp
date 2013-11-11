@@ -11,7 +11,7 @@ A IMG {border:none;}
 table,tbody, tr, td, th { border-collapse: collapse;font-weight: inherit;font-style: inherit;font-size: 100%;line-height: 1;
 						  font-family: inherit;text-align: left;vertical-align: baseline;}
 						  
-thead { border-collapse: collapse; background: #ececea; height:30px; font-weight: bold; line-height: 1; font-style: inherit;
+thead { border-collapse: collapse; background: #b7b7b7; height:30px; font-weight: bold; line-height: 1; font-style: inherit;
 		font-size: 100%;line-height: 1;font-family: inherit;text-align: center; vertical-align: baseline;}
 		
 th{ vertical-align:middle; text-transform: uppercase; }
@@ -33,15 +33,31 @@ a:visited { text-decoration: none; }
 /*#header {margin:0 0 15px 0;}*/
 #mainmenucom { position: absolute; top: 20px; left:0px; margin:0 0px 0 0px; padding: 0; z-index: 1000; width:100%; }
 /*#journey {display:none;}*/
+
+#journey {
+    margin: 10px 20px 5px;
+}
+
+
 #journey_std {
-    background: url("../../img/journey-pattern.png") repeat-x scroll 0 0 transparent;
+   /* sostituito per problemi in chatrooms */
+   /*  
+   background: url("../../img/journey-pattern.png") repeat-x scroll 0 0 transparent;
     height: 35px;
     line-height: 35px;
     margin: 0;
     padding: 0 0 0 10px;
+    */
+    background: none repeat scroll 0 0 #BF236C;
+    color: #FFFFFF;
+    height: 28px;
+    line-height: 35px;
+    margin-top: 12px;
+    padding: 0 0 0 10px;
 }
-#user_wrap 	{background:#1665ad 99% 50%; width:100%}
-#content	{background:#fff; padding:10px; clear:both;min-height:350px;border-bottom:10px solid #c9c9c9;}
+
+#user_wrap 	{background:#005281 url(../../img/userid.png) no-repeat 99% 50%; width:100%}
+#content	{background:#fff; padding:10px; clear:both;min-height:350px;border-bottom:10px solid #005281;}
 
 /* CLEAR FIX*/
 #user_wrap:after {content: "."; display: block; height: 0; clear: both; visibility: hidden;}
@@ -51,8 +67,8 @@ a:visited { text-decoration: none; }
 /* MENU
 ----------------------------------------------- */
 #menu {  background-color:#61aba7; border:10px solid white; }
-UL#menu  {margin:0 20px 0 300px; padding:0; height:50px; line-height:50px; list-style-type:none;}
-UL#menu  LI {margin:0; padding:0; list-style-type:none; float:left; margin:0 0px 0 20px; }
+UL#menu  {margin:5px 10px 0 300px; padding:0; height:50px; line-height:50px; list-style-type:none;}
+/* UL#menu  LI {margin:0; padding:0; list-style-type:none; float:left; margin:0 0px 0 20px; } */
 UL#menu LI A {text-transform: lowercase; color:#fff; font-weight:bold; text-decoration:none;}
 
 #menu_std {
@@ -79,7 +95,7 @@ UL#menu_std LI A {text-transform: lowercase; color:#fff; font-weight:bold; text-
 
 /*azioni*/
 
-.bottomsubmenu {width:300px;height:20px;background: url(../../img/bottomsubmenu.png) no-repeat;}
+/* .bottomsubmenu {width:300px;height:20px;background: url(../../img/bottomsubmenu.png) no-repeat;} */
 #menu span{ font-style: normal;}
 #dropdownmenu { width: 1%;}
 #dropdownmenu a:link, #dropdownmenu a:visited {color: White;}
@@ -87,19 +103,19 @@ UL#menu_std LI A {text-transform: lowercase; color:#fff; font-weight:bold; text-
 
 
 #submenu_actions { position: absolute; left: 395px; top: 60px; padding: 0;}
-#submenu_actions li { display: block; list-style: none; background: #8a8a8a; line-height:50px; }
+#submenu_actions li { display: block; list-style: none; background: #7da238; line-height:50px; }
 #submenu_actions ul{padding: 0;margin: 0;}
 
-#_actionscontent {background: #8a8a8a;padding-left: 1px;}
+#_actionscontent {background: #7da238;padding-left: 1px;}
 
 #submenu_actions_read {	position: absolute; width:275px; left: 493px; top: 60px; padding: 0;}
 #submenu_actions_read li { display: block;	list-style: none; background: #61ABA7;}
 #submenu_actions_read ul { padding: 0; margin: 0;}
 /* LABEL
 ----------------------------------------------- */
-#label {float:left; background:#1665AD no-repeat right top; width:30%; padding:0 0 0 10px;}
+#label {float:left; background:#005281 no-repeat right top; width:30%; padding:0 0 0 10px;}
 #label H1 {margin:0; padding:20px 0 5px 0; font-size:1.2em; color:whitesmoke}
-#user_data {float:right; width:60%; color:#000; text-align:right; padding:10px 40px 0 0;}
+#user_data {float:right; width:60%; color:#fff; text-align:right; padding:10px 40px 0 0;}
 
 
 /* SEND MESSAGES
@@ -126,14 +142,14 @@ TEXTAREA {width:400px;}
 /* SEND EVENT
 ----------------------------------------------- */
 
-#send_event_proposal_form { margin-top: 30px;margin-left: 50px;}
+#send_event_proposal_form { margin-top: 30px; /* margin-left: 50px;*/ }
 #send_event_proposal_form .proposed_date { padding: 5px;}
 #send_event_proposal_form .error { 	font-size: 110%; color:#cc0000; font-weight:bold;font-size:0.9em; }
 #send_event_proposal_form .date_input { margin-left: 20px; 	margin-right: 20px;}
 #send_event_proposal_form textarea { width: 300px; 	height: 100px; }
 #send_event_proposal_form .proposal_title { margin-bottom: 10px; }
 #send_event_proposal_form .proposal_type {	margin-bottom: 20px; }
-#send_event_proposal_form #buttons {margin:10px 0 0 40px;}
+#send_event_proposal_form #buttons {margin:10px 0 0 40px; text-align: center; }
 
 #type { margin-left:20px;}
 #time1, #time2, #time3 { margin-left: 20px;}
@@ -166,7 +182,7 @@ TEXTAREA {width:400px;}
 
 /*classi per le righe pari e dispari*/
 .default_tr_even { background-color: #fff; }
-.default_tr_odd { 	background-color: #f6f6f6; }
+.default_tr_odd { 	background-color: #b7b7b7; }
 #menuright .default_tr_even, #mainmenu .default_tr_even, #com_tools .default_tr_even {background-color: transparent;}
 #menuright .default_tr_odd, #mainmenu .default_tr_odd, #com_tools .default_tr_odd { background-color: transparent;}
 
