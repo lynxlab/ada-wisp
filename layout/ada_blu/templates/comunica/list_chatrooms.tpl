@@ -225,7 +225,7 @@
                     <div id="_comcontent">
                         <ul>
                             <li>
-                                <a href="#" onclick='openMessenger("../comunica/list_messages.php",640,400);'>
+                                <a href="#" onclick='openMessenger("../comunica/list_messages.php",800,600);'>
                                     <i18n>messaggeria</i18n>
                                 </a>
                             </li>
@@ -248,7 +248,7 @@
                     <div id="_toolscontent">
                         <ul>
                             <li>
-                                <a href="#" onclick='openMessenger("../comunica/list_events.php",640,400);'>
+                                <a href="#" onclick='openMessenger("../comunica/list_events.php",800,600);'>
                                     <i18n>agenda</i18n>
                                 </a>
                             </li>

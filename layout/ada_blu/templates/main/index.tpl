@@ -64,7 +64,7 @@
                 </div>    
 		<div class="helpcont column">
                   <div class="lynxRSS portlet">
-                    <div class="portlet-header">RSS Notizie dal mondo Lynx</div>
+                    <div class="portlet-header">RSS Feeds</div>
                     <div class="portlet-content">
                         <template_field class="template_field" name="lynxRSS">lynxRSS</template_field>
                     </div>
@@ -85,8 +85,13 @@
 <br class="clearfix">
 </div>
 
-<div id="newscont">
-	<template_field class="template_field" name="bottomnews">bottomnews</template_field> 	
+<div id="newscont" class="column">
+   <div class="portlet">
+     <div class="portlet-header"><i18n>Ultime news</i18n></div>
+        <div class="portlet-content">
+	  <template_field class="template_field" name="bottomnews">bottomnews</template_field> 	
+	</div>
+   </div>	
 </div>
 <br class="clearfix">
 <div id="bottomcont"></div>

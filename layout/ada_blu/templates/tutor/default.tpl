@@ -108,7 +108,12 @@
         
         <!-- MENU A TENDINA -->
         <div id="mainmenu">
-            <template_field class="microtemplate_field" name="mainmenu">mainmenu</template_field>
+            <ul id="menu">
+                <li id="home"> <a href="tutor.php">
+                        <i18n>home</i18n>
+                    </a> </li></ul>
+           <!-- <template_field class="microtemplate_field" name="mainmenu">mainmenu</template_field-->
+
         </div>
         <!-- / MENU A TENDINA -->
 
