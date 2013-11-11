@@ -66,6 +66,10 @@ if (isset($_SERVER['REQUEST_METHOD']) && $_SERVER['REQUEST_METHOD'] == 'POST') {
         $userObj->setPhoneNumber($_POST['telefono']);
         $userObj->setProfile($_POST['profilo']);
         $userObj->setLanguage($_POST['lingua']);
+        
+        if (isset($_SESSION['importHelper']['fileNameWithoutPath'])) $userObj->setAvatar($_SESSION['importHelper']['fileNameWithoutPath']);
+        $userObj->setCap($_POST['cap']);
+        
         MultiPort::setUser($userObj, array(), true);
 
         $navigationHistoryObj = $_SESSION['sess_navigation_history'];
