@@ -62,7 +62,7 @@ if(!AMA_DataHandler::isError($courseInstances)) {
                 if (!AMA_DataHandler::isError($serviceForInstanceAr)) {
                     if ($serviceForInstanceAr[3] == ADA_SERVICE_HELP) {
                         $courseInstanceHelpAr[] = $c;
-                    }elseif ($serviceForInstanceAr[3] == ADA_SERVICE_COMMON) {
+                    }elseif ($serviceForInstanceAr[3] == ADA_SERVICE_COMMON || ($serviceForInstanceAr[3] == ADA_SERVICE_COMMON_STUDENT && $userObj->getSerialNumber () != '')) {
                         $courseInstanceCommonAreaAr[] = $c;
                     } 
                 }
