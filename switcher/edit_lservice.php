@@ -107,7 +107,8 @@ if (isset($_SERVER['REQUEST_METHOD']) && $_SERVER['REQUEST_METHOD'] == 'POST') {
                     $fieldsAr = array('data_inizio', 'data_inizio_previsto', 'durata', 'data_fine', 'title');
                     $id_course = $_POST['id_corso'];
                     $instancesAr = $dh->course_instance_get_list($fieldsAr, $id_course);
-                    if ($_POST['common_area'] && !AMA_DataHandler::isError($instancesAr) && count($instancesAr) == 0) {
+                    if (($_POST['common_area'] == ADA_SERVICE_COMMON || $_POST['common_area'] == ADA_SERVICE_COMMON_STUDENT || $_POST['common_area'] == ADA_SERVICE_COMMON_TUTOR)
+                            && !AMA_DataHandler::isError($instancesAr) && count($instancesAr) == 0) {
                         $course_instanceAr = array(
                             'data_inizio_previsto' => time(), // dt2tsFN($_POST['data_inizio_previsto']),
                             'durata' => '730', /* two years*/ // $_POST['durata'],
@@ -213,7 +214,8 @@ if (isset($_SERVER['REQUEST_METHOD']) && $_SERVER['REQUEST_METHOD'] == 'POST') {
                     'static_mode' => $courseObj->getStaticMode(),
                     'data_creazione' => $courseObj->getCreationDate(),
                     'data_pubblicazione' => $courseObj->getPublicationDate(),
-                    'common_area' => $common_area ? 1 : 0,
+//                    'common_area' => $common_area ? 1 : 0,
+                    'common_area' => $common_area,
                     'crediti' =>  $courseObj->getCredits() // modifica in Course
                 );
                 $form->fillWithArrayData($formData);

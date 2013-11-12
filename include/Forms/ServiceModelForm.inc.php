@@ -74,12 +74,31 @@ class ServiceModelForm extends FForm {
          */
         
         $desc = translateFN('Livello servizio:');
+        $service_type = array(
+                    ADA_SERVICE_HELP => translateFN('Help per studente'), 
+                    ADA_SERVICE_COMMON => translateFN('Area di interazione per utenti registrati'),
+                    ADA_SERVICE_COMMON_STUDENT => translateFN('Area comune per studenti'),
+                    ADA_SERVICE_COMMON_TUTOR => translateFN('Area riservata ai tutor'),
+                );
+
+        $this->addSelect('common_area',$desc,$service_type,0)
+             ->setRequired();
+//             ->setValidator(FormValidator::POSITIVE_NUMBER_VALIDATOR);
+
+/*        
         $this->addRadios(
                 'common_area',
                 $desc,
-                array(0 => translateFN('Help per studente'), 1 => translateFN('Area di interazione per utenti registrati')),
+                array(
+                    ADA_SERVICE_HELP => translateFN('Help per studente'), 
+                    ADA_SERVICE_COMMON => translateFN('Area di interazione per utenti registrati'),
+                    ADA_SERVICE_COMMON_STUDENT => translateFN('Area comune per studenti'),
+                    ADA_SERVICE_COMMON_TUTOR => translateFN('Area riservata ai tutor'),
+                ),
                 0);
-        
+ * 
+ */
+
         $this->addHidden('id_nodo_iniziale')->withData(0);
         $this->addHidden('crediti')->withData(0);
         $this->addHidden('id_nodo_toc');

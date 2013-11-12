@@ -121,7 +121,8 @@ if (isset($_SERVER['REQUEST_METHOD']) && $_SERVER['REQUEST_METHOD'] == 'POST') {
                     /* *
                      * if needed it creates the instance and chat...
                      */
-                    if ($_POST['common_area']) {
+                    if ($_POST['common_area'] == ADA_SERVICE_COMMON || $_POST['common_area'] == ADA_SERVICE_COMMON_STUDENT 
+                            || $_POST['common_area'] == ADA_SERVICE_COMMON_TUTOR) {
                         $course_instanceAr = array(
                             'data_inizio_previsto' => time(), // dt2tsFN($_POST['data_inizio_previsto']),
                             'data_inizio' => time(), // dt2tsFN($_POST['data_inizio_previsto']),

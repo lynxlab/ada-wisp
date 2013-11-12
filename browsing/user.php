@@ -302,7 +302,7 @@ if(!AMA_DataHandler::isError($courseInstances)) {
                      $courseIdToSub = $singleServiceInstanceAr[1];
                      $serviceForInstanceAr = $common_dh->get_service_info_from_course($courseIdToSub);
                      if (!AMA_DataHandler::isError($serviceForInstanceAr)) {
-                         if ($serviceForInstanceAr[3] == ADA_SERVICE_COMMON) {
+                         if ($serviceForInstanceAr[3] == ADA_SERVICE_COMMON || ($serviceForInstanceAr[3] == ADA_SERVICE_COMMON_STUDENT && $userObj->getSerialNumber() != '')) {
                              array_push($commonAreaToSubscibeAr, $singleServiceInstanceAr);
                          }
                      }
