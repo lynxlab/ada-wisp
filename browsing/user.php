@@ -222,7 +222,6 @@ if(!AMA_DataHandler::isError($courseInstances)) {
                         } elseif ($isStarted && !$isEnded) {
                                 $tutorAssignedAR = $dh->course_instance_tutor_info_get($courseInstanceId,1);
                                 if (!AMA_DataHandler::isError($tutorAssignedAR) && sizeof($tutorAssignedAR) > 0 && $tutorAssignedAR[0] != '') {
-                                    print_r($tutorAssignedAR);
                                     $tutorText = translateFN('il moderatore dell\'area è').' '. ucfirst($tutorAssignedAR[1]) . ' ' . ucfirst($tutorAssignedAR[2]);
                                 } else {
                                     $tutorText = '';
