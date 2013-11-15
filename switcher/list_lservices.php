@@ -47,6 +47,7 @@ if(is_array($coursesAr) && count($coursesAr) > 0) {
     $thead_data = array(
        translateFN('id'),
        translateFN('codice'),
+       translateFN('livello servizio'),
        translateFN('titolo'),
        translateFN('descrizione'),
        translateFN('azioni')
@@ -60,25 +61,72 @@ if(is_array($coursesAr) && count($coursesAr) > 0) {
     foreach($coursesAr as $course) {
         $courseId = $course[0];
         if ($courseId == PUBLIC_COURSE_ID_FOR_NEWS) continue;
+        
+        $serviceInfo = $common_dh->get_service_info_from_course($courseId);
+		$isServiceCommonLevel = false;
+        if (!AMA_DB::isError($serviceInfo))
+        {
+        		switch ($serviceInfo[3])
+        		{
+        			case ADA_SERVICE_HELP:
+        				$serviceLevelTxt = translateFN('Help per studente');
+        				break;
+        			case ADA_SERVICE_COMMON:
+        				$serviceLevelTxt = translateFN('Area di interazione per utenti registrati');
+        				$isServiceCommonLevel = true;
+        				break;
+        			case ADA_SERVICE_COMMON_STUDENT:
+        				$serviceLevelTxt = translateFN('Area comune per studenti');
+        				$isServiceCommonLevel = true;
+        				break;
+        			case ADA_SERVICE_COMMON_TUTOR:
+        				$serviceLevelTxt = translateFN('Area riservata ai tutor');
+        				$isServiceCommonLevel = true;
+        				break;
+        			default:
+        				$serviceLevelTxt = translateFN("N/A");
+        				break;
+        		}
+        }
+        else $serviceLevelTxt = translateFN("N/A");
+        
+        if ($isServiceCommonLevel && $dh->course_has_instances($courseId))
+        {
+        	$instancesList = $dh->course_instance_get_list(null, $courseId);
+        	// get the first instance id as we're dealing with single instances courses
+        	$instanceId = intval($instancesList[0][0]);
+        	unset ($instancesList);
+        } else $instanceId = -1;
 
 //        $edit_link = BaseHtmlLib::link("edit_lservice.php?id_course=$courseId", $edit_img->getHtml());
         $edit_link = BaseHtmlLib::link("edit_lservice.php?id_course=$courseId", translateFN('Edit'));
         //$view_link = BaseHtmlLib::link("view_course.php?id_course=$courseId", $view_img->getHtml());
-        $instances_link = BaseHtmlLib::link("list_users_service.php?id_course=$courseId", translateFN('Users'));
+        
+        // if service is common and has the instance, the 'users' link will be different
+        if($isServiceCommonLevel && $instanceId!==-1)
+        {
+        	$queryString = "?id_course=$courseId&id_course_instance=$instanceId";
+        	$instances_href = "course_instance.php".$queryString;
+        	$assign_practitioner_link = BaseHtmlLib::link("assign_tutor.php".$queryString, translateFN('Orientatore'));
+        }
+        else
+        {
+        	$instances_href = "list_users_service.php?id_course=$courseId";
+        	$assign_practitioner_link = null;
+        }
+        $instances_link = BaseHtmlLib::link($instances_href, translateFN('Users'));        
 //        $instances_link = BaseHtmlLib::link("list_users.php?id_course=$courseId", $instances_img->getHtml());
         //$add_instance_link = BaseHtmlLib::link("add_instance.php?id_course=$courseId", translateFN('Add instance'));
         $delete_course_link = BaseHtmlLib::link("delete_lservice.php?id_course=$courseId", translateFN('Delete'));
-        $actions = BaseHtmlLib::plainListElement('class:inline_menu',
-                array(
-                    $edit_link,
-                    //$view_link,
-                    $instances_link,
-                    //$add_instance_link,
-                    $delete_course_link
-                )
-        );
+        
+        // build up the actions array
+        $actionsArr = array ($edit_link,$instances_link);
+        if (!is_null($assign_practitioner_link)) $actionsArr[] = $assign_practitioner_link;
+        $actionsArr[] = $delete_course_link;
+        
+        $actions = BaseHtmlLib::plainListElement('class:inline_menu', $actionsArr);
 
-        $tbody_data[] = array($courseId, $course[1],  $course[2], $course[3], $actions);
+        $tbody_data[] = array($courseId, $course[1], $serviceLevelTxt, $course[2], $course[3], $actions);
     }
     $data = BaseHtmlLib::tableElement('class:sortable', $thead_data, $tbody_data);
 } else {
@@ -104,4 +152,20 @@ $content_dataAr = array(
     'messages' => $user_messages->getHtml()
 );
 
-ARE::render($layout_dataAr, $content_dataAr);
+$layout_dataAr['JS_filename'] = array(
+		JQUERY,
+		JQUERY_DATATABLE,
+		JQUERY_NO_CONFLICT
+);
+
+$layout_dataAr['CSS_filename']= array(
+		JQUERY_DATATABLE_CSS
+);
+
+$render = null;
+$options['onload_func'] = 'initListLservices();';
+
+/**
+ * Sends data to the rendering engine
+ */
+ARE::render($layout_dataAr, $content_dataAr, $render, $options);
