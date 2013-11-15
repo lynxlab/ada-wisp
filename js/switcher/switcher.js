@@ -81,6 +81,24 @@ function dataTablesExec() {
         
 }
 
+function initListLservices() {
+	$j('table.sortable').dataTable( {		
+        "bLengthChange" : false,
+		"bFilter" : true,
+		"bInfo" : false,
+		"bSort" : true,
+		"bAutoWidth" : true,
+		"bDeferRender" : true,
+		'aoColumnDefs' : [ {
+			"bSortable" : false,
+			"aTargets" : [ 5 ]
+		} ],
+		"aoColumns" : [ null, null, null, null, null, null ],
+		"bPaginate" : false
+	}).show();	
+}
+
+
 /*
         $(document).ready(function() {
                 $('#listaImmobili').dataTable({
