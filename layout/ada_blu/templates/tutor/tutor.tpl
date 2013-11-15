@@ -36,6 +36,7 @@
                         </div>
                         
 			<div id="twobox">
+				<div id="boxone">
 				<!-- blocco1 -->
 				<div id="blocco_uno">
 					<div id="bloccoUnoTitoloContenitore">
@@ -47,6 +48,31 @@
 					</div>
 				</div>
 				<!-- blocco1 end -->
+				
+				<div id="blocco_tre">					
+					<div id="bloccoTreTitoloContenitore">
+                                          <template_field class="template_field" name="bloccoTreTitolo">bloccoTreTitolo</template_field>
+                            </div>
+ 					<div id="content_blocco_tre">
+                                                <template_field class="template_field" name="dati3">dati3</template_field>
+ 
+					</div>
+									</div>
+				<!-- blocco3 end -->
+				
+				<div id="blocco_quattro">
+					
+										<div id="bloccoQuattroTitoloContenitore">
+                                                <template_field class="template_field" name="bloccoQuattroTitolo">bloccoQuattroTitolo</template_field>
+                                        </div>
+ 					<div id="content_blocco_quattro">
+                                                <template_field class="template_field" name="dati4">dati4</template_field>
+ 
+					</div>
+									</div>
+				<!-- blocco4 end -->
+				</div> <!--  boxone end -->
+				<div id="boxtwo">
 				<!-- blocco2 -->
 				<div id="blocco_due">
 					<div id="bloccoDueTitoloContenitore">
@@ -62,6 +88,7 @@
 				</div>
 				<!-- blocco2 end -->
 			</div>
+			</div> <!--  box 2 end -->
                         <br class="clearfix">
                         
                     </div>

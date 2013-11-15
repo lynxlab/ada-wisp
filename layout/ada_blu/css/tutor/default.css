@@ -37,3 +37,5 @@
     width:500px;
     border:solid 1px #000;
 }
+
+#userSummary { width:90%; margin: 0 auto; }

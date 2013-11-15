@@ -74,6 +74,29 @@
                     <!-- start tre blocchi grafici homepage -->
 
 			<div id="twobox">
+				<div id="boxone">
+								<!-- giorgio, blocco "3" con RSS -->
+				<div id="blocco_tre">
+					<div id="bloccoTreTitoloContenitore"><h2>RSS</h2>
+                                        </div>
+					<div id="content_blocco_tre">
+                                                <template_field class="template_field" name="clientRSS">clientRSS</template_field>
+                                        </div>
+				</div>
+                                <!-- fine blocco RSS-->
+				</div> <!--  boxone end -->
+				<div id="boxtwo">
+<!-- blocco2 -->
+				<div id="blocco_due">
+					<div id="bloccoDueTitoloContenitore">
+                                                <template_field class="template_field" name="bloccoDueTitolo">bloccoDueTitolo</template_field>
+                                        </div>
+					<div id="content_blocco_due">
+                                                <template_field class="template_field" name="bloccoDueContenuto">bloccoDueContenuto</template_field>
+                                                <template_field class="template_field" name="bloccoDueIscrizione">bloccoDueIscrizione</template_field>
+                                        </div>
+				</div>
+				<!-- blocco2 end -->			
 				<!-- blocco1 -->
 				<div id="blocco_uno">
 					<div id="bloccoUnoTitoloContenitore">
@@ -88,17 +111,7 @@
 					</div>
 				</div>
 				<!-- blocco1 end -->
-				<!-- blocco2 -->
-				<div id="blocco_due">
-					<div id="bloccoDueTitoloContenitore">
-                                                <template_field class="template_field" name="bloccoDueTitolo">bloccoDueTitolo</template_field>
-                                        </div>
-					<div id="content_blocco_due">
-                                                <template_field class="template_field" name="bloccoDueContenuto">bloccoDueContenuto</template_field>
-                                                <template_field class="template_field" name="bloccoDueIscrizione">bloccoDueIscrizione</template_field>
-                                        </div>
-				</div>
-				<!-- blocco2 end -->
+                </div> <!--  boxtwo end -->
 			</div>
 			<!-- end due blocchi grafici homepage -->
                         <br class="clearfix">
