@@ -25,13 +25,14 @@ $variableToClearAR = array('layout', 'user');
 /**
  * Users (types) allowed to access this module.
  */
-$allowedUsersAr = array(AMA_TYPE_TUTOR);
+$allowedUsersAr = array(AMA_TYPE_TUTOR, AMA_TYPE_SWITCHER);
 
 /**
  * Get needed objects
  */
 $neededObjAr = array(
-  AMA_TYPE_TUTOR => array('layout')
+  AMA_TYPE_TUTOR => array('layout'),
+  AMA_TYPE_SWITCHER => array('layout')
 );
 
 require_once ROOT_DIR.'/include/module_init.inc.php';
@@ -46,7 +47,8 @@ if($sess_navigationHistory->callerModuleWas('quitChatroom')
   $is_popup = TRUE;
 }
 else {
-    $self =  'tutor';
+  // $self =  'tutor';
+  $self = 'default';
   $is_popup = FALSE;
 }
 
@@ -134,14 +136,17 @@ else {
                          translateFN("Dati in input per il modulo eguidance_tutor_form non corretti"),
                          NULL, NULL, NULL, $userObj->getHomePage());
     }
+    $id_course_instance = ADAEventProposal::extractCourseInstanceIdFromThisToken($event_token);
+  }
+  else if (isset($_GET['id_course_instance']))
+  {
+  	$id_course_instance = intval($_GET['id_course_instance']);
   }
   else {
     $errObj = new ADA_Error(NULL,
                          translateFN("Dati in input per il modulo eguidance_tutor_form non corretti"),
                          NULL, NULL, NULL, $userObj->getHomePage());
   }
-
-  $id_course_instance = ADAEventProposal::extractCourseInstanceIdFromThisToken($event_token);
 
   /*
    * Get service info
@@ -249,7 +254,8 @@ $content_dataAr = array(
   'status'    => $status,
   'dati'      => $form->getHtml()
 );
-
+// if it's default.tpl the template field is data and NOT dati
+$content_dataAr['data'] = $content_dataAr['dati'];
 /**
  * @author giorgio 06/nov/2013
  *
