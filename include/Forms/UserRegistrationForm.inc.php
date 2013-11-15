@@ -57,6 +57,34 @@ class UserRegistrationForm extends FForm
              '0');
 
         $this->addTextInput('matricola', translateFN('numero di matricola (se studente)'));
+        
+        $accetto = translateFN ('accetto i');
+        $termini = translateFN('termini di servizio e le norme sulla privacy');
+        
+        if (defined('PRIVACY_DOC'))
+        {
+	        $privacyPath = ROOT_DIR;
+	        
+	        if (!MULTIPROVIDER) {
+	        	$privacyPath .= '/clients/'.$GLOBALS ['user_provider'];
+	        }	        
+	        $privacyPath .= '/docs/'.PRIVACY_DOC;
+	        if (is_file($privacyPath)) {
+	        	$privacyLbl = '<a href="'.str_replace(ROOT_DIR, HTTP_ROOT_DIR, $privacyPath).'" target="_blank">'.$termini.'</a>';
+	        }
+	        else {
+	        	$privacyLbl = $termini;
+	        }
+        } else $privacyLbl = $termini;
+        
+        if ($_SESSION['sess_userObj'] instanceof ADAGuest)
+        {
+	        $this->addSelect ('privacy', $accetto.' '.$privacyLbl,
+	        		array (0=>translateFN('No'), 1=>translateFN('Sì')), 0 )
+	        		->setRequired()
+	        		->setValidator(FormValidator::POSITIVE_NUMBER_VALIDATOR);
+        }
+        
 /*
  * 
         if ($cod) {
