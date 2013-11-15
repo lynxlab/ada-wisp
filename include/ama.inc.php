@@ -1956,7 +1956,7 @@ class AMA_Common_DataHandler extends Abstract_AMA_DataHandler {
     "WHERE  st.id_servizio = s.id_servizio AND st.id_tester = t.id_tester ORDER BY s.livello";
         */
         // query only  in tester table
-        $service_sql = "SELECT st.id_servizio, s.nome, s.livello, st.id_corso, st.id_tester, t.nome, t.provincia, t.nazione
+        $service_sql = "SELECT st.id_servizio, s.nome, s.livello, st.id_corso, st.id_tester, t.nome, t.provincia, t.nazione, s.descrizione
      FROM servizio_tester AS st,  servizio AS s, tester AS t
      WHERE  st.id_servizio = s.id_servizio AND st.id_tester = t.id_tester $clause $orderByFields";
         //echo $service_sql;
@@ -9835,7 +9835,7 @@ abstract class AMA_Tester_DataHandler extends Abstract_AMA_DataHandler {
         $sql = "SELECT
 					ts.`id_utente_tutor`,
 					c.`id_corso`, c.`titolo`, c.`id_utente_autore`,
-					i.`id_istanza_corso`, i.`title`
+					i.`id_istanza_corso`, i.`title`, i.`data_inizio`, i.`data_inizio_previsto`, i.`data_fine`
 				FROM `tutor_studenti` ts
 				JOIN `istanza_corso` i ON (i.`id_istanza_corso`=ts.`id_istanza_corso`)
 				JOIN `modello_corso` c ON (c.`id_corso`=i.`id_corso`)";
