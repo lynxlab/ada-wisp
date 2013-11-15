@@ -3,9 +3,26 @@ document.write("<script type='text/javascript' src='../js/include/menu_functions
 
 function initDoc()
 {
-
 	$j(document).ready(function() {
 		if ($j().uniform) $j("select, input, a.button, button, textarea").uniform();
+		
+		if ($j('#userSummary').length > 0)
+		{
+			$j('#userSummary').dataTable( {		
+		        "bLengthChange" : false,
+				"bFilter" : false,
+				"bInfo" : false,
+				"bSort" : true,
+				"bAutoWidth" : true,
+				"bDeferRender" : true,
+				'aoColumnDefs' : [ {
+					"bSortable" : false,
+					"aTargets" : [ 0 ]
+				} ],
+				"aoColumns" : [ null, null, { 'sType': "date-eu" }, null ],
+				"bPaginate" : false
+			}).show();			
+		}
 	});	
 }
 
