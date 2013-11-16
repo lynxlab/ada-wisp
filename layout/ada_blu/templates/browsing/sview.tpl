@@ -27,29 +27,7 @@
             <!-- / percorso -->
             <!--dati utente-->
             <div id="status_bar">
-            <div id="user_data" class="user_data_default">
-                <span class="avatar_user">
-                    <template_field class="template_field" name="user_avatar">user_avatar</template_field>
-                </span>   
-                <i18n>utente: </i18n>
-                <span>
-                    <template_field class="template_field" name="user_name">user_name</template_field>
-                </span>
-                <i18n>tipo: </i18n>
-                <span>
-                    <template_field class="template_field" name="user_type">user_type</template_field>
-                </span>
-		<i18n>livello: </i18n>
-                <span>
-                    <template_field class="template_field" name="user_level">user_level</template_field>
-                </span>
-                <div class="status">
-                    <i18n>status: </i18n>
-                    <span>
-                        <template_field class="template_field" name="status">status</template_field>
-                    </span>
-                </div>
-            </div>
+                    <template_field class="microtemplate_field" name="user_data_micro">user_data_micro</template_field>
             <!-- / dati utente -->
             <!-- label -->
             <div id="labelview">
@@ -165,7 +143,7 @@
                                 <template_field class="template_field" name="main_index_text">main_index_text</template_field>
                         </li>
                         <li class="_menu">
-							<template_field class="template_field" name="search_form">search_form</template_field>
+				<template_field class="template_field" name="search_form">search_form</template_field>
                         </li>
                         <!--li class="_menu">
 							<template_field class="template_field" name="go_map">go_map</template_field>
@@ -183,23 +161,6 @@
                         <li class="_name">
                         <i18n>collegamenti</i18n>
                         </li>
-                        <ul>
-                            <li>
-                            <template_field class="template_field" name="link">link</template_field>
-                            </li>
-                        </ul>
-                        <li class="_name">
-                        <i18n>esercizi</i18n>
-                        </li>
-                        <ul>
-                            <li>
-                            <template_field class="template_field" name="exercises">exercises</template_field>
-                            </li>
-                        </ul>
-                        <li class="_name">
-                        <i18n>risorse</i18n>
-                        </li>
-                        <ul>
                             <li>
                             <template_field class="template_field" name="media">media</template_field>
                             </li>
@@ -255,14 +216,21 @@
                         <i18n>strumenti</i18n>
                     </a>
                 </li>
+                <li id="actions" class="unselectedactions"> 
+                        <a href="download.php">
+                            <i18n>Documenti</i18n>
+                        </a>
+                </li>
+                <!--
                 <li id="actions" class="unselectedactions" onClick="toggleElementVisibility('submenu_actions','up')">
                     <a>
                         <i18n>agisci</i18n>
                     </a>
                 </li>
+                -->
                 <li id="ancora_menuright" onClick="toggleElementVisibility('menuright', 'right');">
                     <a>
-                        <i18n>Naviga</i18n>
+                        <i18n>Contenuti</i18n>
                     </a>
                 </li>
                 <li id="question_mark" class="unselectedquestion_mark" onClick="toggleElementVisibility('submenu_question_mark','up'); return false;">
@@ -331,7 +299,7 @@
                             </li>
                             <li>
                                 <a href="history.php">
-                                    <i18n>cronologia</i18n>
+                                    <i18n>Statistiche</i18n>
                                 </a>
                             </li>
 							<li>
