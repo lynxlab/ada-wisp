@@ -25,13 +25,14 @@ $variableToClearAR = array('node', 'layout', 'user');
 /**
  * Users (types) allowed to access this module.
  */
-$allowedUsersAr = array(AMA_TYPE_TUTOR, AMA_TYPE_STUDENT);
+$allowedUsersAr = array(AMA_TYPE_TUTOR, AMA_TYPE_STUDENT, AMA_TYPE_AUTHOR);
 /**
  * Performs basic controls before entering this module
  */
 $neededObjAr = array(
   AMA_TYPE_TUTOR => array('layout','node','course'),
-  AMA_TYPE_STUDENT => array('layout','node','course')
+  AMA_TYPE_STUDENT => array('layout','node','course'),
+  AMA_TYPE_AUTHOR => array('layout','node','course')
 );
 
 require_once ROOT_DIR.'/include/module_init.inc.php';
@@ -49,10 +50,10 @@ require_once ROOT_DIR.'/include/HtmlLibrary/UserModuleHtmlLib.inc.php';
 if (isset($err_msg)) {
     $status = $err_msg;
 } else {
-    $status = translateFN('Area di condivisione files');
+    $status = translateFN('Documenti');
 }
 
-$help = translateFN('Da qui lo studente pu&ograve; inviare un file da allegare al nodo corrente');
+$help = translateFN('Area di condivisione di documenti');
 
 $id_node = $_SESSION['sess_id_node'];
 $id_course = $_SESSION['sess_id_course'];
@@ -77,7 +78,7 @@ if ((is_object($userObj)) && (!AMA_dataHandler::isError($userObj))) {
 
 $ymdhms = today_dateFN();
 
-$help = translateFN("Da qui lo studente può scaricare i file allegati ai nodi");
+$help = translateFN("Area di condivisione documenti");
 
 $banner = include ("$root_dir/include/banner.inc.php");
 
@@ -130,7 +131,7 @@ if (isset($_GET['file'])){
 	$elencofile = leggidir($download_path);
 	if ($elencofile == NULL) {
 //           $lista = translateFN("Nessun file inviato dagli studenti di questa classe.");
-           $html = translateFN("Nessun file inviato dagli studenti di questa classe.");
+           $html = translateFN("Nessun file inviato.");
 	} else {
   //          $fstop = count($elencofile);
   //          $lista ="<ol>";
@@ -199,7 +200,7 @@ if (isset($_GET['file'])){
                             }
          		}
 
-	        	if ((!$sender_error) AND ($course_instance == $sess_id_course_instance)){
+	        	if ((!$sender_error) && ($course_instance == $sess_id_course_instance || ($id_profile == AMA_TYPE_AUTHOR && $course_instance == $sess_id_course))){
                             if (!isset($fid_node) OR ($fid_node == $id_node)) {
                                 $out_fields_ar = array('nome');
                                 $clause = "ID_NODO = '$id_node'";
@@ -236,9 +237,19 @@ if (isset($_GET['file'])){
            $html = $table->getHtml();
         } 
 }
+
+$divUpload = CDOMElement::create('div','class:uploadDiv');  
+$uploadLink = CDOMElement::create('a','href:../services/upload.php');
+$uploadLink->addChild(new CText(translateFn('Invia un documento')));
+$divUpload->addChild($uploadLink);
+$html .= $divUpload->getHtml(); 
+
   $navigation_history  = $_SESSION['sess_navigation_history'];
   $last_visited_module = $navigation_history->lastModule();
-
+  
+$imgAvatar = $userObj->getAvatar();
+$avatar = CDOMElement::create('img','src:'.$imgAvatar);
+$avatar->setAttribute('class', 'img_user_avatar');
 $node_data = array(
                'banner'=>$banner,
 //               'data'=>$lista,
@@ -252,7 +263,8 @@ $node_data = array(
                'course_title'=>$course_title,
                'path'=>$nodeObj->findPathFN(),
                'help'=>$help,
-               'back'=>$last_visited_module
+               'back'=>$last_visited_module,
+               'user_avatar'=>$avatar->getHtml()
 );
 
 
