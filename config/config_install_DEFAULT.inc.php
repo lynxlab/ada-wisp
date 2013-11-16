@@ -378,6 +378,22 @@ $ADA_MIME_TYPE["application/vnd.openxmlformats-officedocument.presentationml.pre
 $ADA_MIME_TYPE["application/vnd.openxmlformats-officedocument.presentationml.template"]['permission'] = _GO;
 $ADA_MIME_TYPE["application/vnd.openxmlformats-officedocument.presentationml.slideshow"]['permission'] = _GO;
 
+// libreOffice
+$ADA_MIME_TYPE["application/vnd.oasis.opendocument.text"]['permission'] = _GO;
+$ADA_MIME_TYPE["application/vnd.oasis.opendocument.text-template"]['permission'] = _GO;
+$ADA_MIME_TYPE["application/vnd.oasis.opendocument.text-web"]['permission'] = _GO;
+$ADA_MIME_TYPE["application/vnd.oasis.opendocument.text-master"]['permission'] = _GO;
+$ADA_MIME_TYPE["application/vnd.oasis.opendocument.graphics"]['permission'] = _GO;
+$ADA_MIME_TYPE["application/vnd.oasis.opendocument.graphics-template"]['permission'] = _GO;
+$ADA_MIME_TYPE["application/vnd.oasis.opendocument.presentation"]['permission'] = _GO;
+$ADA_MIME_TYPE["application/vnd.oasis.opendocument.presentation-template"]['permission'] = _GO;
+$ADA_MIME_TYPE["application/vnd.oasis.opendocument.spreadsheet"]['permission'] = _GO;
+$ADA_MIME_TYPE["application/vnd.oasis.opendocument.spreadsheet-template"]['permission'] = _GO;
+$ADA_MIME_TYPE["application/vnd.oasis.opendocument.formula"]['permission'] = _GO;
+$ADA_MIME_TYPE["application/vnd.oasis.opendocument.database"]['permission'] = _GO;
+$ADA_MIME_TYPE["application/vnd.oasis.opendocument.chart"]['permission'] = _GO;
+$ADA_MIME_TYPE["application/vnd.oasis.opendocument.image"]['permission'] = _GO;
+
 $ADA_MIME_TYPE["application/octet-stream"]['permission'] = _STOP;
 
 
