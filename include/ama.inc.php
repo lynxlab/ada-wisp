@@ -952,8 +952,8 @@ class AMA_Common_DataHandler extends Abstract_AMA_DataHandler {
 
         $add_user_sql = 'INSERT INTO utente(nome,cognome,tipo,e_mail,username,password,layout,
                                indirizzo,citta,provincia,nazione,codice_fiscale,birthdate,sesso,
-                               telefono,stato,lingua,timezone)
-                 VALUES(?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)';
+                               telefono,stato,lingua,timezone,cap,matricola,avatar)
+                 VALUES(?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)';
 
         $values = array(
                 $user_dataAr['nome'],
@@ -982,7 +982,10 @@ class AMA_Common_DataHandler extends Abstract_AMA_DataHandler {
 //                $this->or_null($user_dataAr['telefono']),
                 $user_dataAr['stato'],
                 $user_dataAr['lingua'],
-                $user_dataAr['timezone']
+                $user_dataAr['timezone'],
+                $user_dataAr['cap'],
+                $user_dataAr['matricola'],
+                $user_dataAr['avatar']
         );
 
         /*

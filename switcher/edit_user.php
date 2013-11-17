@@ -78,6 +78,9 @@ if (isset($_SERVER['REQUEST_METHOD']) && $_SERVER['REQUEST_METHOD'] == 'POST') {
             }
             $editedUserObj->setStatus($_POST['stato']);
             $editedUserObj->setLayout($user_layout);
+            $editedUserObj->setCap($_POST['cap']);
+            $editedUserObj->setSerialNumber($_POST['matricola']);
+            $editedUserObj->setAvatar($_POST['avatar']);
             $result = MultiPort::setUser($editedUserObj, array(), true);
         }
 
