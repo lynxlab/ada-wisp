@@ -179,7 +179,7 @@ switch ($op) {
         $recipientsAr =  array($username);
         $message_ha = array();
         $message_ha['titolo'] = $titolo;
-        $message_ha['testo'] = $data->getHtml(); //$MailText4User;
+        $message_ha['testo'] = $MailText4User; // $data->getHtml(); //$MailText4User;
         $message_ha['destinatari'] = $recipientsAr;
         $message_ha['data_ora'] = "now";
         $message_ha['tipo'] = ADA_MSG_MAIL;

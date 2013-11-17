@@ -47,10 +47,10 @@ class AskServiceModuleHtmlLib {
         $question = ($dataAr['question']);
         $testo = translateFN("Gentile ");
         $testo.= $dataAr['name']." ".$dataAr['surname']. ','. PHP_EOL;
-        $testo.=translateFN(" hai chiesto aiuto a proposito di: ");
+        $testo.=translateFN("hai chiesto aiuto a proposito di: ");
         $testo.= $dataAr['service_name'].".".PHP_EOL;
-        $testo .= translateFN('La tua domanda') . ':' . PHP_EOL . $question.PHP_EOL;
-        $testo.=translateFN(" Riceverai un messaggio contenente le proposte di appuntamento. "). PHP_EOL;
+        $testo .= translateFN('La tua domanda') . ':' . PHP_EOL . $question.PHP_EOL.PHP_EOL;
+        $testo.= PHP_EOL.translateFN("Sarai contattato al più presto da un nostro esperto. "). PHP_EOL  ;
         $testo .= translateFN('Per accedere ai servizi di'). ': ' . PORTAL_NAME . ' ' . translateFN('Segui questo indirizzo'). ': ' . PHP_EOL;
         $testo .= $dataAr['userHomePage'];
         
