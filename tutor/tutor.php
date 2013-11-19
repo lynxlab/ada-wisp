@@ -190,7 +190,20 @@ switch ($op) {
 		$tbody_data = array();
 		if (is_array($clients_list) && sizeof($clients_list) > 0) {
 		
-		
+		  /**
+           * @author giorgio 18/nov/2013
+           * gets the list of services of ADA_SERVICE_HELP level
+           * in the selected provider
+		   */
+		  $clauseSQL = 's.livello='. ADA_SERVICE_HELP ;
+		  if (!MULTIPROVIDER) $clauseSQL .= ' AND st.id_tester = '. $GLOBALS['testers_dataAr'][$GLOBALS['user_provider']];
+		  $tempResults = $common_dh->get_services(null, $clauseSQL);
+		  $serviceHelpIDs = array();
+		  if (!AMA_DB::isError($tempResults) && !empty($tempResults))
+		  {
+		  	foreach ($tempResults as $tempResult) $serviceHelpIDs[] = $tempResult[3];		  	
+		  }
+		  
 		  $user_history_link_label = translateFN('View service status');
 		  $appointment_link_label  = translateFN('Proponi appuntamento');
 		  $status_opened_label     = translateFN('In corso');
@@ -198,6 +211,17 @@ switch ($op) {
 		  $timeline_link_label = translateFN('Entra nella timeline');
 		
 		  foreach($clients_list as $user_data) {
+		  	$id_course = $user_data['id_corso'];
+		  	
+		  	/**
+             * @author giorgio 18/nov/2013
+             * 
+             * if the id_course is not associated to
+             * a service of ADA_SERVICE_HELP level it
+             * is safe to skip to next iteration
+		  	 */
+		  	if (!in_array($id_course,$serviceHelpIDs)) continue;
+		  	
 		    $id_course_instance = $user_data['id_istanza_corso'];
 		//	$url = HTTP_ROOT_DIR.'/comunica/send_event_proposal.php?id_user='.$user_data['id_utente'];
 		//	$onclick = "openMessenger('$url',800,600);";
@@ -211,7 +235,7 @@ switch ($op) {
 		//    $user_link->setAttribute('onclick',$onclick);
 		    $user_link->addChild(new CText($user_data['nome'] . ' ' . $user_data['cognome']));
 		
-		    $id_course = $user_data['id_corso'];
+		    
 		    $href = HTTP_ROOT_DIR.'/tutor/service_info.php?id_course='.$id_course.'&id_user='.$user_data['id_utente'].'&id_course_instance='.$id_course_instance;
 		    $service_link = CDOMElement::create('a',"href:$href");
 		    $service_link->addChild(new CText(translateFN($user_data['titolo'])));
@@ -330,17 +354,16 @@ switch ($op) {
 		 * AND for which the current tutor has not subscribed yet
 		 */
 		
-		// 1. get the current tester id
-		$testerID = $GLOBALS['testers_dataAr'][$GLOBALS['user_provider']];
-		// 2. get the array of id_corso contained in $practiceCommunities
+		// 1. get the array of id_corso contained in $practiceCommunities
 		//    by getting only the id_corso key
 		$subscribedIDs = array_map(
 				function($arr) { return $arr['id_corso']; },
 				$practiceCommunities);
-		// 3. build the sql clause
-		$clauseSQL = 'st.id_tester = '. $testerID .' AND s.livello='. ADA_SERVICE_COMMON_TUTOR ;
+		// 2. build the sql clause
+		$clauseSQL = 's.livello='. ADA_SERVICE_COMMON_TUTOR ;
+		if (!MULTIPROVIDER) $clauseSQL .= ' AND st.id_tester = '. $GLOBALS['testers_dataAr'][$GLOBALS['user_provider']];
 		if (!empty($subscribedIDs) ) $clauseSQL .= ' AND st.id_corso NOT IN('. implode(',', $subscribedIDs) .')';
-		// 4. ask for resultset
+		// 3. ask for resultset
 		$tempResults = $common_dh->get_services(null, $clauseSQL);
 		
 		if (!AMA_DB::isError($tempResults))
@@ -521,6 +544,8 @@ switch ($op) {
 		
 		$content_dataAr['bloccoDueAppuntamenti'] .= '<h3>'.translateFN('Messaggi ricevuti').'</h3>';
 		$content_dataAr['bloccoDueAppuntamenti'] .= $user_messages->getHtml();
+		
+		$content_dataAr['user_modprofilelink'] = $userObj->getEditProfilePage();
 
 $layout_dataAr['JS_filename'] = array(
 		JQUERY,
