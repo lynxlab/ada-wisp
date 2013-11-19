@@ -54,10 +54,14 @@ if (isset($err_msg)) {
 }
 
 $help = translateFN('Area di condivisione di documenti');
-
-$id_node = $_SESSION['sess_id_node'];
-$id_course = $_SESSION['sess_id_course'];
-$id_course_instance = $_SESSION['sess_id_course_instance'];
+/**
+ * if these vars are set, it means that they have
+ * been passed via get and are populated by 
+ * module_init extracting $_GET vars
+ */
+if (!isset($id_node)) $id_node = $_SESSION['sess_id_node'];
+if (!isset($id_course)) $id_course = $_SESSION['sess_id_course'];
+if (!isset($id_course_instance)) $id_course_instance =  $_SESSION['sess_id_course_instance'];
 
 // ******************************************************
 // get user object
@@ -264,7 +268,8 @@ $node_data = array(
                'path'=>$nodeObj->findPathFN(),
                'help'=>$help,
                'back'=>$last_visited_module,
-               'user_avatar'=>$avatar->getHtml()
+               'user_avatar'=>$avatar->getHtml(),
+			   'user_modprofilelink' => $userObj->getEditProfilePage()
 );
 
 
