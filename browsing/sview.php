@@ -312,7 +312,8 @@ if ($reg_enabled) {
 $imgAvatar = $userObj->getAvatar();
 $avatar = CDOMElement::create('img','src:'.$imgAvatar);
 $avatar->setAttribute('class', 'img_user_avatar');
-$content_dataAr['user_avatar'] = $avatar->getHtml(); 
+$content_dataAr['user_avatar'] = $avatar->getHtml();
+$content_dataAr['user_modprofilelink'] = $userObj->getEditProfilePage();
 
 if ($mod_enabled) {
 	$content_dataAr['add_node'] = $add_node;

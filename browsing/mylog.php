@@ -262,9 +262,13 @@ HTML page building
 
 */
 
-         $body_onload = "includeFCKeditor('log_today');";
+         $body_onload = "includeFCKeditor('log_today'); \$j('input, a.button, button').uniform();";
          $options = array('onload_func' => $body_onload);
 
+         $imgAvatar = $userObj->getAvatar();
+         $avatar = CDOMElement::create('img','src:'.$imgAvatar);
+         $avatar->setAttribute('class', 'img_user_avatar');
+         
 $node_data = array(
                    'banner'=>$banner,
                    'course_title'=>'<a href="main_index.php">'.$course_title.'</a>',
@@ -280,7 +284,9 @@ $node_data = array(
                    'bookmarks'=>$user_bookmarks,
                    'profilo'=>$profilo,
                    'myforum'=>$my_forum,
-                   'title'=>$node_title
+                   'title'=>$node_title,
+				   'user_avatar'=>$avatar->getHtml(),
+				   'user_modprofilelink' => $userObj->getEditProfilePage()		
                    //'mylog'=>$mylog,
                   );
 
@@ -301,6 +307,17 @@ $node_data = array(
                        $node_data['chat_users']="";
                    }
 
+	$layout_dataAr['JS_filename'] = array(
+		JQUERY,
+		JQUERY_UI,
+		JQUERY_UNIFORM,
+		JQUERY_NO_CONFLICT
+     );
+	
+	$layout_dataAr['CSS_filename'] = array (
+			JQUERY_UI_CSS,
+			JQUERY_UNIFORM_CSS
+	);	
 
 ARE::render($layout_dataAr,$node_data, NULL, $options);
 

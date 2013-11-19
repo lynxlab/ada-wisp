@@ -152,6 +152,9 @@ if ($userObj instanceof ADALoggableUser) {
 }
 
 $banner = include ROOT_DIR . '/include/banner.inc.php';
+$imgAvatar = $userObj->getAvatar();
+$avatar = CDOMElement::create('img','src:'.$imgAvatar);
+$avatar->setAttribute('class', 'img_user_avatar');
 $content_dataAr = array(
     'chat_link' => $chat_link,
     'banner' => $banner,
@@ -164,7 +167,9 @@ $content_dataAr = array(
     'data' => $history,
     'messages' => $user_messages->getHtml(),
     'agenda' => $user_agenda->getHtml(),
-    'chat_users' => $online_users
+    'chat_users' => $online_users,
+	'user_avatar'=>$avatar->getHtml(),
+	'user_modprofilelink' => $userObj->getEditProfilePage(),		
 );
 /**
  * Sends data to the rendering engine
