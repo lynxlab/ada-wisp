@@ -29,55 +29,6 @@
             <div id="status_bar">
                     <template_field class="microtemplate_field" name="user_data_micro">user_data_micro</template_field>
             <!-- / dati utente -->
-            <!-- label -->
-            <div id="labelview">
-                <div class="topleft">
-                    <div class="topright">
-                        <div class="bottomleft">
-                            <div class="bottomright">
-                                <div class="contentlabel">
-                                    <ul>
-                                        <li>
-                                        <template_field class="template_field" name="title">title</template_field>
-                                        <span>, </span>
-                                        <i18n>versione: </i18n>
-                                        <span>
-                                            <template_field class="template_field" name="version">version</template_field>
-                                        </span>
-                                        <i18n>del</i18n>
-                                        <span>
-                                            <template_field class="template_field" name="date">date</template_field>
-                                        </span>
-                                        </li>
-                                        <!--li>
-                          		 			<i18n>autore:</i18n>
-                          		 			<span>
-                          		 		 		<template_field class="template_field_disabled" name="author">author</template_field>
-                          		 		 	</span>
-                					    </li-->
-                                        <li>
-                                        <i18n>livello nodo:</i18n>
-                                        <span>
-                                            <template_field class="template_field" name="node_level">node_level</template_field>
-                                        </span>
-                                        </li>
-                                        <li>
-                                        <i18n>keywords: </i18n>
-                                        <span class="keywords">
-                                            <template_field class="template_field" name="keywords">keywords</template_field>
-                                        </span>
-                                        </li>
-                                    </ul>
-                                    <!--div class="dattilo" id="dattilo">
-                                      <template_field class="template_field_disabled" name="dattilo">dattilo</template_field>
-                                    </div-->
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </div>
-            <!-- /label -->
             </div>
             <!-- contenuto -->
             <div id="content_view">

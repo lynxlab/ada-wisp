@@ -12,8 +12,9 @@
 </div> 
 <!-- contenitore -->
 <div id="container">
+<!--dati utente-->
 <div id="user_wrap">
-
+<!-- label -->
 <div id="label">
 		 <div class="topleft">
          <div class="topright">
@@ -27,27 +28,13 @@
 					</div>
 			</div>		
 </div>
+<!-- /label -->
+
 <div id="user_data" class="user_data_default">
- <i18n>utente: </i18n>
- <span>
-			 <template_field class="template_field" name="user_name">user_name</template_field>
- </span>
- <i18n>tipo: </i18n>
-			 <span>
-						 <template_field class="template_field" name="user_type">user_type</template_field>
-			 </span>
- <div class="status">
-	 <i18n>status: </i18n>
-	 <span>
-				 <template_field class="template_field" name="status">status</template_field>
-	 </span>
-
-				 </div>
-				 <!-- label -->
-
-
+  <template_field class="microtemplate_field" name="user_data_mini_micro">user_data_mini_micro</template_field>
 </div>
 </div>
+ <!-- / dati utente -->
     <!-- contenuto -->
     <div id="content">	 
     <div id="contentcontent">

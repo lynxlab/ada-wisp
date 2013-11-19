@@ -16,7 +16,7 @@
                     <template_field class="template_field" name="status">status</template_field>
                 </span>
                 </div>
-                <a href="edit_user.php">
+                <a href="<template_field class="template_field" name="user_modprofilelink">user_modprofilelink</template_field>">
                     <i18n>Modifica il tuo profilo</i18n>
                 </a>    
             </div>

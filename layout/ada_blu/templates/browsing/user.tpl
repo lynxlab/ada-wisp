@@ -24,9 +24,11 @@
                 </span>
             </div>
             <!-- / percorso -->
-            <!--dati utente-->
+            <div id="status_bar">
+            <!--dati utente-->            
                     <template_field class="microtemplate_field" name="user_data_micro">user_data_micro</template_field>
             <!-- / dati utente -->
+            </div>
             <!-- label -->
             <div id="label">
                 <div class="topleft">
