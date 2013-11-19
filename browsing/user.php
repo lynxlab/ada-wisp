@@ -162,13 +162,37 @@ if(!AMA_DataHandler::isError($courseInstances)) {
                                     }
 
                                 }
+                                
+                                $lastFiles = $userObj->get_new_files($courseInstanceId);
+                                
+                                if (!is_null($lastFiles) && !empty($lastFiles))
+                                {
+                                	$divFiles = CDOMElement::create('div','class:newFiles');
+                                	$divFiles->addChild (new CText('<h4>'.translateFN('documenti recenti').'</h4>'));
+                                	$ulFiles = CDOMElement::create('ul');
+                                	
+                                	foreach ($lastFiles as $lastFile)
+                                	{
+                                		$liFile = CDOMElement::create('li');
+                                		$queryString = '?file='.$lastFile['link'] .
+                                		               '&id_node='.$lastFile['id_node'].
+                                		               '&id_course='.$lastFile['id_course'].
+                                		               '&id_course_instance='.$lastFile['id_course_instance'];
+                                		$aFile  = CDOMElement::create('a','href:download.php'.$queryString);
+                                		$aFile->addChild (new CText($lastFile['displaylink']));
+                                		$liFile->addChild ($aFile);
+                                		$ulFiles->addChild ($liFile);
+                                	}                                	
+                                	$divFiles->addChild($ulFiles);
+                                }
                         }
                         elseif ($isEnded) {
                             $access_link = BaseHtmlLib::link("#",
                                     translateFN('Servizio terminato'));
                         }
                         $service->addChild($access_link);
-                        if (is_object($divNews)) $service->addChild($divNews);
+                        if (is_object($divNews))  $service->addChild($divNews);
+                        if (is_object($divFiles)) $service->addChild($divFiles);
 //                        $serviceDOM->addChild($divAppointments)
                         $serviceDOM->addChild(new CText('<h3>'.translateFN('Aiuto per '). $courseName.'</h3>'));
                         $serviceDOM->addChild($service);
@@ -503,6 +527,8 @@ if(!AMA_DataHandler::isError($courseInstances)) {
         $imgAvatar = $userObj->getAvatar();
         $avatar = CDOMElement::create('img','src:'.$imgAvatar);
         $avatar->setAttribute('class', 'img_user_avatar');
+        
+        $content_dataAr['user_modprofilelink'] = $userObj->getEditProfilePage();
 
 	$gochat_link = "";
 	$content_dataAr['gostart'] = $gostart_link;
