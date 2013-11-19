@@ -81,7 +81,9 @@ $home_link = CDOMElement::create('a','href:tutor.php');
 $home_link->addChild(new CText(translateFN("Practitioner's home")));
 $module = $home_link->getHtml() . ' > ' . $label;
 
-
+$imgAvatar = $userObj->getAvatar();
+$avatar = CDOMElement::create('img','src:'.$imgAvatar);
+$avatar->setAttribute('class', 'img_user_avatar');
 
 $content_dataAr = array(
   'user_name' => $user_name,
@@ -89,7 +91,9 @@ $content_dataAr = array(
   'status'    => $status,
   'path'      => $module,
   'label'     => $label,
-  'data'      => $service_data->getHtml()
+  'data'      => $service_data->getHtml(),
+  'user_avatar'=>$avatar->getHtml(),
+  'user_modprofilelink' => $userObj->getEditProfilePage(),		
 );
 
 ARE::render($layout_dataAr, $content_dataAr);

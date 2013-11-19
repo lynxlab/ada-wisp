@@ -79,6 +79,10 @@ $status = translateFN("Caratteristiche dell'utente");
 // preparazione output HTML e print dell' output
 $title = translateFN('ADA - dati epractitioner');
 
+$imgAvatar = $userObj->getAvatar();
+$avatar = CDOMElement::create('img','src:'.$imgAvatar);
+$avatar->setAttribute('class', 'img_user_avatar');
+
 $content_dataAr = array(
   'menu'      => $menu,
   'banner'    => $banner,
@@ -88,7 +92,9 @@ $content_dataAr = array(
   'user_name' => $user_name,
   'user_type' => $user_type,
   'messages'  => $user_messages->getHtml(),
-  'agenda'    => $user_agenda->getHtml()
+  'agenda'    => $user_agenda->getHtml(),
+  'user_avatar'=>$avatar->getHtml(),
+  'user_modprofilelink' => $userObj->getEditProfilePage(),		
 );
 
 ARE::render($layout_dataAr, $content_dataAr);

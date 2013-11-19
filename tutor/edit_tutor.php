@@ -108,6 +108,9 @@ $maxFileSize = (int) (ADA_FILE_UPLOAD_MAX_FILESIZE / (1024*1024));
 $optionsAr['onload_func'] = 'initDoc('.$maxFileSize.','. $userObj->getId().');';
 
 //$optionsAr['onload_func'] = 'initDateField();';
+$imgAvatar = $userObj->getAvatar();
+$avatar = CDOMElement::create('img','src:'.$imgAvatar);
+$avatar->setAttribute('class', 'img_user_avatar');
 
 $content_dataAr = array(
     'user_name' => $user_name,
@@ -117,7 +120,8 @@ $content_dataAr = array(
     'status' => $status,
     'title' => translateFN('Modifica dati utente'),
     'data' => $form->getHtml(),
-    'help' => $help
+	'user_avatar'=>$avatar->getHtml(),		
+	'user_modprofilelink' => $userObj->getEditProfilePage(),
 );
 
 ARE::render($layout_dataAr, $content_dataAr,NULL,$optionsAr);
