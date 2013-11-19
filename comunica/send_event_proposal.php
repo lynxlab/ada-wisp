@@ -152,13 +152,14 @@ if (isset($_SERVER['REQUEST_METHOD']) && $_SERVER['REQUEST_METHOD'] == 'POST') {
       $adm_uname = ""; // ??? FIXME: serve un superadmin nel file di config?
     }
     $clean_subject = ADAEventProposal::removeEventToken($subject);
-    $message_content = sprintf(translateFN('Dear user, the practitioner %s has sent you new proposal dates for the appointment: %s.'), $userObj->getFullName(), $clean_subject);
+    $message_content = sprintf(translateFN('Gentile %s, il tuo orientatore %s ti ha mandato una proposta di appuntamento %s.'),
+    		$addresseeObj->getFullName(),  $userObj->getFullName(), $clean_subject);
     $message_ha = array(
       'tipo'        => ADA_MSG_MAIL,
       'mittente'    => $adm_uname,
       'destinatari' => array($addresseeObj->username),
       'data_ora'    => 'now',
-      'titolo'      => 'ADA: ' . translateFN('new event proposal dates'),
+      'titolo'      => PORTAL_NAME . ': '. translateFN('new event proposal dates'),
       'testo'       => $message_content
     );
     $res = $mh->send_message($message_ha);

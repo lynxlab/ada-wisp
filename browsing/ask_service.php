@@ -290,7 +290,7 @@ switch ($op) {
         $ReminderSubject = PORTAL_NAME . ': '.$name. ' '. $surname . ' ' . translateFN('ha richiesto aiuto per') .' '. $dataAr['service_name'];
         $message_ha = array();
         $message_ha['titolo'] = $ReminderSubject;
-        $message_ha['testo'] = $dataSwitcherText->getHtml(); //$MailText4User;
+        $message_ha['testo'] = $MailText4User; // $dataSwitcherText->getHtml();
         $message_ha['destinatari'] = $recipientsAr;
         $message_ha['data_ora'] = "now";
         $message_ha['tipo'] = ADA_MSG_MAIL;

@@ -279,14 +279,14 @@ if(isset($_SERVER['REQUEST_METHOD']) && $_SERVER['REQUEST_METHOD'] == 'POST') {
     $appointment_type = $new_subject;
     $appointment_title = ADAEventProposal::removeEventToken($subject);
     $appointment_message = sprintf(translateFN('Provider: "%s".%sService: "%s".%s'), $tester_name, $newline, $service_name, $newline)
-                         . ' ' . sprintf(translateFN('This is a reminder for the appointment %s: %s in date %s at time %s'), $appointment_title, $appointment_type, $date, $time);
+                         . ' ' . sprintf(translateFN('Questo è un promemoria per l\'%s, %s: il giorno %s alle ore %s'), $appointment_type, $appointment_title,  $date, $time);
 
     $practitioner_email_message_ha = array(
       'tipo'        => ADA_MSG_MAIL,
       'mittente'    => $adm_uname,
       'destinatari' => array($practitioner_proposal['mittente']),
       'data_ora'    => 'now',
-      'titolo'      => 'ADA: ' . translateFN('appointment reminder'),
+      'titolo'      => PORTAL_NAME . ': ' . translateFN('appointment reminder'),
       'testo'       => $appointment_message
     );
 
@@ -295,7 +295,7 @@ if(isset($_SERVER['REQUEST_METHOD']) && $_SERVER['REQUEST_METHOD'] == 'POST') {
       'mittente'    => $adm_uname,
       'destinatari' => array($user_uname),
       'data_ora'    => 'now',
-      'titolo'      => 'ADA: ' . translateFN('appointment reminder'),
+      'titolo'      => PORTAL_NAME . ': ' . translateFN('appointment reminder'),
       'testo'       => $appointment_message
     );
 
