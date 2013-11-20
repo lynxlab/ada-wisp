@@ -12,30 +12,41 @@
 </div> 
 <!-- contenitore -->
 <div id="container">
-<!--dati utente-->
 <div id="user_wrap">
-<!-- label -->
 <div id="label">
-		 <div class="topleft">
-         <div class="topright">
-            <div class="bottomleft">
-               <div class="bottomright">
-                  <div class="contentlabel">
-                		  <h1><i18n>chat</i18n></h1>
-									</div>
+ <div class="topleft">
+   <div class="topright">
+      <div class="bottomleft">
+         <div class="bottomright">
+            <div class="contentlabel">
+          		 			 <h1>
+											 		 <i18n>chatroom</i18n>
+											 </h1>
 							</div>
-						</div>
 					</div>
-			</div>		
+				</div>
+			</div>
+	</div>		
 </div>
-<!-- /label -->
-
 <div id="user_data" class="user_data_default">
   <template_field class="microtemplate_field" name="user_data_mini_micro">user_data_mini_micro</template_field>
-</div>
-</div>
- <!-- / dati utente -->
- <!-- / contenitore -->
+</div><!-- / dati utente -->
+          
+          <!-- label -->
+          <!-- /label -->
+          
+          <!-- contenuto -->
+          <div id="content">	 
+          		 <div id="contentcontent">
+                          <div class="first">
+                                  <template_field class="template_field" name="chat">chat</template_field>
+                  								
+                          </div>
+							 </div>
+            <div id="bottomcont">
+            </div>
+          </div> <!--  / contenuto -->
+</div> <!-- / contenitore -->
 </div>
 <!-- MENU A TENDINA -->
 <div id="mainmenucom">
