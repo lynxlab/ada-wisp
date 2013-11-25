@@ -33,12 +33,12 @@
             <!-- contenuto -->
             <div id="content_view">
                 <div id="contentcontent" class="contentcontent_view">
-                    <div class="firstnode">
+                    <div class="firstnode"><h2><i18n>timeline</i18n></h2>
                         <template_field class="template_field" name="text">text</template_field>
                     </div>
                     <!-- blocco2 -->
                     <div id="blocco_due">
-                        
+                        <h2>interazioni</h2>
                         <div class="online_user">
                             <h3><i18n>chi e' online </i18n></h3>
                                  <template_field class="template_field" name="chat_users">chat_users</template_field>
