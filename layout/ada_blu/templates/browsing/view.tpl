@@ -116,6 +116,14 @@
                         <!--li class="_menu">
 							<template_field class="template_field" name="go_map">go_map</template_field>
                         </li-->
+                        <li>
+                            <template_field class="template_field" name="add_node">add_node</template_field>
+                        </li>
+                            <template_field class="template_field" name="edit_node">edit_node</template_field>
+                        </li>
+                        <li>
+                            <template_field class="template_field" name="delete_node">delete_node</template_field>
+                        </li>
                     </ul>
                     <ul id="attachment">
                         <li class="_name">

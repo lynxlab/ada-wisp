@@ -55,13 +55,18 @@ a:visited {text-decoration: none; }
 #menuright ul { margin: 0; padding-left: 20px; }
 
 #menurightcontent { 
-background: #bf236c; 
+background: #eff0eb; 
 padding: 10px 5px 20px;
-border-top-left-radius: 10px;
-border-bottom-left-radius: 10px;
+border-radius: 2px;
+color:#000000;
+border: 1px solid #D5D6D1;
+-webkit-box-shadow:  -5px 5px 2px 2px rgba(00, 00, 00, 0.2);
+box-shadow:  -5px 5px 2px 2px rgba(00, 00, 00, 0.2);
 }
-#menurightcontent A:link{color:#fff;font-weight:bold;}
-#menurightcontent A:hover{color:#eaff00;}
+
+#menurightcontent A:link{color:#000;
+font-weight:bold;}
+#menurightcontent A:hover{color:#bf236c;}
 
 #menurightcontent TD {border:none;}
 #menurightcontent A {background:none;}
@@ -582,4 +587,88 @@ display: block;
 
 h3 span.ui-icon {
 float: left;
+}
+
+#label .avatar_user {
+    float: right;
+    padding: 2px 5px 2px 2px;
+} 
+
+
+
+#user_wrap #user_data .avatar_user {
+    padding-bottom:2px;
+    padding-left: 130px;
+}
+
+#user_wrap #user_data {
+    padding: 5px 20px 0 0;
+}
+
+
+
+
+
+
+/* immagine sfondo ask service e registrazione */
+
+#data_ask {
+    float:left;
+    background: none repeat scroll 0 0 #EFF0EB;
+    border: 1px solid #D5D6D1;
+    border-radius: 2px;
+    color: #222222;
+    font-family: Lucida Grande,Lucida Sans,Arial,sans-serif;
+    padding:20px 20px 37px 20px;
+    font-size: 1.8em;
+    width:400px;
+}
+
+#data_ask_img {
+    float:left;
+    background-image: url(../img/studente_fem.jpg);
+    min-width: 400px;
+    min-height: 526px;
+    margin-left: 50px;
+}
+
+
+#data_ask #info_div {
+    font-size: small;
+}
+
+#footer_ask {
+    background: none repeat scroll 0 0 #005281;
+    color: #FFFFFF;
+    min-height: 20px;
+    padding: 4px 7px 5px 0;
+    position:relative;
+    margin-top: 320px;
+}
+
+
+#data_reg {
+    float:left;
+    background: none repeat scroll 0 0 #EFF0EB;
+    border: 1px solid #D5D6D1;
+    border-radius: 2px;
+    color: #222222;
+    font-family: Lucida Grande,Lucida Sans,Arial,sans-serif;
+    padding:20px 20px 37px 20px;
+    /* font-size: 1.8em; */
+    width:400px;
+}
+
+#data_reg_img {
+    float:left;
+    background-image: url(../img/studente_masc.jpg);
+    min-width: 400px;
+    min-height: 500px;
+    margin-left: 50px;
+    background-repeat:no-repeat;
+}
+
+
+#data_reg div.fform {
+    width: 100%;
 }
