@@ -120,7 +120,7 @@ if(!AMA_DataHandler::isError($courseInstances)) {
                         } elseif ($isStarted && !$isEnded) {
                                 $tutorAssignedAR = $dh->course_instance_tutor_info_get($courseInstanceId,1);
                                 if (!AMA_DataHandler::isError($tutorAssignedAR) && count($tutorAssignedAR) > 0) {
-                                    $tutorText = translateFN('ti sta aiutando').' '. ucfirst($tutorAssignedAR[1]) . ' ' . ucfirst($tutorAssignedAR[2]);
+                                    $tutorText = sprintf(translateFN('ti sta aiutando %s'), ucfirst($tutorAssignedAR[1]) . ' ' . ucfirst($tutorAssignedAR[2]));
                                 } else {
                                     $tutorText = '';
                                 }
