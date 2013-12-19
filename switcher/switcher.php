@@ -97,52 +97,61 @@ switch ($op) {
         $filter_link .= "<a href='switcher.php?op=closed'>".translateFN("Show closed")."</a>&nbsp;| &nbsp;";
         break;
 }
-
-/*
-$id_tester = $testers_dataAr[$_SESSION['sess_selected_tester']];
-$info_services_for_current_providerAr = $common_dh->get_info_for_tester_services($id_tester);
-$info_durataHa = array();
-for ($i=0; $i < count($info_services_for_current_providerAr); $i++) {
-    $id_course = $info_services_for_current_providerAr[$i]['id_corso'];
-    $durata = $info_services_for_current_providerAr[$i]['durata_servizio'];
-    $info_durataHa[$id_course] = $durata;
+//print_r($GLOBALS);
+if (MULTIPROVIDER) {
+    $providerPointer = $GLOBALS['sess_selected_tester'];
 }
-//print_r($info_durataHa);
-//print_r($info_services_for_current_providerAr);
-*/
+else 
+{
+    $providerPointer = $GLOBALS['user_provider'];
+}
+$providerDataAr = $common_dh->get_tester_info_from_pointer($providerPointer);
+$idProvider = $providerDataAr[0];
+
+$infoServicesForCurrentProviderAr = $common_dh->get_info_for_tester_services($idProvider);
+$infoServicelHa = array();
+foreach ($infoServicesForCurrentProviderAr as $infoService) {
+    $idLocalService = $infoService['id_corso'];
+    $infoServicelHa[$idLocalService]['level'] = $infoService['livello'];
+    $infoServicelHa[$idLocalService]['idCommonService'] = $infoService['id_servizio'];
+    $infoServicelHa[$idLocalService]['name'] = $infoService['nome'];
+}
+
 $numRequiredHelp = 0;
 if ($op=='not_started' or $op=='all') {
     $not_startedAr = $dh->get_tester_services_not_started();
 
-
     if (is_array($not_startedAr) && sizeof($not_startedAr) > 0) {
       foreach($not_startedAr as $user_registration) {
-        $numRequiredHelp ++;
-        $href = 'zoom_user.php?id='.$user_registration['id_utente'];
-        $user_link = CDOMElement::create('a', "href:$href");
-        $user_link->addChild(new CText($user_registration['nome'] .' '.$user_registration['cognome']));
+        $idLocalService = $user_registration['id_corso'];
+        if ($infoServicelHa[$idLocalService]['level'] == ADA_SERVICE_HELP) {
+            $numRequiredHelp ++;
+            $href = 'zoom_user.php?id='.$user_registration['id_utente'];
+            $user_link = CDOMElement::create('a', "href:$href");
+            $user_link->addChild(new CText($user_registration['nome'] .' '.$user_registration['cognome']));
 
-        $href = HTTP_ROOT_DIR.'/browsing/service_info.php?id_course='.$user_registration['id_corso'];
-        $service_link = CDOMElement::create('a',"href:$href");
-        $service_link->addChild(new CText(translateFN($user_registration['titolo'])));
-        $request_date = AMA_DataHandler::ts_to_date($user_registration['data_richiesta']);
+            $href = HTTP_ROOT_DIR.'/browsing/service_info.php?id_course='.$user_registration['id_corso'];
+            $service_link = CDOMElement::create('a',"href:$href");
+            $service_link->addChild(new CText(translateFN($user_registration['titolo'])));
+            $request_date = AMA_DataHandler::ts_to_date($user_registration['data_richiesta']);
 
-        $href = 'assign_practitioner.php?id_corso='.$user_registration['id_corso'].'&id_course_instance='.$user_registration['id_istanza_corso'].'&id_user='.$user_registration['id_utente'];
-        $epractitioner_link = CDOMElement::create('a', "href:$href");
-        $epractitioner_link->addChild(new CText(translateFN('Assegna')));
+            $href = 'assign_practitioner.php?id_corso='.$user_registration['id_corso'].'&id_course_instance='.$user_registration['id_istanza_corso'].'&id_user='.$user_registration['id_utente'];
+            $epractitioner_link = CDOMElement::create('a', "href:$href");
+            $epractitioner_link->addChild(new CText(translateFN('Assegna')));
 
-        // $href = 'edit_instance.php?id_course_instance='.$user_registration['id_istanza_corso'];
-        $instance_link = CDOMElement::create('a');
-        $instance_link->setAttribute('href','../tutor/eguidance_tutor_form.php?id_course_instance='.$user_registration['id_istanza_corso']);
-        $instance_link->addChild(new CText(translateFN('chiudi')));
+            // $href = 'edit_instance.php?id_course_instance='.$user_registration['id_istanza_corso'];
+            $instance_link = CDOMElement::create('a');
+            $instance_link->setAttribute('href','../tutor/eguidance_tutor_form.php?id_course_instance='.$user_registration['id_istanza_corso']);
+            $instance_link->addChild(new CText(translateFN('chiudi')));
 
-        $tbody_data[] = array(
-          $user_link,
-          $service_link,
-          $request_date,
-          $epractitioner_link,
-          $instance_link
-        );
+            $tbody_data[] = array(
+              $user_link,
+              $service_link,
+              $request_date,
+              $epractitioner_link,
+              $instance_link
+            );
+        }
       }
     }
     else {
@@ -160,32 +169,36 @@ if ($op=='started' || $op=='all' || $op=='open' || $op=='closed') {
 
         //print_r($user_registration);
         if (($op == 'closed' &&  time() >= $user_registration['data_fine']) || ($op == 'open' &&  time() < $user_registration['data_fine']) || ($op=='started') || ($op=='all')) {
-            $numRequiredHelp ++;
-            $href = 'zoom_user.php?id='.$user_registration['id_utente'];
-            $user_link = CDOMElement::create('a', "href:$href");
-            $user_link->addChild(new CText($user_registration['nome'] .' '.$user_registration['cognome']));
+            $idLocalService = $user_registration['id_corso'];
+            if ($infoServicelHa[$idLocalService]['level'] == ADA_SERVICE_HELP) {
 
-            $href = HTTP_ROOT_DIR.'/browsing/service_info.php?id_course='.$user_registration['id_corso'];
-            $service_link = CDOMElement::create('a',"href:$href");
-            $service_link->addChild(new CText(translateFN($user_registration['titolo'])));
-            $request_date = AMA_DataHandler::ts_to_date($user_registration['data_richiesta']);
+                $numRequiredHelp ++;
+                $href = 'zoom_user.php?id='.$user_registration['id_utente'];
+                $user_link = CDOMElement::create('a', "href:$href");
+                $user_link->addChild(new CText($user_registration['nome'] .' '.$user_registration['cognome']));
 
-            $href = 'assign_practitioner.php?id_corso='.$user_registration['id_corso'].'&id_course_instance='.$user_registration['id_istanza_corso'].'&id_user='.$user_registration['id_utente'];
-            $epractitioner_link = CDOMElement::create('a', "href:$href");
-            $epractitioner_link->addChild(new CText($user_registration['username_t'].' ('.$user_registration['nome_t'] .' '.$user_registration['cognome_t'].')'));
+                $href = HTTP_ROOT_DIR.'/browsing/service_info.php?id_course='.$user_registration['id_corso'];
+                $service_link = CDOMElement::create('a',"href:$href");
+                $service_link->addChild(new CText(translateFN($user_registration['titolo'])));
+                $request_date = AMA_DataHandler::ts_to_date($user_registration['data_richiesta']);
 
-            // $href = 'edit_instance.php?id_course_instance='.$user_registration['id_istanza_corso'];
-            $instance_link = CDOMElement::create('a');
-            $instance_link->setAttribute('href','../tutor/eguidance_tutor_form.php?id_course_instance='.$user_registration['id_istanza_corso']);
-            $instance_link->addChild(new CText(translateFN('chiudi')));
-            
-            $tbody_data[] = array(
-              $user_link,
-              $service_link,
-              $request_date,
-              $epractitioner_link,
-              $instance_link
-            );
+                $href = 'assign_practitioner.php?id_corso='.$user_registration['id_corso'].'&id_course_instance='.$user_registration['id_istanza_corso'].'&id_user='.$user_registration['id_utente'];
+                $epractitioner_link = CDOMElement::create('a', "href:$href");
+                $epractitioner_link->addChild(new CText($user_registration['username_t'].' ('.$user_registration['nome_t'] .' '.$user_registration['cognome_t'].')'));
+
+                // $href = 'edit_instance.php?id_course_instance='.$user_registration['id_istanza_corso'];
+                $instance_link = CDOMElement::create('a');
+                $instance_link->setAttribute('href','../tutor/eguidance_tutor_form.php?id_course_instance='.$user_registration['id_istanza_corso']);
+                $instance_link->addChild(new CText(translateFN('chiudi')));
+
+                $tbody_data[] = array(
+                  $user_link,
+                  $service_link,
+                  $request_date,
+                  $epractitioner_link,
+                  $instance_link
+                );
+            }
         }
       }
     }
