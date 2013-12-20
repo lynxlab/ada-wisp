@@ -385,6 +385,8 @@ $content_dataAr['exercises'] = $data['exercises'];
 $content_dataAr['notes'] = $data['notes'];
 $content_dataAr['personal'] = $data['private_notes'];
 $content_dataAr['user_avatar'] = $avatar->getHtml(); 
+$content_dataAr['user_modprofilelink'] = $userObj->getEditProfilePage();
+
 
 if ($node_type == ADA_GROUP_WORD_TYPE OR $node_type == ADA_LEAF_WORD_TYPE) {
 	$content_dataAr['text'] .= $data['extended_node'];
