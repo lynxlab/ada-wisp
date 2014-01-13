@@ -256,7 +256,11 @@ abstract class ADAGenericUser {
 //  }
 
     public function setLayout($layout) {
+        if ($layout == 'none' || $layout == 'null' || $layout == 'NULL') {
+            $this->template_family = '';
+        } else {
         $this->template_family = $layout;
+        }
     }
     public function setAddress($address) {
         $this->indirizzo = $address;
