@@ -87,11 +87,14 @@ if ($_REQUEST['mode']) {
 /**
  * @var Object
  */
-$userObj = read_user($sess_id_user);
-if (ADA_Error::isError($userObj)){
-  $userObj->handleError();
-}
-else {
+  if($_SESSION['sess_userObj'] instanceof ADAGenericUser) {
+      $userObj = $_SESSION['sess_userObj'];
+  } else {    
+    $userObj = read_user($sess_id_user);
+    if (ADA_Error::isError($userObj)){
+      $userObj->handleError();
+    }
+  }
   $id_profile = $userObj->getType();
   switch ($id_profile){
     case AMA_TYPE_STUDENT:
