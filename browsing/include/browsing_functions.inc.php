@@ -169,7 +169,7 @@ if ($_REQUEST['mode']) {
 	$user_events = CommunicationModuleHtmlLib::getEventsAsTable ( $userObj, $user_eventsAr, $testers_dataAr );
 	$user_events_2 = CommunicationModuleHtmlLib::getAppointmentsAsTable ( $userObj, $user_agenda_not_pastAr, $testers_dataAr );  
 	
-}
+
 //}
 /*
  * Get this user needed objects from $neededObjAr based on user tyoe
