@@ -472,14 +472,14 @@ width: 700px;
     position: relative;
     top: 1px;
 	float:left;
-    background: url("../img/header-logo.png") no-repeat scroll left 0 rgba(0, 0, 0, 0);
+    background: url("../img/header-logo.png") no-repeat scroll left 0;
     float: none;
     height: 70px;
 }
 	
 
 #bis_logo {
-	 background: url("../img/header-3rdlogo.png") no-repeat scroll right 0 rgba(0, 0, 0, 0);
+	 background: url("../img/header-3rdlogo.png") no-repeat scroll right 0;
     float: right;
     height: 70px;
     margin-right: 10px;
