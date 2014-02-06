@@ -377,8 +377,12 @@ switch ($op) {
                   } 
 
             }
-            $data = new AskServiceForm($serviceToSubscribeAr,$user_provider_id);
-
+            if(sizeof($serviceToSubscribeAr) > 0) {
+                $data = new AskServiceForm($serviceToSubscribeAr,$user_provider_id);
+            }
+            else {
+                $data = new CText(translateFN('Non è possibile chiedere aiuto'));
+            }
         } else {
             $data = new CText(translateFN('Non è possibile chiedere aiuto'));
         }

@@ -457,19 +457,24 @@ if(!AMA_DataHandler::isError($courseInstances)) {
                       } 
 
                 }
-                $AskServiceForm = new AskServiceForm($serviceToSubscribeAr,$user_provider_id);
+                if(sizeof($serviceToSubscribeAr) > 0) {
+                    $AskServiceForm = new AskServiceForm($serviceToSubscribeAr,$user_provider_id);
+                } 
 
             } else {
                 $data = new CText(translateFN('Non è possibile chiedere aiuto'));
             }
-            $askServiceHelp = translateFN('Se non hai ancora chiesto aiuto puoi farlo ora!');
-            $askServiceDiv = CDOMElement::create('div','id:Askservice');
-            $askServiceDiv->setAttribute('class', 'single_service');
-//            $askServiceDiv->addChild(new CText('<h3>'.translateFN('Chiedi aiuto').'</h3>'));
-            $askServiceDiv->addChild(new CText($askServiceHelp));
-            $askServiceDiv->addChild(new CText($AskServiceForm->getHtml()));
-                    
-            $content_dataAr['bloccoUnoAskService'] = '<h3>'.translateFN('Chiedi aiuto').'</h3>'.$askServiceDiv->getHtml();
+            if (is_object($AskServiceForm)) {
+                
+                $askServiceHelp = translateFN('Se non hai ancora chiesto aiuto puoi farlo ora!');
+                $askServiceDiv = CDOMElement::create('div','id:Askservice');
+                $askServiceDiv->setAttribute('class', 'single_service');
+    //            $askServiceDiv->addChild(new CText('<h3>'.translateFN('Chiedi aiuto').'</h3>'));
+                $askServiceDiv->addChild(new CText($askServiceHelp));
+                $askServiceDiv->addChild(new CText($AskServiceForm->getHtml()));
+
+                $content_dataAr['bloccoUnoAskService'] = '<h3>'.translateFN('Chiedi aiuto').'</h3>'.$askServiceDiv->getHtml();
+            }
             //print_r($content_dataAr);
             
             
