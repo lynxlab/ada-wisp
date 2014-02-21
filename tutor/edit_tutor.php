@@ -70,6 +70,9 @@ if (isset($_SERVER['REQUEST_METHOD']) && $_SERVER['REQUEST_METHOD'] == 'POST') {
         if (isset($_SESSION['importHelper']['fileNameWithoutPath'])) $userObj->setAvatar($_SESSION['importHelper']['fileNameWithoutPath']);
         $userObj->setCap($_POST['cap']);
         
+        $userObj->setBirthCity($_POST['birthcity']);
+        $userObj->setBirthProvince($_POST['birthprovince']);
+                
         MultiPort::setUser($userObj, array(), true);
 
         $navigationHistoryObj = $_SESSION['sess_navigation_history'];
