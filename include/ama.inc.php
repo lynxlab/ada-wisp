@@ -985,7 +985,7 @@ class AMA_Common_DataHandler extends Abstract_AMA_DataHandler {
                 $user_dataAr['timezone'],
                 $user_dataAr['cap'],
                 $user_dataAr['matricola'],
-                $user_dataAr['avatar']
+                $user_dataAr['avatar'],
         		$user_dataAr['birthcity'],
         		$user_dataAr['birthprovince']
         );
