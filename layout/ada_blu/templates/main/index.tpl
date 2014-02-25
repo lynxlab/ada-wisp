@@ -36,7 +36,20 @@
                         </div>
                     </div>    
                 </div>
-                <div class="column">
+
+				<div id="newscont" class="column">
+					<div class="portlet">
+						<div class="portlet-header">
+							<i18n>Ultime news</i18n>
+						</div>
+						<div class="portlet-content">
+							<template_field class="template_field" name="bottomnews">bottomnews</template_field>
+						</div>
+					</div>
+				</div>
+
+
+				<div class="column">
                     <div class="portlet">
                         <div class="portlet-header"><i18n>facebook</i18n></div>
                         <div class="portlet-content">
@@ -85,14 +98,6 @@
 <br class="clearfix">
 </div>
 
-<div id="newscont" class="column">
-   <div class="portlet">
-     <div class="portlet-header"><i18n>Ultime news</i18n></div>
-        <div class="portlet-content">
-	  <template_field class="template_field" name="bottomnews">bottomnews</template_field> 	
-	</div>
-   </div>	
-</div>
 <br class="clearfix">
 <div id="bottomcont"></div>
 </div> <!--  / contenuto -->
