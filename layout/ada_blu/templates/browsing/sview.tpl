@@ -33,6 +33,11 @@
             <!-- contenuto -->
             <div id="content_view">
                 <div id="contentcontent" class="contentcontent_view">
+                
+                	<div><h2><i18n>Ultime news</i18n></h2>
+                        <template_field class="template_field" name="sviewnews">sviewnews</template_field>
+                    </div>
+                    
                     <div class="firstnode"><h2><i18n>timeline</i18n></h2>
                         <template_field class="template_field" name="text">text</template_field>
                     </div>
@@ -179,8 +184,10 @@
                     </a>
                 </li>
                 -->
-                <li id="ancora_menuright" onClick="toggleElementVisibility('menuright', 'right');">
-                    <a>
+                <!-- <li id="ancora_menuright" onClick="toggleElementVisibility('menuright', 'right');">
+                -->
+                <li id="ancora_menuright">
+                    <a href="main_index.php">
                         <i18n>Contenuti</i18n>
                     </a>
                 </li>

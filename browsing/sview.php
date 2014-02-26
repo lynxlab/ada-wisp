@@ -252,6 +252,13 @@ $linked_node_keywords = implode(',',$linksAr);
  * content_data
  * @var array
  */
+
+/**
+ * @author giorgio 25/feb/2014
+ * for sview the course_title is always the string "Main Content Index"
+ */
+$course_title = translateFN('Indice dei Contenuti');
+
 $content_dataAr = array(
 	'banner' => $banner,
 	'eportal' => $eportal,
@@ -404,6 +411,8 @@ switch ($op){
 		array_push ($layout_dataAR['CSS_filename'], JQUERY_UNIFORM_CSS);
 		
 		$optionsAr['onload_func'] = 'initDoc();';
+		
+		$layout_dataAR['widgets']['sviewnews'] = array ("course_id"=>$courseObj->getId());
 
 		ARE::render($layout_dataAR,$content_dataAr, null,$optionsAr);
 
