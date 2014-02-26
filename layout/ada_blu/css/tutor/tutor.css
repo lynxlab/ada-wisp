@@ -15,8 +15,7 @@ position: relative;
 }
 
 #blocco_uno,
-#blocco_tre,
-#blocco_quattro {
+#blocco_tre {
 /*    
 background-color: #D3D6FF;
 border-radius: 10px;
@@ -41,7 +40,8 @@ float: left;
     text-align: center;
 }
 
-#blocco_due {
+#blocco_due,
+#blocco_quattro {
 /*    
     background-color: #E0E2FF;
     min-height: 400px;
@@ -111,8 +111,7 @@ padding:4px;
 }
 
 #blocco_uno,
-#blocco_tre,
-#blocco_quattro {
+#blocco_tre {
 /*    
 background-color: #D3D6FF;
 border-radius: 10px;
@@ -153,7 +152,8 @@ padding: 10px;
     margin-bottom:10px;
 }
 
-#blocco_due {
+#blocco_due,
+#blocco_quattro {
 /*    
     background-color: #E0E2FF;
     min-height: 400px;

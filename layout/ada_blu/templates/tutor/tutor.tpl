@@ -60,7 +60,11 @@
 									</div>
 				<!-- blocco3 end -->
 				
-				<div id="blocco_quattro">
+
+				</div> <!--  boxone end -->
+				<div id="boxtwo">
+				
+								<div id="blocco_quattro">
 					
 										<div id="bloccoQuattroTitoloContenitore">
                                                 <template_field class="template_field" name="bloccoQuattroTitolo">bloccoQuattroTitolo</template_field>
@@ -71,8 +75,7 @@
 					</div>
 									</div>
 				<!-- blocco4 end -->
-				</div> <!--  boxone end -->
-				<div id="boxtwo">
+				
 				<!-- blocco2 -->
 				<div id="blocco_due">
 					<div id="bloccoDueTitoloContenitore">
