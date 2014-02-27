@@ -190,8 +190,16 @@ if (isset($_GET['file'])){
                         if(!AMA_Common_DataHandler::isError($sender_array)) {
                             $id_profile = $sender_array['tipo'];
                             switch ($id_profile){
+                            	case   AMA_TYPE_AUTHOR:
+                            		/**
+                            		 * @author giorgio 27/feb/2014
+                            		 * if it's an author, the first part of the filename
+                            		 * is the course_id and NOT the instance_id, need to
+                            		 * fix the corresponding vars for the below if to work as intended
+                            		 */
+                            		$course = $course_instance;
+                            		$course_instance = null;
                                 case   AMA_TYPE_STUDENT:
-                                case   AMA_TYPE_AUTHOR:
                                 case   AMA_TYPE_TUTOR:
                                       $user_name_sender =  $sender_array['username'];
                                       $user_surname_sender =  $sender_array['cognome'];
@@ -204,7 +212,7 @@ if (isset($_GET['file'])){
                             }
          		}
 
-	        	if ((!$sender_error) && ($course_instance == $sess_id_course_instance || ($id_profile == AMA_TYPE_AUTHOR && $course_instance == $sess_id_course))){
+	        	if ((!$sender_error) && ($course_instance == $sess_id_course_instance || ($id_profile == AMA_TYPE_AUTHOR && $course == $sess_id_course))){
                             if (!isset($fid_node) OR ($fid_node == $id_node)) {
                                 $out_fields_ar = array('nome');
                                 $clause = "ID_NODO = '$id_node'";
