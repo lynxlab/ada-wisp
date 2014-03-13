@@ -415,6 +415,7 @@ switch ($op) {
 					$divel->addChild(new CText($description.'<br />'));
 					
 					// link if service has started and not ended
+					$access_link = BaseHtmlLib::link("#", translateFN('servizio'));
 					if ($element['isStarted'] && !$element['isEnded'])
 					{
 						$access_link = CDOMElement::create('div','class:helpRequired');
