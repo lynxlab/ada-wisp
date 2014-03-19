@@ -952,7 +952,7 @@ class AMA_Common_DataHandler extends Abstract_AMA_DataHandler {
 
         $add_user_sql = 'INSERT INTO utente(nome,cognome,tipo,e_mail,username,password,layout,
                                indirizzo,citta,provincia,nazione,codice_fiscale,birthdate,sesso,
-                               telefono,stato,lingua,timezone,cap,matricola,avatarbirthcity,birthprovince)
+                               telefono,stato,lingua,timezone,cap,matricola,avatar,birthcity,birthprovince)
                  VALUES(?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)';
 
         $values = array(
