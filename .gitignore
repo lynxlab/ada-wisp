@@ -1,0 +1,12 @@
+/clients/*
+!/clients/sampleclient/
+/*.txt
+/config_path.inc.php
+/.settings/
+/.externalToolBuilders/
+/*.project
+/*.buildpath
+/log/
+/nbproject/private/
+/nbproject/
+*.directory
