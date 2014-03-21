@@ -135,11 +135,13 @@
                             <li>
                             <template_field class="template_field" name="mychat">mychat</template_field>
                             </li>
+                            <!--
                             <li>
                             	<a href="../modules/newsletter">
                                 	    <i18n>newsletter</i18n>
                                 </a>
                             </li>
+                            -->
                         </ul>
                     </div>
                     <div class="bottomsubmenu">
@@ -157,24 +159,27 @@
                                 </a>
                             </li>
                             <li><a href="list_users.php?list=authors"><i18n>Lista autori</i18n></a></li>
-                            <li><a href="list_users.php?list=tutors"><i18n>Lista tutor</i18n></a></li>
+                            <li><a href="list_users.php?list=tutors"><i18n>Lista professionisti</i18n></a></li>
                             <li><a href="list_users.php?list=students"><i18n>Lista studenti</i18n></a></li>
                             <li><a href="add_user.php"><i18n>Aggiungi utente</i18n></a></li>
-                            <li><a href="list_courses.php"><i18n>Lista corsi</i18n></a></li>
-                            <li><a href="add_course.php"><i18n>Aggiungi corso</i18n></a></li>
-                            <li><a href="translation.php"><i18n>Traduci messaggi</i18n></a></li>
-                            <li><a href="../modules/impexport/import.php"><i18n>Importa corso</i18n></a></li>
-                            <li><a href="../modules/impexport/export.php"><i18n>Esporta corso</i18n></a></li>
-                            <li><a href="../modules/service-complete/index.php"><i18n>Condizioni di completamento</i18n></a></li>
-                            <li><a href="../admin/edit_content.php"><i18n>Edit home page contents</i18n></a></li>
-                            <!--li>
-                            <template_field class="template_field" name="class_student">class_student</template_field>
-                            </li>
+                            <!-- <li><a href="list_lservices.php"><i18n>Vedi servizi</i18n></a></li> -->
+                            <!-- <li><a href="add_service.php"><i18n>Aggiungi servizio</i18n></a></li> -->
                             <li>
                             <template_field class="template_field" name="menu_01">menu_01</template_field>
                             </li>
                             <li>
                             <template_field class="template_field" name="menu_02">menu_02</template_field>
+                            </li>
+                            <li><a href="translation.php"><i18n>Traduci messaggi</i18n></a></li>
+                            <li><a href="../admin/edit_content.php"><i18n>Edit home page contents</i18n></a></li>
+                            <!--
+                            <li><a href="../modules/impexport/import.php"><i18n>Importa corso</i18n></a></li>
+                            <li><a href="../modules/impexport/export.php"><i18n>Esporta corso</i18n></a></li>
+                            <li><a href="../modules/service-complete/index.php"><i18n>Condizioni di completamento</i18n></a></li>
+                            <li><a href="../admin/edit_content.php"><i18n>Edit home page contents</i18n></a></li>
+                            -->
+                            <!--li>
+                            <template_field class="template_field" name="class_student">class_student</template_field>
                             </li>
                             <li>
                             <template_field class="template_field" name="menu_03">menu_03</template_field>

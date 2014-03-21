@@ -25,17 +25,21 @@ class TutorModuleHtmlLib
   // MARK: methods used to display forms and data for the eguidance session
 
   static public function getServiceDataTable($service_dataAr) {
-
+      
+      $avalaibleServiceTypeAr = array(translateFN('Help per studenti'),translateFN('Area comune'), translateFN('Area comune studenti'));
    // S.nome, S.descrizione, S.livello, S.durata_servizio, S.min_incontri, S.max_incontri, S.durata_max_incontro
     $thead = array(translateFN('Service data'),'');
     $tbody = array(
       array(translateFN('Name'), $service_dataAr[1]),
       array(translateFN('Description'), $service_dataAr[2]),
-      array(translateFN('Level'), $service_dataAr[3]),
+      array(translateFN('Level'), $avalaibleServiceTypeAr[$service_dataAr[3]])
+/*        
       array(translateFN('Duration'), $service_dataAr[4]),
       array(translateFN('Min incontri'), $service_dataAr[5]),
       array(translateFN('Max incontri')       , $service_dataAr[6]),
       array(translateFN('Durata max incontro'), $service_dataAr[7])
+ * 
+ */
     );
     return BaseHtmlLib::tableElement('', $thead, $tbody);
   }
@@ -167,14 +171,14 @@ class TutorModuleHtmlLib
   }
   static public function getEguidanceSessionUserDataTable(ADALoggableUser $tutoredUserObj) {
 
-    $user_fiscal_code = $tutoredUserObj->getFiscalCode();
-    if(is_null($user_fiscal_code)) {
-      $user_fiscal_code = translateFN("L'utente non ha fornito il codice fiscale");
+    $user_serial_number = $tutoredUserObj->getSerialNumber();
+    if(is_null($user_serial_number)) {
+      $user_serial_number = translateFN("L'utente non ha fornito la matricola");
     }
 
     $thead = array(translateFN("Dati utente"),'');
     $tbody = array(
-      array(translateFN("Codice fiscale dell'utente"), $user_fiscal_code),
+      array(translateFN("Matricola"), $user_serial_number),
       array(translateFN("Nome e cognome dell'utente"), $tutoredUserObj->getFullName()),
       array(translateFN("Nazionalità dell'utente")   , $tutoredUserObj->getCountry())
     );
@@ -192,13 +196,14 @@ class TutorModuleHtmlLib
       array(translateFN('Livello') , $service_infoAr[3]),
       array(EguidanceSession::textLabelForField('toe_title'), EguidanceSession::textLabelForField($field))
     );
+//    print_r($tbody_service_info);
     $div->addChild(BaseHtmlLib::tableElement('', $thead_service_info, $tbody_service_info));
 
     $div->addChild(self::getEguidanceSessionUserDataTable($tutoredUserObj));
 
     $pointsString = translateFN('Punteggio');
 
-    $div->addChild(new CText(EguidanceSession::textLabelForField('area_pc')));
+//    $div->addChild(new CText(EguidanceSession::textLabelForField('area_pc')));
 
     $thead_ud = array(EguidanceSession::textLabelForField('ud_title'), $pointsString);
     $tbody_ud = array(
@@ -329,21 +334,25 @@ class TutorModuleHtmlLib
   static public function getEguidanceTutorForm(ADALoggableUser $tutoredUserObj, $service_infoAr = array(), $form_dataAr=array(), $fill_textareas=FALSE) {
     $form = CDOMElement::create('form','id:eguidance_tutor_form, name: eguidance_tutor_form, action:eguidance_tutor_form.php, method:post');
 
+/*    
     $area_personal_conditions = CDOMElement::create('div');
     $area_personal_conditions->addChild(new CText(EguidanceSession::textLabelForField('area_pc')));
     $form->addChild($area_personal_conditions);
+ * 
+ */
     /*
-     * Fiscal code
+     * Serial Number
      */
-    $user_fiscal_code = $tutoredUserObj->getFiscalCode();
-    if(!is_null($user_fiscal_code)) {
+    $user_serial_number = $tutoredUserObj->getSerialNumber();
+    
+    if(!is_null($user_serial_number)) {
       $hidden_fc = CDOMElement::create('hidden','id:user_fc, name:user_fc');
-      $hidden_fc->setAttribute('value', $user_fiscal_code);
+      $hidden_fc->setAttribute('value', $user_serial_number);
       $form->addChild($hidden_fc);
-      $ufc = $user_fiscal_code;
+      $ufc = $user_serial_number;
     }
     else {
-      $ufc = translateFN("L'utente non ha fornito il codice fiscale");
+      $ufc = translateFN("L'utente non ha fornito la matricola");
     }
     if(isset($form_dataAr['is_popup'])) {
       $hidden_popup = CDOMElement::create('hidden','id:is_popup, name:is_popup');
@@ -379,6 +388,9 @@ class TutorModuleHtmlLib
     $hidden_user_fullname = CDOMElement::create('hidden', 'id:user_fullname, name: user_fullname');
     $hidden_user_fullname->setAttribute('value', $user_fullname);
 
+    $hidden_previous_instance_status = CDOMElement::create('hidden', 'id:previous_instance_status, name: previous_instance_status');
+    $hidden_previous_instance_status->setAttribute('value', $service_infoAr['instance_status_previous']);
+   
     $hidden_user_country = CDOMElement::create('hidden', 'id:user_country, name:user_country');
     $hidden_user_country->setAttribute('value', $user_country);
     $hidden_service_duration = CDOMElement::create('hidden','id:service_duration, name:service_duration');
@@ -405,6 +417,7 @@ class TutorModuleHtmlLib
     $form->addChild($hidden_user_birthprovince);
     $form->addChild($hidden_user_gender);
     $form->addChild($hidden_user_foreign_culture);
+    $form->addChild($hidden_previous_instance_status);
 
 //    $ufc_thead = array(translateFN("Dati utente"),'');
 //    $ufc_tbody = array(
@@ -419,6 +432,7 @@ class TutorModuleHtmlLib
     /*
      * Type of e-guidance action
      */
+//    print_r($service_infoAr);
     if(is_array($service_infoAr) && isset($service_infoAr[3])) {
       $service_level = $service_infoAr[3];
     }
@@ -441,6 +455,11 @@ class TutorModuleHtmlLib
         7 => EguidanceSession::textLabelForField('sl_7')
       );
     }
+    else if ($service_level == 0) {
+      $typeAr =  array(
+        0 => EguidanceSession::textLabelForField('sl_0')
+      );    
+    }
     else {
       $typeAr = array();
     }
@@ -450,6 +469,17 @@ class TutorModuleHtmlLib
     $toe_thead = array(EguidanceSession::textLabelForField('toe_title'));
     $toe_tbody = array(
       array(BaseHtmlLib::selectElement2('id:type_of_guidance, name:type_of_guidance',$typeAr,$form_dataAr['tipo_eguidance']))
+    );
+    $toe_table = BaseHtmlLib::tableElement('', $toe_thead, $toe_tbody);
+    $form->addChild($toe_table);
+    
+    //FIXME: qui passo $form_dataAr['tipo_eguidance'], ma dovrei passare $form_dataAr['type_of_guidance']
+//    print_r($service_infoAr);
+    $toe_thead = '';
+    $instance_status = $service_infoAr['instance_status_value'];
+    $avalaibleStatusAr = array($status_opened_label,$status_closed_label); 
+    $toe_tbody = array(
+      array(BaseHtmlLib::selectElement2('id:status_service, name:status_service',$service_infoAr['avalaible_status'],$instance_status))
     );
     $toe_table = BaseHtmlLib::tableElement('', $toe_thead, $toe_tbody);
     $form->addChild($toe_table);
@@ -463,14 +493,15 @@ class TutorModuleHtmlLib
     */
     // Critical socio anagraphic data
 
+/*    
     $ud_1_select = BaseHtmlLib::selectElement2('id:ud_1, name:ud_1',$scoresAr, $form_dataAr['ud_1']);
     $ud_2_select = BaseHtmlLib::selectElement2('id:ud_2, name:ud_2',$scoresAr, $form_dataAr['ud_2']);
     $ud_3_select = BaseHtmlLib::selectElement2('id:ud_3, name:ud_3',$scoresAr, $form_dataAr['ud_3']);
     $ud_4_select = BaseHtmlLib::selectElement2('id:ud_4, name:ud_4',$scoresAr, $form_dataAr['ud_4']);
     $ud_5_select = BaseHtmlLib::selectElement2('id:ud_5, name:ud_5',$scoresAr, $form_dataAr['ud_5']);
 
+    $csa_thead = array(EguidanceSession::textLabelForField('ud_title'),''// translateFN('Select a score'));
 
-    $csa_thead = array(EguidanceSession::textLabelForField('ud_title'),''/*translateFN('Select a score')*/);
     $csa_tbody = array(
       array(EguidanceSession::textLabelForField('ud_1'), $ud_1_select), //$user_birthdate),
       array(EguidanceSession::textLabelForField('ud_4'), $ud_4_select), //$user_birthcity),
@@ -480,10 +511,13 @@ class TutorModuleHtmlLib
     );
     $csa_table = BaseHtmlLib::tableElement('', $csa_thead, $csa_tbody);
     $form->addChild($csa_table);
+ * 
+ */
 
     $label = EguidanceSession::textLabelForField('ud_comments');
     $form->addChild(self::displayTextAreaForTutorComments('ud_comments', $label, $form_dataAr, $fill_textareas));
 
+/*
     // Personal critical items
     $pcitems_1_select = BaseHtmlLib::selectElement2('id:pc_1, name:pc_1',$scoresAr, $form_dataAr['pc_1']);
     $pcitems_2_select = BaseHtmlLib::selectElement2('id:pc_2, name:pc_2',$scoresAr, $form_dataAr['pc_2']);
@@ -511,10 +545,13 @@ class TutorModuleHtmlLib
     $area_of_the_job = CDOMElement::create('div');
     $area_of_the_job->addChild(new CText(EguidanceSession::textLabelForField('area_pp')));
     $form->addChild($area_of_the_job);
+ * 
+ */
 
     /*
      * Bonds/availability
      */
+/*    
     $ba_1_select = BaseHtmlLib::selectElement2('id:ba_1, name:ba_1',$scoresAr, $form_dataAr['ba_1']);
     $ba_2_select = BaseHtmlLib::selectElement2('id:ba_2, name:ba_2',$scoresAr, $form_dataAr['ba_2']);
     $ba_3_select = BaseHtmlLib::selectElement2('id:ba_3, name:ba_3',$scoresAr, $form_dataAr['ba_3']);
@@ -532,10 +569,13 @@ class TutorModuleHtmlLib
 
     $label = EguidanceSession::textLabelForField('ba_comments');
     $form->addChild(self::displayTextAreaForTutorComments('ba_comments', $label, $form_dataAr, $fill_textareas));
+ * 
+ */
 
     /*
      * Training
      */
+/*
     $t_1_select = BaseHtmlLib::selectElement2('id:t_1, name:t_1',$scoresAr, $form_dataAr['t_1']);
     $t_2_select = BaseHtmlLib::selectElement2('id:t_2, name:t_2',$scoresAr, $form_dataAr['t_2']);
     $t_3_select = BaseHtmlLib::selectElement2('id:t_3, name:t_3',$scoresAr, $form_dataAr['t_3']);
@@ -553,10 +593,13 @@ class TutorModuleHtmlLib
 
     $label = EguidanceSession::textLabelForField('t_comments');
     $form->addChild(self::displayTextAreaForTutorComments('t_comments', $label, $form_dataAr, $fill_textareas));
+ * 
+ */
 
     /*
      * Professional experiences
      */
+/*    
     $pe_1_select = BaseHtmlLib::selectElement2('id:pe_1, name:pe_1',$scoresAr, $form_dataAr['pe_1']);
     $pe_2_select = BaseHtmlLib::selectElement2('id:pe_2, name:pe_2',$scoresAr, $form_dataAr['pe_2']);
     $pe_3_select = BaseHtmlLib::selectElement2('id:pe_3, name:pe_3',$scoresAr, $form_dataAr['pe_3']);
@@ -572,10 +615,13 @@ class TutorModuleHtmlLib
 
     $label = EguidanceSession::textLabelForField('pe_comments');
     $form->addChild(self::displayTextAreaForTutorComments('pe_comments', $label, $form_dataAr, $fill_textareas));
+ * 
+ */
 
     /*
      * Critical issues ...
      */
+/*    
     $ci_1_select = BaseHtmlLib::selectElement2('id:ci_1, name:ci_1',$scoresAr, $form_dataAr['ci_1']);
     $ci_2_select = BaseHtmlLib::selectElement2('id:ci_2, name:ci_2',$scoresAr, $form_dataAr['ci_2']);
     $ci_3_select = BaseHtmlLib::selectElement2('id:ci_3, name:ci_3',$scoresAr, $form_dataAr['ci_3']);
@@ -593,10 +639,13 @@ class TutorModuleHtmlLib
 
     $label = EguidanceSession::textLabelForField('ci_comments');
     $form->addChild(self::displayTextAreaForTutorComments('ci_comments', $label, $form_dataAr, $fill_textareas));
+ * 
+ */
 
     /*
      * Motivazione + Other particular comments
      */
+/*    
     $m_1_select = BaseHtmlLib::selectElement2('id:m_1, name:m_1',$scoresAr, $form_dataAr['m_1']);
     $m_2_select = BaseHtmlLib::selectElement2('id:m_2, name:m_2',$scoresAr, $form_dataAr['m_2']);
 
@@ -613,6 +662,8 @@ class TutorModuleHtmlLib
 
     $label = EguidanceSession::textLabelForField('other_comments');
     $form->addChild(self::displayTextAreaForTutorComments('other_comments', $label, $form_dataAr, $fill_textareas));
+ * 
+ */
 
    /*
 	 * Form buttons
@@ -632,17 +683,18 @@ class TutorModuleHtmlLib
 class EguidanceSession
 {
   private static $labels = array(
-    'area_pc'     => "Sfera delle condizioni personali dell'utente",
+    'area_pc'     => "Andamento dell'appuntamento",
 
-    'ud_title'    => 'Criticità dal punto di vista socio-anagrafico verso una situazione lavorativa e/o formativa',
+    'ud_title'    => 'Criticità dal punto di vista socio-anagrafico verso una situazionae lavorativa e/o formativa',
     'ud_1'        => 'Data di Nascita',
     'ud_2'        => 'Sesso',
     'ud_3'        => 'Cultura straniera',
   	'ud_4'		  => 'Comune o stato estero di nascita',
-  	'ud_5'		  => 'Provincia di nascita',
-    'ud_comments' => "I vostri commenti sulle caratteristiche critiche dell'utente dal punto di vista socio-anagrafico",
-
-	  'sl_1'        => 'Colloquio informativo - utente nazionale',
+  	'ud_5'		  => 'Provincia di nascita',  		
+    'ud_comments' => "Commenti sull'andamento dell'incontro",
+      
+    'sl_0'        => 'Help per studente',
+    'sl_1'        => 'Colloquio informativo - utente nazionale',
     'sl_2'        => 'Colloquio informativo - utente straniero',
     'sl_3'        => 'Consulenza orientativa individuale - scolastico/formativa',
     'sl_4'        => 'Consulenza orientativa individuale - professionale',
@@ -650,7 +702,8 @@ class EguidanceSession
     'sl_6'        => 'Bilancio di competenze',
     'sl_7'        => 'Tutorato e accompagnamento al lavoro',
 
-  	'toe_title'   => 'Tipologia di intervento di orientamento a distanza',
+    'toe_title'   => 'Dati intervento di orientamento a distanza',
+//    'toe_title'   => 'Tipologia di intervento di orientamento a distanza',
 
     'pc_title'    => 'Criticità della sfera personale',
     'pc_1'        => 'Problemi fisici',

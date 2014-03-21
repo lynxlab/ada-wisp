@@ -95,11 +95,20 @@ define('ADA_GROUP_WORD_TYPE',  81);
 define('ADA_PERSONAL_EXERCISE_TYPE',  9);
 
 /**
- * ADA services types
+ * ADA instance services types
  */
 define('ADA_COURSEINSTANCE_STATUS_PRIVATE',  0);
 define('ADA_COURSEINSTANCE_STATUS_RESERVED', 1);
 define('ADA_COURSEINSTANCE_STATUS_PUBLIC',   2);
+
+/**
+ * ADA generic services types
+ */
+define('ADA_SERVICE_HELP', 0);
+define('ADA_SERVICE_COMMON', 1);
+define('ADA_SERVICE_COMMON_STUDENT',2);
+define('ADA_SERVICE_COMMON_TUTOR',3);
+define('ADA_SERVICE_COURSE',9);
 
 /**
  * ADA token
@@ -328,3 +337,5 @@ define('JQUERY_DATATABLE_CSS',	ROOT_DIR.'/js/include/jquery/dataTables/jquery.da
 define('JQUERY_NO_CONFLICT',	ROOT_DIR.'/js/include/jquery.noConflict.js');
 define('JQUERY_NIVOSLIDER',		ROOT_DIR.'/js/include/jquery/nivo-slider/jquery.nivo.slider.pack.js');
 define('JQUERY_NIVOSLIDER_CSS', ROOT_DIR.'/js/include/jquery/nivo-slider/nivo-slider.css');
+define('JQUERY_UNIFORM',		ROOT_DIR.'/js/include/jquery/uniform/jquery.uniform.min.js');
+define('JQUERY_UNIFORM_CSS',	ROOT_DIR.'/js/include/jquery/uniform/css/uniform.default.min.css');

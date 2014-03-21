@@ -10,7 +10,7 @@
  */
 function performEnterEventSteps(event, id_course, id_course_instance) {
 		
-	var windowOpenerLocationHref = HTTP_ROOT_DIR + '/browsing/view.php'
+	var windowOpenerLocationHref = HTTP_ROOT_DIR + '/browsing/sview.php'
 	                       + '?id_node=' + id_course + '_0'
 	                       + '&id_course=' + id_course
 	                       + '&id_course_instance=' + id_course_instance;
@@ -21,4 +21,43 @@ function performEnterEventSteps(event, id_course, id_course_instance) {
 	                           
 	window.opener.location.href = windowOpenerLocationHref;
 	window.location = thisWindowLocationHref;
+}
+
+function initDoc() {	
+	if ($j('#appointmentCountdown').length >0 )
+	{
+		if ($j('#enter_appointment').length > 0) $j('#enter_appointment').hide();
+		
+		// conversion from unix timestamp to JS date
+		// is done by multiplying by 1000
+		var until = parseInt($j('#countdownUntil').html())*1000;		
+		var expiryText = $j('#enter_appointment').html();
+
+		$j('#appointmentCountdown').countdown({ 
+		    until:new Date(until), 
+		    serverSync: serverTime,
+		    alwaysExpire: true,
+		    onExpiry: function() {
+		    $j('#countdownWrapper')
+		          .animate( { height: "toggle" }, 700, 'easeInOutExpo' , function() {
+		        	  $j('#appointmentCountdown').html(expiryText);
+			    	  $j('.countdownMessage').hide();
+		        	  $j('#countdownWrapper').animate( { height: "toggle" }, 400, 'easeInOutExpo' ); 
+		          } );
+		    }
+		}); 		
+	}
+}
+
+
+function serverTime() { 
+    var time = null; 
+    $j.ajax({url: HTTP_ROOT_DIR + '/comunica/ajax/serverTime.php', 
+        async: false, dataType: 'text', 
+        success: function(text) { 
+            time = new Date(text); 
+        }, error: function(http, message, exc) { 
+            time = new Date(); 
+    }}); 
+    return time; 
 }

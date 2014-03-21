@@ -1,0 +1,57 @@
+.firstnode {
+    float: left;
+    width: 45%;
+}
+.forum_nodes_text {
+float: left;
+width: 100%;
+}
+.courseNode li {
+    list-style-type: none;
+}
+.courseNodeView {
+    padding:5px;
+}
+.conversation {
+/*    background-color: red;*/
+    border-radius: 5px;
+    margin-left: 10px;
+    display: block;    
+}
+
+#blocco_due {
+/*    
+    background-color: #E0E2FF;
+    min-height: 400px;
+*/
+position: relative;
+border-radius: 10px;
+width: 45%;
+/*height: 300px;
+margin-top: 70px;
+*/
+margin-left: 10px;
+float: right;
+}
+
+div.fform {
+  margin:0;
+  padding:0;
+  width:100%;
+}
+hr { display: none; }
+.conversationSingle {
+padding: 5px !important;
+}
+#structIndex, #blocco_due { font-size:12px ; }
+#structIndex li.form { border: none; padding:0; }
+
+#structIndex fieldset.form { width:85%; float:left; margin-top:-10px; padding: 0; }
+#structIndex p.form.submit { width: 13%; text-align:left; float: right !important; margin: -13px 0 0 0;} 
+#structIndex #l_subject { width: 13%; font-size:12px; text-align:center; line-height:2em;  }
+#structIndex #subject { width: 85%; margin-bottom: 5px; }
+#structIndex .commentContainer { padding: 5px 0 5px 5px; font-size:12px; float:left; width:95%; margin-bottom:10px; }
+#structIndex .img_user_avatar { float:left; margin-right: 10px; }
+#structIndex .forum_nodes_text { width:85%; margin: 5px 0; float:left; padding: 5px 0; border-top: 1px dotted #dfdfdf; }
+#text { width:98%; height: 2.5em; } 
+#status_bar { border-bottom: none !important; }

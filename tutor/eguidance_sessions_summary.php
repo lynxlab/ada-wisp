@@ -146,7 +146,7 @@ $content_dataAr = array(
   'user_type' => $user_type,
   'status'    => $status,
   'label'     => $label,
-  'dati'      => $htmlData,
+  'data'      => $htmlData,
   'path'      => $path
 );
 

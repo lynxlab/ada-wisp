@@ -1,3 +1,18 @@
+/**
+ * @author giorgio 06/nov/2014
+ * 
+ * added jquery uniform plugin on document ready
+ *  
+ */
+function initDoc()
+{
+//	alert ('uniform');
+		$j("select, input, a.button, button, textarea").uniform();
+	
+}
+
+
+
 /*
 funzioni di creazione di opzioni con la definizione del default selected
 new Option([text[, value[, defaultSelected[, selected]]]])

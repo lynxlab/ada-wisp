@@ -32,7 +32,59 @@ abstract class FForm
         $this->_acceptCharset = '';
         $this->_id = '';
         $this->_controls = array();
+        
+        $this->_uniformJavascript = '
+        		if (typeof $j == "undefined")
+        		{
+        			// must include jquery
+        			var jq = document.createElement("script"); jq.type = "text/javascript";        			
+  					jq.src = "'.str_replace(ROOT_DIR, '', JQUERY).'";  					
+  					document.getElementsByTagName("head")[0].appendChild(jq);
+					jQueryReady (applyUniform);  							
+        		}
+  				else
+  				{
+  					var jQuery = $j;
+  					jQueryReady (applyUniform);
+  				}
+  							
+                function loadUniform()
+  				{
+					// must include jquery uniform
+        			var jq = document.createElement("script"); jq.type = "text/javascript";        			
+  					jq.src = "'.str_replace(ROOT_DIR, '', JQUERY_UNIFORM).'";  					
+  					document.getElementsByTagName("head")[0].appendChild(jq);
+  					// must include css
+  					var jqcss = document.createElement("link"); jqcss.setAttribute("rel","stylesheet");
+  					jqcss.setAttribute("type", "text/css"); jqcss.setAttribute("href", "'.str_replace(ROOT_DIR, '', JQUERY_UNIFORM_CSS).'");  					
+  					document.getElementsByTagName("head")[0].appendChild(jqcss);  							  							
+  				}
+  							
+  				function jQueryReady (callback) {
+  					if (typeof jQuery != "undefined")
+  					{  							
+  					        loadUniform();		 			
+  							callback(jQuery);
+  					}
+  					else
+  					{
+  							window.setTimeout (function() { jQueryReady(callback); },100);
+  					}
+  				}
+  							
+  				function applyUniform (myJQuery) {
+					if (myJQuery().uniform)
+  					{  							
+  							if (typeof myJQuery == "undefined") myJQuery = jQuery.noConflict(true);
+  							myJQuery("select, input, a.button, button, textarea").not(":file").uniform();
+  					}
+  					else 
+  					{  							
+  							window.setTimeout (function() { applyUniform(myJQuery); },100);
+  					}
+  				}';
     }
+    
     /**
      * Given a Request object, uses its contents to fill the controls in the
      * form.
@@ -123,6 +175,10 @@ abstract class FForm
 		else {
 			$this->_customJavascript = $js;
 		}
+    }
+
+    protected function setId($id) {
+        $this->_id = $id;
     }
 
     protected function setAction($action) {
@@ -381,6 +437,7 @@ abstract class FForm
 
 		$html.= $this->addJsValidation()."\n";
 		$html.= $this->addCustomJavascript()."\n";
+		$html.= $this->addUniformJavascript()."\n";
 
         return $html;
     }
@@ -390,6 +447,19 @@ abstract class FForm
         return $this->render();
     }
 
+    /**
+     * Adds the javascript form uniform jQuery plugin
+     *
+     * @return string the needed javascript 
+     */
+    private function addUniformJavascript() {
+    	if (!is_null($this->_uniformJavascript)) {
+    		return '<script type="text/javascript">
+				'.$this->_uniformJavascript.'
+			</script>';
+    	}
+    }
+    
 	/**
 	 * Adds the custom javascript specified by user
 	 *
@@ -621,4 +691,9 @@ abstract class FForm
      * @var string
      */
     private $_customJavascript = null;
+    /**
+     *
+     * @var string
+     */
+    private $_uniformJavascript = null;
 }

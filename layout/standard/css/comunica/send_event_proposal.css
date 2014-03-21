@@ -1,0 +1,103 @@
+@CHARSET "UTF-8";
+
+/**
+ * Form styling
+ */
+#top_container_form {
+	float: left;
+	margin-bottom: 30px;
+	width: 100%;
+}
+
+#left_proposal_form {
+	float: left;
+	width: 50%
+}
+
+#right_proposal_form {
+	float: left;
+	width: 50%
+}
+
+#hidden_form_controls {
+	display: none;
+}
+
+#subject {
+	width: 75%;
+	float: right;
+	margin-right: 10px;
+}
+
+/**
+ * NOTE: all fullcalendar related properties must be marked as important
+ * because this css is included by ada rendering engine before the one
+ * from fullcalendar
+ */
+.holiday,.fc-agenda .holiday .fc-event-time,.holiday a {
+	background-color: lightgreen !important; /* background color */
+	border-color: darkgreen !important; /* border color */
+	color: black !important; /* text color */
+	padding: 2px;
+}
+
+.proposal,.fc-agenda .proposal .fc-event-time,.proposal a {
+	background-color: lightgray !important; /* background color */
+	border-color: darkgray !important; /* border color */
+	color: black !important; /* text color */
+	padding: 2px;
+	cursor: pointer !important;
+}
+
+.confirmed,.fc-agenda .confirmed .fc-event-time,.confirmed a {
+	background-color: red !important; /* background color */
+	border-color: darkorange !important; /* border color */
+	color: white !important; /* text color */
+	padding: 2px;
+	cursor: pointer !important;
+}
+
+/**
+ * legend box
+ */
+#proposalLegend {
+	float: left;
+	width: 100%;
+	border: 1px dotted lightgray;
+	padding: 5px;
+	margin: 20px 0 -20px 0;
+}
+
+.proposalLegendLbl {
+	border: 1px dotted lightgray;
+	padding: 3px 10px 3px 10px;
+	margin-top: -20px;
+	display: block;
+	background: #fff;
+	width: 8%;
+}
+
+.legendBox.proposal,.legendBox.confirmed,.legendBox.fc-event {
+	border: inherit;
+	margin: 5px;
+	font-size: inherit;
+	padding: 5px;
+	cursor: default;
+	border-style: solid;
+	width: 30%;
+	float: left;
+}
+
+/**
+ * details, alert and confirm dialogs
+ */
+#proposalDetails,#alertDialog,#confirmDialog,.ui-dialog-titlebar,.ui-button-text
+	{
+	font-size: 0.9em;
+}
+
+#proposalUserDetails,#proposalNotes,#proposalTypeDetails {
+	font-weight: bold;
+	margin: 5px 0 15px 20px;
+	display: block;
+}

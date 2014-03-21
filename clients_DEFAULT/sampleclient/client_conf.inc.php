@@ -34,6 +34,16 @@ if (!MULTIPROVIDER)
 }
 
 /**
+ * Provider holidays feed, to be show on fullcalendar. Sample is italian holidays feed
+ */
+define ('GCAL_HOLIDAYS_FEED','http://www.google.com/calendar/feeds/e327d6lm6r2kb555ce82ll4sbs@group.calendar.google.com/public/basic');	
+
+/*
+ * Maximum number of appointment proposal the tutor can make
+ */
+define ('MAX_PROPOSAL_COUNT',2);
+
+/**
  *
  * @name SAMPLE_DB_TYPE
  */

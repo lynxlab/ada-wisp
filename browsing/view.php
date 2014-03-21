@@ -338,6 +338,10 @@ foreach ($keyAr as $keyword){
 	$linksAr [] = "<a href=\"search.php?s_node_title=$keyword&submit=cerca&l_search=all\">$keyword</a>";
 }
 
+$imgAvatar = $userObj->getAvatar();
+$avatar = CDOMElement::create('img','src:'.$imgAvatar);
+$avatar->setAttribute('class', 'img_user_avatar');
+
 $linked_node_keywords = implode(',',$linksAr);                
 /**
  * content_data
@@ -389,6 +393,9 @@ $content_dataAr['user_media'] = $data['user_media'];
 $content_dataAr['exercises'] = $data['exercises'];
 $content_dataAr['notes'] = $data['notes'];
 $content_dataAr['personal'] = $data['private_notes'];
+$content_dataAr['user_avatar'] = $avatar->getHtml(); 
+$content_dataAr['user_modprofilelink'] = $userObj->getEditProfilePage();
+
 
 if ($node_type == ADA_GROUP_WORD_TYPE OR $node_type == ADA_LEAF_WORD_TYPE) {
 	$content_dataAr['text'] .= $data['extended_node'];
@@ -452,7 +459,7 @@ if ($com_enabled) {
 	$content_dataAr['ajax_chat_link'] = $ajax_chat_link;
 	$content_dataAr['messages'] = $user_messages->getHtml();
 	$content_dataAr['agenda'] = $user_agenda->getHtml();
-	$content_dataAr['events'] = $user_events->getHtml();
+//	$content_dataAr['events'] = $user_events->getHtml();
 	$content_dataAr['chat_users'] = $online_users;
 } else {
 	$content_dataAr['chat_link'] = translateFN("chat non abilitata");

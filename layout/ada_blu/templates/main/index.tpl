@@ -16,8 +16,7 @@
 <div id="content">
 <div id="topcont">
     <div id="submenubanner">
-<!-- <template_field class="template_field" name="infomsg">infomsg</template_field> -->
-&nbsp;
+ <template_field class="template_field" name="infomsg">infomsg</template_field>
 </div>
 
 </div>	 
@@ -37,13 +36,26 @@
                         </div>
                     </div>    
                 </div>
-                <div class="column">
-                  <div class="lynxRSS portlet">
-                    <div class="portlet-header">RSS Feeds</div>
-                    <div class="portlet-content">
-                        <template_field class="template_field" name="lynxRSS">lynxRSS</template_field>
-                    </div>
-                  </div>
+
+				<div id="newscont" class="column">
+					<div class="portlet">
+						<div class="portlet-header">
+							<i18n>Ultime news</i18n>
+						</div>
+						<div class="portlet-content">
+							<template_field class="template_field" name="bottomnews">bottomnews</template_field>
+						</div>
+					</div>
+				</div>
+
+
+				<div class="column">
+                    <div class="portlet">
+                        <div class="portlet-header"><i18n>facebook</i18n></div>
+                        <div class="portlet-content">
+                            <template_field class="template_field" name="fbRSS">fbRSS</template_field>       
+                        </div>
+                    </div>    
                 </div>
             </div>
             <div class="dx">
@@ -55,7 +67,6 @@
                     </div>
     		</div>
                 </div>    
-                
 		<div class="helpcont column">
                     <div class="portlet">
                         <div class="portlet-header">&nbsp;</div>
@@ -64,14 +75,13 @@
                     </div>  
                     </div>  
                 </div>    
-
-                <div class="helpcont column">
-                    <div class="portlet">
-                        <div class="portlet-header"><i18n>facebook</i18n></div>
-                        <div class="portlet-content">
-                            <template_field class="template_field" name="fbRSS">fbRSS</template_field>       
-                        </div>
-                    </div>    
+		<div class="helpcont column">
+                  <div class="lynxRSS portlet">
+                    <div class="portlet-header">RSS Feeds</div>
+                    <div class="portlet-content">
+                        <template_field class="template_field" name="lynxRSS">lynxRSS</template_field>
+                    </div>
+                  </div>
                 </div>
 		<div class="helpcont column">
                   <div class="TwitterTimeLine portlet">
@@ -88,14 +98,6 @@
 <br class="clearfix">
 </div>
 
-<div id="newscont" class="column">
-   <div class="portlet">
-     <div class="portlet-header"><i18n>Ultime news</i18n></div>
-        <div class="portlet-content">
-	  <template_field class="template_field" name="bottomnews">bottomnews</template_field> 	
-	</div>
-   </div>	
-</div>
 <br class="clearfix">
 <div id="bottomcont"></div>
 </div> <!--  / contenuto -->
@@ -110,8 +112,8 @@
 				</a>
 		</li>
 		<li id="tools" class="unselectedtools">
-				<a href="info.php">
-           			 <i18n>Informazioni</i18n>
+				<a href="browsing/ask_service.php">
+           			 <i18n>Chiedi aiuto</i18n>
 			        </a>
 	 </li>
         <li id="question_mark" class="unselectedquestion_mark">

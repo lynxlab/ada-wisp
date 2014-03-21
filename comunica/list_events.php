@@ -189,6 +189,9 @@ if (!isset($course_title)) {
 else {
   $course_title = '<a href="../browsing/main_index.php">'.$course_title.'</a>';
 }
+$imgAvatar = $userObj->getAvatar();
+$avatar = CDOMElement::create('img','src:'.$imgAvatar);
+$avatar->setAttribute('class', 'img_user_avatar');
 
 $content_dataAr = array(
   'banner'       => $banner,
@@ -196,6 +199,7 @@ $content_dataAr = array(
   'go_back'      => $go_back,
   'user_name'    => $user_name,
   'user_type'    => $user_type,
+  'user_avatar'  => $avatar->getHtml(),
   'messages'     => $messages->getHtml(),
   'status'       => $status,
   'chat_users'   => $online_users,
@@ -204,5 +208,21 @@ $content_dataAr = array(
   'menu_03'      => $menu_03
 );
 
-ARE::render($layout_dataAr, $content_dataAr);
+/**
+ * @author giorgio 06/nov/2013
+ *
+ * form is not built using an FForm object, must attach jquery uniform by hand
+ *
+ */
+$layout_dataAr['JS_filename'] = array(
+		JQUERY,
+		JQUERY_UNIFORM,
+		JQUERY_NO_CONFLICT
+);
+
+$layout_dataAr['CSS_filename'][] = JQUERY_UNIFORM_CSS;
+
+$options_Ar = array('onload_func' => "initDoc();");
+
+ARE::render($layout_dataAr, $content_dataAr, NULL, $options_Ar);
 ?>

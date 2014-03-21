@@ -336,8 +336,31 @@ class MessageHandler
 
 
     } // end of switch
+    
+    if(is_array($fields_list) && in_array('utente.username',$fields_list)) {
+    	$tables ="messaggi, destinatari_messaggi AS DM, utente ";
+    
+    	$basic_clause = "messaggi.tipo='$type' AND messaggi.id_messaggio=DM.id_messaggio "
+    	. "AND utente.id_utente=messaggi.id_mittente";
+    
+    }
+    else {
+    	$tables .="messaggi, destinatari_messaggi AS DM";
+    
+    	$basic_clause = "messaggi.tipo='$type' AND messaggi.id_messaggio=DM.id_messaggio";
+    }
+    
+    //    }
+    // set where clause
+    if ($clause == "") {
+    	$clause = $basic_clause;
+    }
+    else {
+    	$clause .= " and $basic_clause";
+    }
 
-    $res_ar_ha = $spool->find_sent_messages($fields_list, "", $ordering);
+//  was:  $res_ar_ha = $spool->find_sent_messages($fields_list, "", $ordering);
+    $res_ar_ha = $spool->find_sent_messages($fields_list, $clause, $ordering, $tables);
     if (AMA_DataHandler::isError($res_ar_ha))
     return new AMA_Error(AMA_ERR_READ_MSG);
 

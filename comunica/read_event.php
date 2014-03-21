@@ -78,7 +78,7 @@ if(MultiPort::isUserBrowsingThePublicTester()) {
 /*
  * In base a event_msg_id, ottenere connessione al tester appropriato
  */
-  $data_Ar = MultiPort::geTesterAndMessageId($msg_id);
+  $data_Ar = MultiPort::getTesterAndMessageId($msg_id);
   $tester  = $data_Ar['tester'];
 }
 else {
@@ -152,11 +152,16 @@ $node_title = ""; // empty
 //$menu_02 = "<a href=\"read_event.php?del_msg_id=" . $msg_id . "\">" . translateFN("Cancella") . "</a>";
 $menu_03 = ""; //"<a href=\"send_event.php?op=replay_all\">" . translateFN("Rispondi a tutti") . "</A>";
 
+$imgAvatar = $userObj->getAvatar();
+$avatar = CDOMElement::create('img','src:'.$imgAvatar);
+$avatar->setAttribute('class', 'img_user_avatar');
+
 $content_dataAr = array(
   'course_title'   => '<a href="../browsing/main_index.php">'.$course_title.'</a>',
   'status'         => $status,
   'user_name'      => $user_name,
   'user_type'      => $user_type,
+  'user_avatar'    => $avatar->getHtml(),  
   'level'          => $user_level,
   'go_back'        => $go_back,
   'go_print'       => $go_print,  // OR ELSE AN ARRAY OF PLACEHOLDERS?
@@ -170,5 +175,30 @@ $content_dataAr = array(
   'menu_03'        => $menu_03
 );
 
-ARE::render($layout_dataAr, $content_dataAr);
+/**
+ * @author giorgio 20/set/2013
+ * jquery and countdown inclusion
+ */
+$layout_dataAr ['JS_filename'] = array (
+		JQUERY,
+		JQUERY_UI,
+		ROOT_DIR . '/js/include/jquery/countdown/jquery.countdown.min.js',
+		ROOT_DIR . '/js/include/jquery/countdown/jquery.countdown-' . $_SESSION ['sess_user_language'] . '.js',
+		JQUERY_NO_CONFLICT
+);
+
+/**
+ * if the jqueru-ui theme directory is there in the template family,
+ * import it.
+ * Else get the standard one
+ */
+$jqueryLayoutCSS = ROOT_DIR . '/layout/' . $userObj->template_family . '/css/jquery-ui/jquery-ui-1.10.3.custom.min.css';
+$layout_dataAr ['CSS_filename'] = array (
+		((is_file ( $jqueryLayoutCSS )) ? $jqueryLayoutCSS : JQUERY_UI_CSS),
+		ROOT_DIR . '/js/include/jquery/countdown/jquery.countdown.css'
+);
+
+$optionsAr ['onload_func'] = 'initDoc();';
+
+ARE::render($layout_dataAr, $content_dataAr, NULL, (isset($optionsAr) ? $optionsAr : NULL));
 ?>

@@ -13,42 +13,36 @@
 <!-- contenitore -->
 <div id="container">
 <!--dati utente-->
-<div id="user_data" class="user_data_default">
-	<i18n>utente: </i18n>
-	<span>
-		<template_field class="template_field" name="user_name">user_name</template_field>
-	</span>
-	<i18n>tipo: </i18n>
-	<span>
-		<template_field class="template_field" name="user_type">user_type</template_field>
-	</span>
-        <i18n>Ora: </i18n>
-        <template_field class="template_field" name="timezone">timezone</template_field>
-        <span id="js_clock">
-            <template_field class="template_field" name="time">time</template_field>
-        </span>
-
-	<div class="status">
-		<i18n>status: </i18n>
-		<span>
-			<template_field class="template_field" name="status">status</template_field>
-		</span>
-        </div>
-</div> <!-- / dati utente -->
+<div id="user_wrap">
 <!-- label -->
 <div id="label">
-	<div class="topleft">
+		 <div class="topleft">
          <div class="topright">
             <div class="bottomleft">
                <div class="bottomright">
                   <div class="contentlabel">
-                  <h1><i18n>nuovo appuntamento</i18n></h1>
-		  </div>
-		</div>
-	    </div>
-	</div>
-    </div>
-</div><!-- /label -->
+                		  <h1><i18n>nuovo appuntamento</i18n></h1>
+									</div>
+							</div>
+						</div>
+					</div>
+			</div>		
+</div>
+<!-- /label -->
+
+<div id="user_data" class="user_data_default">
+  <template_field class="microtemplate_field" name="user_data_mini_micro">user_data_mini_micro</template_field>
+        <span class="timezone"><i18n>Ora: </i18n>
+        <template_field class="template_field" name="timezone">timezone</template_field>
+        </span>
+        <span id="js_clock">
+            <template_field class="template_field" name="time">time</template_field>
+        </span>  
+</div>
+</div>
+ <!-- / dati utente -->
+
+
 <!-- contenuto -->
 <div id="content">
 <div id="contentcontent">
@@ -76,7 +70,7 @@
       			<p>
         	      <i18n>Giorno (gg/mm/aaaa): </i18n>
 <input name="data_evento" type="text" size="10" maxlength="10" id="event_date" class="date_input" value="<template_field class="template_field" name="event_date">event_date</template_field>">
-<a href="javascript:show_calendar('document.form.data_evento', document.form.data_evento.value);"><img src="../layout/standard/img/cal.png" alt="Scegli una data">
+<a href="javascript:show_calendar('document.form.data_evento', document.form.data_evento.value);"><img src="../layout/ada_blu/img/cal.png" alt="Scegli una data">
 </a>
                       <!--input type="text" name="data_evento" value="<template_field class="template_field" name="event_date">event_date</template_field>"-->
                     </p>

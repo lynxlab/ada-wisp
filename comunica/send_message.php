@@ -340,11 +340,16 @@ if (!isset($testo)) {
 
 $ada_address_book = MessagesAddressBook::create($userObj);
 
+$imgAvatar = $userObj->getAvatar();
+$avatar = CDOMElement::create('img','src:'.$imgAvatar);
+$avatar->setAttribute('class', 'img_user_avatar');
+
 $content_dataAr = array(
   'user_name'      => $user_name,
   'level'          => $user_level,
   'titolo'         => $titolo,
   'user_type'      => $user_type,
+  'user_avatar'    => $avatar->getHtml(),
   'testo'          => trim($testo),
   'destinatari'    => $destinatari,
   //'student_button' => $student_button,
@@ -357,6 +362,21 @@ $content_dataAr = array(
   'status'         => $err_msg
 );
 
-$options_Ar = array('onload_func' => 'load_addressbook();');
+/**
+ * @author giorgio 06/nov/2013
+ * 
+ * form is not built using an FForm object, must attach jquery uniform by hand
+ * 
+ */
+$layout_dataAr['JS_filename'] = array(
+		JQUERY,
+		JQUERY_UNIFORM,
+		JQUERY_NO_CONFLICT
+);
+
+$layout_dataAr['CSS_filename'][] = JQUERY_UNIFORM_CSS;
+
+
+$options_Ar = array('onload_func' => 'initDoc(); load_addressbook();');
 ARE::render($layout_dataAr, $content_dataAr, NULL, $options_Ar);
 ?>

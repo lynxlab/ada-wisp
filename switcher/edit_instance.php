@@ -167,7 +167,8 @@ if (isset($_SERVER['REQUEST_METHOD']) && $_SERVER['REQUEST_METHOD'] == 'POST') {
                }
 
 
-                header('Location: list_instances.php?id_course=' . $courseObj->getId());
+                header('Location: switcher.php');
+//                header('Location: list_instances.php?id_course=' . $courseObj->getId());
                 exit();
             }
         } else {            

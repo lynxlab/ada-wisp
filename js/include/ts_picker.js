@@ -14,8 +14,8 @@
  * ada
  * HTTP_ROOT_DIR is imported by PHPjavascript 
  */
-var PREVIOUS_MONTH_IMAGE_PATH = HTTP_ROOT_DIR + '/layout/standard/img/cal_prev.png';
-var NEXT_MONTH_IMAGE_PATH     = HTTP_ROOT_DIR + '/layout/standard/img/cal_next.png';
+var PREVIOUS_MONTH_IMAGE_PATH = HTTP_ROOT_DIR + '/layout/'+ADA_TEMPLATE_FAMILY+'/img/cal_prev.png';
+var NEXT_MONTH_IMAGE_PATH     = HTTP_ROOT_DIR + '/layout/'+ADA_TEMPLATE_FAMILY+'/img/cal_next.png';
 
 function show_calendar(str_target, str_datetime) {
   var arr_months = ["January", "February", "March", "April", "May", "June",

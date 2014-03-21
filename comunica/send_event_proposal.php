@@ -13,6 +13,7 @@
 /**
  * Base config file
  */
+// ini_set('display_errors', '0'); error_reporting(E_ALL);
 require_once realpath(dirname(__FILE__)).'/../config_path.inc.php';
 
 /**
@@ -49,6 +50,9 @@ include_once 'include/comunica_functions.inc.php';
 
 //$success    = HTTP_ROOT_DIR.'/comunica/list_events.php';
 //$error_page = HTTP_ROOT_DIR.'/comunica/send_event.php';
+
+$includeJS = false;
+
 if (isset($_SERVER['REQUEST_METHOD']) && $_SERVER['REQUEST_METHOD'] == 'POST') {
   /*
    * Controllo validita' sui dati in arrivo dal form
@@ -75,23 +79,14 @@ if (isset($_SERVER['REQUEST_METHOD']) && $_SERVER['REQUEST_METHOD'] == 'POST') {
   if(DataValidator::validate_not_empty_string($subject) === FALSE) {
     $errors['subject'] = ADA_EVENT_PROPOSAL_ERROR_SUBJECT;
   }
-
-  if(($value = ADAEventProposal::canProposeThisDateTime($userObj, $date1, $time1, $sess_selected_tester)) !== TRUE) {
-    $errors['date1'] = $value;
+  
+  for ($i=0;$i<MAX_PROPOSAL_COUNT;$i++)
+  {
+  	if(($value = ADAEventProposal::canProposeThisDateTime($userObj, $date[$i], $time[$i], $sess_selected_tester)) !== TRUE) {
+  		$errors['date'.($i+1)] = $value;
+  	}
+  	$datetimesAr[$i] = array( 'date'=>$date[$i], 'time'=>$time[$i]  );
   }
-  if(($value = ADAEventProposal::canProposeThisDateTime($userObj, $date2, $time2, $sess_selected_tester)) !== TRUE) {
-    $errors['date2'] = $value;
-  }
-  if(($value = ADAEventProposal::canProposeThisDateTime($userObj, $date3, $time3, $sess_selected_tester)) !== TRUE) {
-    $errors['date3'] = $value;
-  }
-
-
-  $datetimesAr = array(
-    array('date' => $date1, 'time' => $time1),
-    array('date' => $date2, 'time' => $time2),
-    array('date' => $date3, 'time' => $time3)
-  );
 
   $message_content = ADAEventProposal::generateEventProposalMessageContent($datetimesAr, $id_course_instance, $notes);
 
@@ -101,6 +96,7 @@ if (isset($_SERVER['REQUEST_METHOD']) && $_SERVER['REQUEST_METHOD'] == 'POST') {
       'titolo' => $subject,
       'flags'  => $type
     );
+    $includeJS = true;
     $form = CommunicationModuleHtmlLib::getEventProposalForm($id_user, $data, $errors,$sess_selected_tester);
   }
   else {
@@ -156,13 +152,14 @@ if (isset($_SERVER['REQUEST_METHOD']) && $_SERVER['REQUEST_METHOD'] == 'POST') {
       $adm_uname = ""; // ??? FIXME: serve un superadmin nel file di config?
     }
     $clean_subject = ADAEventProposal::removeEventToken($subject);
-    $message_content = sprintf(translateFN('Dear user, the practitioner %s has sent you new proposal dates for the appointment: %s.'), $userObj->getFullName(), $clean_subject);
+    $message_content = sprintf(translateFN('Gentile %s, il tuo orientatore %s ti ha mandato una proposta di appuntamento %s.'),
+    		$addresseeObj->getFullName(),  $userObj->getFullName(), $clean_subject);
     $message_ha = array(
       'tipo'        => ADA_MSG_MAIL,
       'mittente'    => $adm_uname,
       'destinatari' => array($addresseeObj->username),
       'data_ora'    => 'now',
-      'titolo'      => 'ADA: ' . translateFN('new event proposal dates'),
+      'titolo'      => PORTAL_NAME . ': '. translateFN('new event proposal dates'),
       'testo'       => $message_content
     );
     $res = $mh->send_message($message_ha);
@@ -171,15 +168,20 @@ if (isset($_SERVER['REQUEST_METHOD']) && $_SERVER['REQUEST_METHOD'] == 'POST') {
       NULL,NULL,NULL,$error_page.'?err_msg='.urlencode(translateFN('Impossibile spedire il messaggio')));
     }
 
-    $text = translateFN("La proposta di appuntamento è stata inviata con successo all'utente ") . $addresseeObj->getFullName() . ".";
+    $text = translateFN("La proposta di appuntamento è stata inviata con successo all'utente")." ". $addresseeObj->getFullName() . ".";
     $form = CommunicationModuleHtmlLib::getOperationWasSuccessfullView($text);
     //header('Location: '.HTTP_ROOT_DIR.'/comunica/list_events.php');
     //exit();
   }
 }
 else {
+
+		
   if(isset($msg_id)) {
     $data = MultiPort::getUserAppointment($userObj, $msg_id);
+    
+
+        
     if($data['flags'] & ADA_EVENT_PROPOSAL_OK) {
       /*
        * The user accepted one of the three proposed dates for the appointment.
@@ -195,6 +197,7 @@ else {
       $_SESSION['event_msg_id'] = $msg_id;
       $id_user = $data['id_mittente'];
       $errors = array();
+      $includeJS = true;
       $form = CommunicationModuleHtmlLib::getEventProposalForm($id_user, $data, $errors, $sess_selected_tester);
     }
   }
@@ -206,22 +209,68 @@ else {
      */
     $errors = array();
     $data = array();
-  	$form = CommunicationModuleHtmlLib::getEventProposalForm($sess_id_user, $data, $errors, $sess_selected_tester);
-  }
+    $includeJS = true;
+  	$form = CommunicationModuleHtmlLib::getEventProposalForm($id_user, $data, $errors, $sess_selected_tester);
+  }     
 }
 
 $title = translateFN('Invia proposta di appuntamento');
 
+$imgAvatar = $userObj->getAvatar();
+$avatar = CDOMElement::create('img','src:'.$imgAvatar);
+$avatar->setAttribute('class', 'img_user_avatar');
+
 $content_dataAr = array(
   'user_name'      => $user_name,
   'user_type'      => $user_type,
+  'user_avatar'    => $avatar->getHtml(),
   'titolo'         => $titolo,
   'course_title'   => '<a href="../browsing/main_index.php">'.$course_title.'</a>',
   'status'         => $err_msg,
-  'data'	   => $form->getHtml(),
+  'data'	   => $form->getHtml() . $dateObj,
   'label'	   => $title
 );
 
+$layout_dataAr ['JS_filename'] = array (
+		JQUERY,
+		JQUERY_UI,
+		JQUERY_UNIFORM );
 
-ARE::render($layout_dataAr, $content_dataAr);
+/**
+ * if the jqueru-ui theme directory is there in the template family,
+ * import it.
+ * Else get the standard one
+ */
+$jqueryLayoutCSS = ROOT_DIR . '/layout/' . $userObj->template_family . '/css/jquery-ui/jquery-ui-1.10.3.custom.min.css';
+$layout_dataAr ['CSS_filename'] = array (
+		((is_file ( $jqueryLayoutCSS )) ? $jqueryLayoutCSS : JQUERY_UI_CSS),		
+		JQUERY_UNIFORM_CSS
+		// ROOT_DIR . '/js/include/jquery/fullcalendar/fullcalendar.print.css'
+);
+
+if ($includeJS)
+{	
+	// NOTE: if i18n file is not found it'll be discarded by the rendering engine
+	array_push($layout_dataAr['JS_filename'], ROOT_DIR . '/js/include/jquery/fullcalendar/fullcalendar.js');
+	array_push($layout_dataAr['JS_filename'], ROOT_DIR . '/js/include/jquery/fullcalendar/i18n/fullcalendar.' . $_SESSION ['sess_user_language'] . '.js');
+	array_push($layout_dataAr['JS_filename'], ROOT_DIR . '/js/include/jquery/fullcalendar/gcal.js');			
+
+	if (isset($data))
+		$datetimesAr = ADAEventProposal::extractDateTimesFromEventProposalText($data['testo']);
+	else $datetimesAr = '';
+	
+	for ($i=0; $i<MAX_PROPOSAL_COUNT; $i++) $inputProposalNames[$i] = translateFN('Proposta').' #'.($i+1);
+
+	array_push($layout_dataAr['CSS_filename'], ROOT_DIR . '/js/include/jquery/fullcalendar/fullcalendar.css' );
+	
+	$optionsAr ['onload_func'] = 'initDoc(\''.htmlentities(json_encode($datetimesAr)).'\',\''.htmlentities(json_encode($inputProposalNames)).'\','.MAX_PROPOSAL_COUNT.');';	
+}
+else
+{
+	$optionsAr ['onload_func'] = 'initDoc();';
+}
+
+array_push($layout_dataAr['JS_filename'], JQUERY_NO_CONFLICT);
+
+ARE::render($layout_dataAr, $content_dataAr, NULL, (isset($optionsAr) ? $optionsAr : NULL));
 ?>

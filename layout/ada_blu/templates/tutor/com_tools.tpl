@@ -17,4 +17,10 @@
 		 			 <template_field class="template_field" name="agenda">agenda</template_field>
 		 </span>
 </div>
+<div class="com_tools">
+		 <i18n>Your proposed appointment</i18n>
+		 <span>
+		 			 <template_field class="template_field" name="events_proposed">events_proposed</template_field>
+		 </span>
+</div>
 <!-- FINE Strumenti comunicazione ADA -->

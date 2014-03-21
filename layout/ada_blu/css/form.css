@@ -52,14 +52,14 @@ form em {
   color: #f00;
 }
 form label {
-  width: 120px; /* Width of labels */
+  width: 350px; /* Width of labels */
 }
 form fieldset fieldset label {
   margin-left: 123px; /* Width plus 3 (html space) */
 }
 
 form textarea {
-    width: 400px;
+    width: 350px;
     height: 200px;
 }
 
@@ -86,4 +86,12 @@ div.hide_error {
 div.show_error {
     display:  block;
     color: #ff0000;
+}
+/**
+ * details, alert and confirm dialogs
+ */
+#proposalDetails,#alertDialog,#confirmDialog,.ui-dialog-titlebar,.ui-button-text
+	{
+	font-size: 0.9em;
+        overflow:hidden;
 }

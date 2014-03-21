@@ -175,6 +175,7 @@ function navigationPanelShow(direction) {
 		showElement(NAVIGATION_PANEL_IDENTIFIER, direction);
 	}
 	else {
+            /*
 		if($(NODE_TEXT_CONTAINER_IDENTIFIER)
 		   && !$(NODE_TEXT_CONTAINER_IDENTIFIER).hasClassName('content_small')){
 			
@@ -186,6 +187,7 @@ function navigationPanelShow(direction) {
                             $(MAIN_INDEX_CONTAINER_IDENTIFIER).addClassName('content_small');
                     }
                 }
+             */   
 		$(NAVIGATION_PANEL_IDENTIFIER).show();
 	}
 }

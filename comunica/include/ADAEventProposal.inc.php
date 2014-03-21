@@ -135,7 +135,7 @@ class ADAEventProposal
    * @return string
    */
   static public function extractNotesFromEventProposalText($string) {
-    $pattern = '/<notes>(.*)<\/notes>/';
+    $pattern = '/<notes>(.*)<\/notes>/s';
     $matches = array();
     if(preg_match($pattern, $string, $matches) == 1) {
       return $matches[1];
@@ -166,6 +166,13 @@ class ADAEventProposal
 
   static public function canProposeThisDateTime(ADALoggableUser $userObj, $date, $time, $tester = NULL) {
 
+  	/**
+	 * @author giorgio 23/set/2013
+	 * for appointment proposal purposes, a date is considered valid even if it's empty
+	 * so that the tutor can propose a MAXIMUM of 3 appointments
+	 * 
+  	 */
+  	if (empty($date)) return TRUE;
     $date = DataValidator::validate_date_format($date);
     if($date === FALSE) {
       return ADA_EVENT_PROPOSAL_ERROR_DATE_FORMAT;
@@ -213,5 +220,59 @@ class ADAEventProposal
 
     return $string;
   }
+
+ /**
+   * Returns a new array containing each proposal as one data in agenda
+   * @param string $user_events_proposedAr
+   * @return Array
+   */
+  static public function explodeAgendaMessageFromEventProposal($user_events_proposedAr) {
+    foreach ($user_events_proposedAr as $client => $clientAr) {
+        foreach ($clientAr as $id_message => $messageAr) {
+           $message_text = $messageAr[9];
+           $dateAr = self::extractDateTimesFromEventProposalText($message_text);
+           $num_date = 0;
+           foreach ($dateAr as $one_date) {
+                $timestamp_time = sumDateTimeFN(array($one_date['date'],$one_date['time'].":00"));
+                if (time() <= $timestamp_time) {
+                    $user_events_exploded_clientAr[$id_message."_".$num_date][] = $messageAr[0];
+                    $user_events_exploded_clientAr[$id_message."_".$num_date][] = $timestamp_time;
+                    $user_events_exploded_clientAr[$id_message."_".$num_date][] = $messageAr[2];
+                    $user_events_exploded_clientAr[$id_message."_".$num_date][] = $messageAr[3];
+                    $user_events_exploded_clientAr[$id_message."_".$num_date][] = $messageAr[4];
+                    $user_events_exploded_clientAr[$id_message."_".$num_date][] = $messageAr[5];
+                    $user_events_exploded_clientAr[$id_message."_".$num_date][] = $messageAr[6];
+                    $num_el = count($messageAr);
+//                    $user_events_exploded_clientAr[$id_message."_".$num_date][] = $messageAr[$num_el-1];
+
+                    foreach ($messageAr[$num_el-1] as $key => $value) {
+                        $user_events_exploded_clientAr[$id_message."_".$num_date][$key] = $value;
+                        break;
+                    }
+//                    $user_events_exploded_clientAr[$id_message."_".$num_date][] = $messageAr[8];
+                    $num_date++;
+                    $timeStampAr[]=$timestamp_time;
+                }
+           }
+        }
+           foreach($user_events_exploded_clientAr as &$time)
+               $tmp[] = &$time[1];
+           array_multisort($tmp, SORT_DESC, $user_events_exploded_clientAr);
+           $user_events_explodedAr[$client] = $user_events_exploded_clientAr;
+    }
+    /*
+    $pattern = '/(?:[1-9][0-9]*)_(?:[1-9][0-9]*)_(?:[1-9][0-9]*)_(?:[1-9][0-9]+)/';
+    $matches = array();
+    if(preg_match($pattern, $event_token, $matches) == 1) {
+      return $event_token . '#' . $string;
+    }
+     *
+     */
+
+//    return $string;
+    return $user_events_explodedAr;
+  }
+
+
 }
 ?>

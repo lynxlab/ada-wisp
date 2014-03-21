@@ -952,8 +952,8 @@ class AMA_Common_DataHandler extends Abstract_AMA_DataHandler {
 
         $add_user_sql = 'INSERT INTO utente(nome,cognome,tipo,e_mail,username,password,layout,
                                indirizzo,citta,provincia,nazione,codice_fiscale,birthdate,sesso,
-                               telefono,stato,lingua,timezone,birthcity,birthprovince)
-                 VALUES(?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)';
+                               telefono,stato,lingua,timezone,cap,matricola,avatar,birthcity,birthprovince)
+                 VALUES(?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)';
 
         $values = array(
                 $user_dataAr['nome'],
@@ -983,9 +983,11 @@ class AMA_Common_DataHandler extends Abstract_AMA_DataHandler {
                 $user_dataAr['stato'],
                 $user_dataAr['lingua'],
                 $user_dataAr['timezone'],
+                $user_dataAr['cap'],
+                $user_dataAr['matricola'],
+                $user_dataAr['avatar'],
         		$user_dataAr['birthcity'],
         		$user_dataAr['birthprovince']
-        		
         );
 
         /*
@@ -1963,7 +1965,7 @@ class AMA_Common_DataHandler extends Abstract_AMA_DataHandler {
     "WHERE  st.id_servizio = s.id_servizio AND st.id_tester = t.id_tester ORDER BY s.livello";
         */
         // query only  in tester table
-        $service_sql = "SELECT st.id_servizio, s.nome, s.livello, st.id_corso, st.id_tester, t.nome, t.provincia, t.nazione
+        $service_sql = "SELECT st.id_servizio, s.nome, s.livello, st.id_corso, st.id_tester, t.nome, t.provincia, t.nazione, s.descrizione
      FROM servizio_tester AS st,  servizio AS s, tester AS t
      WHERE  st.id_servizio = s.id_servizio AND st.id_tester = t.id_tester $clause $orderByFields";
         //echo $service_sql;
@@ -2160,7 +2162,7 @@ class AMA_Common_DataHandler extends Abstract_AMA_DataHandler {
         $db =& $this->getConnection();
         if (AMA_DB::isError($db)) return $db;
 
-        $courses_sql = 'SELECT S.id_servizio, S.nome, S.descrizione, S.durata_servizio FROM servizio AS S, (SELECT distinct(id_servizio) FROM servizio_tester';
+        $courses_sql = 'SELECT S.id_servizio, S.nome, S.descrizione, S.durata_servizio, S.livello FROM servizio AS S, (SELECT distinct(id_servizio) FROM servizio_tester';
         if (!is_null($id_tester) && intval($id_tester)>0) $courses_sql .= ' WHERE id_tester='.intval($id_tester); 
         $courses_sql .= ') AS ST WHERE S.id_servizio = ST.id_servizio';
 
@@ -4117,7 +4119,6 @@ abstract class AMA_Tester_DataHandler extends Abstract_AMA_DataHandler {
              . ' WHERE I.id_istanza_corso ='.$id_course_instance
              . ' AND I.status IN ('.implode(',',$status_Ar).')'
              . ' AND U.id_utente = I.id_utente_studente';
-
         $result = $db->getAll($sql, NULL, AMA_FETCH_ASSOC);
         if(AMA_DB::isError($result)) {
             return new AMA_Error(AMA_ERR_GET);
@@ -4707,6 +4708,31 @@ abstract class AMA_Tester_DataHandler extends Abstract_AMA_DataHandler {
         return true;
     }
 
+    /**
+     * Directly subscribe a student without presubscription
+     * 
+     * @param $id_course_instance
+     * @param $student
+     * @param $status
+     * @param int $user_level 
+     * @return unknown_type
+     */
+    public function course_instance_student_subscribe_add($id_course_instance, $student,$status=2, $user_level=1) {
+        $db =& $this->getConnection();
+        if ( AMA_DB::isError( $db ) ) return $db;
+
+        // insert a row into table iscrizioni
+        $sql1 =  "insert into iscrizioni (id_utente_studente, id_istanza_corso, livello, status)";
+        $sql1 .= " values ($student, $id_course_instance, $user_level, $status);";
+        $res = $db->query($sql1);
+        // FIXME: usare executeCritical?
+        if (AMA_DB::isError($res)) {// || $db->affectedRows()==0)
+            return new AMA_Error(AMA_ERR_ADD);
+        }
+        return true;
+
+    }
+    
 
     /**
      * Unsubscribe a set of students from an instance course.
@@ -5337,6 +5363,8 @@ abstract class AMA_Tester_DataHandler extends Abstract_AMA_DataHandler {
         if ( AMA_DB::isError( $db ) ) return $db;
 
         // prepare values
+        $data_fine = $this->or_null($istanza_ha['data_fine']);
+        
         $data_inizio = $this->or_null($istanza_ha['data_inizio']);
         $durata = $this->or_zero($istanza_ha['durata']);
         $data_inizio_previsto = $this->or_zero($istanza_ha['data_inizio_previsto']);
@@ -5356,12 +5384,14 @@ abstract class AMA_Tester_DataHandler extends Abstract_AMA_DataHandler {
 
         }
 
-        $data_fine = 0;
-        if($data_inizio == "NULL") {
-            $data_fine = $this->add_number_of_days($durata,$data_inizio_previsto);
-        }
-        else {
-            $data_fine = $this->add_number_of_days($durata,$data_inizio);
+        if ($data_fine == "NULL") { // graffio 05/11/2013
+            $data_fine = 0;
+            if($data_inizio == "NULL") {
+                $data_fine = $this->add_number_of_days($durata,$data_inizio_previsto);
+            }
+            else {
+                $data_fine = $this->add_number_of_days($durata,$data_inizio);
+            }
         }
 
         // verify that the record exists
@@ -9849,7 +9879,7 @@ abstract class AMA_Tester_DataHandler extends Abstract_AMA_DataHandler {
         $sql = "SELECT
 					ts.`id_utente_tutor`,
 					c.`id_corso`, c.`titolo`, c.`id_utente_autore`,
-					i.`id_istanza_corso`, i.`title`
+					i.`id_istanza_corso`, i.`title`, i.`data_inizio`, i.`data_inizio_previsto`, i.`data_fine`
 				FROM `tutor_studenti` ts
 				JOIN `istanza_corso` i ON (i.`id_istanza_corso`=ts.`id_istanza_corso`)
 				JOIN `modello_corso` c ON (c.`id_corso`=i.`id_corso`)";
@@ -10319,6 +10349,8 @@ public function get_updates_nodes($userObj, $pointer)
     	 *
     	 * @param userId user id to get new nodes for
     	 * @param maxNodes : maximum number of nodes to get, gets all nodes if zero or not passed
+         * @param array $instancesArray the ids of the instances to get news nodes or NULL for all new nodes 
+         * @param array $nodeTypesArray
     	 * 
     	 * @author giorgio 29/apr/2013
     	 *
@@ -10326,14 +10358,16 @@ public function get_updates_nodes($userObj, $pointer)
     	 * 
     	 * on success, an AMA_Error object on failure
     	 */
-    	public function get_new_nodes($userId, $maxNodes = 3) {
+    	public function get_new_nodes($userId, $maxNodes = 3, $nodeTypesArray = array ( ADA_LEAF_TYPE, ADA_GROUP_TYPE ), $instancesArray=array()) {
     		
-    		$nodeTypesArray = array ( ADA_LEAF_TYPE, ADA_GROUP_TYPE );
+    		//$nodeTypesArray = array ( ADA_LEAF_TYPE, ADA_GROUP_TYPE );
     		
     		$db =& $this->getConnection();
     		if ( AMA_DB::isError( $db ) ) return $db;
     		
-    		$instancesArray = $this->get_course_instances_active_for_this_student ($userId);
+                if (count($instancesArray) == 0) { 
+        		$instancesArray = $this->get_course_instances_active_for_this_student ($userId);
+                }
     		
     		$result = array();
     		
@@ -10943,9 +10977,9 @@ public function get_updates_nodes($userObj, $pointer)
 
         $type = implode(',', $user_type);
         if ($retrieve_extended_data) {
-            $sql = "SELECT nome, cognome, tipo, username, e_mail FROM utente WHERE tipo IN ($type) ORDER BY cognome ASC";
+            $sql = "SELECT nome, cognome, tipo, username, e_mail, id_utente FROM utente WHERE tipo IN ($type) ORDER BY cognome ASC";
         } else {
-            $sql = "SELECT tipo, username FROM utente WHERE tipo IN ($type)";
+            $sql = "SELECT tipo, username, id_utente FROM utente WHERE tipo IN ($type)";
         }
 
         $result = $db->getAll($sql, NULL, AMA_FETCH_ASSOC);
@@ -11769,7 +11803,7 @@ public function get_updates_nodes($userObj, $pointer)
 			$sql = "
 				SELECT
 					N.id_nodo, N.id_utente, N.nome AS nome_nodo, N.titolo, N.testo, N.tipo, N.id_nodo_parent, N.data_creazione,
-					U.username, U.nome, U.cognome
+					U.username, U.nome, U.cognome, U.avatar
 				FROM nodo N
 				LEFT JOIN (SELECT id_nodo, count(id_nodo) AS numero_visite FROM history_nodi WHERE id_istanza_corso=".$id_course_instance." GROUP BY id_nodo) AS V ON (N.id_nodo=V.id_nodo)
 				LEFT JOIN utente AS U ON (U.id_utente=N.id_utente)
@@ -11782,7 +11816,7 @@ public function get_updates_nodes($userObj, $pointer)
 			$sql = "
 				SELECT
 					N.id_nodo, N.id_utente, N.nome AS nome_nodo, N.titolo, N.testo, N.tipo, N.id_nodo_parent, N.data_creazione,
-					U.username, U.nome, U.cognome
+					U.username, U.nome, U.cognome, U.avatar
 				FROM nodo N
 				LEFT JOIN utente AS U ON (U.id_utente=N.id_utente)
 				WHERE N.id_istanza=".$id_course_instance." AND (N.tipo = ".ADA_NOTE_TYPE." OR (N.tipo=".ADA_PRIVATE_NOTE_TYPE." AND N.id_utente=".$id_user.")) ".

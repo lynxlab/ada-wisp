@@ -29,13 +29,17 @@ $variableToClearAR = array('layout');
  */
 $allowedUsersAr = array(AMA_TYPE_ADMIN);
 
-if (!MULTIPROVIDER) { array_push($allowedUsersAr, AMA_TYPE_SWITCHER); }
+if (!MULTIPROVIDER) { 
+    array_push($allowedUsersAr, AMA_TYPE_SWITCHER); 
+    array_push($allowedUsersAr, AMA_TYPE_AUTHOR); 
+}
 
 /**
  * Performs basic controls before entering this module
  */
 $neededObjAr = array(
-    AMA_TYPE_SWITCHER => array('layout')
+    AMA_TYPE_SWITCHER => array('layout'),
+    AMA_TYPE_AUTHOR => array('layout')
 );
 
 require_once ROOT_DIR . '/include/module_init.inc.php';

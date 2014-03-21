@@ -75,13 +75,11 @@ if (isset($_SERVER['REQUEST_METHOD']) && $_SERVER['REQUEST_METHOD'] == 'POST') {
 } else {
     $allowEditProfile=false;
     $allowEditConfirm=false;
-    $user_dataAr = $userObj->toArray();
-    
-    // the standard UserProfileForm is always needed.
-    // Let's create it
+   
     $form = new UserProfileForm($languages,$allowEditProfile, $allowEditConfirm, $self.'.php');
     unset($user_dataAr['password']);
     $user_dataAr['email'] = $user_dataAr['e_mail'];
+//    $user_dataAr['avatarFileHidden']=$user_dataAr['avatarfile'];
     unset($user_dataAr['e_mail']);
     $form->fillWithArrayData($user_dataAr);   
     
@@ -243,7 +241,13 @@ if (isset($_SERVER['REQUEST_METHOD']) && $_SERVER['REQUEST_METHOD'] == 'POST') {
 }
 
 $label = translateFN('Modifica dati utente');
-$help =  $label; // or set it to whatever you like
+
+$divProgressBar = CDOMElement::create('div','id:progressbar');
+$divProgressLabel = CDOMElement::create('div','id:progress-label');			
+$divProgressBar->addChild ($divProgressLabel);			
+
+
+$help = translateFN('Modifica dati utente');
 
 $layout_dataAr['JS_filename'] = array(
 		JQUERY,
@@ -260,17 +264,12 @@ $layout_dataAr['CSS_filename'] = array(
 
 $maxFileSize = (int) (ADA_FILE_UPLOAD_MAX_FILESIZE / (1024*1024));
 
-/**
- * do the form have to be submitted with an AJAX call?
- * defalut answer is true, call this method to set it to false.
- * 
- * $userObj->useAjax(false);
- */
-
-$optionsAr['onload_func']  = 'initDoc('.$maxFileSize.','. $userObj->getId().');';
-$optionsAr['onload_func'] .= 'initUserRegistrationForm('.(int)(isset($tabsContainer)).', '.(int)$userObj->saveUsingAjax().');';
+$optionsAr['onload_func'] = 'initDoc('.$maxFileSize.','. $userObj->getId().');';
 
 //$optionsAr['onload_func'] = 'initDateField();';
+$imgAvatar = $userObj->getAvatar();
+$avatar = CDOMElement::create('img','src:'.$imgAvatar);
+$avatar->setAttribute('class', 'img_user_avatar');
 
 $content_dataAr = array(
     'user_name' => $user_name,
@@ -279,8 +278,11 @@ $content_dataAr = array(
     'agenda' => $user_agenda->getHtml(),
     'status' => $status,
     'title' => translateFN('Modifica dati utente'),
-    'data' => $data,
-    'help' => $help
+    'data' => $form->getHtml(), //.$divProgressBar->getHtml(),
+    'help' => $help,
+	'user_avatar'=>$avatar->getHtml(),		
+	'user_modprofilelink' => $userObj->getEditProfilePage(),
+	
 );
 
 ARE::render($layout_dataAr, $content_dataAr,NULL, $optionsAr);

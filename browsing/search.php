@@ -277,6 +277,9 @@ $go_print = "<a href=\" view.php?id_node=" . $sess_id_node . "&op=print\" target
 costruzione della pagina HTML
 */
 
+$imgAvatar = $userObj->getAvatar();
+$avatar = CDOMElement::create('img','src:'.$imgAvatar);
+$avatar->setAttribute('class', 'img_user_avatar');
 
 $content_dataAr = array(
   'form'=>$search_form,
@@ -296,13 +299,29 @@ $content_dataAr = array(
   'messages'=>$user_messages->getHtml(),
   'agenda'=>$user_agenda->getHtml(),
   'events'=>$user_events->getHtml(),
-  'chat_users'=>$online_users
+  'chat_users'=>$online_users,
+  'user_avatar'=>$avatar->getHtml(),
+  'user_modprofilelink' => $userObj->getEditProfilePage(),		
 );
 
 /**
  * Sends data to the rendering engine
  */
-ARE::render($layout_dataAr,$content_dataAr);
+
+$layout_dataAr['JS_filename'] = array(
+		JQUERY,
+		JQUERY_UI,
+		JQUERY_UNIFORM,
+		JQUERY_NO_CONFLICT
+);
+
+$layout_dataAr['CSS_filename'] = array (
+		JQUERY_UI_CSS,
+		JQUERY_UNIFORM_CSS
+);
+
+
+ARE::render($layout_dataAr,$content_dataAr, NULL, array('onload_func' => "\$j('input, a.button, button').uniform();") );
 
 
 ?>

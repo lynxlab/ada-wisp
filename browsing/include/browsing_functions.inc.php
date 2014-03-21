@@ -139,17 +139,37 @@ if ($_REQUEST['mode']) {
 
   $testers_dataAr = MultiPort::getTestersPointersAndIds();
 
+  $showRead = false;
   $user_messagesAr = MultiPort::getUserMessages($userObj);
-  $user_messages   = CommunicationModuleHtmlLib::getMessagesAsTable($user_messagesAr, $testers_dataAr);
+  $user_messages   = CommunicationModuleHtmlLib::getMessagesAsTable($user_messagesAr, $testers_dataAr,$showRead);
 
   $user_agendaAr   = MultiPort::getUserAgenda($userObj);
-  $user_agenda     = CommunicationModuleHtmlLib::getAgendaAsTable($user_agendaAr, $testers_dataAr);
+  $user_agenda     = CommunicationModuleHtmlLib::getAgendaAsTable($user_agendaAr, $testers_dataAr,$showRead);
+		
+    // $user_eventsAr = MultiPort::getUserEvents($userObj);
+	
+	/**
+	 *
+	 * @author giorgio 19/set/2013
+	 *        
+	 *         uncomment the lines below for ada
+	 */
+	// $user_eventsAr = MultiPort::getUserEventsNotRead($userObj);
+	// $user_events = CommunicationModuleHtmlLib::getEventsAsTable($userObj, $user_eventsAr, $testers_dataAr);
+	
+	/**
+	 *
+	 * @author giorgio 19/set/2013
+	 *        
+	 *         comment the lines below for ada
+	 */
+	$past = 0;
+	$user_agenda_not_pastAr = MultiPort::getUserAgenda ( $userObj, $past );
+	$user_eventsAr = MultiPort::getUserEvents ( $userObj );
+	$user_events = CommunicationModuleHtmlLib::getEventsAsTable ( $userObj, $user_eventsAr, $testers_dataAr );
+	$user_events_2 = CommunicationModuleHtmlLib::getAppointmentsAsTable ( $userObj, $user_agenda_not_pastAr, $testers_dataAr );  
+	
 
-  //$user_eventsAr = MultiPort::getUserEvents($userObj);
-  //$user_events    = CommunicationModuleHtmlLib::getEventsAsTable($userObj, $user_eventsAr, $testers_dataAr);
-
-  $user_eventsAr = MultiPort::getUserEventsNotRead($userObj);
-  $user_events    = CommunicationModuleHtmlLib::getEventsAsTable($userObj, $user_eventsAr, $testers_dataAr);
 //}
 /*
  * Get this user needed objects from $neededObjAr based on user tyoe

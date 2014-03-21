@@ -1209,7 +1209,9 @@ class MultiPort
      * Get messages sent from  this user from all the testers the user has subscribed to.
      */
 
-    $fields_list_Ar = array('id_mittente','data_ora', 'titolo', 'priorita','flags');
+    // ADA default: $fields_list_Ar = array('id_mittente','data_ora', 'titolo', 'priorita','flags');
+    // WISP modified:
+    $fields_list_Ar = array('id_mittente','data_ora', 'titolo', 'priorita', 'read_timestamp', 'flags','utente.username','utente.nome', 'utente.cognome','testo');
     $sort_field     = ' data_ora desc';
 
     //if($sess_selected_tester === NULL || $sess_selected_tester === ADA_PUBLIC_TESTER) {
@@ -1274,7 +1276,7 @@ class MultiPort
    * @param  $ADAUser $userObj
    * @return $msgs_ha array
    */
-  static private function get_messages(ADALoggableUser $userObj, $msgType = ADA_MSG_SIMPLE, $msgFlags=array(),$retrieve_only_unread_events=false){//,$field_ar,$clause) {
+  static private function get_messages(ADALoggableUser $userObj, $msgType = ADA_MSG_SIMPLE, $msgFlags=array(),$retrieve_only_unread_events=false,$past=1){//,$field_ar,$clause) {
 
     $messages_Ar = array();
     $user_id = $userObj->getId();
@@ -1299,8 +1301,10 @@ class MultiPort
      * If we are retrieving messages representing events or events proposal,
      * filter them by flag too.
      * NOT USED ANYMORE --> Graffio 24/01/2011
+     * 
+     * USED AGAIN BY WISP --> giorgio 17/set/2013
      */
-    /*
+    
     if($msgType == ADA_MSG_AGENDA) {
       if(empty($msgFlags)) {
         $clause = 'flags & '.ADA_EVENT_CONFIRMED;
@@ -1312,14 +1316,18 @@ class MultiPort
     else {
       $clause = '';
     }
-     *
-     */
     
+    if ($past != 1) {
+    	$today_timestamp = time();
+    	$time_yesterday = $today_timestamp - 24*60*60;
+    	$clause .= ' AND data_ora > ' . $time_yesterday;
+    }
+         
     /*
      * Get messagges not yet read
      */
     if ($retrieve_only_unread_events) {
-        $clause = 'read_timestamp <= 0';
+        $clause .= ' AND read_timestamp <= 0';
     }
 
     /*
@@ -1428,13 +1436,14 @@ class MultiPort
    */
   // MARK: restituire $result_Ar, rimuovere tutto lo switch($display_mode)
   // e il passaggio del parametro display_mode
-  static public function getUserAgenda(ADAGenericUser $userObj, $display_mode=1) {
+  static public function getUserAgenda(ADAGenericUser $userObj, $past=1, $display_mode=1) {
 
     if($userObj instanceof ADAGuest) {
       //return new CText(translateFN('Non sono presenti appuntamenti'));
       return  array();
     }
-    $result_Ar = self::get_messages($userObj, ADA_MSG_AGENDA);
+    $msgFlags=array();
+    $result_Ar = self::get_messages($userObj, ADA_MSG_AGENDA,$msgFlags,false,$past);
 
     return $result_Ar;
   }
@@ -1447,7 +1456,9 @@ class MultiPort
 
     $user_type = $userObj->getType();
     if($user_type == AMA_TYPE_TUTOR) {
-      $msgFlags = ADA_EVENT_PROPOSAL_NOT_OK;
+    	$msgFlags = ADA_EVENT_PROPOSED;
+      // giorgio 17/set/2013 was:
+      // $msgFlags = ADA_EVENT_PROPOSAL_NOT_OK;
     }
     else {
       $msgFlags = ADA_EVENT_PROPOSED;
@@ -1457,6 +1468,27 @@ class MultiPort
     return $result_Ar;
     //return self::getEventsAsTable($userObj, $result_Ar);
   }
+  
+  // MARK: restituire $result_Ar, rimuovere la chiamata a getEventsAsTable
+  static public function getTutorEventsProposed(ADAGenericUser $userObj) {
+  	// include_once ROOT_DIR.'/include/WISPHtmlLibrary/BaseHtmlLib.inc.php';
+  	if(!($userObj instanceof ADAUser || $userObj instanceof ADAPractitioner)) {
+  		return array();
+  	}
+  
+  	$user_type = $userObj->getType();
+  	if($user_type == AMA_TYPE_TUTOR) {
+  		$msgFlags = ADA_EVENT_PROPOSED;
+  		//      $msgFlags = ADA_EVENT_PROPOSAL_NOT_OK;
+  	}
+  	else {
+  		$msgFlags = ADA_EVENT_PROPOSED;
+  	}
+  	$result_Ar = self::get_sent_messages($userObj, ADA_MSG_AGENDA, $msgFlags);
+  
+  	return $result_Ar;
+  	//return self::getEventsAsTable($userObj, $result_Ar);
+  } 
 
     static public function getUserEventsNotRead(ADAGenericUser $userObj) {
     // include_once ROOT_DIR.'/include/HtmlLibrary/BaseHtmlLib.inc.php';
@@ -1526,14 +1558,16 @@ class MultiPort
           //$message_internal_identifier = $matches[1];
 
           $event_token = ADAEventProposal::extractEventToken($one_date[2]);
-
+          /*
           $cdh = ChatDataHandler::instance(MultiPort::getDSN($_SESSION['sess_selected_tester']));
           $id_chatroom = $cdh->get_chatroom_with_title_prefixFN($event_token);
           if(AMA_DataHandler::isError($id_chatroom)) {
             return FALSE;
           }
           return $id_chatroom;
-          //return TRUE;
+           * 
+           */
+          return $event_token;
         }
       }
     }
@@ -1614,7 +1648,7 @@ class MultiPort
 
     // TODO: refactor
     foreach ($appointmentsIdsAr as $appointment_id) {
-      $data_Ar = self::geTesterAndMessageId($appointment_id);
+      $data_Ar = self::getTesterAndMessageId($appointment_id);
 
       $mh = MessageHandler::instance(self::getDSN($data_Ar['tester']));
       $result = $mh->set_messages($user_id, array($data_Ar['message_id']),'R');
@@ -1634,7 +1668,7 @@ class MultiPort
 
     // TODO: refactor
     foreach ($appointmentsIdsAr as $appointment_id) {
-      $data_Ar = self::geTesterAndMessageId($appointment_id);
+      $data_Ar = self::getTesterAndMessageId($appointment_id);
 
       $mh = MessageHandler::instance(self::getDSN($data_Ar['tester']));
       $result = $mh->set_messages($user_id, array($data_Ar['message_id']),'N');
@@ -1676,7 +1710,7 @@ class MultiPort
 
     // TODO: refactor
     foreach ($appointmentsIdsAr as $appointment_id) {
-      $data_Ar = self::geTesterAndMessageId($appointment_id);
+      $data_Ar = self::getTesterAndMessageId($appointment_id);
 
       $mh = MessageHandler::instance(self::getDSN($data_Ar['tester']));
       $result = $mh->remove_messages($user_id, array($data_Ar['message_id']));
@@ -1706,8 +1740,7 @@ class MultiPort
   // MARK: NON MODIFICARE
   static public function getUserAppointment(ADALoggableUser $userObj, $appointment_id) {
 
-
-    $data_Ar = self::geTesterAndMessageId($appointment_id);
+  	$data_Ar = self::getTesterAndMessageId($appointment_id);
 
     $mh = MessageHandler::instance(self::getDSN($data_Ar['tester']));
 
@@ -1745,13 +1778,8 @@ class MultiPort
    * @param  string $appointment_id
    * @return array
    */
-  // wrapper for next function with a strange name ...
-   static public function getTesterAndMessageId($appointment_id) {
-    return self::geTesterAndMessageId($appointment_id);
-   }
-
   // MARK: NON MODIFICARE
-  static public function geTesterAndMessageId($appointment_id) {
+   static public function getTesterAndMessageId($appointment_id) {
     /*
      * First, check if appointment is in the form <number> or <number1>_<number2>.
      * In the first case, read the appointment with id = number from $sess_selected_tester.

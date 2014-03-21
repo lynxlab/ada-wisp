@@ -25,11 +25,13 @@ class TutorAssignmentForm extends FForm
        parent::__construct();
        $this->addRadios(
                'id_tutor_new',
-               translateFN("Seleziona un tutor dall'elenco"),
+               translateFN("Seleziona un consulente dall'elenco"),
                $tutorsAr,
                $checkedRadioButton);
        $this->addHidden('id_tutor_old');
        $this->addHidden('id_course_instance');
        $this->addHidden('id_course');
+       $this->addHidden('id_student');
+       $this->setSubmitValue(translateFN('Assegna'));
     }
 }

@@ -355,9 +355,11 @@ if (in_array('chatroom',$thisUserNeededObjAr)) {
   $event_token = '';
 
 //  if (($id_chatroom = MultiPort::hasThisUserAChatAppointment($userObj)) !== FALSE) {
+$event_token = MultiPort::hasThisUserAChatAppointment($userObj);
 
 //  $chatroomHA = ChatRoom::get_info_chatroomFN($id_chatroom);
-  if (!isset($id_chatroom) && isset($_SESSION['sess_id_course_instance'])) {
+  if (isset($_SESSION['sess_id_course_instance'])) {
+//  if (!isset($id_chatroom) && isset($_SESSION['sess_id_course_instance'])) {
       $id_chatroom = ChatRoom::get_class_chatroomFN($_SESSION['sess_id_course_instance']);
         if(AMA_DataHandler::isError($id_chatroom)) {
             $id_chatroom = 0;
@@ -369,7 +371,7 @@ if (in_array('chatroom',$thisUserNeededObjAr)) {
     if($chatroomObj->error == 1) {
       $exit_reason = EXIT_REASON_WRONG_ROOM;
     }
-//    $event_token = ADAEventProposal::extractEventToken($chatroomObj->chat_title);
+    //$event_token = ADAEventProposal::extractEventToken($chatroomObj->chat_title);
 //  }
 //  else {
 //    $exit_reason = EXIT_REASON_WRONG_ROOM;

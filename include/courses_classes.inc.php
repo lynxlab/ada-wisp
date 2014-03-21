@@ -849,7 +849,7 @@ class Course_instance_Old {
         $icon = "_gruppo.png";
 
         $out_fields_ar = array('data_creazione','tipo');
-        $clause = "id_istanza =  $sess_id_course_instance AND tipo = 2";
+        $clause = "id_istanza =  $sess_id_course_instance AND tipo = ".ADA_NOTE_TYPE;
         $childrenAr = $dh->find_course_nodes_list($out_fields_ar,$clause,$sess_id_course);
         $note_count = count($childrenAr);
         $index = $note_count . translateFN(" note attualmente presenti nel Forum di classe.");
@@ -1462,7 +1462,10 @@ class Student_class {
                             $added_nodes_count = count($nodes);
                             $added_nodes_count_norm = str_pad($added_nodes_count,5, "0", STR_PAD_LEFT);
 
-                            $added_notes = "<!-- $added_nodes_count_norm --><a href=$http_root_dir/tutor/tutor.php?op=student_notes&id_instance=$id_instance&id_student=$id_student>".$added_nodes_count."</a>";
+                            $added_notes = "<!-- $added_nodes_count_norm -->";
+                            if ($added_nodes_count>0) $added_notes .= "<a href=$http_root_dir/tutor/tutor.php?op=student_notes&id_instance=$id_instance&id_student=$id_student>";
+                            $added_notes .= $added_nodes_count;
+                            if ($added_nodes_count>0) $added_notes .= "</a>";
                             //$added_notes = $added_nodes_count;
                         } else {
                             $added_notes = "<!-- 0 -->-";
@@ -1492,9 +1495,9 @@ class Student_class {
                         $st_name .= $student_name."</a>";
 
                         $st_history_count_norm = str_pad($st_history_count,5, "0", STR_PAD_LEFT);
-                        $st_history = "<!-- $st_history_count_norm --><a href=" .  $http_root_dir . "/tutor/tutor_history.php?id_student=" . $id_student;
-                        $st_history.= "&id_course=" . $id_course ."&id_course_instance=" . $id_instance . ">";
-                        $st_history.=  $st_history_count."</a>";
+//                         $st_history = "<!-- $st_history_count_norm --><a href=" .  $http_root_dir . "/tutor/tutor_history.php?id_student=" . $id_student;
+//                         $st_history.= "&id_course_instance=" . $id_instance . ">";
+                        $st_history =  $st_history_count; //."</a>";
 
                         $st_history_last_access = $studentObj->get_last_accessFN($id_instance,"T");
                         //$dati['date'] = $st_history_last_access;
@@ -1521,7 +1524,9 @@ class Student_class {
                         $tot_history_count+=$st_history_count;
                         if ($st_history_last_access!= "-") {
 
-                            $dati_stude[$num_student]['last_access'] = "<a href=\"$http_root_dir/tutor/tutor_history_details.php?period=1&id_student=$id_student&id_course_instance=$id_instance&id_course=$id_course\">".$st_history_last_access."</a>";
+                            $dati_stude[$num_student]['last_access'] = 
+//                               "<a href=\"$http_root_dir/tutor/tutor_history_details.php?period=1&id_student=$id_student&id_course_instance=$id_instance&id_course=$id_course\">".
+                            $st_history_last_access; // ."</a>";
                         } else {
                             $dati_stude[$num_student]['last_access'] = $st_history_last_access;
                         }
@@ -1771,10 +1776,13 @@ class Student_class {
                 // $tObj->initTable('0','center','0','1','100%','black','white','black','white');
                 $tObj->initTable('0','center','0','1','100%','','','','',0,0,1);
                 // Syntax: $border,$align,$cellspacing,$cellpadding,$width,$col1, $bcol1,$col2, $bcol2
-                $caption = translateFN("Studenti del corso") . " <strong>$course_title</strong>  - ".
-                  		   translateFN("Classe")." ".$instance_course_ha['title']." (".
-                  		   $id_instance.") - " . translateFN("Iniziato il ");
+                $caption = translateFN("Utenti del servizio") . " <strong>$course_title</strong>  - ".
+                  		   // translateFN("Classe")." ".$instance_course_ha['title']." (".
+                  		   // $id_instance.")".
+                  		   " - " . translateFN("Iniziato il ");                
                 $caption .= "&nbsp;<strong>$start_date</strong>" ;
+                
+                
                 
                 $summary = translateFN("Elenco dei corsi monitorati");
                 $tObj->setTable($tabled_dataHa,$caption,$summary);

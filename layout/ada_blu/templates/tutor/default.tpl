@@ -24,22 +24,10 @@
 
             
             <div id="status_bar">
-                <div id="user_data" class="user_data_default">
-                    <i18n>utente: </i18n>
-                    <span>
-                        <template_field class="template_field" name="user_name">user_name</template_field>
-                    </span>
-                    <i18n>tipo: </i18n>
-                    <span>
-                        <template_field class="template_field" name="user_type">user_type</template_field>
-                    </span>
-                    <div class="status">
-                        <i18n>status: </i18n>
-                        <span>
-                            <template_field class="template_field" name="status">status</template_field>
-                        </span>
-                    </div>
-                </div> 
+                <!--dati utente-->
+                   <template_field class="microtemplate_field" name="user_data_micro">user_data_micro</template_field>
+                 <!-- / dati utente -->
+            </div> 
                 <div id="label">
                 <!--    <div class="topleft">
                         <div class="topright">
@@ -108,7 +96,12 @@
         
         <!-- MENU A TENDINA -->
         <div id="mainmenu">
-            <template_field class="microtemplate_field" name="mainmenu">mainmenu</template_field>
+            <ul id="menu">
+                <li id="home"> <a href="tutor.php">
+                        <i18n>home</i18n>
+                    </a> </li></ul>
+           <!-- <template_field class="microtemplate_field" name="mainmenu">mainmenu</template_field-->
+
         </div>
         <!-- / MENU A TENDINA -->
 

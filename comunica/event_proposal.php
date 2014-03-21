@@ -13,6 +13,7 @@
 /**
  * Base config file
  */
+// ini_set('display_errors', '1'); error_reporting(E_ALL);
 require_once realpath(dirname(__FILE__)).'/../config_path.inc.php';
 
 /**
@@ -93,7 +94,7 @@ if(isset($_SERVER['REQUEST_METHOD']) && $_SERVER['REQUEST_METHOD'] == 'POST') {
   /*
    * In base a event_msg_id, ottenere connessione al tester appropriato
    */
-    $data_Ar = MultiPort::geTesterAndMessageId($msg_id);
+    $data_Ar = MultiPort::getTesterAndMessageId($msg_id);
     $tester  = $data_Ar['tester'];
   }
   else {
@@ -227,7 +228,8 @@ if(isset($_SERVER['REQUEST_METHOD']) && $_SERVER['REQUEST_METHOD'] == 'POST') {
 
       if(ADA_CHAT_EVENT & $practitioner_proposal['flags']) {
         $event_flag = ADA_CHAT_EVENT;
-
+/*
+		LA CHAT E' CREATA AL MOMENTO DELLA RICHIESTA DEL SERVIZIO (ask_service.php) 
         $end_time = $data_ora + $service_infoAr[7]; //durata_max_incontro
 
         $chatroom_ha = array(
@@ -249,7 +251,7 @@ if(isset($_SERVER['REQUEST_METHOD']) && $_SERVER['REQUEST_METHOD'] == 'POST') {
           $errObj = new ADA_Error($id_chatroom,
                                    translateFN("Si è verificato un errore nella creazione della chatroom. L'appuntamento non è stato creato."),
                                    NULL, NULL, NULL, $userObj->getHomePage());
-        }
+        } */
       }
       else {
         $event_flag = ADA_VIDEOCHAT_EVENT;
@@ -277,14 +279,14 @@ if(isset($_SERVER['REQUEST_METHOD']) && $_SERVER['REQUEST_METHOD'] == 'POST') {
     $appointment_type = $new_subject;
     $appointment_title = ADAEventProposal::removeEventToken($subject);
     $appointment_message = sprintf(translateFN('Provider: "%s".%sService: "%s".%s'), $tester_name, $newline, $service_name, $newline)
-                         . ' ' . sprintf(translateFN('This is a reminder for the appointment %s: %s in date %s at time %s'), $appointment_title, $appointment_type, $date, $time);
+                         . ' ' . sprintf(translateFN('Questo è un promemoria per l\'%s, %s: il giorno %s alle ore %s'), $appointment_type, $appointment_title,  $date, $time);
 
     $practitioner_email_message_ha = array(
       'tipo'        => ADA_MSG_MAIL,
       'mittente'    => $adm_uname,
       'destinatari' => array($practitioner_proposal['mittente']),
       'data_ora'    => 'now',
-      'titolo'      => 'ADA: ' . translateFN('appointment reminder'),
+      'titolo'      => PORTAL_NAME . ': ' . translateFN('appointment reminder'),
       'testo'       => $appointment_message
     );
 
@@ -293,7 +295,7 @@ if(isset($_SERVER['REQUEST_METHOD']) && $_SERVER['REQUEST_METHOD'] == 'POST') {
       'mittente'    => $adm_uname,
       'destinatari' => array($user_uname),
       'data_ora'    => 'now',
-      'titolo'      => 'ADA: ' . translateFN('appointment reminder'),
+      'titolo'      => PORTAL_NAME . ': ' . translateFN('appointment reminder'),
       'testo'       => $appointment_message
     );
 
@@ -365,7 +367,7 @@ else if(isset($msg_id)) {
   /*
    * In base a event_msg_id, ottenere connessione al tester appropriato
    */
-    $data_Ar = MultiPort::geTesterAndMessageId($msg_id);
+    $data_Ar = MultiPort::getTesterAndMessageId($msg_id);
     $tester  = $data_Ar['tester'];
   }
   else {
@@ -375,14 +377,11 @@ else if(isset($msg_id)) {
     $tester = $sess_selected_tester;
   }
 
-  if(($value = ADAEventProposal::canProposeThisDateTime($userObj,$datetimesAr[0]['date'], $datetimesAr[0]['time'], $tester)) !== TRUE) {
-    $errors['date1'] = $value;
-  }
-  if(($value = ADAEventProposal::canProposeThisDateTime($userObj,$datetimesAr[1]['date'], $datetimesAr[1]['time'], $tester)) !== TRUE) {
-    $errors['date2'] = $value;
-  }
-  if(($value = ADAEventProposal::canProposeThisDateTime($userObj,$datetimesAr[2]['date'], $datetimesAr[2]['time'], $tester)) !== TRUE) {
-    $errors['date3'] = $value;
+  foreach ($datetimesAr as $k=>$datetimeEl)
+  {
+  	if(($value = ADAEventProposal::canProposeThisDateTime($userObj,$datetimeEl['date'], $datetimeEl['time'], $tester)) !== TRUE) {
+  		$errors['date'.($k+1)] = $value;
+  	}
   }
 
   $form = CommunicationModuleHtmlLib::getProposedEventForm($data, $errors, $tester);

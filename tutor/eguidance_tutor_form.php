@@ -25,13 +25,14 @@ $variableToClearAR = array('layout', 'user');
 /**
  * Users (types) allowed to access this module.
  */
-$allowedUsersAr = array(AMA_TYPE_TUTOR);
+$allowedUsersAr = array(AMA_TYPE_TUTOR, AMA_TYPE_SWITCHER);
 
 /**
  * Get needed objects
  */
 $neededObjAr = array(
-  AMA_TYPE_TUTOR => array('layout')
+  AMA_TYPE_TUTOR => array('layout'),
+  AMA_TYPE_SWITCHER => array('layout')
 );
 
 require_once ROOT_DIR.'/include/module_init.inc.php';
@@ -46,7 +47,8 @@ if($sess_navigationHistory->callerModuleWas('quitChatroom')
   $is_popup = TRUE;
 }
 else {
-    $self =  'tutor';
+  // $self =  'tutor';
+  $self = 'default';
   $is_popup = FALSE;
 }
 
@@ -61,7 +63,10 @@ include_once ROOT_DIR.'/include/HtmlLibrary/BaseHtmlLib.inc.php';
 include_once ROOT_DIR.'/include/HtmlLibrary/TutorModuleHtmlLib.inc.php';
 include_once ROOT_DIR.'/comunica/include/ADAEventProposal.inc.php';
 
-if(isset($_SERVER['REQUEST_METHOD']) && $_SERVER['REQUEST_METHOD'] == 'POST') {
+  $status_opened     = 0;
+  $status_closed     = 1;
+
+  if(isset($_SERVER['REQUEST_METHOD']) && $_SERVER['REQUEST_METHOD'] == 'POST') {
   // Genera CSV a partire da contenuto $_POST
   // e crea CSV forzando il download
 
@@ -93,6 +98,20 @@ if(isset($_SERVER['REQUEST_METHOD']) && $_SERVER['REQUEST_METHOD'] == 'POST') {
       $errObj = new ADA_Error($result);
     }
   }
+  $id_course_instance = $eguidance_dataAr['id_istanza_corso'];
+  if ($eguidance_dataAr['status_service'] != $eguidance_dataAr['previous_instance_status']) {
+      $instanceInfoAr = $dh->course_instance_get($id_course_instance);
+      if(!AMA_DataHandler::isError($instanceInfoAr)) {
+          if ($eguidance_dataAr['status_service'] == $status_closed) {
+              $instanceInfoAr['data_fine'] = time();
+          }
+          elseif ($eguidance_dataAr['status_service'] == $status_opened) {
+              $instanceInfoAr['data_fine'] = NULL;
+          }
+      }
+      $updateInstance = $dh->course_instance_set($id_course_instance,$instanceInfoAr);
+}
+ 
   //createCSVFileToDownload($_POST);
 
   //$text = translateFN('The eguidance session data were correctly saved.');
@@ -101,7 +120,6 @@ if(isset($_SERVER['REQUEST_METHOD']) && $_SERVER['REQUEST_METHOD'] == 'POST') {
    * Redirect the practitioner to user service detail
    */
   $tutored_user_id    = $eguidance_dataAr['id_utente'];
-  $id_course_instance = $eguidance_dataAr['id_istanza_corso'];
   header('Location: user_service_detail.php?id_user='.$tutored_user_id.'&id_course_instance='.$id_course_instance.$href_suffix);
   exit();
 }
@@ -118,6 +136,11 @@ else {
                          translateFN("Dati in input per il modulo eguidance_tutor_form non corretti"),
                          NULL, NULL, NULL, $userObj->getHomePage());
     }
+    $id_course_instance = ADAEventProposal::extractCourseInstanceIdFromThisToken($event_token);
+  }
+  else if (isset($_GET['id_course_instance']))
+  {
+  	$id_course_instance = intval($_GET['id_course_instance']);
   }
   else {
     $errObj = new ADA_Error(NULL,
@@ -125,16 +148,23 @@ else {
                          NULL, NULL, NULL, $userObj->getHomePage());
   }
 
-  $id_course_instance = ADAEventProposal::extractCourseInstanceIdFromThisToken($event_token);
-
   /*
    * Get service info
    */
+  /*
   $id_course = $dh->get_course_id_for_course_instance($id_course_instance);
   if(AMA_DataHandler::isError($id_course)) {
     $errObj = new ADA_Error(NULL,translateFN("Errore nell'ottenimento dell'id del servzio"),
                              NULL,NULL,NULL,$userObj->getHomePage());
   }
+   * 
+   */
+  $instanceInfoAr = $dh->course_instance_get($id_course_instance);
+  if(AMA_DataHandler::isError($instanceInfoAr)) {
+    $errObj = new ADA_Error(NULL,translateFN("Errore nell'ottenimento dell'id del servzio"),
+                             NULL,NULL,NULL,$userObj->getHomePage());
+  }
+  $id_course = $instanceInfoAr['id_corso'];
 
   $service_infoAr = $common_dh->get_service_info_from_course($id_course);
   if(AMA_Common_DataHandler::isError($service_infoAr)) {
@@ -164,6 +194,34 @@ else {
 
   $service_infoAr['id_istanza_corso'] = $id_course_instance;
   $service_infoAr['event_token']      = $event_token;
+  
+  /*
+   * data chiusura e apertura istanza
+   */
+  $status_opened_label     = translateFN('In corso');
+  $status_closed_label     = translateFN('Terminato');
+  $status_instance = $status_closed_label;  
+  $status_instance_value = 1;
+  $current_timestamp = time();
+  
+  if($instanceInfoAr['data_inizio'] > 0 && $instanceInfoAr['data_fine'] > 0
+   && $current_timestamp > $instanceInfoAr['data_inizio']
+   && $current_timestamp < $instanceInfoAr['data_fine']) {
+      $status_instance = $status_opened_label;
+      $status_instance_value = 0;
+  }
+
+  $service_infoAr['instance_status']      = $status_instance;
+  $service_infoAr['instance_status_previous'] = $status_instance;
+  $service_infoAr['instance_status_value']      = $status_instance_value;
+  
+  /*
+  $service_infoAr['status_opened_label']      = $status_opened_label;
+  $service_infoAr['status_closed_label']      = $status_closed_label;
+   * 
+   */
+  $service_infoAr['avalaible_status']      = array($status_opened_label,$status_closed_label);
+  $service_infoAr['instance'] = $instanceInfoAr;
 
   /*
    * Check if an eguidance session with this event_token exists. In this case,
@@ -196,6 +254,23 @@ $content_dataAr = array(
   'status'    => $status,
   'dati'      => $form->getHtml()
 );
+// if it's default.tpl the template field is data and NOT dati
+$content_dataAr['data'] = $content_dataAr['dati'];
+/**
+ * @author giorgio 06/nov/2013
+ *
+ * form is not built using an FForm object, must attach jquery uniform by hand
+ *
+ */
+$layout_dataAr['JS_filename'] = array(
+		JQUERY,
+		JQUERY_UNIFORM,
+		JQUERY_NO_CONFLICT
+);
 
-ARE::render($layout_dataAr, $content_dataAr);
+$layout_dataAr['CSS_filename'][] = JQUERY_UNIFORM_CSS;
+
+$options_Ar = array('onload_func' => "initDoc();");
+
+ARE::render($layout_dataAr, $content_dataAr, NULL, $options_Ar);
 ?>

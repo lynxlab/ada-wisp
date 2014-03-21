@@ -185,7 +185,7 @@ if(isset($_GET['messages']) && $_GET['messages'] == 'sent') {
 }
 else {
   $dataAr   = MultiPort::getUserMessages($userObj);
-
+  // print_r($messages);
   $messages = CommunicationModuleHtmlLib::getReceivedMessagesAsForm($dataAr, $testers_dataAr);
   $label   = translateFN('Messaggi ricevuti');
 
@@ -214,6 +214,9 @@ if (!isset($status)) {
 if (!isset($chat_link)) {
   $chat_link = "";
 }
+$imgAvatar = $userObj->getAvatar();
+$avatar = CDOMElement::create('img','src:'.$imgAvatar);
+$avatar->setAttribute('class', 'img_user_avatar');
 
 $content_dataAr = array(
   'chat_link'    => $chat_link,
@@ -222,13 +225,31 @@ $content_dataAr = array(
   'go_back'      => $go_back,
   'user_name'    => $user_name,
   'user_type'    => $user_type,
+  'user_avatar'  => $avatar->getHtml(),
   'messages'     => $messages->getHtml(),
   'status'       => $status,
   'chat_users'   => $online_users,
   'label'        => $label,
+//  'label'        => $label->getHtml(),
   'menu_01'      => $menu_01,
   'menu_02'      => $menu_02->getHtml(),
   'menu_03'      => $menu_03
 );
 
-ARE::render($layout_dataAr, $content_dataAr);
+/**
+ * @author giorgio 06/nov/2013
+ *
+ * form is not built using an FForm object, must attach jquery uniform by hand
+ *
+ */
+$layout_dataAr['JS_filename'] = array(
+		JQUERY,
+		JQUERY_UNIFORM,
+		JQUERY_NO_CONFLICT
+);
+
+$layout_dataAr['CSS_filename'][] = JQUERY_UNIFORM_CSS;
+
+$options_Ar = array('onload_func' => "initDoc();");
+
+ARE::render($layout_dataAr, $content_dataAr, NULL, $options_Ar);

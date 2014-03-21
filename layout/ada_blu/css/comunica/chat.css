@@ -31,7 +31,7 @@ a:visited { text-decoration: none; }
 #header {margin:0 0 15px 0;}
 #mainmenucom { position: absolute; top: 20px; left:0px; margin:0 0px 0 0px; padding: 0; z-index: 1000; width:100%; }
 /*#journey {display:none;}*/
-#user_wrap 	{background:#808080 url(../../img/userid.png) no-repeat 99% 50%; width:100%}
+#user_wrap 	{background:#005281 url(../../img/userid.png) no-repeat 99% 50%; width:100%}
 /*#label	   	{background:#55f;}*/
 #content	{background:#fff; padding:10px; clear:both;}
 #container {background:#fff;  border-bottom:10px solid #808080;}
@@ -43,8 +43,13 @@ a:visited { text-decoration: none; }
 /* MENU
 ----------------------------------------------- */
 #menu {  background-color:#808080; border:10px solid white; }
-UL#menu  {margin:0 20px 0 300px; padding:0; height:50px; line-height:50px; list-style-type:none;}
-UL#menu  LI {margin:0; padding:0; list-style-type:none; float:left; margin:0 0px 0 20px; }
+UL#menu  {margin:16px 20px 0 300px; padding:0; height:50px; line-height:50px; list-style-type:none;}
+UL#menu  LI {
+margin:0; 
+padding:0 20px 0 0; 
+list-style-type:none; 
+float:left; 
+margin:0 0px 0 20px; }
 UL#menu LI A {text-transform: lowercase; color:#fff; font-weight:bold; text-decoration:none;}
 
 #selfclose A { background: url(../../img/selfclose.png) no-repeat center left; display:block; padding:0 0 0 40px;  }
@@ -53,6 +58,11 @@ UL#menu LI A {text-transform: lowercase; color:#fff; font-weight:bold; text-deco
 
 .bottomsubmenu {width:300px;height:20px;background: url(../../img/bottomsubmenu.png) no-repeat;}
 #menu span{ font-style: normal;}
+
+#journey {
+    margin: 5px 30px;
+}
+
 
 /* LABEL
 ----------------------------------------------- */
@@ -211,4 +221,13 @@ div.javascript_error
 	margin-right: 2px;
 	padding: 5px;
 	background-color: #ffff00;
+}
+
+
+#content {
+    border-bottom: none;
+}
+
+#container {
+    border-bottom: none;
 }

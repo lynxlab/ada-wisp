@@ -148,12 +148,14 @@ if ( isset($_GET['caller']) && $_GET['caller'] == 'editor' )
              */
           // vito, 19 mar 2009, clean filename here.
           $filename = strtr($filename, array(' ' => '_', '\'' => '_'));
+          $uploaded_file_type = $ADA_MIME_TYPE[$file_type]['type'];
 
 
             //echo 'tutto ok';
            if ( $id_profile == AMA_TYPE_AUTHOR )
            {
-               $filename_prefix = '';
+              $filename_prefix = '';
+              $filename_prefix = $course_id .'_'. $user_id .'_'. $node_id .'_' . $uploaded_file_type .'_';
            }
            else
            {
@@ -163,7 +165,6 @@ if ( isset($_GET['caller']) && $_GET['caller'] == 'editor' )
                * build the prefix for the uploaded filename adding the ADA type
                * of the uploaded file.
                */
-              $uploaded_file_type = $ADA_MIME_TYPE[$file_type]['type'];
 
               $filename_prefix = $course_instance_id .'_'. $user_id .'_'. $node_id .'_' . $uploaded_file_type .'_';
 
@@ -328,6 +329,7 @@ else if($id_profile == AMA_TYPE_STUDENT || $id_profile == AMA_TYPE_TUTOR || $id_
         //echo 'tutto ok';
         if ( $id_profile == AMA_TYPE_AUTHOR ) {
            $filename_prefix = '';
+           $filename_prefix = $course_id .'_'. $user_id .'_'. $node_id .'_' . $uploaded_file_type .'_';
         }
         else {
         /*
