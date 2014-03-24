@@ -1,0 +1,18 @@
+@CHARSET "UTF-8";
+
+div.fform {
+	width:90%;
+}
+
+form label.form {
+	width: 70%;
+}
+
+form select.form {
+	float: right;
+}
+
+form div.selector,
+form div.selector span {
+	float:right;
+}
