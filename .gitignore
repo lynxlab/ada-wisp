@@ -1,5 +1,8 @@
 /clients/*
 !/clients/sampleclient/
+!/clients/sevilla/
+!/clients/macerata/
+!/clients/bme/
 /*.txt
 /config_path.inc.php
 /.settings/
