@@ -265,4 +265,12 @@ $content_dataAr = array(
 );
 // FIXME: non dovrebbe essere necessario aggiungere questa riga!
 $layout_dataAr['node_type'] = '';
+
+$imgAvatar = $userObj->getAvatar();
+$avatar = CDOMElement::create('img','src:'.$imgAvatar);
+$avatar->setAttribute('class', 'img_user_avatar');
+
+$content_dataAr['user_modprofilelink'] = $userObj->getEditProfilePage();
+$content_dataAr['user_avatar'] = $avatar->getHtml();
+
 ARE::render($layout_dataAr, $content_dataAr);

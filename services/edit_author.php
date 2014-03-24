@@ -106,4 +106,11 @@ $content_dataAr = array(
     'help' => $help
 );
 
+$imgAvatar = $userObj->getAvatar();
+$avatar = CDOMElement::create('img','src:'.$imgAvatar);
+$avatar->setAttribute('class', 'img_user_avatar');
+
+$content_dataAr['user_modprofilelink'] = $userObj->getEditProfilePage();
+$content_dataAr['user_avatar'] = $avatar->getHtml();
+
 ARE::render($layout_dataAr, $content_dataAr,NULL, $optionsAr);

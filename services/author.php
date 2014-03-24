@@ -161,6 +161,13 @@ $content_dataAr = array(
   'agenda'       => $user_agenda->getHtml(),
   'messages'     => $user_messages->getHtml()
 );
+
+$imgAvatar = $userObj->getAvatar();
+$avatar = CDOMElement::create('img','src:'.$imgAvatar);
+$avatar->setAttribute('class', 'img_user_avatar');
+
+$content_dataAr['user_modprofilelink'] = $userObj->getEditProfilePage();
+$content_dataAr['user_avatar'] = $avatar->getHtml();
 /**
  * Sends data to the rendering engine
  */

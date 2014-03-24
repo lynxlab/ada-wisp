@@ -401,4 +401,12 @@ $content_dataAr = array_merge($content_dataAr, $preview_additional_data);
 //$htmlObj = new HTML($layout_template,$layout_CSS,$user_name,"","","","","","","$body_onload");
 
 $options = array('onload_func' => $body_onload);
+
+$imgAvatar = $userObj->getAvatar();
+$avatar = CDOMElement::create('img','src:'.$imgAvatar);
+$avatar->setAttribute('class', 'img_user_avatar');
+
+$content_dataAr['user_modprofilelink'] = $userObj->getEditProfilePage();
+$content_dataAr['user_avatar'] = $avatar->getHtml();
+
 ARE::render($layout_dataAr, $content_dataAr, NULL, $options);
