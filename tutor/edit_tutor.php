@@ -50,7 +50,7 @@ if (isset($_SERVER['REQUEST_METHOD']) && $_SERVER['REQUEST_METHOD'] == 'POST') {
     $form->fillWithPostData();
 
     if ($form->isValid()) {
-        $userObj->fillWithArrayData($_POST);                
+        $userObj->fillWithArrayData($_POST);
         MultiPort::setUser($userObj, array(), true);
 
         $navigationHistoryObj = $_SESSION['sess_navigation_history'];
@@ -76,7 +76,8 @@ $layout_dataAr['JS_filename'] = array(
 		JQUERY_UI,
 		JQUERY_MASKEDINPUT,
 		JQUERY_NO_CONFLICT,
-		ROOT_DIR.'/js/include/jquery/pekeUpload/pekeUpload.js'
+		ROOT_DIR.'/js/include/jquery/pekeUpload/pekeUpload.js',
+		ROOT_DIR.'/js/browsing/edit_user.js'
 );
 
 $layout_dataAr['CSS_filename'] = array(
