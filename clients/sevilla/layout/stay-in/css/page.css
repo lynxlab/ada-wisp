@@ -1,0 +1,56 @@
+
+/* loghi in header */
+
+/*
+#logo_title {
+    position: relative;
+    top: 0;
+	float:left;
+
+}
+*/
+
+#bis_logo {
+	 background: url("../img/header-3rdlogo-sevilla.png") no-repeat scroll right 0 rgba(0, 0, 0, 0);
+    float: right;
+    height: 70px;
+    margin-right: 10px;
+    position: relative;
+    top: -65px;
+    width: 350px;
+}
+	
+	
+.vtop {
+    vertical-align: top;
+}
+
+.linkup {
+  background: url('../img/up.png') no-repeat 0px 0px;
+  width: 25px;
+  height:25px;
+  display:block;  
+}
+
+/* 
+html,body {
+	background: yellow;
+}
+*/
+
+/*
+#intestazione {
+  padding:0;
+  width:100%;
+  background: #32B04A;
+}
+*/
+
+/*
+#logo_title {
+  text-align: center;
+  float: none;
+  height:60px;
+  background: url('../img/header-logo.png') no-repeat center 0px;
+}
+*/
