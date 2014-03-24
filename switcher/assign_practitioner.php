@@ -439,6 +439,9 @@ if (!is_dir(ROOT_DIR.'/layout/'.$userObj->template_family.'/css/jquery-ui'))
 	);
 }
 
+$imgAvatar = $userObj->getAvatar();
+$avatar = CDOMElement::create('img','src:'.$imgAvatar);
+$avatar->setAttribute('class', 'img_user_avatar');
 
 $content_dataAr = array(
     'data' => $dataDiv->getHtml() . $tooltips,
@@ -450,7 +453,9 @@ $content_dataAr = array(
     'user_type' => $user_type,
     'course_title' => $status,
     'messages' => $user_messages->getHtml(),
-    'agenda' => $user_agenda->getHtml()
+    'agenda' => $user_agenda->getHtml(),
+    'user_avatar'=>$avatar->getHtml(),
+	'user_modprofilelink' => $userObj->getEditProfilePage()
 );
 
 

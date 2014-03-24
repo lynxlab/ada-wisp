@@ -140,6 +140,10 @@ $layout_dataAr['JS_filename'] = array(
 
 $optionsAr['onload_func'] = 'initDateField();';
 
+$imgAvatar = $userObj->getAvatar();
+$avatar = CDOMElement::create('img','src:'.$imgAvatar);
+$avatar->setAttribute('class', 'img_user_avatar');
+
 $content_dataAr = array(
     'user_name' => $user_name,
     'user_type' => $user_type,
@@ -148,7 +152,9 @@ $content_dataAr = array(
     'help' => $help,
     'data' => $data->getHtml(),
     'module' => $module,
-    'messages' => $user_messages->getHtml()
+    'messages' => $user_messages->getHtml(),
+    'user_avatar'=>$avatar->getHtml(),
+	'user_modprofilelink' => $userObj->getEditProfilePage()
 );
 
 ARE::render($layout_dataAr, $content_dataAr,NULL,$optionsAr);

@@ -237,6 +237,10 @@ if(!isset($status)) {
   $status = 'Lista degli utenti che hanno richiesto un servizio';
 }
 
+$imgAvatar = $userObj->getAvatar();
+$avatar = CDOMElement::create('img','src:'.$imgAvatar);
+$avatar->setAttribute('class', 'img_user_avatar');
+
 $content_dataAr = array(
   'user_name' => $user_name,
   'user_type' => $user_type,
@@ -249,13 +253,15 @@ $content_dataAr = array(
   'filter_link' => $filter_link,
   'menu_01' => $menu_01,
   'menu_02' => $menu_02,
-  'data'      => $table->getHtml()
+  'data'      => $table->getHtml(),
+  'user_avatar'=>$avatar->getHtml(),
+  'user_modprofilelink' => $userObj->getEditProfilePage()
 );
 
 $layout_dataAr['JS_filename'] = array(
 		JQUERY,
 		JQUERY_DATATABLE,
-                JQUERY_DATATABLE_DATE,
+        JQUERY_DATATABLE_DATE,
 		JQUERY_NO_CONFLICT
 	);
 

@@ -187,6 +187,10 @@ $label = translateFN('Lista utenti');
 $help = translateFN('Da qui il provider admin può vedere la lista degli utenti presenti sul provider');
 $help .= ' ' .translateFN('Numero utenti'). ': '. $UserNum;
 
+$imgAvatar = $userObj->getAvatar();
+$avatar = CDOMElement::create('img','src:'.$imgAvatar);
+$avatar->setAttribute('class', 'img_user_avatar');
+
 $content_dataAr = array(
     'user_name' => $user_name,
     'user_type' => $user_type,
@@ -195,7 +199,9 @@ $content_dataAr = array(
     'help' => $help,
     'data' => $data->getHtml().$tooltips,
     'module' => $module,
-    'messages' => $user_messages->getHtml()
+    'messages' => $user_messages->getHtml(),
+    'user_avatar'=>$avatar->getHtml(),
+	'user_modprofilelink' => $userObj->getEditProfilePage()
 );
 $layout_dataAr['JS_filename'] = array(
 		JQUERY,

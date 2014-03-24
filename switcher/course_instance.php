@@ -226,6 +226,11 @@ $help = translateFN('Da qui il provider admin può gestire le iscrizioni alla cl
  * OUTPUT
  */
 $optionsAr = array('onload_func' => "PAGER.showPage('subscribed');");
+
+$imgAvatar = $userObj->getAvatar();
+$avatar = CDOMElement::create('img','src:'.$imgAvatar);
+$avatar->setAttribute('class', 'img_user_avatar');
+
 $content_dataAr = array(
     'banner'=> $banner,
     'path' => $path,
@@ -237,7 +242,9 @@ $content_dataAr = array(
     'help' => $help,
     'data' => $actions->getHtml() . $data->getHtml() . $tooltips,
     'messages' => $user_messages->getHtml(),
-    'agenda '=> $user_agenda->getHtml()
+    'agenda '=> $user_agenda->getHtml(),
+    'user_avatar'=>$avatar->getHtml(),
+	'user_modprofilelink' => $userObj->getEditProfilePage()
 );
 
 ARE::render($layout_dataAr, $content_dataAr, null, $optionsAr);
