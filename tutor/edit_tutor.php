@@ -50,29 +50,7 @@ if (isset($_SERVER['REQUEST_METHOD']) && $_SERVER['REQUEST_METHOD'] == 'POST') {
     $form->fillWithPostData();
 
     if ($form->isValid()) {
-        $userObj->setFirstName($_POST['nome']);
-        $userObj->setLastName($_POST['cognome']);
-        $userObj->setEmail($_POST['email']);
-        if (trim($_POST['password']) != '') {
-            $userObj->setPassword($_POST['password']);
-        }
-        $userObj->setLayout($_POST['layout']);
-        $userObj->setAddress($_POST['indirizzo']);
-        $userObj->setCity($_POST['citta']);
-        $userObj->setProvince($_POST['provincia']);
-        $userObj->setCountry($_POST['nazione']);
-        $userObj->setBirthDate($_POST['birthdate']);
-        $userObj->setGender($_POST['sesso']);
-        $userObj->setPhoneNumber($_POST['telefono']);
-        $userObj->setProfile($_POST['profilo']);
-        $userObj->setLanguage($_POST['lingua']);
-        
-        if (isset($_SESSION['importHelper']['fileNameWithoutPath'])) $userObj->setAvatar($_SESSION['importHelper']['fileNameWithoutPath']);
-        $userObj->setCap($_POST['cap']);
-        
-        $userObj->setBirthCity($_POST['birthcity']);
-        $userObj->setBirthProvince($_POST['birthprovince']);
-                
+        $userObj->fillWithArrayData($_POST);                
         MultiPort::setUser($userObj, array(), true);
 
         $navigationHistoryObj = $_SESSION['sess_navigation_history'];
