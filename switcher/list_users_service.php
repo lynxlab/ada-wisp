@@ -137,6 +137,10 @@ $help = translateFN('Da qui il provider admin può vedere la lista degli utenti 
 $menu_01 = '<a href="list_lservices.php">'.translateFN('Vedi servizi').'</a>';
 $menu_02 = '<a href="add_lservice.php">'.translateFN('Aggiungi servizio').'</a>';
 
+$imgAvatar = $userObj->getAvatar();
+$avatar = CDOMElement::create('img','src:'.$imgAvatar);
+$avatar->setAttribute('class', 'img_user_avatar');
+
 $content_dataAr = array(
     'user_name' => $user_name,
     'user_type' => $user_type,
@@ -147,7 +151,9 @@ $content_dataAr = array(
     'module' => $module,
     'menu_01' => $menu_01,
     'menu_02' => $menu_02,//    'ajax_chat_link' => $chatrooms_link,
-    'messages' => $user_messages->getHtml()
+    'messages' => $user_messages->getHtml(),
+    'user_avatar'=>$avatar->getHtml(),
+	'user_modprofilelink' => $userObj->getEditProfilePage()
 );
 
 ARE::render($layout_dataAr, $content_dataAr);

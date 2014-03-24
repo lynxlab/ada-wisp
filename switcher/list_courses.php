@@ -95,6 +95,9 @@ $label = translateFN('Lista corsi');
 $help = translateFN('Da qui il provider admin può vedere la lista dei corsi presenti sul provider');
 $chatrooms_link = '<a href="'.HTTP_ROOT_DIR . '/comunica/list_chatrooms.php">'. translateFN('Lista chatrooms');
 
+$imgAvatar = $userObj->getAvatar();
+$avatar = CDOMElement::create('img','src:'.$imgAvatar);
+$avatar->setAttribute('class', 'img_user_avatar');
 
 $content_dataAr = array(
     'user_name' => $user_name,
@@ -105,7 +108,9 @@ $content_dataAr = array(
     'data' => $data->getHtml(),
     'module' => $module,
     'ajax_chat_link' => $chatrooms_link,
-    'messages' => $user_messages->getHtml()
+    'messages' => $user_messages->getHtml(),
+    'user_avatar'=>$avatar->getHtml(),
+	'user_modprofilelink' => $userObj->getEditProfilePage()
 );
 
 ARE::render($layout_dataAr, $content_dataAr);

@@ -114,6 +114,9 @@ $error_div->setAttribute('class', 'hide_error');
 $error_div->addChild(new CText(translateFN("ATTENZIONE: Ci sono degli errori nel modulo!")));
 $help .= $error_div->getHtml();
 
+$imgAvatar = $userObj->getAvatar();
+$avatar = CDOMElement::create('img','src:'.$imgAvatar);
+$avatar->setAttribute('class', 'img_user_avatar');
 
 $content_dataAr = array(
     'user_name' => $user_name,
@@ -123,7 +126,9 @@ $content_dataAr = array(
     'help' => $help,
     'data' => $form->getHtml(),
     'module' => $module,
-    'messages' => $user_messages->getHtml()
+    'messages' => $user_messages->getHtml(),
+    'user_avatar'=>$avatar->getHtml(),
+	'user_modprofilelink' => $userObj->getEditProfilePage()
 );
 
 ARE::render($layout_dataAr, $content_dataAr);

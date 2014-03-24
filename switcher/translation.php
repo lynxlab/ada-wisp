@@ -357,6 +357,11 @@ switch ($op) {
 
 }
 $status = translateFN('translation mode');
+
+$imgAvatar = $userObj->getAvatar();
+$avatar = CDOMElement::create('img','src:'.$imgAvatar);
+$avatar->setAttribute('class', 'img_user_avatar');
+
 $content_dataAr = array(
   'banner' => $banner,
   'eportal' => $eportal,
@@ -369,7 +374,9 @@ $content_dataAr = array(
   'banner'    => $banner,
   'help'      => $help,
 //  'dati'      => $table->getHtml(),
-  'data'      => $page_content->getHtml()
+  'data'      => $page_content->getHtml(),
+  'user_avatar'=>$avatar->getHtml(),
+  'user_modprofilelink' => $userObj->getEditProfilePage()
 
 );
 

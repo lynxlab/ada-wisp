@@ -137,6 +137,10 @@ if($courseObj instanceof Course && $courseObj->isFull()) {
 $label = translateFN('Lista istanze del corso'). ' '.$course_title;
 $help = translateFN('Da qui il provider admin può vedere la lista delle istanze del corso selezionato');
 
+$imgAvatar = $userObj->getAvatar();
+$avatar = CDOMElement::create('img','src:'.$imgAvatar);
+$avatar->setAttribute('class', 'img_user_avatar');
+
 $content_dataAr = array(
     'user_name' => $user_name,
     'user_type' => $user_type,
@@ -145,7 +149,9 @@ $content_dataAr = array(
     'help' => $help,
     'data' => $data->getHtml(),
     'module' => $module,
-    'messages' => $user_messages->getHtml()
+    'messages' => $user_messages->getHtml(),
+    'user_avatar'=>$avatar->getHtml(),
+	'user_modprofilelink' => $userObj->getEditProfilePage()
 );
 
 ARE::render($layout_dataAr, $content_dataAr);
