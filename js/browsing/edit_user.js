@@ -19,10 +19,12 @@ function initDoc(maxSize,userId) {
          */
         if ($j('#avatar').val() != '') {
             var avatarValue = $j('#avatar').val();
+            var avatarImgUserId = userId + '/';
         } else {
-            var avatarValue = '../owl.png';
+            var avatarValue = ADA_DEFAULT_AVATAR;
+            var avatarImgUserId = '';
         }
-        var imgSrcAvatar = $j('<img>').attr('src',HTTP_UPLOAD_PATH+userId+'/'+avatarValue).attr('id','imgAvatar');
+        var imgSrcAvatar = $j('<img>').attr('src',HTTP_UPLOAD_PATH+avatarImgUserId+avatarValue).attr('id','imgAvatar');
         $j('#l_avatarfile').append($j('<div></div>').attr('id', 'avatar_preview'));
          $j('#avatar_preview').append(imgSrcAvatar);
         
