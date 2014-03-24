@@ -34,6 +34,7 @@ abstract class FForm
         $this->_controls = array();
         
         $this->_uniformJavascript = '
+        		if (typeof appliedUniform == "undefined") var appliedUniform = false;
         		if (typeof $j == "undefined")
         		{
         			// must include jquery
@@ -76,7 +77,10 @@ abstract class FForm
 					if (myJQuery().uniform)
   					{  							
   							if (typeof myJQuery == "undefined") myJQuery = jQuery.noConflict(true);
-  							myJQuery("select, input, a.button, button, textarea").not(":file").uniform();
+  							if (!appliedUniform) {
+  							 myJQuery("select, input, a.button, button, textarea").not(":file").uniform();
+  							 appliedUniform = true;
+  							}
   					}
   					else 
   					{  							
