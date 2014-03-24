@@ -135,7 +135,7 @@ if ($op=='not_started' or $op=='all') {
             $service_link->addChild(new CText(translateFN($user_registration['titolo'])));
             $request_date = AMA_DataHandler::ts_to_date($user_registration['data_richiesta']);
 
-            $href = 'assign_practitioner.php?id_corso='.$user_registration['id_corso'].'&id_course_instance='.$user_registration['id_istanza_corso'].'&id_user='.$user_registration['id_utente'];
+            $href = 'assign_practitioner.php?id_course='.$user_registration['id_corso'].'&id_course_instance='.$user_registration['id_istanza_corso'].'&id_user='.$user_registration['id_utente'];
             $epractitioner_link = CDOMElement::create('a', "href:$href");
             $epractitioner_link->addChild(new CText(translateFN('Assegna')));
 

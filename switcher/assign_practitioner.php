@@ -30,7 +30,7 @@ $allowedUsersAr = array(AMA_TYPE_SWITCHER);
  * Performs basic controls before entering this module
  */
 $neededObjAr = array(
-    AMA_TYPE_SWITCHER => array('layout', 'course_instance')
+    AMA_TYPE_SWITCHER => array('layout', 'course', 'course_instance')
 );
 
 require_once ROOT_DIR . '/include/module_init.inc.php';
@@ -231,7 +231,8 @@ if (isset($_SERVER['REQUEST_METHOD']) && $_SERVER['REQUEST_METHOD'] == 'POST'
 } else {
     if ($courseInstanceObj instanceof Course_instance && $courseInstanceObj->isFull()) {
 
-        $courseId = DataValidator::is_uinteger($id_corso);
+//         $courseId = DataValidator::is_uinteger($id_corso);
+        $courseId = DataValidator::is_uinteger($id_course);
         $serviceAr = $dh->get_course($courseId);
         if (AMA_DataHandler::isError($serviceAr)) {
             // FIXME: verificare che si venga redirezionati alla home page del'utente
