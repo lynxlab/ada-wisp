@@ -49,24 +49,7 @@ if (isset($_SERVER['REQUEST_METHOD']) && $_SERVER['REQUEST_METHOD'] == 'POST') {
     $form->fillWithPostData();
 
     if ($form->isValid()) {
-        $user_layout = $_POST['layout'];
-        $userObj->setFirstName($_POST['nome']);
-        $userObj->setLastName($_POST['cognome']);
-        $userObj->setEmail($_POST['email']);
-        if (trim($_POST['password']) != '') {
-            $userObj->setPassword($_POST['password']);
-        }
-        $userObj->setLayout($user_layout);
-        $userObj->setAddress($_POST['indirizzo']);
-        $userObj->setCity($_POST['citta']);
-        $userObj->setProvince($_POST['provincia']);
-        $userObj->setCountry($_POST['nazione']);
-        $userObj->setBirthDate($_POST['birthdate']);
-        $userObj->setGender($_POST['sesso']);
-        $userObj->setPhoneNumber($_POST['telefono']);
-        $userObj->setLanguage($_POST['lingua']);
-        $userObj->setBirthCity($_POST['birthcity']);
-        $userObj->setBirthProvince($_POST['birthprovince']);
+        $userObj->fillWithArrayData($_POST);
         MultiPort::setUser($userObj, array(), true);
 
         $navigationHistoryObj = $_SESSION['sess_navigation_history'];
@@ -89,11 +72,22 @@ $help = translateFN('Modifica dati utente');
 
 $layout_dataAr['JS_filename'] = array(
 		JQUERY,
+		JQUERY_UI,
 		JQUERY_MASKEDINPUT,
-		JQUERY_NO_CONFLICT
+		JQUERY_NO_CONFLICT,
+		ROOT_DIR.'/js/include/jquery/pekeUpload/pekeUpload.js'
 );
 
-$optionsAr['onload_func'] = 'initDateField();';
+$layout_dataAr['CSS_filename'] = array(
+		JQUERY_UI_CSS,
+		ROOT_DIR.'/js/include/jquery/pekeUpload/pekeUpload.css'
+);
+
+$maxFileSize = (int) (ADA_FILE_UPLOAD_MAX_FILESIZE / (1024*1024));
+
+$optionsAr['onload_func'] = 'initDoc('.$maxFileSize.','. $userObj->getId().');';
+
+// $optionsAr['onload_func'] = 'initDateField();';
 
 $content_dataAr = array(
     'user_name' => $user_name,

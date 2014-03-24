@@ -75,7 +75,8 @@ if (isset($_SERVER['REQUEST_METHOD']) && $_SERVER['REQUEST_METHOD'] == 'POST') {
 } else {
     $allowEditProfile=false;
     $allowEditConfirm=false;
-   
+    $user_dataAr = $userObj->toArray();
+    
     $form = new UserProfileForm($languages,$allowEditProfile, $allowEditConfirm, $self.'.php');
     unset($user_dataAr['password']);
     $user_dataAr['email'] = $user_dataAr['e_mail'];
@@ -264,7 +265,7 @@ $layout_dataAr['CSS_filename'] = array(
 
 $maxFileSize = (int) (ADA_FILE_UPLOAD_MAX_FILESIZE / (1024*1024));
 
-$optionsAr['onload_func'] = 'initDoc('.$maxFileSize.','. $userObj->getId().');';
+$optionsAr['onload_func']  = 'initDoc('.$maxFileSize.','. $userObj->getId().');';
 
 //$optionsAr['onload_func'] = 'initDateField();';
 $imgAvatar = $userObj->getAvatar();
