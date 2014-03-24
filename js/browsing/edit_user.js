@@ -1,4 +1,9 @@
 /**
+ * global var to tell FForm.inc.php if jQuery uniform has been applied already
+ */
+var appliedUniform = false;
+
+/**
  * Initializations
  * 
  * @param maxSize the max uploadable file size 
