@@ -34,6 +34,7 @@ abstract class FForm
         $this->_controls = array();
         
         $this->_uniformJavascript = '
+        		if (typeof appliedUniform == "undefined") var appliedUniform = false;
         		if (typeof $j == "undefined")
         		{
         			// must include jquery

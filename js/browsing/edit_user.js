@@ -1,7 +1,10 @@
 /**
  * global var to tell FForm.inc.php if jQuery uniform has been applied already
+ * and to tell the submit handler the timestamp of the last request, to prevent
+ * incidental and buggy uniform plugin double form submissions
  */
 var appliedUniform = false;
+var lastSubmit = -1;
 
 /**
  * Initializations
@@ -183,7 +186,14 @@ function initUserRegistrationForm( hasTabs, useAjax )
 	if (useAjax) {
 	$j('form').submit(
 			function (e) {
+				e.stopPropagation();
 				e.preventDefault();
+				
+				if (lastSubmit+500 >  e.timeStamp) {
+					return;
+				} else {
+					lastSubmit = e.timeStamp;
+				}
 				
 				var theId = -1;
 				var theForm = $j(this);
