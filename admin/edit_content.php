@@ -182,7 +182,17 @@ $content_dataAr = array(
  *  if it's the admin, load the menu. if it's the swithcer force the template in the swithcer dir
  */
 if ($userObj->getType()==AMA_TYPE_ADMIN) $content_dataAr['actions_menu'] = $actions_menu->getHtml();
-else if ($userObj->getType()==AMA_TYPE_SWITCHER) $layout_dataAr['module_dir'] = 'switcher';
+else if ($userObj->getType()==AMA_TYPE_SWITCHER) {
+	$layout_dataAr['module_dir'] = 'switcher';
+	
+	$imgAvatar = $userObj->getAvatar();
+	$avatar = CDOMElement::create('img','src:'.$imgAvatar);
+	$avatar->setAttribute('class', 'img_user_avatar');
+	
+	$content_dataAr = array_merge($content_dataAr,array(
+			'user_avatar'=>$avatar->getHtml(),
+  			'user_modprofilelink' => $userObj->getEditProfilePage()));
+}
 //print_r($options);
 //ARE::render($layout_dataAr, $content_dataAr, $options);
 ARE::render($layout_dataAr, $content_dataAr, NULL, $options);
