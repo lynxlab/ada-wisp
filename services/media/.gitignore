@@ -1,0 +1,2 @@
+# ignore all dirs whose name starts with a number
+/[0-9]*/
