@@ -155,7 +155,9 @@ if (isset($_SERVER['REQUEST_METHOD']) && $_SERVER['REQUEST_METHOD'] == 'POST') {
           }
         } else {
             $errObj = new ADA_Error($result);
-            $form = new CText(translateFN('Si è verificato un errore durante la creazione del corso. (3)'));
+            $text = translateFN('Si è verificato un errore durante la creazione del corso. (3)');
+            $text .= ' '.translateFN('Suggerimento').': '.translateFN('Provare a cambiare il codice servizio'); 
+            $form = new CText($text);
         }
     } else {
         $form = new CText(translateFN('I dati inseriti nel form non sono validi'));
