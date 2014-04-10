@@ -89,7 +89,7 @@ if (isset($testerName))
 	
 	// watch out: $newscontent is NOT associative
 	$output = '';
-	$maxLength = 600;
+	$maxLength = 400;
 	if (!AMA_DB::isError($newscontent) && count($newscontent)>0)
 	{
 		foreach ( $newscontent as $num=>$aNews )
