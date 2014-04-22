@@ -121,8 +121,8 @@ if (isset($_SERVER['REQUEST_METHOD']) && $_SERVER['REQUEST_METHOD'] == 'POST'
                 /*
                  * Send a message to the selected practitioner informing him of the assignment
                  */
-                $message_text = sprintf(translateFN('Caro %s, un nuovo utente %s (con username: %s) ti è stato assegnato.'), 
-                		$userObj->getFullName(),
+                $message_text = sprintf(translateFN('Caro %s, ti è stato assegnato un nuovo utente: %s (con username: %s)'), 
+                		$tutorObj->getFullName(),
                 		$tutoredUserObj->getFullName(),
                 		$tutoredUserObj->getUserName());
 
@@ -136,6 +136,51 @@ if (isset($_SERVER['REQUEST_METHOD']) && $_SERVER['REQUEST_METHOD'] == 'POST'
                 );
 
                 $mh = MessageHandler::instance(MultiPort::getDSN($sess_selected_tester));
+                
+                /**
+                 * @author giorgio 15/apr/2014
+                 * Must retrieve help message text sent in by the user
+                 */
+                $messageTokenPart =  $id_student    . '_'
+                		. $id_course_instance . '_'
+                		. $userObj->getId() . '_';
+                
+                $fields_list_Ar = array('testo');
+                $clause         = ' titolo like \'%' . $messageTokenPart . '%\'';
+                $sort_field     = ' data_ora asc';
+                
+                $helpMsg_ha = $mh->find_messages($userObj->getId(),
+                		ADA_MSG_SIMPLE,
+                		$fields_list_Ar,
+                		$clause,
+                		$sort_field);
+                $helpText = reset($helpMsg_ha);
+                
+                /**
+				 * append the help message text to the outgoing email
+                 */
+                $message_ha['testo'] .= PHP_EOL.sprintf(translateFN('L\'utente ha richiesto aiuto per il servizio: %s'),$courseObj->getTitle()).
+                				 		PHP_EOL.sprintf(translateFN('Ecco il testo della sua richiesta: %s'),$helpText);
+                
+                /**
+                 * build a note with service name as object and help text as body
+                 */
+                $node_data = array(
+                		'name' => $courseObj->getTitle(),
+                		'type' => ADA_GROUP_TYPE,
+                		'id_node_author' => $tutoredUserObj->getId(),
+                		'parent_id' => $courseObj->getId().'_0',
+                		'type' => ADA_NOTE_TYPE,
+                		'text' => $helpText,
+                		'id_course'=> $courseId
+                );
+                // include NodeEditing here, only if it's needed
+                require_once ROOT_DIR . '/services/include/NodeEditing.inc.php';
+                $result = NodeEditing::createNode($node_data);
+                if(AMA_DataHandler::isError($result)) {
+                	// FIXME: gestire errore
+                }
+                
                 $result = $mh->send_message($message_ha);
                 if(AMA_DataHandler::isError($result)) {
                   // FIXME: gestire errore
@@ -424,7 +469,7 @@ $layout_dataAr['JS_filename'] = array(
 		JQUERY,
 		JQUERY_UI,
 		JQUERY_NO_CONFLICT,
-                HTTP_ROOT_DIR.'/js/switcher/assign_practitioner.js'
+        HTTP_ROOT_DIR.'/js/switcher/assign_practitioner.js'
 );
 
 /**
