@@ -181,6 +181,7 @@ if(isset($_GET['messages']) && $_GET['messages'] == 'sent') {
   $link = CDOMElement::create('a', 'href:list_messages.php?messages=received');
   $link->addChild(new CText(translateFN('Messaggi ricevuti')));
   $menu_02->addChild($link);
+  $displayedMsgs = 'sent';
 
 }
 else {
@@ -193,6 +194,7 @@ else {
   $link = CDOMElement::create('a', 'href:list_messages.php?messages=sent');
   $link->addChild(new CText(translateFN('Messaggi inviati')));
   $menu_02->addChild($link);
+  $displayedMsgs = 'received';
 }
 
 $node_title = ""; // empty
@@ -226,7 +228,7 @@ $content_dataAr = array(
   'user_name'    => $user_name,
   'user_type'    => $user_type,
   'user_avatar'  => $avatar->getHtml(),
-  'messages'     => $messages->getHtml(),
+  'messages'     => $messages->getHtml().'<br/>',
   'status'       => $status,
   'chat_users'   => $online_users,
   'label'        => $label,
@@ -237,19 +239,29 @@ $content_dataAr = array(
 );
 
 /**
- * @author giorgio 06/nov/2013
- *
- * form is not built using an FForm object, must attach jquery uniform by hand
- *
+ * @author giorgio 18/apr/2014 12:55:21
+ * 
+ * added jquery, uniform, datatables and initDoc function call
  */
 $layout_dataAr['JS_filename'] = array(
 		JQUERY,
 		JQUERY_UNIFORM,
+		JQUERY_UI,
+		JQUERY_DATATABLE,
+		JQUERY_DATATABLE_DATE,
 		JQUERY_NO_CONFLICT
 );
 
-$layout_dataAr['CSS_filename'][] = JQUERY_UNIFORM_CSS;
+$layout_dataAr['CSS_filename'] = array(
+		JQUERY_UI_CSS,
+		JQUERY_DATATABLE_CSS,
+		JQUERY_UNIFORM_CSS
+);
 
-$options_Ar = array('onload_func' => "initDoc();");
+if (isset($options_Ar) && is_array($options_Ar) && isset($options_Ar['onload_func'])) {	
+	$options_Ar['onload_func'] = 'initDoc(\''.$displayedMsgs.'\'); '.$options_Ar['onload_func'];
+} else {
+	$options_Ar['onload_func'] = 'initDoc(\''.$displayedMsgs.'\');';
+}
 
 ARE::render($layout_dataAr, $content_dataAr, NULL, $options_Ar);
