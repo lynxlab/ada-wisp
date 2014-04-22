@@ -162,7 +162,8 @@ if ($op=='not_started' or $op=='all') {
     }
 }
 if ($op=='started' || $op=='all' || $op=='open' || $op=='closed') {
-    $startedAr = $dh->get_tester_services_started();
+	$getUnassignedServices = true;
+    $startedAr = $dh->get_tester_services_started($getUnassignedServices);
     if (is_array($startedAr) && sizeof($startedAr) > 0) {
 
       foreach($startedAr as $user_registration) {
@@ -180,16 +181,43 @@ if ($op=='started' || $op=='all' || $op=='open' || $op=='closed') {
                 $href = HTTP_ROOT_DIR.'/browsing/service_info.php?id_course='.$user_registration['id_corso'];
                 $service_link = CDOMElement::create('a',"href:$href");
                 $service_link->addChild(new CText(translateFN($user_registration['titolo'])));
-                $request_date = AMA_DataHandler::ts_to_date($user_registration['data_richiesta']);
+                $request_date = AMA_DataHandler::ts_to_date($user_registration['data_richiesta']);               
 
-                $href = 'assign_practitioner.php?id_course='.$user_registration['id_corso'].'&id_course_instance='.$user_registration['id_istanza_corso'].'&id_user='.$user_registration['id_utente'];
-                $epractitioner_link = CDOMElement::create('a', "href:$href");
-                $epractitioner_link->addChild(new CText($user_registration['username_t'].' ('.$user_registration['nome_t'] .' '.$user_registration['cognome_t'].')'));
-
+                /**
+                 * @author giorgio check if service opened is done on data_fine
+                 * @author giorgio epractioner link is built here, depending on service status
+                 */
                 // $href = 'edit_instance.php?id_course_instance='.$user_registration['id_istanza_corso'];
                 $instance_link = CDOMElement::create('a');
                 $instance_link->setAttribute('href','../tutor/eguidance_tutor_form.php?id_course_instance='.$user_registration['id_istanza_corso']);
-                $instance_link->addChild(new CText(translateFN('chiudi')));
+                
+                $current_timestamp = time();
+                
+                if($user_registration['data_inizio'] > 0 && $user_registration['data_fine'] > 0
+                && $current_timestamp > $user_registration['data_inizio']
+                && $current_timestamp < $user_registration['data_fine']) {
+                	// 1. build epractiotioner link
+                	$href = 'assign_practitioner.php?id_course='.$user_registration['id_corso'].'&id_course_instance='.$user_registration['id_istanza_corso'].'&id_user='.$user_registration['id_utente'];
+                	$epractitioner_link = CDOMElement::create('a', "href:$href");
+                	if (!is_null($user_registration['username_t'])) {
+                		$epractitioner_link->addChild(new CText($user_registration['username_t'].' ('.$user_registration['nome_t'] .' '.$user_registration['cognome_t'].')'));
+                	} else {
+                		$epractitioner_link->addChild(new CText(translateFN('Assegna')));
+                	}
+                	// 2. build instance link
+                	$instance_link->addChild(new CText(translateFN('chiudi')));                	
+                } else {
+                	// 1. build epractiotioner link, that is a span in this case                	
+                	$epractitioner_link = CDOMElement::create('span');
+                	if (!is_null($user_registration['username_t'])) {
+                		$epractitioner_link = new CText($user_registration['username_t'].' ('.$user_registration['nome_t'] .' '.$user_registration['cognome_t'].')');
+                	} else {
+                		$epractitioner_link = new CText(translateFN('Non Assegnato'));
+                	}
+                	// 2. build instance link
+                	$instance_link->addChild(new CText(translateFN('terminato')));
+                }
+                
 
                 $tbody_data[] = array(
                   $user_link,

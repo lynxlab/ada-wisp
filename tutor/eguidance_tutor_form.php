@@ -104,6 +104,13 @@ include_once ROOT_DIR.'/comunica/include/ADAEventProposal.inc.php';
       if(!AMA_DataHandler::isError($instanceInfoAr)) {
           if ($eguidance_dataAr['status_service'] == $status_closed) {
               $instanceInfoAr['data_fine'] = time();
+              /**
+               * @author giorgio 15/apr/2014
+               * 
+               * If session has not been started by assigning a tutor,
+               * let's start it by setting data_inizio = data_fine
+               */
+              if ($instanceInfoAr['data_inizio']==0) $instanceInfoAr['data_inizio'] = $instanceInfoAr['data_fine']; 
           }
           elseif ($eguidance_dataAr['status_service'] == $status_opened) {
               $instanceInfoAr['data_fine'] = NULL;
@@ -209,6 +216,8 @@ else {
    && $current_timestamp < $instanceInfoAr['data_fine']) {
       $status_instance = $status_opened_label;
       $status_instance_value = 0;
+  } else if ($instanceInfoAr['data_inizio']==0) {
+  	  $status_instance_value = 0;
   }
 
   $service_infoAr['instance_status']      = $status_instance;
