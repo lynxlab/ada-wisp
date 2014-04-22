@@ -965,12 +965,16 @@ class CommunicationModuleHtmlLib
       $table = BaseHtmlLib::tableElement('id:sort_message',$thead_dataAr, $messages_Ar);
       $form = CDOMElement::create('form',"name:form, method:post, action:$module");
       $form->addChild($table);
-      $div = CDOMElement::create('div','id:buttons,class:clearfix');
-      $submit = CDOMElement::create('submit','name:btn_commit value:'.translateFN('Salva'));
-      $reset = CDOMElement::create('reset','name:btn_reset value:'.translateFN('Ripristina'));
-      $div->addChild($submit);
-      $div->addChild($reset);
-      $form->addChild($div);
+      /**
+       * @author giorgio 22/apr/2014
+       * buttons are no longer needed, unless the delete checkbox is not working
+       */
+//       $div = CDOMElement::create('div','id:buttons,class:clearfix');
+//       $submit = CDOMElement::create('submit','name:btn_commit value:'.translateFN('Salva'));
+//       $reset = CDOMElement::create('reset','name:btn_reset value:'.translateFN('Ripristina'));
+//       $div->addChild($submit);
+//       $div->addChild($reset);
+//       $form->addChild($div);
       return $form;
     }
   }
@@ -999,8 +1003,8 @@ class CommunicationModuleHtmlLib
       $form = CDOMElement::create('form',"name:form, method:post, action:$module");
       $form->addChild($table);
       $div = CDOMElement::create('div','id:buttons,class:clearfix');
-      $submit = CDOMElement::create('submit','name:btn_commit value:'.translateFN('Salva'));
-      $reset = CDOMElement::create('reset','name:btn_reset value:'.translateFN('Ripristina'));
+      $submit = CDOMElement::create('submit','name:btn_commit,value:'.translateFN('Salva'));
+      $reset = CDOMElement::create('reset','name:btn_reset,value:'.translateFN('Ripristina'));
       $div->addChild($submit);
       $div->addChild($reset);
       $form->addChild($div);
