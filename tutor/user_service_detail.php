@@ -205,5 +205,13 @@ $content_dataAr = array(
   'user_modprofilelink' => $userObj->getEditProfilePage(),		
 );
 
-ARE::render($layout_dataAr, $content_dataAr);
+/**
+ * @author giorgio 11/apr/2014 16:27:21
+ * 
+ * Force a reload of parent window, to
+ * reflect saved changes right away.
+ */
+$optionsAr['onload_func'] = 'reloadParent();';
+
+ARE::render($layout_dataAr, $content_dataAr, NULL, (isset($optionsAr) ? $optionsAr : NULL) );
 ?>
