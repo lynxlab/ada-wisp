@@ -305,6 +305,22 @@ $content_dataAr['exercises'] = $data['exercises'];
 $content_dataAr['notes'] = $data['notes'];
 $content_dataAr['personal'] = $data['private_notes'];
 
+/**
+ * $tutorObj is set in browsing_functions.inc.php
+ * and sadly enough it's an array :(
+ */
+if ($userObj->getType()==AMA_TYPE_STUDENT && isset($tutorObj)) {
+	$content_dataAr['timelinewithuser'] = ': '.$tutorObj['nome'].' '.$tutorObj['cognome'];
+} else if ($userObj->getType()==AMA_TYPE_TUTOR) {
+	// the timeline is with the only subscribed user to the course instance
+	$students = $dh->get_students_for_course_instance($courseInstanceObj->getId());
+	if (!AMA_DB::isError($students)) {
+		// take the first and only student
+		$student = reset ($students);
+		$content_dataAr['timelinewithuser'] = ': '.$student['nome'].' '.$student['cognome'];
+	}
+}
+
 if ($log_enabled)
 	$content_dataAr['go_history'] = $go_history;
 else
@@ -353,8 +369,8 @@ if ($com_enabled) {
 	$online_users = ADALoggableUser::get_online_usersFN($sess_id_course_instance,$online_users_listing_mode);
 	$content_dataAr['ajax_chat_link'] = $ajax_chat_link;
 	$content_dataAr['messages'] = $user_messages->getHtml();
-	$content_dataAr['agenda'] = $user_agenda->getHtml();
-//	$content_dataAr['events'] = $user_events->getHtml();
+	$content_dataAr['agenda'] = $user_agenda->getHtml();  // confirmed appointments
+    $content_dataAr['events'] = $user_events->getHtml();  // appointment proposals
 	$content_dataAr['chat_users'] = $online_users;
 } else {
 	$content_dataAr['chat_link'] = translateFN("chat non abilitata");
@@ -383,9 +399,9 @@ switch ($op){
 				JQUERY,
 				JQUERY_UI,
 				JQUERY_NIVOSLIDER,
-                                JQUERY_DATATABLE,
-                                JQUERY_DATATABLE_DATE,
-                                JQUERY_UNIFORM,
+                JQUERY_DATATABLE,
+                JQUERY_DATATABLE_DATE,
+                JQUERY_UNIFORM,
 				JQUERY_NO_CONFLICT,
 				ROOT_DIR. '/external/mediaplayer/flowplayer-5.4.3/flowplayer.js'
 		);		
@@ -404,10 +420,10 @@ switch ($op){
 			);
 		} else $layout_dataAR['CSS_filename'] = array();
                 
-                array_push($layout_dataAR['CSS_filename'], JQUERY_DATATABLE_CSS);
-                array_push ($layout_dataAR['CSS_filename'],ROOT_DIR.'/external/mediaplayer/flowplayer-5.4.3/skin/minimalist.css');
+        array_push ($layout_dataAR['CSS_filename'], JQUERY_DATATABLE_CSS);
+        array_push ($layout_dataAR['CSS_filename'], ROOT_DIR.'/external/mediaplayer/flowplayer-5.4.3/skin/minimalist.css');
 		array_push ($layout_dataAR['CSS_filename'], JQUERY_NIVOSLIDER_CSS);
-		array_push ($layout_dataAR['CSS_filename'],ROOT_DIR.'/js/include/jquery/nivo-slider/themes/default/default.css');
+		array_push ($layout_dataAR['CSS_filename'], ROOT_DIR.'/js/include/jquery/nivo-slider/themes/default/default.css');
 		array_push ($layout_dataAR['CSS_filename'], JQUERY_UNIFORM_CSS);
 		
 		$optionsAr['onload_func'] = 'initDoc();';
