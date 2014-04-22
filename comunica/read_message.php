@@ -92,7 +92,7 @@ $mittente = $msg_ha['mittente'];
 $Data_messaggio = AMA_DataHandler::ts_to_date($msg_ha['data_ora'], "%d/%m/%Y - %H:%M:%S");
 $oggetto        = $msg_ha['titolo'];
 $destinatario   = str_replace (",", ", ", $msg_ha['destinatari']);
-$message_text   = $msg_ha['testo'];
+$message_text   = nl2br($msg_ha['testo']);
 
 $go_map = "<A HREF = \" map.php?id_node=$sess_id_node\">" . translateFN("Vai alla mappa") . "</A>";
 $go_print = "<a href=\" view.php?id_node=" . $sess_id_node . "&op=print\">"  . translateFN("Stampa") . "</A>";

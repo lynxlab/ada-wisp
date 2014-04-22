@@ -45,7 +45,7 @@
 					
                     <div id="box_sx">
 						<div id="titolo_box_sx">
-					 	<h2><i18n>Timeline</i18n></h2>
+					 	<h2><i18n>Timeline</i18n><template_field class="template_field" name="timelinewithuser">timelinewithuser</template_field></h2>
 						</div>
 					<div class="firstnode">
                         <template_field class="template_field" name="text">text</template_field>
@@ -64,21 +64,21 @@
 					 	<h2><i18n>Interazioni</i18n></h2>
 						</div>
                     <div id="blocco_due">
-                        
-                        <div class="online_user">
-                            <h3><i18n>chi e' online </i18n></h3>
-                                 <template_field class="template_field" name="chat_users">chat_users</template_field>
-                        </div>
+                        <div class="user_agenda">
+                             <h3><i18n>i tuoi appuntamenti</i18n></h3>
+                             <template_field class="template_field" name="agenda">agenda</template_field>
+                             <!-- notifiche eventi -->
+            				 <template_field class="template_field" name="events">events</template_field>
+            				 <!-- / notifiche eventi -->
+                        </div>                        
                         <div class="user_messages">
                              <h3><i18n>messaggi per te </i18n></h3>
                              <template_field class="template_field" name="messages">messages</template_field>
                         </div>
-                        <div class="user_agenda">
-                             <h3><i18n>i tuoi appuntamenti</i18n></h3>
-                             <template_field class="template_field" name="agenda">agenda</template_field>
+                        <div class="online_user">
+                            <h3><i18n>chi e' online </i18n></h3>
+                                 <template_field class="template_field" name="chat_users">chat_users</template_field>
                         </div>                        
-                        
-                        
                     </div>
 					</div>
                     <!-- blocco2 end -->
@@ -226,9 +226,6 @@
             </ul>
             <!-- / menu -->
 
-            <!-- notifiche eventi -->
-            <template_field class="template_field" name="events">events</template_field>
-            <!-- / notifiche eventi -->
             <!-- tendina -->
             <div id="dropdownmenu">
                 <!-- comunica -->
@@ -240,11 +237,13 @@
                                     <i18n>messaggeria</i18n>
                                 </a>
                             </li>
+                            <!-- 
                             <li>
                                 <a href="main_index.php?op=forum">
                                     <i18n>forum</i18n>
                                 </a>
                             </li>
+                             -->
                             <li>
                             <template_field class="template_field" name="chat">chat</template_field>
                             </li>

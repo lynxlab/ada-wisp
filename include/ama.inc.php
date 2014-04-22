@@ -1685,8 +1685,8 @@ class AMA_Common_DataHandler extends Abstract_AMA_DataHandler {
                 $tester_dataAr['tester_name'],
                 $tester_dataAr['tester_rs'],
                 $tester_dataAr['tester_address'],
-                $tester_dataAr['tester_province'],
                 $tester_dataAr['tester_city'],
+                $tester_dataAr['tester_province'],
                 $tester_dataAr['tester_country'],
                 $tester_dataAr['tester_phone'],
                 $tester_dataAr['tester_email'],
@@ -8250,9 +8250,9 @@ abstract class AMA_Tester_DataHandler extends Abstract_AMA_DataHandler {
           GROUP BY id_nodo) AS visite ON (N.id_nodo=visite.id_nodo)
           WHERE N.id_nodo LIKE '".$id_course."\_%' AND N2.id_nodo LIKE '".$id_course."\_%'
                        AND N.tipo NOT IN (". ADA_NOTE_TYPE .",". ADA_PRIVATE_NOTE_TYPE .") AND N.tipo NOT IN (". ADA_LEAF_WORD_TYPE .",". ADA_GROUP_WORD_TYPE .")
-                       AND N2.tipo in (". ADA_LEAF_TYPE .",". ADA_GROUP_TYPE .")
-                       AND N.livello <= $user_level
-           ORDER BY " . $ORDER;
+                       AND N2.tipo in (". ADA_LEAF_TYPE .",". ADA_GROUP_TYPE .")";
+//                        AND N.livello <= $user_level
+           $sql.="ORDER BY " . $ORDER;
 
                 break;
 
@@ -10865,7 +10865,8 @@ public function get_updates_nodes($userObj, $pointer)
         if (AMA_DB::isError($db)) return $db;
 
         $sql = 'SELECT U1.id_utente, U1.nome, U1.cognome, MC.titolo, I.status,
-                   IC.id_istanza_corso, IC.id_corso, IC.data_inizio_previsto AS data_richiesta
+                   IC.id_istanza_corso, IC.id_corso, IC.data_inizio_previsto AS data_richiesta,
+        		   IC.data_inizio AS data_inizio, IC.data_fine AS data_fine
               FROM utente AS U1, modello_corso AS MC, iscrizioni AS I, istanza_corso AS IC
              WHERE IC.data_inizio = 0 AND MC.id_corso = IC.id_corso
                AND I.id_istanza_corso = IC.id_istanza_corso
@@ -10879,21 +10880,34 @@ public function get_updates_nodes($userObj, $pointer)
         }
         return $resultAr;
     }
-    public function get_tester_services_started() {
+    public function get_tester_services_started($getUnassignedServices=false) {
         $db =& $this->getConnection();
         if (AMA_DB::isError($db)) return $db;
 
         $sql = 'SELECT U1.id_utente, U1.nome, U1.cognome, MC.titolo, I.status,
                    U2.id_utente AS id_tutor, U2.nome AS nome_t, U2.cognome AS cognome_t, U2.username AS username_t,
-                   IC.id_istanza_corso, IC.id_corso, IC.data_inizio_previsto AS data_richiesta
-              FROM utente AS U1, utente AS U2, modello_corso AS MC, iscrizioni AS I, istanza_corso AS IC, tutor_studenti AS TS
-             WHERE IC.data_inizio > 0 AND MC.id_corso = IC.id_corso
-               AND I.id_istanza_corso = IC.id_istanza_corso
-               AND U1.id_utente = I.id_utente_studente
-               AND TS.id_istanza_corso = IC.id_istanza_corso
-               AND U2.id_utente = TS.id_utente_tutor
-               ORDER BY IC.id_istanza_corso DESC';
+                   IC.id_istanza_corso, IC.id_corso, IC.data_inizio_previsto AS data_richiesta,
+        		   IC.data_inizio AS data_inizio, IC.data_fine AS data_fine
+              FROM utente AS U1, modello_corso AS MC, istanza_corso AS IC, ';
 
+        if ($getUnassignedServices===true) {
+        	$sql .=  'tutor_studenti AS TS RIGHT JOIN iscrizioni AS I ON I.id_istanza_corso=TS.id_istanza_corso
+        			LEFT JOIN utente AS U2 ON U2.id_utente=TS.id_utente_tutor';
+        } else {
+        	$sql .= 'utente AS U2,  iscrizioni AS I,  tutor_studenti AS TS';
+        }
+        
+        $sql .= ' WHERE IC.data_inizio > 0 AND MC.id_corso = IC.id_corso
+               AND I.id_istanza_corso = IC.id_istanza_corso
+               AND U1.id_utente = I.id_utente_studente ';
+
+        if ($getUnassignedServices===false) {
+        	$sql .= 'AND TS.id_istanza_corso = IC.id_istanza_corso
+               AND U2.id_utente = TS.id_utente_tutor ';
+        }
+        
+        $sql .= 'ORDER BY IC.id_istanza_corso DESC';
+        
         $resultAr = $db->getAll($sql, NULL, AMA_FETCH_ASSOC);
         if(AMA_DB::isError($resultAr)) {
             return new AMA_Error(AMA_ERR_GET);

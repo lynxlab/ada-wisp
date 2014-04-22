@@ -39,10 +39,10 @@ class ADAEventProposal
   static public function extractCourseInstanceIdFromThisToken($event_token) {
 
     /*
-     * first match: tutored user id
-     * second match: tutor id
+     * first match: tutored user id (not loaded in $matches, because of the ?: )
+     * second match: tutor id (not loaded in $matches, because of the ?: )
      * third match: course instance id
-     * fourth match: timestamp
+     * fourth match: timestamp (not loaded in $matches, because of the ?: )
      */
     $pattern = '/(?:[1-9][0-9]*)_(?:[1-9][0-9]*)_([1-9][0-9]*)_(?:[1-9][0-9]+)/';
     $matches = array();
@@ -51,6 +51,28 @@ class ADAEventProposal
     }
     return FALSE;
 
+  }
+
+  /**
+   * Returns the tutor id from a given event token
+   * 
+   * @param string $event_token
+   * @return int
+   */  
+  static public function extractTutorIdFromThisToken($event_token) {
+  	
+    /*
+  	 * first match: tutored user id (not loaded in $matches, because of the ?: )
+  	 * second match: tutor id 
+  	 * third match: course instance id (not loaded in $matches, because of the ?: )
+  	 * fourth match: timestamp (not loaded in $matches, because of the ?: )
+  	 */
+  	$pattern = '/(?:[1-9][0-9]*)_([1-9][0-9]*)_(?:[1-9][0-9]*)_(?:[1-9][0-9]+)/';
+  	$matches = array();
+  	if(preg_match($pattern, $event_token, $matches) == 1) {
+  		return $matches[1];
+  	}
+  	return FALSE;  	
   }
 
   /**

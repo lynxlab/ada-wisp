@@ -303,7 +303,7 @@ UL#menu a:hover { color: #eaff00; }
 
 #home A		 { background: url(../img/home.png) no-repeat center left; display:block; padding:0 0 0 40px;  }
 
-#com A		 { display:block; padding:0 0 0 40px;  }
+#com A		 { display:block; padding:0 0 0 40px; float:left;  }
 	.selectedcom A { background: url(../img/_chat.png) no-repeat center left; }
 	.unselectedcom A { background: url(../img/comunica.png) no-repeat center left; }
 
@@ -671,4 +671,35 @@ float: left;
 
 #data_reg div.fform {
     width: 100%;
+}
+
+#newMsgCount {
+	background: #f00;
+	padding: 3px 3px 3px 4px;
+	position: relative;
+	font-size: 11px;
+	text-shadow: 0 1px 2px #00F;
+	color: #fff;
+	margin-left:4px;
+	font-weight:bold;
+ 	-webkit-box-shadow: 1px 1px 8px 1px #A8B5C2;
+	box-shadow: 1px 1px 10px 8px 1px #A8B5C2;
+	-webkit-border-radius: 2px;
+	border-radius: 2px;
+}
+
+ #newMsgCount .arrow {
+	border-color: transparent #f00 transparent transparent;
+    border-style: solid;
+    border-width: 3px;
+    left: -6px;
+    position: absolute;
+    top: 7px;
+    width: 0;   
+} 
+/**
+ * Remove underline from RSS widget header
+ */
+a.RSSheader {
+	text-decoration: none;
 }

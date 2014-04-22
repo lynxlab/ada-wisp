@@ -579,12 +579,18 @@ $content_dataAr = array(
   'index'        => $node_index,
   'search_form'  => $search_form,//."<br>".$menu,
   'forum_menu'   => $menu,
-  'messages'     => $user_messages->getHtml(),
-  'agenda'       => $user_agenda->getHtml(),
-  'events'		 => $user_events->getHtml(),
+//   'messages'     => $user_messages->getHtml(),
+//   'agenda'       => $user_agenda->getHtml(),
+//   'events'		 => $user_events->getHtml(),
   'chat_users'   => $online_users,
   'go_map'		 => $go_map
 );
+
+$imgAvatar = $userObj->getAvatar();
+$avatar = CDOMElement::create('img','src:'.$imgAvatar);
+$avatar->setAttribute('class', 'img_user_avatar');
+$content_dataAr['user_avatar'] = $avatar->getHtml();
+$content_dataAr['user_modprofilelink'] = $userObj->getEditProfilePage();
 
 ARE::render($layout_dataAr, $content_dataAr);
 
