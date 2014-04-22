@@ -745,6 +745,24 @@ class CommunicationModuleHtmlLib
         }else {
             $sender_username = $appointment_Ar[6];
         }
+        
+        /**
+         * @author giorgio 16/apr/2014 16:35:39
+         *
+         * If session user is a student, try to
+         * retrieve tutor's full name just for display purposes
+         */
+        if (isset($_SESSION['sess_userObj']) && $_SESSION['sess_userObj']->getType()==AMA_TYPE_STUDENT) {
+        	// the token is in $appointment_Ar[2]
+        	$id_tutor = ADAEventProposal::extractTutorIdFromThisToken($appointment_Ar[2]);
+        	if (intval($id_tutor)>0)
+        	{
+        		$tutorObj = MultiPort::findUser($id_tutor);
+        		if ($tutorObj->getType()==AMA_TYPE_TUTOR) {
+        			$sender_username = $tutorObj->getFullName();
+        		}
+        	}
+        }        
 
 
         //$msg_id = $tester_info_Ar[0].'_'.$appointment_id;
@@ -1054,12 +1072,12 @@ static public function getRecipientsFromAgenda($data_Ar) {
 /*
  * Methods used to display Agenda user interfaces
  */
-  static public function getEventsProposedAsTableMin($data_Ar=array(), $testers_dataAr=array()) {
+  static public function getEventsProposedAsTableMin($data_Ar=array(), $testers_dataAr=array(),$showRead=true) {
     if(empty($data_Ar)) {
       return new CText(translateFN('Non sono presenti appuntamenti'));
     }
     $data_Ar = self::getRecipientsFromAgenda($data_Ar);
-    return self::display_proposed_as_table($data_Ar, ADA_MSG_AGENDA, $testers_dataAr);
+    return self::display_proposed_as_table($data_Ar, ADA_MSG_AGENDA, $testers_dataAr,$showRead);
   }
 
   static public function getAgendaAsTable($data_Ar=array(), $testers_dataAr=array(),$showRead=true) {
@@ -1087,7 +1105,7 @@ static public function getRecipientsFromAgenda($data_Ar) {
     return self::display_messages_as_form($data_Ar, ADA_MSG_AGENDA, $testers_dataAr);
   }
   
-  static private function display_proposed_as_table($data_Ar=array(), $message_type = ADA_MSG_SIMPLE, $testers_dataAr=array()) {
+  static private function display_proposed_as_table($data_Ar=array(), $message_type = ADA_MSG_SIMPLE, $testers_dataAr=array(), $showRead=true) {
     $common_dh = $GLOBALS['common_dh'];
     $javascript_ok = check_javascriptFN($_SERVER['HTTP_USER_AGENT']);
 
@@ -1132,13 +1150,12 @@ static public function getRecipientsFromAgenda($data_Ar) {
         $subject        = ADAEventProposal::removeEventToken($appointment_Ar[2]);
         $priority       = $appointment_Ar[3];
         $read_timestamp = $appointment_Ar[4];
-        $read_msg       = AMA_DataHandler::ts_to_date($read_timestamp, "%d/%m/%Y - %H:%M:%S");// ." " . $zone;
+        $read_msg       = AMA_DataHandler::ts_to_date($read_timestamp, "%d/%m/%Y %H:%M:%S");// ." " . $zone;
         if ($read_timestamp == 0) $read_msg= '';
 
         $date_time_zone = $date_time + $offset;
  	$zone 		= translateFN("Time zone:") . " " . $tester_TimeZone;
-        $data_msg       = AMA_DataHandler::ts_to_date($date_time_zone, "%d/%m/%Y - %H:%M:%S");// ." " . $zone;
-//        $data_msg       = AMA_DataHandler::ts_to_date($date_time_zone, "%d/%m/%Y");// ." " . $zone;
+        $data_msg       = AMA_DataHandler::ts_to_date($date_time_zone, "%d/%m/%Y %H:%M:%S");// ." " . $zone;
 
         if ($appointment_Ar[7] != '') {
             $sender_username = $appointment_Ar[7] . ' ' . $appointment_Ar[8];;
@@ -1159,11 +1176,15 @@ static public function getRecipientsFromAgenda($data_Ar) {
           $subject_link = CDOMElement::create('a',"href:$url, target:_blank");
           $subject_link->addChild(new CText($subject));
         }
-
-        $appointments_Ar[] = array($data_msg,$subject_link,$sender_username,$read_msg);
+        if ($showRead) {
+            $appointments_Ar[] = array($data_msg,$subject_link,$sender_username,$read_msg);
+        } else {
+            $appointments_Ar[] = array($data_msg,$subject_link,$sender_username);
+        }
       }
     }
     $thead_data = array(translateFN('Data'),translateFN('Oggetto'), translateFN('User'));
+    if ($showRead) $thead_data[3] =  translateFN('Letto');
     if(count($appointments_Ar) > 0) {
 //      $table = BaseHtmlLib::tableElement('class:sortable', NULL, $appointments_Ar);
       $table = BaseHtmlLib::tableElement('id:sortable_event_proposed', $thead_data, $appointments_Ar);
@@ -1241,6 +1262,25 @@ static public function getRecipientsFromAgenda($data_Ar) {
         }else {
             $sender_username = $appointment_Ar[6];
         }
+        
+        /**
+         * @author giorgio 16/apr/2014 16:35:39
+         * 
+         * If session user is a student, try to
+         * retrieve tutor's full name just for display purposes
+         */
+        if ($message_type==ADA_MSG_AGENDA && isset($_SESSION['sess_userObj']) && $_SESSION['sess_userObj']->getType()==AMA_TYPE_STUDENT) {
+        	// the token is in $appointment_Ar[2]
+        	$id_tutor = ADAEventProposal::extractTutorIdFromThisToken($appointment_Ar[2]);
+        	if (intval($id_tutor)>0)
+        	{
+        		$tutorObj = MultiPort::findUser($id_tutor);
+        		if ($tutorObj->getType()==AMA_TYPE_TUTOR) {
+        			$sender_username = $tutorObj->getFullName();
+        		}
+        	}
+        }
+        
         //$msg_id = $tester_info_Ar[0].'_'.$appointment_id;
         $msg_id = $tester_id.'_'.$appointment_id;
         $url = HTTP_ROOT_DIR.'/comunica/'.$module.'?msg_id='.$msg_id;

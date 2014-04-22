@@ -144,7 +144,6 @@ if ($_REQUEST['mode']) {
   $user_messages   = CommunicationModuleHtmlLib::getMessagesAsTable($user_messagesAr, $testers_dataAr,$showRead);
 
   $user_agendaAr   = MultiPort::getUserAgenda($userObj);
-  $user_agenda     = CommunicationModuleHtmlLib::getAgendaAsTable($user_agendaAr, $testers_dataAr,$showRead);
 		
     // $user_eventsAr = MultiPort::getUserEvents($userObj);
 	
@@ -166,8 +165,43 @@ if ($_REQUEST['mode']) {
 	$past = 0;
 	$user_agenda_not_pastAr = MultiPort::getUserAgenda ( $userObj, $past );
 	$user_eventsAr = MultiPort::getUserEvents ( $userObj );
-	$user_events = CommunicationModuleHtmlLib::getEventsAsTable ( $userObj, $user_eventsAr, $testers_dataAr );
-	$user_events_2 = CommunicationModuleHtmlLib::getAppointmentsAsTable ( $userObj, $user_agenda_not_pastAr, $testers_dataAr );  
+	/**
+	 * @author giorgio 15/apr/2014
+	 * 
+	 * If a course instance is set by module_init, then filter
+	 * the events and appointments by that course instance id
+	 * so that the controller (sview.php usually) shall display
+	 * only the current course instance events and appointments
+	 * 
+	 * NOTE: $sess_id_course_instance is set by module_init
+	 */
+	
+	if (!is_null($sess_id_course_instance)) {
+		$instanceFilterId = intval($sess_id_course_instance);
+		require_once ROOT_DIR . '/comunica/include/ADAEventProposal.inc.php';
+		foreach (array ($user_eventsAr, $user_agenda_not_pastAr, $user_agendaAr) as $aKey=>$anElement) {
+			foreach ($anElement as $testerName=>$userTester_eventsAr) {
+				foreach ($userTester_eventsAr as $key=>$user_eventAr) {
+					// message token is stored in array index 2
+					if (intval(ADAEventProposal::extractCourseInstanceIdFromThisToken($user_eventAr[2]))!==$instanceFilterId) {
+						if ($aKey==0)      unset ($user_eventsAr[$testerName][$key]);
+						else if ($aKey==1) unset ($user_agenda_not_pastAr[$testerName][$key]);
+						else if ($aKey==2) unset ($user_agendaAr[$testerName][$key]);
+					}
+				}
+			}
+		}
+	}
+	
+	/**
+     * Looks like:
+     * $user_events are APPOINTMENT PROPOSALS
+     * $user_agenda_not_pastAr	are ALL APPOINTMENTS THAT ARE NOT EXPIRED
+     * $user_agendaAr are ALL APPOINTMENTS 
+	 */
+	$user_events   = CommunicationModuleHtmlLib::getEventsAsTable ( $userObj, $user_eventsAr, $testers_dataAr );
+	$user_events_2 = CommunicationModuleHtmlLib::getAppointmentsAsTable ( $userObj, $user_agenda_not_pastAr, $testers_dataAr );
+	$user_agenda   = CommunicationModuleHtmlLib::getAgendaAsTable($user_agendaAr, $testers_dataAr,$showRead);
 	
 
 //}
@@ -258,8 +292,8 @@ if (in_array('tutor',$thisUserNeededObjAr)){
          * @var Object
          */
         $tutorObj = $dh->get_tutor($tutor_id);
-        if (!AMA_dataHandler::isError($tutorObj)){
-          $tutor_uname = $tutor['username'];
+        if (!AMA_DB::isError($tutorObj)){
+          $tutor_uname = $tutorObj['username'];
         }
       }
     }
