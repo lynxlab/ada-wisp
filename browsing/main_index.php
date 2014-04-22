@@ -579,9 +579,9 @@ $content_dataAr = array(
   'index'        => $node_index,
   'search_form'  => $search_form,//."<br>".$menu,
   'forum_menu'   => $menu,
-  'messages'     => $user_messages->getHtml(),
-  'agenda'       => $user_agenda->getHtml(),
-  'events'		 => $user_events->getHtml(),
+//   'messages'     => $user_messages->getHtml(),
+//   'agenda'       => $user_agenda->getHtml(),
+//   'events'		 => $user_events->getHtml(),
   'chat_users'   => $online_users,
   'go_map'		 => $go_map
 );
