@@ -20,7 +20,8 @@
 #info_div {
     padding: 10px;
     float: right;
-    margin-right: 100px;
+    /* margin-right: 100px; */
+    width: 65%;
     
 }
 

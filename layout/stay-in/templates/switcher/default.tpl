@@ -197,6 +197,7 @@
         <!-- / menu a tendina -->
 
         <!-- piede -->
+        <div class="clearfix"></div>
         <div id="footer">
             <template_field class="microtemplate_field" name="footer">footer</template_field>
         </div>
