@@ -488,19 +488,31 @@ class Spool extends Abstract_AMA_DataHandler
 //    else // all other cases
 //    {
 
+      /**
+	   * @author giorgio 23/apr/2014 15:24:51
+	   * 
+	   * addded support for an array in $user_id,
+	   * set $basic_clause to '1 ' so that aferwards
+	   * can be concatenated with ' AND'... without worries
+       */
+      $basic_clause = '1 ';
+      if (is_array($user_id) && count($user_id)>0) {
+      	$basic_clause = 'DM.id_utente IN ('.implode(',', $user_id).') ';
+      } else if (intval($user_id)>0) {
+      	$basic_clause = 'DM.id_utente='.$user_id.' ';
+      }
+
       if(is_array($fields_list) && in_array('utente.username',$fields_list)) {
         $tables .=", destinatari_messaggi AS DM, utente ";
 
-        $basic_clause = "DM.id_utente=$user_id "
-                      . "AND messaggi.tipo='$type' AND messaggi.id_messaggio=DM.id_messaggio "
-                      . "AND utente.id_utente=messaggi.id_mittente";
+        $basic_clause .= "AND messaggi.tipo='$type' AND messaggi.id_messaggio=DM.id_messaggio "
+                       . "AND utente.id_utente=messaggi.id_mittente";
 
       }
       else {
         $tables .=", destinatari_messaggi AS DM";
 
-        $basic_clause = "DM.id_utente=$user_id "
-                      . "AND messaggi.tipo='$type' AND messaggi.id_messaggio=DM.id_messaggio";
+        $basic_clause .= "AND messaggi.tipo='$type' AND messaggi.id_messaggio=DM.id_messaggio";
       }
 
 //    }
