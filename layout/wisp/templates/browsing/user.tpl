@@ -221,6 +221,7 @@
                 </div>
                 <!-- /strumenti -->
                 <!-- azioni -->
+                <!-- 
                 <div id="submenu_actions" class="sottomenu sottomenu_off">
                     <div id="_actionscontent">
                         <ul>
@@ -235,6 +236,7 @@
                     <div class="bottomsubmenu">
                     </div>
                 </div>
+                -->
                 <!-- / azioni -->
                 <!-- puntoint -->
                 <div id="submenu_question_mark" class="sottomenu  sottomenu_off">
