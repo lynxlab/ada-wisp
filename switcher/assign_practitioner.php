@@ -141,15 +141,42 @@ if (isset($_SERVER['REQUEST_METHOD']) && $_SERVER['REQUEST_METHOD'] == 'POST'
                  * @author giorgio 15/apr/2014
                  * Must retrieve help message text sent in by the user
                  */
+                
                 $messageTokenPart =  $id_student    . '_'
-                		. $id_course_instance . '_'
-                		. $userObj->getId() . '_';
+                		. $id_course_instance . '_';
+                
+                /**
+                 * @author giorgio 23/apr/2014
+                 * switcher is no longer needed in the token, see comment
+                 * below where I get all the switchers
+                 */
+                //  $userObj->getId() . '_';
                 
                 $fields_list_Ar = array('testo');
                 $clause         = ' titolo like \'%' . $messageTokenPart . '%\'';
-                $sort_field     = ' data_ora asc';
+                $sort_field     = ' data_ora desc';
                 
-                $helpMsg_ha = $mh->find_messages($userObj->getId(),
+                $mh = MessageHandler::instance(MultiPort::getDSN($sess_selected_tester));
+                
+                /**
+                 * @author giorgio 23/apr/2014
+                 *
+                 * The provider can have more than one switcher, and could be that the
+                 * logged one has not the id associated with the message we're trying to load.
+                 * So, get the switcher list and try to get the message having token like (sql)
+                 *  '%'.$id_user.'_'.$id_course_instance.'_%'
+                */
+                $switcherListAr = $dh-> get_users_by_type(array(AMA_TYPE_SWITCHER));
+                // build an array with switchers' id_utente only
+                foreach ($switcherListAr as $switcherData) {
+                	$switcherList[] = $switcherData['id_utente'];
+                }
+                // if there's only one or no switcher(!) use the logged user id
+                if (!isset($switcherList) || count($switcherList)<=1) {
+                	$switcherList = $id_switcher;
+                }
+
+                $helpMsg_ha = $mh->find_messages($switcherList,
                 		ADA_MSG_SIMPLE,
                 		$fields_list_Ar,
                 		$clause,
@@ -191,14 +218,28 @@ if (isset($_SERVER['REQUEST_METHOD']) && $_SERVER['REQUEST_METHOD'] == 'POST'
                  */
 
                 /* We send the message to all switchers (???) */
+                
+                /**
+                 * @author giorgio 23/apr/2014
+                 * 
+                 * send the message only to the logged switcher, code to send to
+                 * all switcher is commented.
+                 * Variable names are kept for compatibility and to not rewrite all
+                 * the involved below code.
+                 */
+                $switcher_uname = $userObj->getUserName();
+                $switcher['nome'] = $userObj->getFirstName();
+                $switcher['cognome'] = $userObj->getLastName();
 
+/*
                 $destinatari = array();
-                $switcherList = $dh->get_users_by_type(array(AMA_TYPE_SWITCHER));
+                $switcherList = $dh->get_users_by_type(array(AMA_TYPE_SWITCHER), true);
 				if (! AMA_DataHandler::isError ( $switcherList )) {
 					foreach ( $switcherList as $switcher ) {
 						$switcher_uname = $switcher ['username'];
 						$destinatari [] = $switcher_uname;
-						
+*/
+
 						$message_text = sprintf ( translateFN ( 'Caro %s %s, hai assegnato con successo l\'utente %s all\'orientatore %s.' ),
 								$switcher['nome'], $switcher['cognome'],
 								$tutoredUserObj->getFullName(),
@@ -219,9 +260,13 @@ if (isset($_SERVER['REQUEST_METHOD']) && $_SERVER['REQUEST_METHOD'] == 'POST'
 						if (AMA_DataHandler::isError ( $result )) {
 							// FIXME: gestire errore
 						}
-					}
-				}
-              }
+					
+/*						
+					} // foreach
+				} // isError($switcherList)
+*/				
+
+              } // if($ci_info['data_inizio'] == 0) 
 
             
                /*
