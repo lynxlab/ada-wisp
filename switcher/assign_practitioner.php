@@ -400,8 +400,13 @@ if (isset($_SERVER['REQUEST_METHOD']) && $_SERVER['REQUEST_METHOD'] == 'POST'
            */
           $id_switcher = $userObj->getId();
           $messageTokenPart =  $id_user    . '_'
-                 . $id_course_instance . '_'                  
-                 . $id_switcher . '_';
+                 . $id_course_instance . '_';
+          /**
+           * @author giorgio 23/apr/2014
+           * switcher is no longer needed in the token, see comment
+           * below where I get all the switchers
+           */
+                 // . $id_switcher . '_';
                   
           $fields_list_Ar = array('data_ora', 'titolo', 'testo');
           $clause         = ' titolo like \'%' . $messageTokenPart . '%\'';
@@ -411,7 +416,26 @@ if (isset($_SERVER['REQUEST_METHOD']) && $_SERVER['REQUEST_METHOD'] == 'POST'
           $sort_field     = ' data_ora desc';
           
           $mh = MessageHandler::instance(MultiPort::getDSN($sess_selected_tester));
-          $msgs_ha = $mh->find_messages($id_switcher,
+          
+          /**
+           * @author giorgio 23/apr/2014
+           * 
+           * The provider can have more than one switcher, and could be that the
+           * logged one has not the id associated with the message we're trying to load.
+           * So, get the switcher list and try to get the message having token like (sql)
+           *  '%'.$id_user.'_'.$id_course_instance.'_%'
+           */
+          $switcherListAr = $dh-> get_users_by_type(array(AMA_TYPE_SWITCHER));
+          // build an array with switchers' id_utente only
+          foreach ($switcherListAr as $switcherData) {
+          	$switcherList[] = $switcherData['id_utente'];
+          }
+          // if there's only one or no switcher(!) use the logged user id
+          if (!isset($switcherList) || count($switcherList)<=1) {
+          	$switcherList = $id_switcher;
+          }
+          
+          $msgs_ha = $mh->find_messages($switcherList,
                                         ADA_MSG_SIMPLE,
                                         $fields_list_Ar,
                                         $clause,
