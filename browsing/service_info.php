@@ -240,7 +240,8 @@ $content_dataAr = array(
   'status' => $status
 );
 
-
+$content_dataAr['user_avatar'] = CDOMElement::create('img','src:'.$userObj->getAvatar().',class:img_user_avatar')->getHtml();
+$content_dataAr['user_modprofilelink'] = $userObj->getEditProfilePage();
 
 /**
  * Sends data to the rendering engine
