@@ -69,7 +69,7 @@ if (!defined('HTTP_ROOT_DIR')) define('HTTP_ROOT_DIR','http://guidance.stay-in.o
 /**
  * portal name string - displayed in window titlebar
  */
-if (!defined('PORTAL_NAME')) define('PORTAL_NAME','guidance.stay-in.org');
+if (!defined('PORTAL_NAME')) define('PORTAL_NAME','WISP guidance service');
 
 
 /**
@@ -154,9 +154,9 @@ define('AVATAR_MAX_HEIGHT', "500");
 define('ADA_ADMIN_MAIL_ADDRESS','graffio@lynxlab.com');
 
 /**
- *
+ * Default noreply mail address
  */
-define('PORTAL_NAME','Stay-in guidance service');
+define('ADA_NOREPLY_MAIL_ADDRESS','noreply@lynxlab.com');
 
 /**
  * ADA version
