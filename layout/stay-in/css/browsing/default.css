@@ -72,6 +72,14 @@ background: url(../../img/back.png) no-repeat center left; display:block; paddin
         padding-top: 10px;
         border-bottom: 1px dotted #DDDDDD;
 }
+
+
+#guest_dattilo {
+        padding-top: 10px;
+        border-bottom: none;
+}
+
+
 #topcont {
     height: 20px;
     background: url(../../img/topcont.png) no-repeat;

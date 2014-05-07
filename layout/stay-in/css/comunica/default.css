@@ -70,7 +70,7 @@ a:visited { text-decoration: none; }
 /* MENU
 ----------------------------------------------- */
 #menu {  background-color:#7da238; border:10px solid white; }
-UL#menu  {margin:5px 10px 0 300px; padding:0; height:50px; line-height:50px; list-style-type:none;}
+UL#menu  {margin:5px 10px 0 289px; padding:0; height:50px; line-height:50px; list-style-type:none;}
 /* UL#menu  LI {margin:0; padding:0; list-style-type:none; float:left; margin:0 0px 0 20px; } */
 UL#menu LI A {text-transform: lowercase; color:#fff; font-weight:bold; text-decoration:none;}
 

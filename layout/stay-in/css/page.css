@@ -43,8 +43,8 @@ a:visited {text-decoration: none; }
 
 /* TABLES ------------------------------ */
 .default_table {width: 100%;color:#555;}
-.default_table A:link { color:#222; background:#b7b7b7; padding:1px; display:block; padding:2px; text-decoration:none;}
-.default_table A:hover {background:#bf236c; color:yellow;}
+.default_table A:link { color:#222; padding:1px; display:block; padding:2px; text-decoration:underline;}
+.default_table A:hover {background:#bf236c; color:yellow; text-decoration:none;}
 
 
 /* RIGHT MENU ------------------------------ */
@@ -142,10 +142,19 @@ font-weight:bold;}
  * User data
  */
 #status_bar {
-  height: 50px;
+  height: 58px;
   padding-top: 5px;
     border-bottom:1px dotted #ddd;
 }
+
+
+#guest_status_bar {
+  height: 5px;
+  padding-top: 5px;
+    border-bottom:none;
+}
+
+
 #user_data {
     float:right;
  /*   border-top:1px solid #e0e0e0;*/
@@ -448,9 +457,9 @@ border-bottom-right-radius: 10px;}
 }
 
 .sortable {width: 100%;color:#555;}
-.sortable A:link { color:#222; background:#d2d2d2; padding:1px; display:block; padding:2px; text-decoration:none;}
-.sortable A:hover {background:#8ED; color:#f50;}
-th.sortcol:hover {background:#96e1dd; color:#f50;}
+.sortable A:link { color:#222; padding:1px; display:block; padding:2px; text-decoration:underline;}
+.sortable A:hover {background:#bf236c; color:yellow; text-decoration:none; }
+th.sortcol:hover {background:#bf236c; color:yellow; text-decoration:none;}
 /*.sortable_th:hover {background:#ffc; color:#f50;}*/
 
 
@@ -703,3 +712,14 @@ float: left;
 a.RSSheader {
 	text-decoration: none;
 }
+
+
+
+/*  -- Distanziare le form --  */
+#data {
+	
+	margin-bottom: 25px;
+}
+
+
+

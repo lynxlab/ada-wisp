@@ -28,8 +28,16 @@
                     <template_field class="template_field" name="address">address</template_field>
                 </span>
             </div> <!-- / percorso -->
+			
+			
+			<!-- modificato 4.2014 -->
+			<!--dati utente-->
+                   <template_field class="microtemplate_field" name="user_data_micro">user_data_micro</template_field>
+                 <!-- / dati utente -->
+			
+			
             <!--dati utente-->
-            <div id="status_bar">
+            <!-- <div id="status_bar">
             <div id="user_data" class="user_data_default">
                 <i18n>utente: </i18n>
                 <span>
@@ -43,7 +51,10 @@
                         <template_field class="template_field" name="status">status</template_field>
                     </span>
                 </div>
-            </div> <!-- / dati utente -->
+            </div> 
+			-->
+			<!-- / dati utente -->
+			
             </div>
             <!-- contenuto -->
             <div id="content">

@@ -25,7 +25,7 @@
                 <span>
                     <template_field class="template_field" name="path">path</template_field>
                 </span>
-                <div class="dattilo" id="dattilo">
+                <div class="dattilo" id="guest_dattilo">
                       <!--template_field class="template_field_disabled" name="dattilo">dattilo</template_field-->
                 </div>
 
@@ -33,7 +33,7 @@
             <!-- / percorso -->
 
             <!--dati utente-->
-            <div id="status_bar">
+            <div id="guest_status_bar">
             <div id="user_data" class="user_data_view hide">
                 <i18n>utente: </i18n>
                 <span><template_field class="template_field" name="user_name">user_name</template_field></span>
@@ -295,9 +295,21 @@
             <div id="bottomrightpanel">
             </div>
         </div>
-        <!-- PIEDE -->
+        
+		
+		 <!-- piede -->
+        <div class="clearfix"></div>
         <div id="footer">
+            <template_field class="microtemplate_field" name="footer">footer</template_field>
+        </div>
+        <!-- / piede -->
+		
+		
+		<!-- PIEDE -->
+        <!-- <div id="footer">
             <template_field class="microtemplate_field" name="footer_guest">footer_guest</template_field>
-        </div> <!-- / piede -->
+        </div>
+		-->
+		 <!-- / piede -->
     </body>
 </html>

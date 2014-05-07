@@ -19,31 +19,16 @@
             </div>
             <!-- / percorso -->
             <div id="status_bar">
-            <!--dati utente-->
-            <div id="user_data" class="user_data_view">
-                <i18n>utente: </i18n>
-                <span>
-                    <template_field class="template_field" name="user_name">user_name</template_field>
-                </span>
-                <i18n>tipo: </i18n>
-                <span>
-                    <template_field class="template_field" name="user_type">user_type</template_field>
-                </span>
-                <!--i18n>livello: </i18n-->
-                <!--span>
-                													<template_field class="template_field" name="user_level">user_level</template_field>
-                		 								</span-->
-                <!--i18n>punteggio: </i18n-->
-                <!--span>
-                														<template_field class="template_field" name="user_score">user_score</template_field>
-                											</span-->
-                <div class="status">
-                    <i18n>status: </i18n>
-                    <span>
-                        <template_field class="template_field" name="status">status</template_field>
-                    </span>
-                </div>
-            </div> <!-- / dati utente -->
+			
+			
+   				<!--dati utente-->
+                   <template_field class="microtemplate_field" name="user_data_micro">user_data_micro</template_field>
+                 <!-- / dati utente -->
+			
+			
+			
+			
+			
             <!-- label -->
             <div id="labelview">
                 <div class="topleft">
@@ -93,7 +78,7 @@
                 <div id="menurightcontent">
                     <ul>
                         <li class="close">
-                            <a href="#" onclick="toggleElementVisibility('menuright', 'right');">
+                            <a href="#" onClick="toggleElementVisibility('menuright', 'right');">
                                 </i18n>chiudi</i18n>
                             </a>
                         </li>
@@ -234,9 +219,21 @@
 
         </div> <!-- / MENU A TENDINA -->
 
-        <!-- PIEDE -->
+      
+	 <!-- piede -->
+        <div class="clearfix"></div>
         <div id="footer">
+            <template_field class="microtemplate_field" name="footer">footer</template_field>
+        </div>
+        <!-- / piede -->
+	  
+	  
+	  
+	    <!-- PIEDE RIMOSSO -->
+        <!-- <div id="footer">
             <template_field class="microtemplate_field" name="footer_guest">footer_guest</template_field>
-        </div> <!-- / piede -->
+        </div> 
+		-->
+		<!-- / piede RIMOSSO -->
     </body>
 </html>
