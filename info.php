@@ -420,6 +420,11 @@ $content_dataAr = array(
     'home' => $link_to_home->getHtml()
 );
 
+if (isset($userObj) && !is_null($userObj)) {
+	$content_dataAr['user_avatar'] = CDOMElement::create('img','src:'.$userObj->getAvatar().',class:img_user_avatar')->getHtml();
+	$content_dataAr['user_modprofilelink'] = $userObj->getEditProfilePage();
+}
+
 /**
  * Sends data to the rendering engine
  */
