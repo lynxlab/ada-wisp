@@ -110,17 +110,15 @@ font-weight:bold;}
 	padding-bottom: 10px;
 }
 
-/*
- *
- */
+
 #intestazione {
-    background-color: #fff;
+    background-color: #ffffff;
     height: 60px;
-    padding-left:15px;
-    margin-left: 10px;
-	margin-right: 10px;
-	border-top: 19px solid #005281;
-	margin-top: -4px;
+    padding:0 35px 0 25px;
+    margin-top: -10px;
+    margin-left: -10px;
+	 margin-right: -10px;
+	 border-top: 25px solid #005281;
 }
 
 #mainmenu {
@@ -273,20 +271,25 @@ font-weight:bold;}
     height:5px;
 }
 
-/*
- *
- */
-/* MENU
------------------------------------------------ */
+
+
+/*  --- MENU --- */
 #menu {
 	background-color:#7da238;
-	border-left: 10px solid white;
-	border-right: 10px solid white;
 	background-image: url(../img/main_menu_bg.gif);
 	background-repeat: repeat;
 	background-position: center center;
+	/*	border-left: 10px solid white;
+	border-right: 10px solid white; */
 }
-UL#menu  {margin:0 10px 0 10px; padding:0; height:50px; line-height:50px; list-style-type:none;}
+
+UL#menu  {
+margin:0px; 
+padding:0; height:50px; 
+line-height:50px; 
+list-style-type:none;
+}
+
 UL#menu  LI {
 	border-right: 1px solid #FFFFFF;
     float: left;
@@ -346,16 +349,29 @@ UL#menu a:hover { color: #eaff00; }
 #journey {
 	background: #BF236C;
 	color: #ffffff;
-	padding-top: 2px;
-	padding-right: 0px;
-	padding-bottom: 2px;
-	padding-left: 10px;
-	margin-top:2px;
-	margin-bottom:5px;
+	padding:2px 0 0 25px;
+	margin:2px -20px 5px -20px;
 }
 
-#journey A {text-decoration:none; color:#fff;}
+#journey A {
+text-decoration:none; 
+color:#fff;
+}
+
 #journey A:hover {color:#eee; text-decoration:underline}
+
+
+
+/*  -- modifiche barra sotto menu banner --  */
+
+#submenubanner {
+    background: none repeat scroll 0 0 #BF236C;
+    color: #FFFFFF;
+    padding: 0px;
+    margin: 0 -20px 0 -20px;
+}
+
+
 
 
 /* SOTTOMENU */
@@ -657,15 +673,16 @@ float: left;
 
 
 #data_reg {
-    float:left;
-    background: none repeat scroll 0 0 #EFF0EB;
-    border: 1px solid #D5D6D1;
-    border-radius: 2px;
+    background: none repeat scroll 0 0 #FCFDFD;
+    border: 1px solid #A6C9E2;
+    border-radius: 5px;
+    box-shadow: 0 5px 15px 0 rgba(120, 120, 120, 0.4);
     color: #222222;
+    float: left;
     font-family: Lucida Grande,Lucida Sans,Arial,sans-serif;
-    padding:20px 20px 37px 20px;
-    /* font-size: 1.8em; */
-    width:400px;
+    padding: 20px 20px 37px;
+    width: 400px;
+    margin: 0 0 20px;
 }
 
 #data_reg_img {
@@ -720,6 +737,5 @@ a.RSSheader {
 	
 	margin-bottom: 25px;
 }
-
 
 
