@@ -75,7 +75,13 @@ switch($userObj->getType()) {
 if (!is_null($editUserObj) && isset($_SERVER['REQUEST_METHOD']) && $_SERVER['REQUEST_METHOD'] == 'POST') {
     $form = new UserProfileForm($languages);
     $form->fillWithPostData();
-
+    $password = trim($_POST['password']);
+    $passwordcheck = trim($_POST['passwordcheck']);
+    if(DataValidator::validate_password_modified($password, $passwordcheck) === FALSE) {
+	    $message = translateFN('Le password digitate non corrispondono o contengono caratteri non validi.');
+	    header("Location: edit_user.php?message=$message");
+	    exit();
+  	}
     if ($form->isValid()) {
         if(isset($_POST['layout']) && $_POST['layout'] != 'none') {
             $user_layout = $_POST['layout'];
@@ -316,6 +322,14 @@ $imgAvatar = $userObj->getAvatar();
 $avatar = CDOMElement::create('img','src:'.$imgAvatar);
 $avatar->setAttribute('class', 'img_user_avatar');
 
+/*
+ * Display error message  if the password is incorrect
+ */
+if(isset($_GET['message']))
+{
+   $help= $_GET['message'];
+   
+}
 $content_dataAr = array(
     'user_name' => $user_name,
     'user_type' => $user_type,
