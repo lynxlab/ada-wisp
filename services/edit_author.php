@@ -47,7 +47,13 @@ $languages = Translator::getLanguagesIdAndName();
 if (isset($_SERVER['REQUEST_METHOD']) && $_SERVER['REQUEST_METHOD'] == 'POST') {
     $form = new UserProfileForm($languages);
     $form->fillWithPostData();
-
+    $password = trim($_POST['password']);
+    $passwordcheck = trim($_POST['passwordcheck']);
+    if(DataValidator::validate_password_modified($password, $passwordcheck) === FALSE) {
+    	$message = translateFN('Le password digitate non corrispondono o contengono caratteri non validi.');
+    	header("Location: edit_author.php?message=$message");
+    	exit();
+    }
     if ($form->isValid()) {
         $userObj->fillWithArrayData($_POST);
         MultiPort::setUser($userObj, array(), true);
@@ -88,6 +94,15 @@ $maxFileSize = (int) (ADA_FILE_UPLOAD_MAX_FILESIZE / (1024*1024));
 $optionsAr['onload_func'] = 'initDoc('.$maxFileSize.','. $userObj->getId().');';
 
 // $optionsAr['onload_func'] = 'initDateField();';
+
+/*
+ * Display error message  if the password is incorrect
+ */
+if(isset($_GET['message']))
+{
+	$help= $_GET['message'];
+
+}
 
 $content_dataAr = array(
     'user_name' => $user_name,

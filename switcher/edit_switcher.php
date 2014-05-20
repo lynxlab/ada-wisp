@@ -47,6 +47,13 @@ $languages = Translator::getLanguagesIdAndName();
 if (isset($_SERVER['REQUEST_METHOD']) && $_SERVER['REQUEST_METHOD'] == 'POST') {
     $form = new UserProfileForm($languages);
     $form->fillWithPostData();
+    $password = trim($_POST['password']);
+    $passwordcheck = trim($_POST['passwordcheck']);
+    if(DataValidator::validate_password_modified($password, $passwordcheck) === FALSE) {
+	    $message = translateFN('Le password digitate non corrispondono o contengono caratteri non validi.');
+	    header("Location: edit_switcher.php?message=$message");
+	    exit();
+  	}
 
     if ($form->isValid()) {
     	$userObj->fillWithArrayData($_POST);
@@ -75,8 +82,7 @@ $layout_dataAr['JS_filename'] = array(
 		JQUERY_UI,
 		JQUERY_MASKEDINPUT,
 		JQUERY_NO_CONFLICT,
-		ROOT_DIR.'/js/include/jquery/pekeUpload/pekeUpload.js',
-		ROOT_DIR.'/js/browsing/edit_user.js'
+		ROOT_DIR.'/js/include/jquery/pekeUpload/pekeUpload.js'
 );
 
 $layout_dataAr['CSS_filename'] = array(
@@ -91,6 +97,15 @@ $optionsAr['onload_func'] = 'initDoc('.$maxFileSize.','. $userObj->getId().');';
 $imgAvatar = $userObj->getAvatar();
 $avatar = CDOMElement::create('img','src:'.$imgAvatar);
 $avatar->setAttribute('class', 'img_user_avatar');
+
+/*
+ * Display error message  if the password is incorrect
+ */
+if(isset($_GET['message']))
+{
+	$help= $_GET['message'];
+	 
+}
 
 $content_dataAr = array(
     'user_name' => $user_name,
