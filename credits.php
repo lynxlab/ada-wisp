@@ -48,8 +48,8 @@ include_once ROOT_DIR.'/browsing/include/browsing_functions.inc.php';
 $self = 'default';
 
 $credits_data = "<p>"
-              . translateFN("ADA &egrave; un software libero sviluppato da")
-              . ' ' ."<a href='http://www.lynxlab.coml'; target='_blank'>Lynx s.r.l.</a>"
+              . translateFN("ADA-WISP &egrave; un software libero sviluppato da")
+              . ' ' ."<a href='http://www.lynxlab.com'; target='_blank'>Lynx s.r.l.</a>"
               .  "<p>".translateFN("E' rilasciato con licenza ")." <a href='".HTTP_ROOT_DIR . "/browsing/external_link.php?file=gpl.txt'; target='_blank'>GNU GPL.</a></p>".
               "Hanno contribuito allo sviluppo:".
               "<ul>
@@ -60,6 +60,7 @@ $credits_data = "<p>"
               <li>Valerio Riva</li>
               <li>Guglielmo Celata</li>
               <li>Stamatis Filippis</li>
+              <li>Sara Capotosti</li>
               </ul>".
               "Hanno contribuito al disegno dell'interfaccia:".
               "<ul>
