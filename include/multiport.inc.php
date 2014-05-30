@@ -2132,6 +2132,32 @@ class MultiPort
   	else return false;  
   }
   
+  /*
+   * Used by admin/log_report.php
+   */
+    static public function log_report() {
+        $log_dataAr = array();
+        $common_dh = $GLOBALS['common_dh'];
+        $testers_list = $common_dh->get_all_testers();
+        if (!AMA_Common_DataHandler::isError($testers_list)) {
+            foreach ($testers_list as $testerAr) {
+                $tester = $testerAr['puntatore'];
+               // $tester_dataHa = $common_dh->get_tester_info_from_pointer($tester);
+               // $tester_name = $tester_dataHa[1];
+                $tester_dsn = self::getDSN($tester);
+                if ($tester_dsn != null) {
+                    $tester_dh = AMA_DataHandler::instance($tester_dsn);
+                    $result = $tester_dh->tester_log_report();
+                    if (!AMA_DataHandler::isError($result)) {
+                       // $result['tester'] = $tester_name;
+                        $log_dataAr[$tester] = $result;
+                    }
+                }
+            }
+        }
+        return $log_dataAr;
+    } 
+  
 }
 
 ?>

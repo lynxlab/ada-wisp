@@ -11195,6 +11195,49 @@ public function get_updates_nodes($userObj, $pointer)
         return $get_user_result;
     }
 
+  /**
+   * get some log data for a given tester
+   * @return  $res_ar array
+   */
+  public function tester_log_report() {
+
+      /*
+	$res_ar = array();
+        $sql = array();
+	$sql['final_users'] = "SELECT COUNT(`id_utente`), `tipo` FROM `utente` WHERE `tipo` = ". AMA_TYPE_STUDENT;
+	$sql['sessions'] = "SELECT COUNT(`id_istanza_corso`), `data_inizio` FROM `istanza_corso` WHERE `data_inizio` > 0";
+	$sql['sessions_alt1'] = "SELECT COUNT(`id_utente_studente`), `status` FROM `iscrizioni` WHERE `status` > 1";
+	$sql['sessions_closed'] = "SELECT COUNT('id') FROM `sessione_eguidance`";
+	$sql['system_messages'] = "SELECT COUNT(`id_messaggio`), `tipo` FROM `messaggi` WHERE `tipo` = 'S'";
+	$sql['user_messages'] = "SELECT COUNT(`id_messaggio`), `tipo` FROM `messaggi` WHERE `tipo` = 'A'";
+	$sql['visits'] = "SELECT COUNT('id_history') FROM `history_nodi`";
+//	$sql['users_in_chatrooms'] = "SELECT * FROM utente_chatroom_log, utente WHERE utente_chatroom_log.id_utente = utente.id_utente AND utente_chatroom_log.azione = 'EN'";
+	$sql['chatrooms'] = "SELECT COUNT('id_chatroom') FROM `chatroom`";
+	$sql['videochatrooms'] = "SELECT COUNT(`id`) FROM `openmeetings_room`";
+       * 
+       */
+	$sql['final_users'] = "SELECT COUNT(`id_utente`), `tipo` FROM `utente` WHERE `tipo` = ". AMA_TYPE_STUDENT;
+	$sql['sessions'] = "SELECT COUNT(`id_istanza_corso`), `data_inizio` FROM `istanza_corso` WHERE `data_inizio` > 0";
+	$sql['sessions_started'] = "SELECT COUNT(`id_utente_studente`), `status` FROM `iscrizioni` WHERE `status` = ". ADA_STATUS_SUBSCRIBED; //1";
+	$sql['sessions_closed'] = "SELECT COUNT(`id_istanza_corso`), `data_inizio` FROM `istanza_corso` WHERE `data_fine` <= " . time();
+	$sql['system_messages'] = "SELECT COUNT(`id_messaggio`), `tipo` FROM `messaggi` WHERE `tipo` = '". ADA_MSG_SIMPLE ."'"  ;
+	$sql['agenda_confirmed'] = "SELECT COUNT(`id_messaggio`), `tipo` FROM `messaggi` WHERE `tipo` = '". ADA_MSG_AGENDA . "' AND (flags & " . ADA_EVENT_CONFIRMED .")";
+	$sql['visits'] = "SELECT COUNT('id_history') FROM `history_nodi`";
+//	$sql['users_in_chatrooms'] = "SELECT * FROM utente_chatroom_log, utente WHERE utente_chatroom_log.id_utente = utente.id_utente AND utente_chatroom_log.azione = 'EN'";
+	$sql['chatrooms'] = "SELECT COUNT('id_chatroom') FROM `chatroom`";
+	$sql['videochatrooms'] = "SELECT COUNT(`id`) FROM `openmeetings_room`";
+        
+	$db =& $this->getConnection();
+	if ( AMA_DB::isError( $db ) ) return $db;
+
+	foreach ($sql as $type => $query){
+	    $res =  $db->getOne($query);
+            if(!AMA_DataHandler::isError($res)) {
+                $res_ar[$type] = $res;
+            }
+	}
+	return $res_ar;
+  }
 
     /**
      * Methods accessing table `banner`
