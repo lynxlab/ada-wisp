@@ -71,7 +71,6 @@ foreach ($log_dataAr as $singleProviderAr) {
     }
 }
 array_push($log_dataAr,$totalAr);
-print_r($totalAr);
 $table = BaseHtmlLib::tableElement('id:table_log_report',$thead_data, $log_dataAr);  
   
 /*
