@@ -2138,19 +2138,23 @@ class MultiPort
     static public function log_report() {
         $log_dataAr = array();
         $common_dh = $GLOBALS['common_dh'];
-        $testers_list = $common_dh->get_all_testers();
+        $filedArray = array('nome','ragione_sociale');
+        $testers_list = $common_dh->get_all_testers($filedArray);
         if (!AMA_Common_DataHandler::isError($testers_list)) {
             foreach ($testers_list as $testerAr) {
                 $tester = $testerAr['puntatore'];
                // $tester_dataHa = $common_dh->get_tester_info_from_pointer($tester);
-               // $tester_name = $tester_dataHa[1];
+                $tester_name = $testerAr['nome'];
                 $tester_dsn = self::getDSN($tester);
                 if ($tester_dsn != null) {
                     $tester_dh = AMA_DataHandler::instance($tester_dsn);
-                    $result = $tester_dh->tester_log_report();
+                    $result = $tester_dh->tester_log_report($tester_name);
                     if (!AMA_DataHandler::isError($result)) {
                        // $result['tester'] = $tester_name;
+                        $result['provider']= $tester_name;
+                        //array_push($result_complete,$result); 
                         $log_dataAr[$tester] = $result;
+//                        print_r(array($tester_nameAr,$result,$log_dataAr[$tester]));
                     }
                 }
             }

@@ -11199,7 +11199,7 @@ public function get_updates_nodes($userObj, $pointer)
    * get some log data for a given tester
    * @return  $res_ar array
    */
-  public function tester_log_report() {
+  public function tester_log_report($tester = 'default') {
 
       /*
 	$res_ar = array();
@@ -11230,6 +11230,7 @@ public function get_updates_nodes($userObj, $pointer)
 	$db =& $this->getConnection();
 	if ( AMA_DB::isError( $db ) ) return $db;
 
+        $res_ar['provider'] = $tester;
 	foreach ($sql as $type => $query){
 	    $res =  $db->getOne($query);
             if(!AMA_DataHandler::isError($res)) {

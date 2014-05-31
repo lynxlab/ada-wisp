@@ -51,6 +51,7 @@ $label = translateFN("Home dell'amministratore");
 $help  = translateFN("Report sintetico dell'attivit&agrave; dei tester");
 
 $menu_dataAr = array(
+  array('href' => 'log_report.php', 'text' => translateFN('Riepilogo attivtà')),
   array('href' => 'add_tester.php', 'text' => translateFN('Aggiungi provider')),
   array('href' => 'add_service.php', 'text' => translateFN('Aggiungi servizio')),
   array('href' => 'add_user.php', 'text' => translateFN('Aggiungi utente')),
