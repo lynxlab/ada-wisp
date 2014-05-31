@@ -61,7 +61,17 @@ $head_desc_video_chatrooms = translateFN("video chat");
 
 
 $thead_data = array($head_provider,$head_desc_user,$head_desc_sessions,$head_desc_sessions_assigned,$head_desc_sessions_closed,$head_desc_messages,$head_desc_events,$head_desc_visits,$head_desc_chatrooms,$head_desc_video_chatrooms);
-  
+
+$totalAr['provider'] = translateFN('totale'); 
+foreach ($log_dataAr as $singleProviderAr) {
+    foreach ($singleProviderAr as $key => $value) {
+        if (is_numeric($singleProviderAr[$key])) {
+            $totalAr[$key] +=  $singleProviderAr[$key];
+        }
+    }
+}
+array_push($log_dataAr,$totalAr);
+print_r($totalAr);
 $table = BaseHtmlLib::tableElement('id:table_log_report',$thead_data, $log_dataAr);  
   
 /*
