@@ -60,7 +60,7 @@ if ($cacheObj->getCachedData){
  *
  */
 
-if ($userObj instanceof ADAGuest) {
+if ($userObj instanceof ADAGuest  || $courseObj->getIsPublic()) {
     $self = 'guest_view';
 } else {
     $self = whoami();
@@ -206,7 +206,7 @@ else {
 	} else {
 		$accessed_from = ADA_GENERIC_ACCESS;
 	}
-	if (!isset($sess_id_course_instance)) {
+	if (!isset($sess_id_course_instance)  || $courseObj->getIsPublic() ) {
 		$dh->add_node_history($sess_id_user, 0, $sess_id_node, $remote_address, HTTP_ROOT_DIR, $accessed_from);
 	} else {
 		$dh->add_node_history($sess_id_user, $sess_id_course_instance, $sess_id_node, $remote_address, HTTP_ROOT_DIR, $accessed_from);
