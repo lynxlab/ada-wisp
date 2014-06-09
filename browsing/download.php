@@ -166,6 +166,12 @@ if (isset($_GET['file'])){
             $thHead = CDOMElement::create('th','class: node');
             $thHead->addChild(new CText(translateFN('nodo')));
             $trHead->addChild($thHead);
+                        
+            if ($userObj->getType()==AMA_TYPE_TUTOR) {
+            	$thHead = CDOMElement::create('th','class: node');
+            	$thHead->addChild(new CText(translateFN('azioni')));
+            	$trHead->addChild($thHead);            	
+            }                        
 
             $thead->addChild($trHead);
             
@@ -285,16 +291,19 @@ $node_data = array(
   HTML page building
   */
 
-$layout_dataAr['JS_filename'] = array(
+
+$layout_dataAr['JS_filename'] = array(		
 		JQUERY,
 		JQUERY_DATATABLE,
+		JQUERY_UI,
 		JQUERY_NO_CONFLICT
 	);
 $layout_dataAr['CSS_filename']= array(
-		JQUERY_DATATABLE_CSS
+		JQUERY_UI_CSS,
+		JQUERY_DATATABLE_CSS,
 	);
   $render = null;
-  $options['onload_func'] = 'dataTablesExec()';
+  $options['onload_func'] = 'initDoc()';
   ARE::render($layout_dataAr, $node_data, $render, $options);
 
 ?>
