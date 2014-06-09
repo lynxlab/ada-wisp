@@ -39,4 +39,18 @@
 	else {
 		define('MODULES_SERVICECOMPLETE', false);
 	}
+	
+	//defines for module lex
+	define('MODULES_LEX_PATH', MODULES_DIR.'/lex');
+	if (file_exists(MODULES_LEX_PATH.'/index.php'))
+	{
+		require_once(MODULES_LEX_PATH.'/config/config.inc.php');
+	
+		define('MODULES_LEX', true);
+		define('MODULES_LEX_HTTP', HTTP_ROOT_DIR.'/modules/lex');
+	}
+	else {
+		define('MODULES_LEX', false);
+	}
+	
 ?>
