@@ -154,3 +154,60 @@ CREATE TABLE IF NOT EXISTS `module_lex_EUROVOC_USED_FOR` (
   `lng` varchar(2) COLLATE utf8_unicode_ci NOT NULL DEFAULT '',
   PRIMARY KEY (`descripteur_id`,`lng`,`version`)
 ) ENGINE=MyISAM DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
+
+-- -----------------------------------------------------
+-- Table `module_lex_testi`
+-- -----------------------------------------------------
+CREATE TABLE IF NOT EXISTS `module_lex_testi` (
+  `module_lex_testi_id` INT NOT NULL AUTO_INCREMENT,
+  `testo` TEXT NULL DEFAULT NULL,
+  PRIMARY KEY (`module_lex_testi_id`))
+ENGINE = MyISAM DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
+
+
+-- -----------------------------------------------------
+-- Table `module_lex_tipologie_fonti`
+-- -----------------------------------------------------
+CREATE TABLE IF NOT EXISTS `module_lex_tipologie_fonti` (
+  `module_lex_tipologie_fonti_id` INT NOT NULL AUTO_INCREMENT,
+  `descrizione` VARCHAR(45) NOT NULL,
+  PRIMARY KEY (`module_lex_tipologie_fonti_id`))
+ENGINE = MyISAM DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
+
+-- -----------------------------------------------------
+-- Table `module_lex_fonti`
+-- -----------------------------------------------------
+CREATE TABLE IF NOT EXISTS `module_lex_fonti` (
+  `modules_lex_fonti_id` INT NOT NULL AUTO_INCREMENT,
+  `numero` VARCHAR(45) NULL,
+  `titolo` VARCHAR(255) NULL,
+  `data_pubblicazione` INT(12) NULL DEFAULT NULL,
+  `module_lex_tipologie_fonti_id` INT NOT NULL,
+  PRIMARY KEY (`modules_lex_fonti_id`, `module_lex_tipologie_fonti_id`))
+ENGINE = MyISAM DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
+
+-- -----------------------------------------------------
+-- Table `module_lex_assets`
+-- -----------------------------------------------------
+CREATE TABLE IF NOT EXISTS `module_lex_assets` (
+  `module_lex_assets_id` INT NOT NULL AUTO_INCREMENT,
+  `label` VARCHAR(255) NULL DEFAULT NULL,
+  `url` VARCHAR(255) NULL DEFAULT NULL,
+  `modules_lex_fonti_id` INT NOT NULL,
+  `id_utente` INT NOT NULL,
+  `module_lex_testi_id` INT NOT NULL,
+  `data_inserimento` INT(12) NULL DEFAULT NULL,
+  `data_verifica` INT(12) NULL DEFAULT NULL,
+  `stato` ENUM('0','1') NOT NULL DEFAULT '0',
+  PRIMARY KEY (`module_lex_assets_id`))
+ENGINE = MyISAM DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
+
+-- -----------------------------------------------------
+-- Table `module_lex_eurovoc_rel`
+-- -----------------------------------------------------
+CREATE TABLE IF NOT EXISTS `module_lex_eurovoc_rel` (
+  `descripteur_id` INT NOT NULL,
+  `module_lex_assets_id` INT NOT NULL,
+  `weight` DECIMAL(18,17) NOT NULL DEFAULT '0',
+  PRIMARY KEY (`descripteur_id`, `module_lex_assets_id`))
+ENGINE = MyISAM DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
