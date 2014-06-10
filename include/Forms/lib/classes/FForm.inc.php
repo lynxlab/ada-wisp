@@ -78,7 +78,7 @@ abstract class FForm
   					{  							
   							if (typeof myJQuery == "undefined") myJQuery = jQuery.noConflict(true);
   							if (!appliedUniform) {
-  							 myJQuery("select, input, a.button, button, textarea").not(":file").uniform();
+  							 myJQuery("select, input, a.button, button, textarea").not(":file").not(".dontuniform").uniform();
   							 appliedUniform = true;
   							}
   					}
