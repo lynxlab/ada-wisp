@@ -1,6 +1,6 @@
 <?php
 /**
- * doImportEurovoc.php
+ * doImportJex.php
  *
  * @package        lex
  * @author         Giorgio Consorti <g.consorti@lynxlab.com>         
@@ -37,11 +37,11 @@ $neededObjAr = array (
  */
 $trackPageToNavigationHistory = false;
 require_once ROOT_DIR . '/include/module_init.inc.php';
-require_once MODULES_LEX_PATH . '/include/management/eurovocManagement.inc.php';
+require_once MODULES_LEX_PATH . '/include/management/jexManagement.inc.php';
 
 if (isset($_SERVER['REQUEST_METHOD']) && $_SERVER['REQUEST_METHOD']==='POST') {
-	$eurovoc = new eurovocManagement();
-	$eurovoc->save();
+	$jex = new jexManagement();
+	$jex->save();
 }
 
 die();

@@ -21,7 +21,6 @@ require_once MODULES_LEX_PATH . '/include/management/jexManagement.inc.php';
 class lexManagement
 {
 	private $_userObj;
-	private $_dh;
 	private $_canDO;
 	
     /**
@@ -32,7 +31,6 @@ class lexManagement
     		$this->_userObj = $userObj;
     		$this->_canDO = $GLOBALS['canDO'][$this->_userObj->getType()];
     	}
-    	$this->_dh = $GLOBALS['dh'];
     }
     
 	public function run() {

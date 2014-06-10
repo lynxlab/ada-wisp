@@ -43,8 +43,6 @@ require_once MODULES_LEX_PATH .'/config/config.inc.php';
 
 $self = 'lex';
 
-$GLOBALS['dh'] = AMALexDataHandler::instance(MultiPort::getDSN($_SESSION['sess_selected_tester']));
-
 /**
  * TODO: Add your own code here
  */
@@ -86,9 +84,18 @@ $content_dataAr = array(
 $layout_dataAr['JS_filename'] = array(
 		JQUERY,
 		JQUERY_UI,
+// 		ROOT_DIR . '/js/include/jquery/ui/i18n/datepicker-it.js',
+		MODULES_LEX_PATH . '/js/jquery.selectric.min.js',
 		JQUERY_NO_CONFLICT,
-		ROOT_DIR . '/js/include/jquery/pekeUpload/pekeUpload.js'
+		ROOT_DIR . '/js/include/jquery/pekeUpload/pekeUpload.js'		
 );
+
+$user_lang = strtolower(Translator::getLanguageInfoForLanguageId($userObj->getLanguage())['codice_lingua']);
+if (is_file(ROOT_DIR . '/js/include/jquery/ui/i18n/datepicker-'.$user_lang.'.js')) {
+	$position = array_search(JQUERY_NO_CONFLICT, $layout_dataAr['JS_filename']);
+	array_splice($layout_dataAr['JS_filename'], $position, 0, ROOT_DIR . '/js/include/jquery/ui/i18n/datepicker-'.$user_lang.'.js');
+}
+
 
 $maxFileSize = (int) (ADA_FILE_UPLOAD_MAX_FILESIZE / (1024*1024));
 $optionsAr['onload_func'] = 'initDoc('.$maxFileSize.','. $userObj->getId().');';

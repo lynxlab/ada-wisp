@@ -15,107 +15,33 @@
  * @author giorgio
  */
 
+require_once MODULES_LEX_PATH. '/include/management/abstractImportManagement.inc.php';
 require_once MODULES_LEX_PATH. '/include/form/formUploadFile.php';
-require_once MODULES_LEX_PATH. '/include/functions.inc.php';
+
 		
-class eurovocManagement
+class eurovocManagement extends importManagement
 {
-	/**
-	 * uploaded file name, being imported
-	 * @var string
-	 */
-	private $_importFileName;
-	
-	/**
-	 * Module's own log file to log import progress, and if something goes wrong
-	 * @var string
-	 */
-	private $_logFile;
-	
-	/**
-	 * the datahandler
-	 * @var AMALexDataHandler
-	 */
-	private $_dh;
-	
 	/**
 	 * eurovoc tables prefix inside the module
 	 * @var string
 	 */
 	private static $_SUBPREFIX = 'EUROVOC';
 	
-    /**
-     * name constructor
-     */
-    public function __construct($importFileName = null) {
-    	/**
-    	 * real uploaded filename must be in $_SESSION['uploadHelper']['filename']
-    	 * set by js/include/jquery/pekeUpload/upload.php
-    	 */
-    	if (isset($_SESSION['uploadHelper']['filename']) &&
-			strlen($_SESSION['uploadHelper']['filename'])>0) 
-    		$this->_importFileName = $_SESSION['uploadHelper']['filename'];
-    	
-    	$this->_dh = AMALexDataHandler::instance(MultiPort::getDSN($_SESSION['sess_selected_tester']));
-    }
-    
-    /**
-     * runs the import procedure
-     */
-    public function run() {
-    	$zip = new ZipArchive();
-    	if ($zip->open($this->_importFileName)) {
-    		// flush and terminate output buffer
-    		ob_end_flush();
-    		// make the module's own log dir if it's needed
-    		if (!is_dir(MODULES_LEX_LOGDIR)) mkdir (MODULES_LEX_LOGDIR, 0777, true);
-    		// set the log file name
-    		$this->_logFile = MODULES_LEX_LOGDIR . "eurovoc-import_".date('d-m-Y_His').".log";
-    		$this->_logMessage(translateFN('Importo da').': '.basename($this->_importFileName));
-    		$this->_logMessage(translateFN('Scompatto il file...'));
-    		// a wildcard search is needed, must unzip the file
-    		$destDir = dirname($this->_importFileName). DIRECTORY_SEPARATOR . 
-    				str_ireplace('.zip', '', basename($this->_importFileName));
-    		$zip->extractTo($destDir);
-    		$this->_logMessage('['.translateFN('OK').']');
-    		
-    		// iterate all *.xml files found inside the uploaded zip
-    		$filesIterator = new GlobIterator($destDir . DIRECTORY_SEPARATOR . '*.xml');
-    		
-    		if ($filesIterator->count()>0) {
-    			
-    			$dom = new DOMDocument();
-    			libxml_use_internal_errors(true);
-    			
-    			foreach ($filesIterator as $file) {
-    				$htmlDTDMessage = '';
-    				// load the xml
-    				$dom->load($filesIterator->getPath(). DIRECTORY_SEPARATOR . $filesIterator->getFilename());
-    				
-    				if ($dom->validate()) {
-    					// if the xml validates against its own dtd, do the import
-    					// htmlDTDError is not an error message
-    					$htmlDTDMessage .= $filesIterator->getFilename().' '.translateFN('è valido').' DTD: '.$dom->doctype->systemId;
-    					$this->_logMessage($htmlDTDMessage);
-    					$this->_importXMLRoot ($dom->documentElement, $dom->doctype->name);
-    				}
-    				else {
-    					$htmlDTDMessage .= $filesIterator->getFilename().' '.translateFN('NON è valido').' DTD: '.$dmc->doctype->publicId;;
-    					$errors = libxml_get_errors();
-    					foreach ($errors as $error) {
-    						$htmlDTDMessage .= $error->message.' '.translateFN('a riga').': '.$error->line;
-    					}
-    					libxml_clear_errors();
-    					$this->_logMessage($htmlDTDMessage);
-    				}
-    			}
-    			libxml_use_internal_errors(false);
-    		} else {
-    			$this->_logMessage(translateFN('Nessun file XML trovato.'));
-    		}
-    	}
-    }
-    
+	/**
+	 * runs the import
+	 * 
+	 * @see lexManagement::run()
+	 */
+	public function save() {
+		$this->_mustValidate = true;
+		// make the module's own log dir if it's needed
+		if (!is_dir(MODULES_LEX_LOGDIR)) mkdir (MODULES_LEX_LOGDIR, 0777, true);
+		// set the log file name
+		$this->_logFile = MODULES_LEX_LOGDIR . "eurovoc-import_".date('d-m-Y_His').".log";
+		
+		parent::run();
+	}
+        
     /**
      * This will read the attributes of the root node and
      * call the appropriate method to import the tableName
@@ -123,9 +49,9 @@ class eurovocManagement
      * @param DOMElement $XMLObj
      * @param unknown $tablename
      * 
-     * @access private
+     * @access protected
      */
-    private function _importXMLRoot ($XMLObj, $tableName) {
+    protected function _importXMLRoot ($XMLObj, $tableName) {
     	
     	$lng = $XMLObj->getAttribute('LNG');
     	$version = $XMLObj->getAttribute('VERSION');
@@ -575,23 +501,5 @@ class eurovocManagement
 		$htmlObj->addChild($iFrame);
 		
 		return $htmlObj;
-	}
-	
-	/**
-	 * logs a message in the log file defined in the logFile private property.
-	 * and sends output to the iframe in the browser as well
-	 *
-	 * @param string $text the message to be logged
-	 *
-	 * @return unknown_type
-	 *
-	 * @access private
-	 */
-	private function _logMessage ($text)
-	{
-		// the file must exists, otherwise logger won't log
-		if (!is_file($this->_logFile)) touch ($this->_logFile);
-		ADAFileLogger::log($text, $this->_logFile);
-		sendToBrowser($text);
 	}
 } // class ends here
