@@ -1,4 +1,6 @@
 @CHARSET "UTF-8";
+@import url("selectric.css");
+@import url("showHideDiv.css");
 
 /* THIS IS JUST THE BASIC CSS WITH THE BACK BUTTON STYLED
    USE IT TO BUILD MODULE'S OWN CSS */
@@ -76,7 +78,7 @@ em.form {
 input.input_text {
 	float: right;
 	display: inline-block;
-	text-align: right;
+	text-align: left;
 	width: 45%;
 }
 
@@ -134,16 +136,59 @@ div.show_error {
  * Hide unwanted submit buttons
  */
 #submit_eurovoc,
-#submit_jex,
-#eurovocResults
+#eurovocResults,
+#jexResults
 {
 	display: none;
 }
 
-#eurovocResults {
+#eurovocResults,
+#jexResults {
 	border: 1px solid #aaa;
 	width: 100%;
 	height : 400px;
+}
+
+#l_tipologia {
+	float:left;
+	margin-right: 10px;
+	margin-left: 0px;
+}
+
+#set_tipologia {
+	padding:0;
+}
+
+#l_nuova_tipologia {
+	display: none;
+}
+
+#nuova_tipologia {
+	margin-top: 10px;
+}
+
+#nuova_tipologia_btn {
+	float:right;
+}
+
+.selectricWrapper {
+	float: right;
+	/* width: auto; */
+	margin:0;
+}
+
+.selectric .label {
+	font-size: 1em;
+	line-height: 12px;
+	min-height: 12px;
+}
+
+.selectric .button {
+	height: 24px;
+}
+
+#data_pubblicazione {
+	width: 20em;
 }
 
 .importTitle {
