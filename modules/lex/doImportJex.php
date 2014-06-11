@@ -18,7 +18,7 @@ require_once realpath ( dirname ( __FILE__ ) ) . '/../../config_path.inc.php';
 /**
  * Clear node and layout variable in $_SESSION
  */
-$variableToClearAR = array ('node', 'layout', 'course', 'user' );
+$variableToClearAR = array ('node', 'layout', 'course' );
 
 /**
  * Users (types) allowed to access this module.
@@ -29,7 +29,7 @@ $allowedUsersAr = array ( AMA_TYPE_SWITCHER );
  * Get needed objects
  */
 $neededObjAr = array (
-		AMA_TYPE_SWITCHER => array ( 'layout' ),
+		AMA_TYPE_SWITCHER => array ( 'layout', 'user' ),
 	);
 
 /**
@@ -40,7 +40,7 @@ require_once ROOT_DIR . '/include/module_init.inc.php';
 require_once MODULES_LEX_PATH . '/include/management/jexManagement.inc.php';
 
 if (isset($_SERVER['REQUEST_METHOD']) && $_SERVER['REQUEST_METHOD']==='POST') {
-	$jex = new jexManagement();
+	$jex = new jexManagement($_SESSION['sess_userObj']);
 	$jex->save();
 }
 

@@ -178,12 +178,12 @@ ENGINE = MyISAM DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
 -- Table `module_lex_fonti`
 -- -----------------------------------------------------
 CREATE TABLE IF NOT EXISTS `module_lex_fonti` (
-  `modules_lex_fonti_id` INT NOT NULL AUTO_INCREMENT,
+  `module_lex_fonti_id` INT NOT NULL AUTO_INCREMENT,
   `numero` VARCHAR(45) NULL,
   `titolo` VARCHAR(255) NULL,
   `data_pubblicazione` INT(12) NULL DEFAULT NULL,
   `module_lex_tipologie_fonti_id` INT NOT NULL,
-  PRIMARY KEY (`modules_lex_fonti_id`, `module_lex_tipologie_fonti_id`))
+  PRIMARY KEY (`module_lex_fonti_id`, `module_lex_tipologie_fonti_id`))
 ENGINE = MyISAM DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
 
 -- -----------------------------------------------------
@@ -193,7 +193,7 @@ CREATE TABLE IF NOT EXISTS `module_lex_assets` (
   `module_lex_assets_id` INT NOT NULL AUTO_INCREMENT,
   `label` VARCHAR(255) NULL DEFAULT NULL,
   `url` VARCHAR(255) NULL DEFAULT NULL,
-  `modules_lex_fonti_id` INT NOT NULL,
+  `module_lex_fonti_id` INT NOT NULL,
   `id_utente` INT NOT NULL,
   `module_lex_testi_id` INT NOT NULL,
   `data_inserimento` INT(12) NULL DEFAULT NULL,

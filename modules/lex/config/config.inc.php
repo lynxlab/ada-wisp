@@ -14,18 +14,27 @@
 	 */
 	define ('IMPORT_EUROVOC', 1);
 	define ('IMPORT_JEX', 2);
+	
+	/**
+	 * constants for asset state
+	 */
+	define ('MODULES_LEX_ASSET_STATE_UNVERIFIED', 0);
+	define ('MODULES_LEX_ASSET_STATE_VERIFIED', 1);
+	
+	/**
+	 * constant for module log dir
+	 */
+	define ('MODULES_LEX_LOGDIR' , ROOT_DIR.'/log/lex/');
 
 	/**
 	 * array of what action a user can do while in the lex module
 	 * here you specify which actions a user can do and the order
 	 * they appear in the UI tabs
 	 */
-	$canDO[AMA_TYPE_SWITCHER] = array( IMPORT_EUROVOC, IMPORT_JEX );
+	$canDO[AMA_TYPE_SWITCHER] = array( IMPORT_JEX, IMPORT_EUROVOC );
 	$canDO[AMA_TYPE_AUTHOR]   = array();
 	$canDO[AMA_TYPE_TUTOR]    = array();
 	$canDO[AMA_TYPE_STUDENT]  = array();
 
-define ('MODULES_LEX_LOGDIR' , ROOT_DIR.'/log/lex/');
-	
-require_once MODULES_LEX_PATH.'/include/AMALexDataHandler.inc.php';
+	require_once MODULES_LEX_PATH.'/include/AMALexDataHandler.inc.php';
 ?>

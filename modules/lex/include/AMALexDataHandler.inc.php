@@ -21,7 +21,7 @@ class AMALexDataHandler extends AMA_DataHandler {
 	public static $PREFIX = 'module_lex_';
 	
 	/**
-	 * does a multi-row insert when importing the eurovoc xml files
+	 * does a multi-row insert when importing the xml files
 	 * 
 	 * @param array $valuesArray the array of values to be inserted
 	 * @param string $tableName the table to insert into
@@ -59,6 +59,13 @@ class AMALexDataHandler extends AMA_DataHandler {
 		}
 	}
 	
+	/**
+	 * gets all typologies as an array
+	 * 
+	 * @return array [module_lex_tipologie_fonti_id]=>'descrizione'
+	 * 
+	 * @access public
+	 */
 	public function getTypologies() {
 		$sql = 'SELECT * FROM `'.self::$PREFIX.'tipologie_fonti` ORDER BY `descrizione` ASC';
 		return $this->getConnection()->getAssoc($sql);
@@ -69,7 +76,7 @@ class AMALexDataHandler extends AMA_DataHandler {
 	 * 
 	 * @param string $newTypology
 	 * 
-	 * @return AMA_Error if error | number inserted typology id
+	 * @return number|AMA_Error
 	 * 
 	 * @access public
 	 */
@@ -88,67 +95,124 @@ class AMALexDataHandler extends AMA_DataHandler {
 	}
 	
 	/**
-	 * insert and update for table fonti
+	 * Insert and update for table fonti
 	 * 
-	 * @param number $id_fonte
-	 * @param unknown $fonteAr
-	 * @return number|Ambigous <mixed, boolean, object, AMA_Error, PDOException, PDOStatement, unknown_type>
+	 * @param array $fonteHa the array to be saved in the DB
+	 * 
+	 * @return array|AMA_Error
+	 * 
+	 * @access public
 	 */
-	public function fonti_set($id_fonte=0, $fonteAr) {
-		
-		$isUpdate = $id_fonte>0;
-		
-		if (!$isUpdate) {
-			$sql = 'INSERT INTO `'.self::$PREFIX.'fonti` '.
-			       '(`numero`,`titolo`,`data_pubblicazione`,`'.self::$PREFIX.'tipologie_fonti_id`) VALUES ('.
-			       '?,?,?,?)';
-			$args = array_values($fonteAr);
-		} else {
-			$sql = 'UPDATE `'.self::$PREFIX.'fonti` SET `numero`=?, `titolo`=?, `data_pubblicazione`=?, '.
-				   '`'.self::$PREFIX.'tipologie_fonti_id`=? WHERE `'.self::$PREFIX.'fonti_id=?';
-			$args = array_values($fonteAr) + array($id_fonte);
-		}
-		
-		$result = $this->queryPrepared($sql,$args);
-		
-		if (!AMA_DB::isError($result)) {
-			if (!$isUpdate) return $this->getConnection()->lastInsertID();
-			else return $id_fonte;
-			
-		} else return $result;
+	public function fonti_set($fonteHa) {
+				
+		return $this->setFromArray(self::$PREFIX.'fonti', self::$PREFIX.'fonti_id', $fonteHa);
+
 	}
 	
 	/**
-	 * insert and update for table testi
+	 * Insert and update fpr table assets
 	 * 
-	 * @param unknown $testoHa
-	 * @return unknown|Ambigous <mixed, boolean, object, AMA_Error, PDOException, PDOStatement, unknown_type>
+	 * @param array $assetHa the array to be saved in the DB
+	 * 
+	 * @return array|AMA_Error
+	 * 
+	 * @access public
 	 */
-	public function testi_set ($testoHa=array()) {
-		if (!empty($testoHa)) {
-			
+	public function asset_set ($assetHa) {
+		
+		return $this->setFromArray(self::$PREFIX.'assets', self::$PREFIX.'assets_id', $assetHa);
+		
+	}
+	
+	/**
+	 * Insert and update for table testi
+	 * 
+	 * @param array $testoHa the array to be saved in the DB
+	 * 
+	 * @return array|AMA_Error
+	 * 
+	 * @access public
+	 */
+	public function testi_set ($testoHa) {
+		
+		$testoHa['testo'] = utf8_encode($testoHa['testo']);
+		
+		return $this->setFromArray(self::$PREFIX.'testi', self::$PREFIX.'testi_id', $testoHa);
+		
+	}
+	
+	/**
+	 * Perform an insert or update on the DB in the passed table with
+	 * the passed primarykey and the passed array of data to be set.
+	 * 
+	 * @param string $tableName
+	 * @param string $primaryKey
+	 * @param array $setHa
+	 * 
+	 * @return array|AMA_Error
+	 * 
+	 * @access private
+	 */
+	private function setFromArray ($tableName, $primaryKey, $setHa) {
+		if (!empty($setHa)) {
 			$isInsert = null;
-			
-			if (isset($testoHa['id']) && isset($testoHa['testo'])) {
-				$sql = 'UPDATE `'.self::$PREFIX.'testi` SET `testo` = ? WHERE `module_lex_testi_id`=?';
-				$args = array (utf8_encode($testoHa['testo']), $testoHa['id']);
+			if (isset($setHa[$primaryKey]) && intval($setHa[$primaryKey])>0) {
 				$isInsert = false;
-			} else if (isset($testoHa['testo'])) {
-				$sql = 'INSERT INTO `'.self::$PREFIX.'testi` (`testo`) VALUES (?)';
-				$args = array (utf8_encode($testoHa['testo']));
+				/**
+				 * must move primary key to last setHa element
+				 * for the queryPrepared to underdstand parameters associations
+				 */
+				$primaryKeyVal = $setHa[$primaryKey];
+				unset ($setHa[$primaryKey]);
+				$args = array_values($setHa) + array ($primaryKeyVal);
+			} else {
 				$isInsert = true;
+				if (isset($setHa[$primaryKey])) unset ($setHa[$primaryKey]);
+				$args = array_values($setHa);
 			}
-			
+				
 			if (!is_null($isInsert)) {
+				$sql = $this->buildQuery($tableName, $primaryKey, array_keys($setHa),$isInsert);
 				$result = $this->queryPrepared($sql,$args);
 				if (!AMA_DB::isError($result)) {
-					if ($isInsert) $testoHa['id'] = $this->getConnection()->lastInsertID();
-					return $testoHa;
+					if ($isInsert) $setHa[$primaryKey] = $this->getConnection()->lastInsertID();
+					return $setHa;
 				} else {
 					return $result;
 				}
 			}
+		}		
+	}
+	
+	/**
+	 * Builds the SQL to be executed when inserting or updating
+	 * guess the fields from the passed array and uses the passed tableName
+	 * and primaryKey
+	 * 
+	 * @param string $tableName
+	 * @param string $primaryKey
+	 * @param fields $fields
+	 * @param boolean $generateInsert true to genrate an INSERT. defaults to true
+	 * 
+	 * @return string
+	 * 
+	 * @access private
+	 */
+	private function buildQuery ($tableName, $primaryKey, $fields, $generateInsert=true) {
+		if (!$generateInsert) {		
+			$sql = 'UPDATE `'.$tableName.'` SET ';
+			foreach ($fields as $count=>$field) {
+				$sql = '`'.$field.'`=?';
+				if ($count < count($fields)) $sql.=', ';
+			}
+			$sql = 'WHERE `'.$primaryKey.'`=?';
+
+		} else {
+			$sql  = 'INSERT INTO `'.$tableName.'` ('. implode(',', $fields) . ') VALUES (';
+			$sql .= sprintf("?%s", str_repeat(",?", (count($fields)  ? (count($fields) - 1) : 0))) .')';
 		}
+		
+		return $sql;
 	}
 
 	/**

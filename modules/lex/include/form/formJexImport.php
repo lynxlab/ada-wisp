@@ -39,6 +39,8 @@ class FormJexImport extends FForm {
 		     ->setValidator(FormValidator::DATE_VALIDATOR);
 		
 		$sel_tipologia = FormControl::create(FormControl::SELECT, 'tipologia', translateFN('tipologia'));
+		$sel_tipologia->setRequired();
+		$sel_tipologia->setAttribute('class', 'dontuniform');
 		$sel_tipologia->withData($typologiesArr);
 		
 		$add_tipologia = FormControl::create(FormControl::INPUT_TEXT,'nuova_tipologia','&nbsp;');

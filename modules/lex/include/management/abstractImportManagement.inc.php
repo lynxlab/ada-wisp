@@ -20,8 +20,18 @@ require_once MODULES_LEX_PATH . '/include/management/jexManagement.inc.php';
 
 abstract class importManagement 
 {
+	/**
+	 * The imported file name
+	 * @var string
+	 */
 	protected $_importFileName;
+	
+	/**
+	 * The destination dir to unzip and to look for files
+	 * @var string
+	 */
 	protected $_destDir;
+	
 	/**
 	 * Module's own log file to log import progress, and if something goes wrong
 	 * @var string
@@ -29,7 +39,7 @@ abstract class importManagement
 	protected  $_logFile;
 	
 	/**
-	 * the datahandler
+	 * The datahandler
 	 * @var AMALexDataHandler
 	 */
 	protected  $_dh;
@@ -38,7 +48,7 @@ abstract class importManagement
 	 * true if the xml must validate with its dtd
 	 */
 	protected $_mustValidate;
-	
+
     /**
      * name constructor
      */
@@ -56,7 +66,10 @@ abstract class importManagement
     	
     	$this->_dh = AMALexDataHandler::instance(MultiPort::getDSN($_SESSION['sess_selected_tester']));
     }
-    
+
+    /**
+     * runs the import from the XML found in the uploaded zip file
+     */
 	public function run() {
 		$zip = new ZipArchive();
 		if ($zip->open($this->_importFileName)) {
@@ -69,7 +82,7 @@ abstract class importManagement
 			$this->_logMessage(translateFN('Scompatto il file...'));
 			// a wildcard search is needed, must unzip the file
 			$this->_destDir = dirname($this->_importFileName). DIRECTORY_SEPARATOR .
-			str_ireplace('.zip', '', basename($this->_importFileName));
+											str_ireplace('.zip', '', basename($this->_importFileName));
 			$zip->extractTo($this->_destDir);
 			$this->_logMessage('['.translateFN('OK').']');
 		
@@ -93,9 +106,9 @@ abstract class importManagement
 						// htmlDTDError is not an error message
 						$htmlDTDMessage .= $filesIterator->getFilename().' '.translateFN('è valido').' DTD: '.$dom->doctype->systemId;
 						$this->_logMessage($htmlDTDMessage);
+						// call the extending class own import method on XML root node
 						$this->_importXMLRoot ($dom->documentElement, $dom->doctype->name);
-					}
-					else {
+					} else {
 						$htmlDTDMessage .= $filesIterator->getFilename().' '.translateFN('NON è valido').' DTD: '.$dmc->doctype->publicId;;
 						$errors = libxml_get_errors();
 						foreach ($errors as $error) {
@@ -118,6 +131,18 @@ abstract class importManagement
 			$this->_logMessage(translateFN('Tempo impiegato').'(min.) ...');
 			$this->_logMessage('['.((microtime(true) - $time_start)/60).']');
 		}
+	}
+	
+	/**
+	 * Sets the log file name
+	 * 
+	 * @param string $filename
+	 */
+	protected function _setLogFileName ($filename) {
+		// make the module's own log dir if it's needed
+		if (!is_dir(MODULES_LEX_LOGDIR)) mkdir (MODULES_LEX_LOGDIR, 0777, true);
+		// set the log file name
+		$this->_logFile = MODULES_LEX_LOGDIR . $filename;
 	}
 	
 	/**

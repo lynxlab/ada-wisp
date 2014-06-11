@@ -34,10 +34,7 @@ class eurovocManagement extends importManagement
 	 */
 	public function save() {
 		$this->_mustValidate = true;
-		// make the module's own log dir if it's needed
-		if (!is_dir(MODULES_LEX_LOGDIR)) mkdir (MODULES_LEX_LOGDIR, 0777, true);
-		// set the log file name
-		$this->_logFile = MODULES_LEX_LOGDIR . "eurovoc-import_".date('d-m-Y_His').".log";
+		$this->_setLogFileName("eurovoc-import_".date('d-m-Y_His').".log");
 		
 		parent::run();
 	}
@@ -477,7 +474,6 @@ class eurovocManagement extends importManagement
      */
     public static function getTabTitle() {
     	return translateFN('Importa XML Eurovoc');
-    	
     }
     
     /**

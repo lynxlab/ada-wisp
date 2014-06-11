@@ -169,6 +169,11 @@ div.show_error {
 
 #nuova_tipologia_btn {
 	float:right;
+	margin-top: 10px;
+}
+
+#nuova_fonte_btn {
+	margin: 10px auto 0 auto;
 }
 
 .selectricWrapper {

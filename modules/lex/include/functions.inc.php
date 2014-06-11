@@ -10,6 +10,11 @@
  * @version		   0.1
  */
 
+/**
+ * recursiverly deletes a directory and all its content
+ * 
+ * @param string $dir the directory to delete
+ */
 function rrmdir($dir) {
 	if (is_dir($dir)) {
 		$objects = scandir($dir);
@@ -23,6 +28,11 @@ function rrmdir($dir) {
 	}
 }
 
+/**
+ * sends a string to the browser output buffer
+ * 
+ * @param string $message the message to output
+ */
 function sendToBrowser ($message) {
 
 	$style = '';
@@ -35,9 +45,8 @@ function sendToBrowser ($message) {
 	echo '<pre style=\'color:'.$color.'; margin:0; font-family:monospace; '.$style.'\'>';
 	echo $message;
 	echo '</pre>';
+	echo '<script type="text/javascript">window.scrollTo(0,document.body.scrollHeight);</script>';
 
 	ob_flush();
 	flush();
 }
-
-?>
