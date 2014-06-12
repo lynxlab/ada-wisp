@@ -28,14 +28,17 @@ class FormJexImport extends FForm {
 		$this->addHidden('id_fonte');
 		
 		$this->addTextInput('numero_fonte', translateFN('Numero Fonte'))
+			 ->setAttribute('class', 'dontuniform')
 		     ->setRequired()
 			 ->setValidator(FormValidator::NOT_EMPTY_STRING_VALIDATOR);
 		
 		$this->addTextInput('titolo_fonte', translateFN('Titolo Fonte'))
+			 ->setAttribute('class', 'dontuniform')
 		     ->setRequired()
 		     ->setValidator(FormValidator::NOT_EMPTY_STRING_VALIDATOR);
 		
 		$this->addTextInput('data_pubblicazione', translateFN('Data Pubblicazione in G.U.'))
+			 ->setAttribute('class', 'dontuniform')
 		     ->setValidator(FormValidator::DATE_VALIDATOR);
 		
 		$sel_tipologia = FormControl::create(FormControl::SELECT, 'tipologia', translateFN('tipologia'));
@@ -44,6 +47,8 @@ class FormJexImport extends FForm {
 		$sel_tipologia->withData($typologiesArr);
 		
 		$add_tipologia = FormControl::create(FormControl::INPUT_TEXT,'nuova_tipologia','&nbsp;');
+		$add_tipologia->setAttribute('class', 'dontuniform');
+		
 		$add_btn = FormControl::create(FormControl::INPUT_BUTTON,'nuova_tipologia_btn',translateFN('aggiungi tipologia'));
 		$add_btn->setAttribute('class', 'dontuniform');
 		$add_btn->setAttribute('onClick', 'javascript:addTipologia();');

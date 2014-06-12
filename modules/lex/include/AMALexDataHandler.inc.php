@@ -142,6 +142,32 @@ class AMALexDataHandler extends AMA_DataHandler {
 	}
 	
 	/**
+	 * Performs the serach for the autocomplete form fields
+	 * 
+	 * @param string $tableName the table to be searched
+	 * @param string $fieldName the field to be searched
+	 * @param string $term      the search term
+	 * 
+	 * @return NULL|array
+	 * 
+	 * @access public
+	 */
+	public function doSearchForAutocomplete ($tableName, $fieldName, $term) {
+		$retArray = null;
+		
+		$sql = 'SELECT `'.$fieldName.'` FROM `'.self::$PREFIX.$tableName.'` WHERE `'.$fieldName."` LIKE ?";
+		
+		$result = $this->getConnection()->getAll($sql, array('%'.$term.'%'));
+		
+		if (!AMA_DB::isError($result)) {
+			foreach ($result as $res) {
+				$retArray[] = $res[0];
+			}
+		}
+		return $retArray;
+	}
+	
+	/**
 	 * Perform an insert or update on the DB in the passed table with
 	 * the passed primarykey and the passed array of data to be set.
 	 * 

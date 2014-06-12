@@ -80,6 +80,40 @@ function initDoc(maxSize, userId) {
 		
 		// function to call on submit
 		$j("form[name='jex']").on('submit', function() { doImportJex(); } );
+		
+		// autocomplete feature with cache for numero_fonte and titolo_fonte fields
+		var cache = {};
+		var fieldName = null;
+		
+		$j('#numero_fonte, #titolo_fonte').autocomplete({
+			minLength: 3,
+			search: function( event, ui ) {
+				// set the field name before asking for source
+				fieldName = $j(event.target).attr('id').replace('_fonte','');
+			},
+			source: function( request, response ) {
+				var term = request.term;
+				if ( term in cache ) {
+					response( cache[ term ] );
+					return;
+				}
+				
+				if (fieldName != null) { 
+					// term is already in the request,
+					// add tableName and fieldName
+					request = $j.extend ({
+						tableName : 'fonti',
+						fieldName : fieldName
+					}, request);
+					
+					$j.getJSON( HTTP_ROOT_DIR+"/modules/lex/ajax/autocomplete.php", request, function( data, status, xhr ) {
+						cache[ term ] = data;
+						response( data );
+						fieldName = null;
+						});
+				}
+			}
+		});
 	});
 }
 
