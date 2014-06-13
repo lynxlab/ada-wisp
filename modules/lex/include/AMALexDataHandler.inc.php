@@ -40,7 +40,7 @@ class AMALexDataHandler extends AMA_DataHandler {
 						
 			$sql = 'INSERT INTO `'.self::$PREFIX.$tableName.'` ';
 			// 1. get the keys of the passed array
-			$fields = array_keys($valuesArray[0]);
+			$fields = array_keys(reset($valuesArray));
 			// 2. build the placeholders string			
 			$flCount = count($fields);
 			$lCount = ($flCount  ? $flCount - 1 : 0);

@@ -36,6 +36,9 @@ class eurovocManagement extends importManagement
 		$this->_mustValidate = true;
 		$this->_setLogFileName("eurovoc-import_".date('d-m-Y_His').".log");
 		
+		ini_set('max_execution_time', 1800); //1800 seconds = 30 minutes
+		set_time_limit(0);
+		
 		parent::run();
 	}
         
@@ -60,7 +63,14 @@ class eurovocManagement extends importManagement
     	foreach ($records as $record) {
     		$method = '_import'.$tableName;
     		if (method_exists($this, $method)) {
-    			$toSaveha[] = $this->{$method}($record, $lng, $version);
+    			$tmpToSaveha = $this->{$method}($record, $lng, $version);
+    			
+    			if (count($tmpToSaveha)>1) {
+    				foreach ($tmpToSaveha as $el) $toSaveha[] = $el;
+    			} else {
+    				$toSaveha[] = reset($tmpToSaveha);
+    			}
+    			
     		} else {
     			$this->_logMessage('**'.translateFN('Errore').': '.translateFN('Non posso importare in').' '.$tableName.'**');
     			break;
@@ -94,29 +104,42 @@ class eurovocManagement extends importManagement
      */
     private function _importUSED_FOR  ($record=null, $lng=null, $version=null) {
     	$record_ha = array();
-    	 
+    	$count=0; 
     	foreach ($record->childNodes as $node) {
     		switch (strtoupper($node->nodeName)) {
     			case 'DESCRIPTEUR_ID':
-    				$record_ha['descripteur_id'] = $node->nodeValue;
+    				$desc_id = $node->nodeValue;
+    				$record_ha[$count]['descripteur_id'] = $desc_id;
     				break;
-    			case 'UF_EL':
-    				$record_ha['uf_el'] = $node->nodeValue;
-    				if ($node->hasAttribute('FORM')) {
-    					$record_ha['uf_el_form'] = $node->getAttribute('FORM');
-    				} else {
-    					$record_ha['uf_el_form'] = null;
+    			case 'UF':
+    				if ($node->hasChildNodes()) {
+    					foreach ($node->childNodes as $uf_el) {
+    						
+    						if (!isset($record_ha[$count]['descripteur_id'])) $record_ha[$count]['descripteur_id'] = $desc_id;
+    						 
+    						$record_ha[$count]['uf_el'] = $uf_el->nodeValue;
+    						if ($uf_el->hasAttribute('FORM')) {
+    							$record_ha[$count]['uf_el_form'] = $uf_el->getAttribute('FORM');
+    						} else {
+    							$record_ha[$count]['uf_el_form'] = null;
+    						}
+    						
+    						if ($uf_el->hasAttribute('DEF')) {
+    							$record_ha[$count]['def'] = $uf_el->getAttribute('DEF');
+    						} else {
+    							$record_ha[$count]['def'] = null;
+    						}
+    						
+//     						if (!isset($record_ha[$count]['def'])) $record_ha[$count]['def'] = null;
+    						if (!is_null($lng) && strlen($lng)>0) $record_ha[$count]['lng'] = $lng;
+    						if (!is_null($version) && strlen($version)>0) $record_ha[$count]['version'] = doubleval($version);
+    						
+    						$count++;    						
+    					}
     				}
-    				break;
-    			case 'DEF':
-    				$record_ha['def'] = $node->nodeValue;
     				break;
     		}
     	}
-
-    	if (!isset($record_ha['def'])) $record_ha['def'] = null;
-    	if (!is_null($lng) && strlen($lng)>0) $record_ha['lng'] = $lng;
-    	if (!is_null($version) && strlen($version)>0) $record_ha['version'] = doubleval($version);
     	 
     	return $record_ha;
     }
@@ -149,7 +172,7 @@ class eurovocManagement extends importManagement
     	if (!is_null($lng) && strlen($lng)>0) $record_ha['lng'] = $lng;
     	if (!is_null($version) && strlen($version)>0) $record_ha['version'] = doubleval($version);
     	
-    	return $record_ha;
+    	return array($record_ha);
     }
     
     /**
@@ -185,7 +208,7 @@ class eurovocManagement extends importManagement
     	if (!is_null($lng) && strlen($lng)>0) $record_ha['lng'] = $lng;
     	if (!is_null($version) && strlen($version)>0) $record_ha['version'] = doubleval($version);
     	 
-    	return $record_ha;
+    	return array($record_ha);
     }
     
     /**
@@ -215,7 +238,7 @@ class eurovocManagement extends importManagement
     	
     	if (!is_null($version) && strlen($version)>0) $record_ha['version'] = doubleval($version);
     	
-    	return $record_ha;
+    	return array($record_ha);
     }
     
     /**
@@ -245,7 +268,7 @@ class eurovocManagement extends importManagement
     	
     	if (!is_null($version) && strlen($version)>0) $record_ha['version'] = doubleval($version);
     	 
-    	return $record_ha;
+    	return array($record_ha);
     }
     
     /**
@@ -275,7 +298,7 @@ class eurovocManagement extends importManagement
     	
     	if (!is_null($version) && strlen($version)>0) $record_ha['version'] = doubleval($version);
     	
-    	return $record_ha;
+    	return array($record_ha);
     }
 
     /**
@@ -309,7 +332,7 @@ class eurovocManagement extends importManagement
     	
     	if (!is_null($version) && strlen($version)>0) $record_ha['version'] = doubleval($version);
     	 
-    	return $record_ha;
+    	return array($record_ha);
     }
     
     /**
@@ -340,7 +363,7 @@ class eurovocManagement extends importManagement
     	if (!is_null($lng) && strlen($lng)>0) $record_ha['lng'] = $lng;
     	if (!is_null($version) && strlen($version)>0) $record_ha['version'] = doubleval($version);
     	
-    	return $record_ha;
+    	return array($record_ha);
     }
     
     /**
@@ -385,7 +408,7 @@ class eurovocManagement extends importManagement
     	
     	if (!is_null($version) && strlen($version)>0) $record_ha['version'] = doubleval($version);
     	 
-    	return $record_ha;
+    	return array($record_ha);
     }
     
     /**
@@ -426,7 +449,7 @@ class eurovocManagement extends importManagement
     	if (!is_null($lng) && strlen($lng)>0) $record_ha['lng'] = $lng;
     	if (!is_null($version) && strlen($version)>0) $record_ha['version'] = doubleval($version);
     	
-    	return $record_ha;
+    	return array($record_ha);
     }
     
     /**
@@ -464,7 +487,7 @@ class eurovocManagement extends importManagement
     	if (!is_null($lng) && strlen($lng)>0) $record_ha['lng'] = $lng;
     	if (!is_null($version) && strlen($version)>0) $record_ha['version'] = doubleval($version);
     	
-    	return $record_ha;
+    	return array($record_ha);
     }
     
     /**

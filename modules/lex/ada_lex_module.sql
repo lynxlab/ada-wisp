@@ -152,7 +152,7 @@ CREATE TABLE IF NOT EXISTS `module_lex_EUROVOC_USED_FOR` (
   `def` text COLLATE utf8_unicode_ci,
   `version` decimal(4,2) NOT NULL DEFAULT '0.00',
   `lng` varchar(2) COLLATE utf8_unicode_ci NOT NULL DEFAULT '',
-  PRIMARY KEY (`descripteur_id`,`lng`,`version`)
+  KEY `USED_FOR_IDX` (`descripteur_id`,`lng`,`version`)
 ) ENGINE=MyISAM DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
 
 -- -----------------------------------------------------
