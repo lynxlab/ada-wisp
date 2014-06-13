@@ -56,162 +56,157 @@ else { */
   $self = search;
 /*} */
 
+  $id_course=$_SESSION['sess_id_course'];
 
+
+
+if (isset($submit)) {  //&& (!empty($s_node_text))) {
+  
+    $out_fields_ar = array('nome','titolo','testo','tipo');
+    $clause='';
+    $or = ' OR ';
+    $and = ' AND ';
+    
 /*
  * Versione campo unico
  *
  *
  */
-if (isset($submit)) {  //&& (!empty($s_node_text))) {
-  // versione con campo unico
-  $out_fields_ar = array('nome','titolo','testo','tipo');
-  $clause='';
-  $or = ' OR ';
-  $and = ' AND ';
-
-  if (!empty($s_node_text)) {
-    $clause = "(";
-    $clause = $clause . "nome LIKE '%$s_node_text%'";
-    $clause = $clause . $or. "titolo LIKE '%$s_node_text%'";
-    $clause = $clause . $or. "testo LIKE '%$s_node_text%'";
-    $clause = $clause . ")";
-  }
-  else {
-    $s_node_text = ""; 
-  }
- 
-
-  //versione con campi diversi
-
-  $out_fields_ar = array('nome','titolo','testo','tipo','id_utente');
-  $clause='';
-  $or = '';
-  $and = '';
-
-  if (!empty($s_node_name)) {
-    $clause = "nome LIKE '%$s_node_name%'";
-  }
-
-  if (!empty($s_node_title)){
-    if ($clause) {
-      $and = " AND ";
-    }
-    $clause = $clause . $and. "titolo LIKE '%$s_node_title%'";
-  }
-
-  if (!empty($s_node_text)){
-    if ($clause) {
-      $and = " AND ";
-    }
-    $clause = $clause . $and. "testo LIKE '%$s_node_text%'";
-  }
-  else {
-    $s_node_text = "";
-  }
-
-  // authors
-
-  if (!empty($s_node_author)){
-    $s_node_authorAR = explode(' ',$s_node_author);
-    $node_author_name = $s_node_authorAR[0];
-    $auth_clause = "nome LIKE '$node_author_name' ";
-    if (count($s_node_authorAR)>1){ //name & surname
-      $node_author_surname = $s_node_authorAR[1];
-      $auth_clause .= "AND cognome LIKE '$node_author_surname' ";
+    if (!empty($s_node_text)) {
+        $clause = "(";
+        $clause = $clause . "nome LIKE '%$s_node_text%'";
+        $clause = $clause . $or. "titolo LIKE '%$s_node_text%'";
+        $clause = $clause . $or. "testo LIKE '%$s_node_text%'";
+        $clause = $clause . ")";
     }
     else {
-      $auth_clause .= "OR cognome LIKE '$s_node_author' ";
-      $auth_clause .= "OR username LIKE '$s_node_author' ";
+        $s_node_text = ""; 
     }
 
-    $auth_field_list_ar = array('username');
-    $authorAR = $dh->find_authors_list($auth_field_list_ar,$auth_clause);
-    if (is_object($authorAR) OR (!isset($authorAR)) ) {//error
-      $id_author = 'nobody';
+
+/*
+ * Versione campo diversi
+ *
+ *
+ */
+
+    $out_fields_ar = array('nome','titolo','testo','tipo','id_utente');
+    $clause='';
+    $or = '';
+    $and = '';
+
+    if (!empty($s_node_name)) {
+        $clause = "nome LIKE '%$s_node_name%'";
+    }
+    if (!empty($s_node_title)){   //keywors
+        if ($clause) {
+            //$and = " AND ";
+            $operator=$s_node_search_mode;
+        }
+        $clause = $clause . $operator. "titolo LIKE '%$s_node_title%'";
+    }
+    if (!empty($s_node_text)){
+        if ($clause) {
+            //$and = " AND ";
+            $operator=$s_node_search_mode;
+        }
+        $clause = $clause . $operator. "testo LIKE '%$s_node_text%'";
     }
     else {
-      $id_author =  $authorAR[0][0]; // id
+        $s_node_text = "";
     }
-    if ($clause) {
-      $and = " AND ";
+    // authors
+    /*if (!empty($s_node_author)){
+        $s_node_authorAR = explode(' ',$s_node_author);
+        $node_author_name = $s_node_authorAR[0];
+        $auth_clause = "nome LIKE '$node_author_name' ";
+        if (count($s_node_authorAR)>1){  //name & surname
+            $node_author_surname = $s_node_authorAR[1];
+            $auth_clause .= "AND cognome LIKE '$node_author_surname' ";
+        }
+        else {
+            $auth_clause .= "OR cognome LIKE '$s_node_author' ";
+            $auth_clause .= "OR username LIKE '$s_node_author' ";
+        }
+        $auth_field_list_ar = array('username');
+        $authorAR = $dh->find_authors_list($auth_field_list_ar,$auth_clause);
+        if (is_object($authorAR) OR (!isset($authorAR)) ) {  //error
+            $id_author = 'nobody';
+        }
+        else {
+            $id_author =  $authorAR[0][0]; // id
+        }
+        if ($clause) {
+            //$and = " AND ";
+            $operator=$s_node_search_mode;
+        }
+        $clause = $clause . $operator. "id_utente LIKE '$id_author'";
+    }*/
+    // node types
+    if (isset($l_search)){   
+        switch ($l_search){
+        case 'standard_node':  // group OR nodes NOT notes 
+            if ($clause) {
+                $and = " AND ";
+            }
+            $clause = '( '.$clause.')' . $and. " (tipo  = ".ADA_GROUP_TYPE."  OR tipo  = ".ADA_LEAF_TYPE.")";
+            $checked_standard = "checked";
+        break;
+        case 'group':
+        case ADA_GROUP_TYPE:
+            $type = ADA_GROUP_TYPE;
+            if ($clause) {
+                $and = " AND ";
+            }
+            $clause = $clause . $and. "tipo = '$type'";
+            $checked_group = "checked";
+        break;
+        case 'node':
+        //case ADA_LEAF_TYPE:
+            $type = ADA_LEAF_TYPE;
+            if ($clause) {
+                $and = " AND ";
+            }
+            $clause = $clause . $and. "tipo = '$type'";
+            $checked_node = "checked";
+        break;
+        case 'note':
+        case ADA_NOTE_TYPE:          //ricerca nel forum
+            $type = ADA_NOTE_TYPE;
+            if ($clause) {
+                $and = " AND ";
+            }
+            $clause = '('.$clause.')' . $and. "tipo = '$type'";
+            $checked_note = "checked";
+        break;
+        case 'private_note':
+        case ADA_PRIVATE_NOTE_TYPE:
+            $type = ADA_PRIVATE_NOTE_TYPE;
+            if ($clause) {
+                $and = " AND ";
+            }
+        /* vito, 16 giugno 2009, vogliamo che l'utente veda tra i risultati della
+         ricerca eventualmente solo le SUE note personali e non quelle di
+         altri utenti.
+        $clause = $clause . $and. "tipo = '$type'";*/
+            $clause = $clause . $and . "(tipo = '$type' and id_utente='$sess_id_user')";
+            $checked_note = "checked";
+        break;
+        case '':
+        default:
+        case 'all': // group OR nodes OR notes
+            $checked_all = "checked";
+        /* vito, 16 giugno 2009, vogliamo che l'utente veda tra i risultati della
+         ricerca eventualmente solo le SUE note personali e non quelle di
+         altri utenti.*/
+            if ($clause) {
+                $and = " AND ";
+            }
+            $clause = '('.$clause.')'.$and.' ((tipo <> '.ADA_PRIVATE_NOTE_TYPE.') OR (tipo ='.ADA_PRIVATE_NOTE_TYPE.' AND id_utente = '.$sess_id_user.'))';
+        break;
+
+        }
     }
-    $clause = $clause . $and. "id_utente LIKE '$id_author'";
-  }
-
-  // node types
-
-  $clause = $clause . $and. " (tipo  = ".ADA_GROUP_TYPE."  OR tipo  = ".ADA_LEAF_TYPE.")";
-
-  if (isset($l_search)){
-    switch ($l_search){
-      case 'standard_node':  // group OR nodes NOT notes
-        if ($clause) {
-          $and = " AND ";
-        }
-        $clause = $clause . $and. " (tipo  = ".ADA_GROUP_TYPE."  OR tipo  = ".ADA_LEAF_TYPE.")";
-        $checked_standard = "checked";
-        break;
-
-      case 'group':
-      case ADA_GROUP_TYPE:
-        $type = ADA_GROUP_TYPE;
-        if ($clause) {
-          $and = " AND ";
-        }
-        $clause = $clause . $and. "tipo = '$type'";
-        $checked_group = "checked";
-        break;
-
-      case 'node':
-//      case ADA_LEAF_TYPE:
-        $type = ADA_LEAF_TYPE;
-        if ($clause) {
-          $and = " AND ";
-        }
-        $clause = $clause . $and. "tipo = '$type'";
-        $checked_node = "checked";
-        break;
-
-      case 'note':
-      case ADA_NOTE_TYPE:
-        $type = ADA_NOTE_TYPE;
-        if ($clause) {
-          $and = " AND ";
-        }
-        $clause = $clause . $and. "tipo = '$type'";
-        $checked_note = "checked";
-        break;
-
-      case 'private_note':
-      case ADA_PRIVATE_NOTE_TYPE:
-        $type = ADA_PRIVATE_NOTE_TYPE;
-        if ($clause) {
-          $and = " AND ";
-        }
-        // vito, 16 giugno 2009, vogliamo che l'utente veda tra i risultati della
-        // ricerca eventualmente solo le SUE note personali e non quelle di
-        // altri utenti.
-
-        //$clause = $clause . $and. "tipo = '$type'";
-        $clause = $clause . $and . "(tipo = '$type' and id_utente='$sess_id_user')";
-        $checked_note = "checked";
-        break;
-
-      case '':
-      default:
-      case 'all': // group OR nodes OR notes
-        $checked_all = "checked";
-        // vito, 16 giugno 2009, vogliamo che l'utente veda tra i risultati della
-        // ricerca eventualmente solo le SUE note personali e non quelle di
-        // altri utenti.
-        if ($clause) {
-          $and = " AND ";
-        }
-        $clause = $clause.$and.' ((tipo <> '.ADA_PRIVATE_NOTE_TYPE.') OR (tipo ='.ADA_PRIVATE_NOTE_TYPE.' AND id_utente = '.$sess_id_user.'))';
-        break;
-
-    }
-  }
 
   /* ricerca su tutti i corsi pubblici
    * if (il tester è quello pubblico){
@@ -220,10 +215,9 @@ if (isset($submit)) {  //&& (!empty($s_node_text))) {
    */
 
   // $resHa = $dh->find_course_nodes_list($out_fields_ar, $clause,$sess_id_course);
-  $resHa = $dh->find_course_nodes_list($out_fields_ar, $clause,$_SESSION['sess_id_course']);
+   $resHa = $dh->find_course_nodes_list($out_fields_ar, $clause,$id_course);
 
-if (!AMA_DataHandler::isError($resHa) and is_array($resHa)) {
-//    if ($resHa){
+    if (!AMA_DataHandler::isError($resHa) and is_array($resHa) and !empty($resHa)) {
     $total_results = array();
     $group_count=0;
     $node_count=0;
@@ -231,67 +225,61 @@ if (!AMA_DataHandler::isError($resHa) and is_array($resHa)) {
     $exer_count=0;
 
     foreach ($resHa as $row){
-      $res_id_node = $row[0];
-      $res_name = $row[1];
-      $res_course_title = $row[2];
-      $res_text = $row[3];
+        $res_id_node = $row[0];
+        $res_name = $row[1];
+        $res_course_title = $row[2];
+        $res_text = $row[3];
+        $res_type =  $row[4];
 
-      $res_type =  $row[4];
-
-      switch ($res_type){
+        switch ($res_type){
         case ADA_GROUP_TYPE:
-          //$icon = "<img src=\"img/group_ico.png\" border=0>";
-          $class_name = 'ADA_GROUP_TYPE';
-          $group_count++;
-          break;
-      case ADA_LEAF_TYPE:
-          //$icon = "<img src=\"img/node_ico.png\" border=0>";
-          $class_name = 'ADA_LEAF_TYPE';
-          $node_count++;
-          break;
-
+            //$icon = "<img src=\"img/group_ico.png\" border=0>";
+            $class_name = 'ADA_GROUP_TYPE';
+            $group_count++;
+        break;
+        case ADA_LEAF_TYPE:
+            //$icon = "<img src=\"img/node_ico.png\" border=0>";
+            $class_name = 'ADA_LEAF_TYPE';
+            $node_count++;
+        break;
         case ADA_NOTE_TYPE:
-          //$icon = "<img src=\"img/note_ico.png\" border=0>";
-          $class_name = 'ADA_NOTE_TYPE';
-          $note_count++;
-          break;
-
+            //$icon = "<img src=\"img/note_ico.png\" border=0>";
+            $class_name = 'ADA_NOTE_TYPE';
+            $note_count++;
+        break;
         case ADA_PRIVATE_NOTE_TYPE:
-          //$icon = "<img src=\"img/_nota_pers.png\" border=0>";
-          $class_name = 'ADA_PRIVATE_NOTE_TYPE';
-          $note_count++;
-          break;
-
-
+            //$icon = "<img src=\"img/_nota_pers.png\" border=0>";
+            $class_name = 'ADA_PRIVATE_NOTE_TYPE';
+            $note_count++;
+        break;
         case ADA_STANDARD_EXERCISE_TYPE:
         default:
-          $class_name = 'ADA_STANDARD_EXERCISE_TYPE';
-          //$icon = "<img src=\"img/exer_ico.png\" border=0>";
-          $exer_count++;
-      }
+            $class_name = 'ADA_STANDARD_EXERCISE_TYPE';
+            //$icon = "<img src=\"img/exer_ico.png\" border=0>";
+            $exer_count++;
+        }
       //$temp_results = array(translateFN("Titolo")=>"<a href=view.php?id_node=$res_id_node&querystring=$s_node_text>$icon $res_name</a>");
 
-      if( $res_type == ADA_GROUP_TYPE || $res_type == ADA_LEAF_TYPE || $res_type == ADA_NOTE_TYPE || $res_type == ADA_PRIVATE_NOTE_TYPE) {
-        $html_for_result = "<span class=\"$class_name\"><a href=\"view.php?id_node=$res_id_node&querystring=$s_node_text\">$res_name</a></span>";
+      if( $res_type == ADA_GROUP_TYPE || $res_type == ADA_LEAF_TYPE || $res_type == ADA_NOTE_TYPE || $res_type == ADA_PRIVATE_NOTE_TYPE) { //aggiunta a manina un'istanza del corso a cui l'utente loggato è iscritto che fare? 
+        $html_for_result = "<span class=\"$class_name\"><a href=\"view.php?id_node=$res_id_node&id_course_instance=".$_SESSION['sess_id_course_instance']."&querystring=$s_node_text\">$res_name</a></span>";
       }
       else {
         $html_for_result = "<span class=\"$class_name\"><a href=\"exercise.php?id_node=$res_id_node\">$res_name</a></span>";
       }
       $temp_results = array(translateFN('Titolo') => $html_for_result);
-      //           $temp_results = array(translateFN("Titolo")=>$title,translateFN("Testo")=>$res_text);
+      //$temp_results = array(translateFN("Titolo")=>$title,translateFN("Testo")=>$res_text);
       array_push ($total_results,$temp_results);
     }
 
     $tObj = new Table();
     $tObj->initTable('0','center','2','1','100%','black','white','black','white');
     $summary = translateFN("Elenco dei nodi che soddisfano la ricerca al ") . $ymdhms;
- //   $caption = translateFN("Sono stati trovati")." $group_count ".translateFN("gruppi").", $node_count ".translateFN("nodi").", $exer_count ".translateFN("esercizi").",  $note_count ".translateFN("note.");
-   $caption = translateFN("Sono stati trovati")." $group_count ".translateFN("gruppi").", $node_count ".translateFN("nodi");
+    //   $caption = translateFN("Sono stati trovati")." $group_count ".translateFN("gruppi").", $node_count ".translateFN("nodi").", $exer_count ".translateFN("esercizi").",  $note_count ".translateFN("note.");
+    $caption = translateFN("Sono stati trovati")." $group_count ".translateFN("gruppi").", $node_count ".translateFN("nodi");
     $tObj->setTable($total_results,$caption,$summary);
     $search_results = $tObj->getTable();
-    //
     // diretto:
-    //  header("Location: view.php?id_node=$res_id_node");
+    //header("Location: view.php?id_node=$res_id_node");
   }
   else {
     $search_results = translateFN("Non &egrave; stato trovato nessun nodo.");
@@ -372,7 +360,7 @@ if ($checked_standard == "" && $checked_note == "" && $checked_all == "") {
 
 $form_dataHa = array(
   // SEARCH FIELDS
-  array(
+ array(
     'label'=>translateFN('Nome')."<br>",
     'type'=>'text',
     'name'=>'s_node_name',
@@ -388,22 +376,22 @@ $form_dataHa = array(
     'maxlength'=>'40',
     'value'=>$s_node_title
   ),
- array(
+ /*array(
     'label'=>translateFN('Autore')."<br>",
     'type'=>'text',
     'name'=>'s_node_author',
     'size'=>'20',
     'maxlength'=>'40',
     'value'=>$s_node_author
-  ),
-   array(
+  ),*/
+   /*array(
    'label'=>translateFN('Media')."<br>",
    'type'=>'text',
    'name'=>'s_node_media',
    'size'=>'20',
    'maxlength'=>'40',
    'value'=>$s_node_media
-   ),
+   ),*/
   array(
     'label'=>translateFN('Testo')."<br>",
     'type'=>'textarea',
@@ -436,13 +424,19 @@ $form_dataHa = array(
     'selected' => 'selected'
   ),
   array(
+    'label'=>translateFN('Modalità di ricerca')."<br>",
+    'type'=>'select',
+    'name'=>'s_node_search_mode',
+    'size'=>'20',
+    'maxlength'=>'40',
+    'value'=>array(' AND ',' OR ')
+    ),
+  array(
     'label'=>'',
     'type'=>'submit',
     'name'=>'submit',
     'value'=>translateFN('Cerca')
-  )
-);
-
+  ));
 $fObj = new Form();
 $fObj->setForm($form_dataHa);
 $search_form = $fObj->getForm();
