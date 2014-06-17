@@ -258,6 +258,7 @@ $linked_node_keywords = implode(',',$linksAr);
  * for sview the course_title is always the string "Main Content Index"
  */
 $course_title = translateFN('Indice dei Contenuti');
+$advanced_search="<a href=\"advanced_search.php\">Cerca</a>";
 
 $content_dataAr = array(
 	'banner' => $banner,
@@ -282,6 +283,7 @@ $content_dataAr = array(
 	'author' => $author_info_link, //'author'=>$node_author,
 	'tutor' => $tutor_info_link, //'tutor'=>$tutor_uname,
 	'search_form' => $search_form,
+        'advanced_search'=>$advanced_search,
 //	'index' => $node_index,
 	'go_map' => $go_map,
 	'go_next' => $next_node_link,
