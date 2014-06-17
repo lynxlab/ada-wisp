@@ -35,7 +35,7 @@ CREATE TABLE IF NOT EXISTS `module_lex_EUROVOC_DESCRIPTEUR` (
 --
 
 CREATE TABLE IF NOT EXISTS `module_lex_EUROVOC_DESCRIPTEUR_THESAURUS` (
-  `thesaurus_id` int(11) NOT NULL,
+  `thesaurus_id` varchar(10) COLLATE utf8_unicode_ci NOT NULL,
   `descripteur_id` int(11) NOT NULL,
   `country` enum('yes','no') COLLATE utf8_unicode_ci DEFAULT 'no',
   `iso_country_code` varchar(2) COLLATE utf8_unicode_ci DEFAULT NULL,
@@ -51,7 +51,7 @@ CREATE TABLE IF NOT EXISTS `module_lex_EUROVOC_DESCRIPTEUR_THESAURUS` (
 --
 
 CREATE TABLE IF NOT EXISTS `module_lex_EUROVOC_DOMAINES` (
-  `domaine_id` int(11) NOT NULL,
+  `domaine_id` varchar(2) COLLATE utf8_unicode_ci NOT NULL,
   `libelle` text COLLATE utf8_unicode_ci,
   `version` decimal(4,2) NOT NULL DEFAULT '0.00',
   `lng` varchar(2) COLLATE utf8_unicode_ci NOT NULL DEFAULT '',
@@ -132,7 +132,7 @@ CREATE TABLE IF NOT EXISTS `module_lex_EUROVOC_SCOPE_NOTE` (
 --
 
 CREATE TABLE IF NOT EXISTS `module_lex_EUROVOC_THESAURUS` (
-  `thesaurus_id` int(11) NOT NULL,
+  `thesaurus_id` varchar(10) COLLATE utf8_unicode_ci NOT NULL,
   `libelle` text COLLATE utf8_unicode_ci,
   `version` decimal(4,2) NOT NULL DEFAULT '0.00',
   `lng` varchar(2) COLLATE utf8_unicode_ci NOT NULL DEFAULT '',
@@ -153,6 +153,21 @@ CREATE TABLE IF NOT EXISTS `module_lex_EUROVOC_USED_FOR` (
   `version` decimal(4,2) NOT NULL DEFAULT '0.00',
   `lng` varchar(2) COLLATE utf8_unicode_ci NOT NULL DEFAULT '',
   KEY `USED_FOR_IDX` (`descripteur_id`,`lng`,`version`)
+) ENGINE=MyISAM DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
+
+-- --------------------------------------------------------
+
+--
+-- Struttura della tabella `module_lex_EUROVOC_DOMAINES_CACHE`
+--
+
+CREATE TABLE IF NOT EXISTS `module_lex_EUROVOC_DOMAINES_CACHE` (
+  `domaine_id` varchar(2) COLLATE utf8_unicode_ci NOT NULL,
+  `content` text COLLATE utf8_unicode_ci,
+  `version` decimal(4,2) NOT NULL DEFAULT '0.00',
+  `lng` varchar(2) COLLATE utf8_unicode_ci NOT NULL DEFAULT '',
+  PRIMARY KEY (`domaine_id`,`lng`,`version`),
+  FULLTEXT KEY `content_idx` (`content`)
 ) ENGINE=MyISAM DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
 
 -- -----------------------------------------------------
