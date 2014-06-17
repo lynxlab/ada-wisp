@@ -14,6 +14,7 @@
 	 */
 	define ('IMPORT_EUROVOC', 1);
 	define ('IMPORT_JEX', 2);
+	define ('EDIT_SOURCE', 3);
 	
 	/**
 	 * constants for asset state
@@ -32,7 +33,7 @@
 	 * they appear in the UI tabs
 	 */
 	$canDO[AMA_TYPE_SWITCHER] = array( IMPORT_JEX, IMPORT_EUROVOC );
-	$canDO[AMA_TYPE_AUTHOR]   = array();
+	$canDO[AMA_TYPE_AUTHOR]   = array( EDIT_ASSET );
 	$canDO[AMA_TYPE_TUTOR]    = array();
 	$canDO[AMA_TYPE_STUDENT]  = array();
 

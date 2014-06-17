@@ -40,7 +40,7 @@ class jexManagement extends importManagement
 	}
 	
 	/**
-	 * runs the import
+	 * saves the fonte from POST array and runs the import
 	 *
 	 * @see lexManagement::run()
 	 */
@@ -51,34 +51,45 @@ class jexManagement extends importManagement
 		/**
 		 * save into table fonti first
 		 */
-		$form = new FormJexImport('jex', null, $this->_dh->getTypologies());
-		$form->fillWithPostData();
-		if ($form->isValid()) {
-			$fonteAr = array(
-				AMALexDataHandler::$PREFIX.'fonti_id' => intval($_POST['id_fonte']),				
-				'numero'=> trim($_POST['numero_fonte']),
-				'titolo'=> trim($_POST['titolo_fonte']),
-				'data_pubblicazione'=> $this->_dh->date_to_ts($_POST['data_pubblicazione']),
-				AMALexDataHandler::$PREFIX.'tipologie_fonti_id'=> intval($_POST['tipologia'])
-			);
-			$result = $this->_dh->fonti_set($fonteAr);
+		$result = $this->saveFromPOST();
+		
+		if (!AMA_DB::isError($result)) {
+			$this->_id_fonte = $result[AMALexDataHandler::$PREFIX.'fonti_id'];
+			$this->_logMessage(translateFN('Fonte salvata correttamente').' id='.$this->_id_fonte);
 			
-			if (!AMA_DB::isError($result)) {
-				$this->_id_fonte = $result[AMALexDataHandler::$PREFIX.'fonti_id'];
-				$this->_logMessage(translateFN('Fonte salvata correttamente').' id='.$this->_id_fonte);
-				
-				// fonte saved ok, now run the import on the zip file
-				parent::run();
-			} else {
-				$this->_logMessage('**'.translateFN('Problema nel salvataggio della fonte').'**');
-				$this->_logMessage('**'.print_r($result, true).'**');
-			}			
-		}
+			// fonte saved ok, now run the import on the zip file
+			parent::run();
+		} else {
+			$this->_logMessage('**'.translateFN('Problema nel salvataggio della fonte').'**');
+			$this->_logMessage('**'.print_r($result, true).'**');
+		}			
 		
 		/**
 		 * send a javascript to the browser that will show the add new fonte button
 		 */
 		sendToBrowser('<script type="text/javascript">parent.showAddNewButton();</script>');
+	}
+	
+	/**
+	 * does the actual saving in the db from POST array
+	 * 
+	 * @return Ambigous <multitype:, AMA_Error, array, mixed, boolean, object, PDOException, PDOStatement, unknown_type>|AMA_Error
+	 * 
+	 * @access public
+	 */
+	public function saveFromPOST() {
+		$form = new FormJexImport('jex', null, $this->_dh->getTypologies());
+		$form->fillWithPostData();
+		if ($form->isValid()) {			
+			$fonteAr = array(
+					AMALexDataHandler::$PREFIX.'fonti_id' => intval($_POST['id_fonte']),
+					'numero'=> trim($_POST['numero_fonte']),
+					'titolo'=> trim($_POST['titolo_fonte']),
+					'data_pubblicazione'=> $this->_dh->date_to_ts($_POST['data_pubblicazione']),
+					AMALexDataHandler::$PREFIX.'tipologie_fonti_id'=> intval($_POST['tipologia'])
+			);
+			return $this->_dh->fonti_set($fonteAr);
+		} else return new AMA_Error(AMA_ERR_INCONSISTENT_DATA);		
 	}
 	
 	/**
@@ -172,15 +183,75 @@ class jexManagement extends importManagement
 	 * gets the label to be used in the UI tab
 	 *
 	 * @return string
+	 * 
+	 * @access public
 	 */
-    public static function getTabTitle() {
-    	return translateFN('Nuova Fonte');
+    public static function getTabTitle($actionCode) {
+    	
+    	if ($actionCode===IMPORT_JEX)
+    		return translateFN('Nuova Fonte');
+    	else if ($actionCode===EDIT_SOURCE)
+    		return translateFN('Modifica Fonte');
     }
     
     /**
-     * gets the HTML form to be rendered as the UI tab contents
+     * gets the HTML form to be rendered as the UI tab edit
+     * 
+     * @return CDOMElement
+     * 
+     * @access public
+     */
+    public static function getEditContent() {
+    	
+    	$dh = AMALexDataHandler::instance(MultiPort::getDSN($_SESSION['sess_selected_tester']));
+    	
+    	$htmlObj = CDOMElement::create('div','id:editSourceContainer');
+    	
+//     	$fancyTree = CDOMElement::create('div','id:selectEurovocTerms');
+//     	$echo = CDOMElement::create('div','id:echoSelection');
+//     	$htmlObj->addChild($fancyTree);
+//     	$htmlObj->addChild($echo);
+
+    	$sourcesData = array();
+    	
+    	$sourcesList = $dh->get_sources( array ( $dh::$PREFIX.'fonti_id','numero', 'titolo','data_pubblicazione','tipologia' ));
+    	
+//     	for ($j=1;$j<33;$j++) {
+//     		$sourcesList[$j]=$sourcesList[0];
+//     	}
+    	
+    	
+    	if (!AMA_DB::isError($sourcesList)) {
+    	
+    	$labels = array (translateFN('Numero'), translateFN('Titolo'), translateFN('Data Pubb. G.U.') , translateFN('Tipologia'), translateFN('azioni'));
+    	
+    	foreach ($sourcesList as $i=>$source) {
+    		$sourcesData[$i] = array (
+    				$labels[0]=>$source['numero'],
+    				$labels[1]=>$source['titolo'],
+    				$labels[2]=>$source['data_pubblicazione'],
+    				$labels[3]=>$source['tipologia'],
+    				$labels[4]=>'nessuna');
+    	}
+    	
+    	$sourcesTable = new Table();
+    	$sourcesTable->initTable('0','center','1','1','90%','','','','','1','0','','default','sourcesTable');
+    	$sourcesTable->setTable($sourcesData,translateFN('Archivio Fonti'),translateFN('Archivio Fonti'));
+
+    	$htmlObj->addChild(new CText($sourcesTable->getTable()));
+    	
+    	}
+    	
+    	return $htmlObj;
+    	
+    }
+    
+    /**
+     * gets the HTML form to be rendered as the UI tab new
      *
      * @return CDOMElement
+     * 
+     * @access public
      */
 	public static function getImportForm() {
 		

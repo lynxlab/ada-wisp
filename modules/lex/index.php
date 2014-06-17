@@ -23,13 +23,14 @@ $variableToClearAR = array('node', 'layout', 'course', 'user');
 /**
  * Users (types) allowed to access this module.
 */
-$allowedUsersAr = array(AMA_TYPE_SWITCHER);
+$allowedUsersAr = array(AMA_TYPE_SWITCHER,AMA_TYPE_AUTHOR);
 
 /**
  * Get needed objects
 */
 $neededObjAr = array(
-		AMA_TYPE_SWITCHER => array('layout')
+		AMA_TYPE_SWITCHER => array('layout'),
+		AMA_TYPE_AUTHOR => array('layout')
 );
 
 /**
@@ -56,7 +57,10 @@ $data = $lex->run();
  * include proper jquery ui css file depending on wheter there's one
  * in the template_family css path or the default one
 */
-if (!is_dir(MODULES_LEX_PATH.'/layout/'.$userObj->template_family.'/css/jquery-ui'))
+
+$templateFamily = (isset($userObj->template_family) && strlen($userObj->template_family)>0) ? $userObj->template_family : ADA_TEMPLATE_FAMILY;
+
+if (!is_dir(MODULES_LEX_PATH.'/layout/'.$templateFamily.'/css/jquery-ui'))
 {
 	$layout_dataAr['CSS_filename'] = array(
 			JQUERY_UI_CSS
@@ -65,12 +69,13 @@ if (!is_dir(MODULES_LEX_PATH.'/layout/'.$userObj->template_family.'/css/jquery-u
 else
 {
 	$layout_dataAr['CSS_filename'] = array(
-			MODULES_LEX_PATH.'/layout/'.$userObj->template_family.'/css/jquery-ui/jquery-ui-1.10.3.custom.min.css'
+			MODULES_LEX_PATH.'/layout/'.$templateFamily.'/css/jquery-ui/jquery-ui-1.10.3.custom.min.css'
 	);
 }
 
 array_push($layout_dataAr['CSS_filename'], JQUERY_DATATABLE_CSS);
 array_push($layout_dataAr['CSS_filename'], ROOT_DIR . '/js/include/jquery/pekeUpload/pekeUpload.css' );
+array_push($layout_dataAr['CSS_filename'], MODULES_LEX_PATH.'/layout/'.$templateFamily.'/css/skin-vista/ui.fancytree.css' );
 
 $content_dataAr = array(
 		'user_name' => $user_name,
@@ -83,9 +88,12 @@ $content_dataAr = array(
 
 $layout_dataAr['JS_filename'] = array(
 		JQUERY,
+		JQUERY_DATATABLE,
+		JQUERY_DATATABLE_DATE,
 		JQUERY_UI,
-// 		ROOT_DIR . '/js/include/jquery/ui/i18n/datepicker-it.js',
 		MODULES_LEX_PATH . '/js/jquery.selectric.min.js',
+		MODULES_LEX_PATH . '/js/jquery.fancytree.js',
+		MODULES_LEX_PATH . '/js/jquery.fancytree.childcounter.js',
 		JQUERY_NO_CONFLICT,
 		ROOT_DIR . '/js/include/jquery/pekeUpload/pekeUpload.js'		
 );

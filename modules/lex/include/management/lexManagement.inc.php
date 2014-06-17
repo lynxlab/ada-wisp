@@ -63,8 +63,12 @@ class lexManagement
 						$div->addChild (eurovocManagement::getImportForm());
 						break;
 					case IMPORT_JEX:
-						$a->addChild (new CText(jexManagement::getTabTitle()));
+						$a->addChild (new CText(jexManagement::getTabTitle(IMPORT_JEX)));
 						$div->addChild (jexManagement::getImportForm());
+						break;
+					case EDIT_ASSET:
+						$a->addChild (new CText(jexManagement::getTabTitle(EDIT_SOURCE)));
+						$div->addChild (jexManagement::getEditContent());
 						break;
 					default:
 						break;

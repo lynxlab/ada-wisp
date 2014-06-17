@@ -168,6 +168,178 @@ class AMALexDataHandler extends AMA_DataHandler {
 	}
 	
 	/**
+	 * gets the eurovoc  languages that have been imported
+	 */
+	public function getSupportedLanguages () {
+		$sql = 'SELECT DISTINCT(`lng`) FROM `'.self::$PREFIX.'EUROVOC_DOMAINES` '.
+			   'WHERE `version`='.EUROVOC_VERSION;
+		return $this->getConnection()->getAll($sql);
+	}
+	
+	/**
+	 * gets a json encoded object from the domaine cache table
+	 * 
+	 * @param string $domaine_id
+	 * @param string $lng
+	 * @param double $version
+	 * 
+	 * @return Ambigous <NULL, mixed, unknown, object, AMA_Error, PDOException, PDOStatement, unknown_type>
+	 * 
+	 * @access public
+	 */
+	public function getEurovocDOMAINECache ($domaine_id, $lng, $version) {
+		$sql = 'SELECT `content` FROM `'.self::$PREFIX.'EUROVOC_DOMAINES_CACHE` '.
+			   'WHERE `domaine_id`=? AND `version`=? AND `lng`=?';
+		
+		$result = $this->getOnePrepared($sql, array($domaine_id, $version, $lng));
+		
+		return ($result===false) ? null : $result;
+	}
+	
+	/**
+	 * sets a domaine subtree as a json encoded object in the domaine cache table
+	 * 
+	 * @param stdClass $cacheObj
+	 * @param string $lng
+	 * @param double $version
+	 * 
+	 * @access public
+	 */
+	public function setEurovocDOMAINECache ($cacheObj, $lng, $version) {
+		// delete old cache value		
+		$sql = 'DELETE FROM `'.self::$PREFIX.'EUROVOC_DOMAINES_CACHE` '.
+			   'WHERE `domaine_id`=? AND `version`=? AND `lng`=?';				
+		$this->queryPrepared($sql, array($cacheObj->key,$version,$lng));
+		
+		// insert new cache value		
+		$sql = 'INSERT INTO `'.self::$PREFIX.'EUROVOC_DOMAINES_CACHE` ( '.
+		       '`domaine_id` ,`content` ,`version` ,`lng`) VALUES (?,?,?,?)';		
+		$this->queryPrepared($sql, array($cacheObj->key, json_encode($cacheObj), $version, $lng));	
+	}
+	
+	/**
+	 * gets the domaines in the passed language and for the passed eurovoc version
+	 * 
+	 * @param string $lng
+	 * @param double $version
+	 * 
+	 * @return Ambigous <mixed, unknown, object, AMA_Error, PDOException, PDOStatement, unknown_type>
+	 * 
+	 * @access public
+	 */
+	public function getEurovocDOMAINES($lng, $version) {
+		
+		$sql = 'SELECT `domaine_id`, `libelle` FROM `'.self::$PREFIX.'EUROVOC_DOMAINES` '.
+			   'WHERE `version`=? AND `lng`=? ORDER BY `domaine_id`';
+		
+		return $this->getAllPrepared($sql,array($version,$lng),AMA_FETCH_OBJECT);
+	}
+	
+	/**
+	 * gets the thesaurus terms related to the passed domaine in the passed language and for the passed eurovoc version 
+	 * 
+	 * @param string $domaine_id
+	 * @param string $lng
+	 * @param double $version
+	 * 
+	 * @return Ambigous <mixed, unknown, object, AMA_Error, PDOException, PDOStatement, unknown_type>
+	 * 
+	 * @access public
+	 */
+	public function getEurovocTHESAURUS($domaine_id, $lng, $version) {
+		
+		$sql = 'SELECT `thesaurus_id`, `libelle` FROM `'.self::$PREFIX.'EUROVOC_THESAURUS` '.
+			   'WHERE `thesaurus_id` LIKE ? AND `version`=? AND `lng`=? ORDER BY `thesaurus_id` ASC';
+		
+		return $this->getAllPrepared($sql,array($domaine_id.'%',$version,$lng),AMA_FETCH_OBJECT);
+	}
+	
+	/**
+	 * gets the topterms associated to the passed thesaurus term in the passed language and for the passed eurovoc version
+	 * 
+	 * @param string $thesaurus_id
+	 * @param string $lng
+	 * @param double $version
+	 * 
+	 * @return Ambigous <mixed, unknown, object, AMA_Error, PDOException, PDOStatement, unknown_type>
+	 * 
+	 * @access public
+	 */
+	public function getEurovocTOPTERMS($thesaurus_id, $lng, $version) {
+		
+		$sql = 'SELECT B.`descripteur_id`, B.`libelle`  FROM `'.self::$PREFIX.'EUROVOC_DESCRIPTEUR_THESAURUS` A '.
+		       'JOIN `'.self::$PREFIX.'EUROVOC_DESCRIPTEUR` B ON A.`descripteur_id` = B.`descripteur_id` '.
+		       'WHERE A.topterm=\'O\' AND `thesaurus_id` LIKE ? AND B.`version`=? AND B.`lng`=? ORDER BY `libelle` ASC';
+		
+		return $this->getAllPrepared($sql,array($thesaurus_id.'%',$version,$lng),AMA_FETCH_OBJECT);
+	}
+	
+	/**
+	 * gets the descripteur terms Broader Then the passed descripteur in the passed language and for the passed eurovoc version
+	 * 
+	 * @param string $descripteur_id
+	 * @param string $lng
+	 * @param double $version
+	 * 
+	 * @return Ambigous <mixed, unknown, object, AMA_Error, PDOException, PDOStatement, unknown_type>
+	 * 
+	 * @access public
+	 */
+	public function getEurovocDESCRIPTEURTERMS($descripteur_id, $lng, $version) {
+		
+		$sql = ' SELECT B.`descripteur_id`, B.`libelle`  FROM `'.self::$PREFIX.'EUROVOC_RELATIONS_BT` A '.
+		       'JOIN `'.self::$PREFIX.'EUROVOC_DESCRIPTEUR` B ON A.`source_id`= B.`descripteur_id`  '.
+			   'WHERE `cible_id` =? AND A.version=? AND B.lng=? ORDER BY B.`libelle` ASC ';
+		
+		return $this->getAllPrepared($sql,array($descripteur_id,$version,$lng),AMA_FETCH_OBJECT);
+	}
+	
+	/**
+	 * gets the sources list from the module_lex_fonti table
+	 * 
+	 * @param array $fields the array of the fields to get, if 'tipologia' is found in the array then a join with module_lex_tipologie_fonti is performed 
+	 * @param boolean $idOrdered true if must order by insertion id asc
+	 * 
+	 * @return AMA_Error on error, result of query execution on success
+	 * 
+	 * @access public
+	 */
+	public function get_sources($fields=array(),$idOrdered=true) {
+		$sql = 'SELECT ';
+		
+		$typologyKey = array_search('tipologia', $fields);
+		if ($typologyKey !== false) {
+			unset ($fields[$typologyKey]);
+		}
+		
+		if (empty($fields)) $sql .= 'F.*';
+		else $sql .= implode(',', $fields);
+		
+		if ($typologyKey!==false) {
+			$sql .= ', T.`descrizione` AS `tipologia`';
+		}
+		
+		$sql .= ' FROM `'.self::$PREFIX.'fonti` AS F';
+		
+		if ($typologyKey!==false) {
+			$sql .= ' JOIN `'.self::$PREFIX.'tipologie_fonti` AS T ON `F`.`'.self::$PREFIX.'tipologie_fonti_id`'.
+			        ' = `T`.`'.self::$PREFIX.'tipologie_fonti_id`';
+		}
+		
+		if ($idOrdered) $sql .= ' ORDER BY `'.self::$PREFIX.'fonti_id` DESC';
+		
+		$res = $this->getAllPrepared($sql, null, AMA_FETCH_ASSOC);
+		
+		if (!AMA_DB::isError($res)) {
+			for ($i=0; $i<count($res); $i++) {
+				$res[$i]['data_pubblicazione'] = ts2dFN($res[$i]['data_pubblicazione']);
+			}
+		}
+		
+		return $res;
+	}
+	
+	/**
 	 * Perform an insert or update on the DB in the passed table with
 	 * the passed primarykey and the passed array of data to be set.
 	 * 

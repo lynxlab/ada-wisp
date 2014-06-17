@@ -18,14 +18,27 @@
 require_once MODULES_LEX_PATH. '/include/management/abstractImportManagement.inc.php';
 require_once MODULES_LEX_PATH. '/include/form/formUploadFile.php';
 
+define ('EUROVOC_VERSION',4.40);
+
 		
 class eurovocManagement extends importManagement
 {
+	/**
+	 * the language to use
+	 * @var string
+	 */
+	private $_language;
+	
 	/**
 	 * eurovoc tables prefix inside the module
 	 * @var string
 	 */
 	private static $_SUBPREFIX = 'EUROVOC';
+	
+	public function __construct($language='en') {
+		parent::__construct();
+		$this->_language = (isset($language) && strlen($language)>0) ? $language : 'en';
+	}
 	
 	/**
 	 * runs the import
@@ -40,6 +53,153 @@ class eurovocManagement extends importManagement
 		set_time_limit(0);
 		
 		parent::run();
+		$this->_buildImportedJSONCache();
+		$this->_logMessage(translateFN('Importazione EUROVOC terminata'));
+	}
+	
+	/**
+	 * gets the eurovoc tree as an array of objects, one per each domaine
+	 * first tries to get the json object from the cache table and if it's
+	 * not found or is invalid, run the code to generate the domaine subtree
+	 * and stores it in the cache table
+	 * 
+	 * @return NULL|array
+	 * 
+	 * @access public
+	 */
+	
+	public function getEurovocTree () {
+		$treeObj = null;
+				
+		$domaines = $this->_dh->getEurovocDOMAINES($this->_language,EUROVOC_VERSION);
+		if (!AMA_DB::isError($domaines)) {
+			foreach ($domaines as $count=>$domaine) {
+				// instantiate new empty object
+				$treeObj[$count] = new stdClass();
+				
+				$cachedObj = $this->_dh->getEurovocDOMAINECache($domaine->domaine_id,$this->_language,EUROVOC_VERSION);				
+				$cacheAccepted = false;
+				
+				if (!is_null($cachedObj) && !AMA_DB::isError($cachedObj)) {
+					// try to json_decode cached object
+					$treeObj[$count] = json_decode($cachedObj);					
+					// if cached object is not valid json, run all the code
+					$cacheAccepted = (json_last_error() == JSON_ERROR_NONE);
+				}
+					
+				if (!$cacheAccepted) {
+					// domaine tree is not cached, must run all the code
+					$treeObj[$count]->key = $domaine->domaine_id;
+					$treeObj[$count]->title = $domaine->libelle;
+					$treeObj[$count]->folder= true;
+					$treeObj[$count]->hideCheckbox = true;
+					$treeObj[$count]->unselectable = true;
+					
+					$thesaurusTree = $this->getThesaurusTree($domaine->domaine_id);
+					if (!is_null($thesaurusTree)) $treeObj[$count]->children = $thesaurusTree;
+					
+					$this->_dh->setEurovocDOMAINECache($treeObj[$count],$this->_language,EUROVOC_VERSION);
+				}
+			}
+		} // if (!AMA_DB::isError($domaines))
+		return $treeObj;
+	}
+	
+	/**
+	 * gets the thesaurus subtree of a domain
+	 * 
+	 * @param $domaine_id
+	 * 
+	 * @return NULL|stdClass
+	 * 
+	 * @access private
+	 */
+	private function getThesaurusTree ($domaine_id) {
+		$treeObj = null;
+				
+		$thesauri = $this->_dh->getEurovocTHESAURUS($domaine_id, $this->_language, EUROVOC_VERSION);		
+		if (!AMA_DB::isError($thesauri)) {
+			foreach ($thesauri as $count=>$thesaurus) {
+				$treeObj[$count] = new stdClass();
+				$treeObj[$count]->key = $thesaurus->thesaurus_id;
+				$treeObj[$count]->title = $thesaurus->libelle;
+				$treeObj[$count]->folder= true;
+				$treeObj[$count]->hideCheckbox = true;
+				$treeObj[$count]->unselectable = true;
+				
+				$topTermsTree = $this->getTopTermsTree($thesaurus->thesaurus_id);
+				if (!is_null($topTermsTree)) $treeObj[$count]->children = $topTermsTree;
+			}			
+		} // if (!AMA_DB::isError($domaines))
+		return $treeObj;
+	}
+	
+	/**
+	 * gets the topterm subtree of a thesaurus term
+	 * 
+	 * @param $thesaurus_id
+	 * 
+	 * @return NULL|stdClass
+	 * 
+	 * @access private
+	 */
+	private function getTopTermsTree ($thesaurus_id) {
+		$treeObj = null;
+		
+		$topTerms = $this->_dh->getEurovocTOPTERMS($thesaurus_id, $this->_language, EUROVOC_VERSION);
+		if (!AMA_DB::isError($topTerms)) {
+			foreach ($topTerms as $count=>$topTerm) {
+				$treeObj[$count] = new stdClass();
+				$treeObj[$count]->key = $topTerm->descripteur_id;
+				$treeObj[$count]->title = $topTerm->libelle;
+				$treeObj[$count]->folder= false;
+				$treeObj[$count]->hideCheckbox = false;
+				$treeObj[$count]->unselectable = false;
+				
+				$descripteurTree = $this->getDescripteurTree($topTerm->descripteur_id);
+				
+				if (!is_null($descripteurTree)) {
+					$treeObj[$count]->folder = true;
+					$treeObj[$count]->children = $descripteurTree;
+				}
+			}
+		}
+		return $treeObj;
+	}
+	
+	/**
+	 * recursively gets the descripteur tree of a descripteur
+	 * 
+	 * @param $descripteur_id
+	 * 
+	 * @return NULL|stdClass
+	 * 
+	 * @access private
+	 */
+	private function getDescripteurTree($descripteur_id) {
+		$treeObj = null;
+		
+		$terms = $this->_dh->getEurovocDESCRIPTEURTERMS($descripteur_id, $this->_language, EUROVOC_VERSION);
+		
+		if (!AMA_DB::isError($terms)) {
+			
+			foreach ($terms as $count=>$term) {
+				$treeObj[$count] = new stdClass();
+				$treeObj[$count]->key = $term->descripteur_id;
+				$treeObj[$count]->title = $term->libelle;
+				$treeObj[$count]->folder= false;
+				$treeObj[$count]->hideCheckbox = false;
+				$treeObj[$count]->unselectable = false;
+				
+				$descripteurTree = $this->getDescripteurTree($term->descripteur_id);
+				
+				if (!is_null($descripteurTree)) {
+					$treeObj[$count]->folder = true;
+					$treeObj[$count]->children = $descripteurTree;
+				}
+			}
+		}
+		return $treeObj;
 	}
         
     /**
@@ -130,7 +290,6 @@ class eurovocManagement extends importManagement
     							$record_ha[$count]['def'] = null;
     						}
     						
-//     						if (!isset($record_ha[$count]['def'])) $record_ha[$count]['def'] = null;
     						if (!is_null($lng) && strlen($lng)>0) $record_ha[$count]['lng'] = $lng;
     						if (!is_null($version) && strlen($version)>0) $record_ha[$count]['version'] = doubleval($version);
     						
@@ -489,6 +648,31 @@ class eurovocManagement extends importManagement
     	
     	return array($record_ha);
     }
+    
+    /**
+     * build the cache table contents to speed up tree generation
+     * 
+     * @access private
+     */
+    private function _buildImportedJSONCache() {
+    	
+    	$langArr = $this->_dh->getSupportedLanguages();
+    	
+    	if (!AMA_DB::isError($langArr)) {
+    		
+    		$this->_logMessage(translateFN('Generazione degli oggetti in cache'));
+    		
+    		foreach ($langArr as $lang) {
+    			$this->_language = $lang[0];
+    			$this->_logMessage(translateFN('codice lingua').': '.$this->_language.' ...');
+    			$this->getEurovocTree();
+    			$this->_logMessage('['.translateFN('OK').']');
+    		}
+    		
+    		$this->_logMessage(translateFN('Generazione degli oggetti in cache completata'));
+    	}
+    }
+    
     
     /**
      * gets the label to be used in the UI tab

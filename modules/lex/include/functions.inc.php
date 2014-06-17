@@ -45,7 +45,7 @@ function sendToBrowser ($message) {
 	echo '<pre style=\'color:'.$color.'; margin:0; font-family:monospace; '.$style.'\'>';
 	echo $message;
 	echo '</pre>';
-	echo '<script type="text/javascript">window.scrollTo(0,document.body.scrollHeight);</script>';
+// 	echo '<script type="text/javascript">window.scrollTo(0,document.body.scrollHeight);</script>';
 
 	ob_flush();
 	flush();
