@@ -57,12 +57,14 @@ abstract class importManagement
     	$this->_mustValidate = false;
     	
     	/**
-    	 * real uploaded filename must be in $_SESSION['uploadHelper']['filename']
+    	 * real uploaded filename must be in $_SESSION[UPLOAD_SESSION_VAR]['filename']
     	 * set by js/include/jquery/pekeUpload/upload.php
     	 */
-    	if (isset($_SESSION['uploadHelper']['filename']) &&
-			strlen($_SESSION['uploadHelper']['filename'])>0) 
-    		$this->_importFileName = $_SESSION['uploadHelper']['filename'];  
+    	if (isset($_SESSION[UPLOAD_SESSION_VAR]['filename']) &&
+			strlen($_SESSION[UPLOAD_SESSION_VAR]['filename'])>0) {
+    		$this->_importFileName = $_SESSION[UPLOAD_SESSION_VAR]['filename'];
+    		unset ($_SESSION[UPLOAD_SESSION_VAR]);
+    	}
     	
     	$this->_dh = AMALexDataHandler::instance(MultiPort::getDSN($_SESSION['sess_selected_tester']));
     }

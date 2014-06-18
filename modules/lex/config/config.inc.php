@@ -28,6 +28,11 @@
 	define ('MODULES_LEX_LOGDIR' , ROOT_DIR.'/log/lex/');
 
 	/**
+	 * session var name of the uploaded file
+	 */
+	define ('UPLOAD_SESSION_VAR','lexFile');
+
+	/**
 	 * array of what action a user can do while in the lex module
 	 * here you specify which actions a user can do and the order
 	 * they appear in the UI tabs
