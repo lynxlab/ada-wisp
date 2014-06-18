@@ -43,7 +43,7 @@ a:visited {text-decoration: none; }
 
 /* TABLES ------------------------------ */
 .default_table {width: 100%;color:#555;}
-.default_table A:link { color:#222; padding:1px; display:block; padding:2px; text-decoration:underline;}
+.default_table A:link { color:#222; background:#b0d668; padding:1px; display:block; padding:2px; text-decoration:underline;}
 .default_table A:hover {background:#bf236c; color:yellow; text-decoration:none;}
 
 
