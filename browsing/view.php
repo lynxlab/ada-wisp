@@ -60,7 +60,7 @@ if ($cacheObj->getCachedData){
  *
  */
 
-if ($userObj instanceof ADAGuest  || $courseObj->getIsPublic()) {
+if ($userObj instanceof ADAGuest  || ($courseObj->getIsPublic() && $userObj->getType()!=AMA_TYPE_AUTHOR)) {
     $self = 'guest_view';
 } else {
     $self = whoami();
