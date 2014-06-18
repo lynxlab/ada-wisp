@@ -16,6 +16,7 @@ var commonPekeOptions = {
 		allowedExtensions : "zip",
 		btnText : "Sfoglia Files..",
 		field : 'uploaded_file',
+		url : HTTP_ROOT_DIR+'/js/include/jquery/pekeUpload/upload.php',
 		onFileError: function(file,error) { fileError = true; }
 };
 
@@ -33,13 +34,13 @@ function initDoc(maxSize, userId) {
 
 		// sets maximum upload file size
 		commonPekeOptions.maxSize = maxSize;
+		commonPekeOptions.url += '?userId='+userId+'&sessionVar='+UPLOAD_SESSION_VAR;
 		
 		/**
 		 * set javaScript file upload handler
 		 * on file upload success for eurovoc file upload
 		 */
 		$j('#importfile-eurovoc').pekeUpload($j.extend ({
-			url : HTTP_ROOT_DIR+'/js/include/jquery/pekeUpload/upload.php?userId='+userId+'&fieldUploadName='+$j(this).attr('id'),
 			onFileSuccess : function() {
 				 if (!fileError) doImportEurovoc();
 				 fileError = false;
@@ -51,7 +52,6 @@ function initDoc(maxSize, userId) {
 		 * on file upload success for jex file upload
 		 */
 		$j('#importfile-jex').pekeUpload($j.extend ({
-			url : HTTP_ROOT_DIR+'/js/include/jquery/pekeUpload/upload.php?userId='+userId+'&fieldUploadName='+$j(this).attr('id'),
 			onFileSuccess : function(file) {
 				 if (!fileError) fileError = false;
 			}
