@@ -258,6 +258,9 @@ if ($op == 'lemma') {
 }
 
 $fObj = new Form();
+$action=whoami().".php";
+/*set get method to prevent the confirmation data on back button's browser*/
+$fObj->initForm($action, 'GET');
 $fObj->setForm($form_dataHa);
 $search_form = $fObj->getForm();
 
@@ -281,9 +284,12 @@ $imgAvatar = $userObj->getAvatar();
 $avatar = CDOMElement::create('img','src:'.$imgAvatar);
 $avatar->setAttribute('class', 'img_user_avatar');
 
+$advanced_search="<a href=\"advanced_search.php\">Ricerca avanzata</a>";
+
 $content_dataAr = array(
   'form'=>$search_form,
   'results'=>$search_results,
+  'advanced_search'=>$advanced_search,
   'menu'=>$menu,
   'chat_link'=>$chat_link,
   'banner'=> $banner,

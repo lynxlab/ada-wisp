@@ -57,6 +57,9 @@
                         </div>
                     </div>
                 </div>
+                <span>
+                    <template_field class="template_field" name="advanced_search">advanced_search</template_field>
+                </span>
                 <div id="bottomcont">
                 </div>
             </div> <!--  / contenuto -->

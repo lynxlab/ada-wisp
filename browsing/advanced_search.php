@@ -95,7 +95,7 @@ if (isset($submit)) {  //&& (!empty($s_node_text))) {
     $or = '';
     $and = '';
 
-    if (!empty($s_node_name)) {
+  if (!empty($s_node_name)) {
         $clause = "nome LIKE '%$s_node_name%'";
     }
     if (!empty($s_node_title)){   //keywors
@@ -260,12 +260,12 @@ if (isset($submit)) {  //&& (!empty($s_node_text))) {
         }
       //$temp_results = array(translateFN("Titolo")=>"<a href=view.php?id_node=$res_id_node&querystring=$s_node_text>$icon $res_name</a>");
 
-      if( $res_type == ADA_GROUP_TYPE || $res_type == ADA_LEAF_TYPE || $res_type == ADA_NOTE_TYPE || $res_type == ADA_PRIVATE_NOTE_TYPE) { //aggiunta a manina un'istanza del corso a cui l'utente loggato è iscritto che fare? 
-        $html_for_result = "<span class=\"$class_name\"><a href=\"view.php?id_node=$res_id_node&id_course_instance=".$_SESSION['sess_id_course_instance']."&querystring=$s_node_text\">$res_name</a></span>";
+      if( $res_type == ADA_GROUP_TYPE || $res_type == ADA_LEAF_TYPE || $res_type == ADA_NOTE_TYPE || $res_type == ADA_PRIVATE_NOTE_TYPE) { 
+          $html_for_result = "<span class=\"$class_name\"><a href=\"view.php?id_node=$res_id_node&querystring=$s_node_text\">$res_name</a></span>";
       }
-      else {
+      /*else {
         $html_for_result = "<span class=\"$class_name\"><a href=\"exercise.php?id_node=$res_id_node\">$res_name</a></span>";
-      }
+      }*/
       $temp_results = array(translateFN('Titolo') => $html_for_result);
       //$temp_results = array(translateFN("Titolo")=>$title,translateFN("Testo")=>$res_text);
       array_push ($total_results,$temp_results);
@@ -438,6 +438,9 @@ $form_dataHa = array(
     'value'=>translateFN('Cerca')
   ));
 $fObj = new Form();
+$action=whoami().".php";
+/*set get method to prevent the confirmation data on back button's browser*/
+$fObj->initForm($action, 'GET');
 $fObj->setForm($form_dataHa);
 $search_form = $fObj->getForm();
 
