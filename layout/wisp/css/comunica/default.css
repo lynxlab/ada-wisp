@@ -56,11 +56,11 @@ a:visited { text-decoration: none; }
     padding: 0 0 0 10px;
 }
 
-#user_wrap 	{background:#005281 no-repeat 99% 50%; width:100%}
+#user_wrap 	{background:#4a4a4a no-repeat 99% 50%; width:100%}
 
 
 
-#content	{background:#fff; padding:10px; clear:both;min-height:350px;border-bottom:10px solid #005281;}
+#content	{background:#fff; padding:10px; clear:both;min-height:350px;border-bottom:10px solid #4a4a4a;}
 
 /* CLEAR FIX*/
 #user_wrap:after {content: "."; display: block; height: 0; clear: both; visibility: hidden;}
@@ -116,7 +116,7 @@ UL#menu_std LI A {text-transform: lowercase; color:#fff; font-weight:bold; text-
 #submenu_actions_read ul { padding: 0; margin: 0;}
 /* LABEL
 ----------------------------------------------- */
-#label {float:left; background:#005281 no-repeat right top; width:30%; padding:0 0 0 10px;}
+#label {float:left; background:#4a4a4a no-repeat right top; width:30%; padding:0 0 0 10px;}
 #label H1 {margin:0; padding:20px 0 5px 0; font-size:1.2em; color:whitesmoke}
 #user_data {float:right; width:60%; color:#fff; text-align:right; padding:10px 40px 0 0;}
 
