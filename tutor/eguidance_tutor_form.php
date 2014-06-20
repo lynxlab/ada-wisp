@@ -236,7 +236,12 @@ else {
    * Check if an eguidance session with this event_token exists. In this case,
    * use this data to fill the form.
    */
-  $eguidance_session_dataAr = $dh->get_eguidance_session_with_event_token($event_token);
+  if (strlen($event_token)>0) {
+  	$eguidance_session_dataAr = $dh->get_eguidance_session_with_event_token($event_token);
+  } else {
+  	$eguidance_session_dataAr = new AMA_Error();
+  }
+  
   if(!AMA_DataHandler::isError($eguidance_session_dataAr)) {
     if($is_popup) {
       $eguidance_session_dataAr['is_popup'] = true;
@@ -253,7 +258,7 @@ else {
     if($is_popup) {
       $last_eguidance_session_dataAr['is_popup'] = true;
     }
-    $form = TutorModuleHtmlLib::getEguidanceTutorForm($tutoredUserObj, $service_infoAr, $last_eguidance_session_dataAr);
+    $form = TutorModuleHtmlLib::getEguidanceTutorForm($tutoredUserObj, $service_infoAr,$last_eguidance_session_dataAr, true);
   }
 }
 

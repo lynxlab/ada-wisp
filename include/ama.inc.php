@@ -9441,7 +9441,7 @@ abstract class AMA_Tester_DataHandler extends Abstract_AMA_DataHandler {
         $sql = 'SELECT id_utente,id_tutor,event_token,data_ora,tipo_eguidance,ud_1,ud_2,ud_3,ud_comments,'
                 . 'pc_1,pc_2,pc_3,pc_4,pc_5,pc_6,pc_comments,ba_1,ba_2,ba_3,ba_4,ba_comments,'
                 . 't_1,t_2,t_3,t_4,t_comments,pe_1,pe_2,pe_3,pe_comments,ci_1,ci_2,ci_3,ci_4, ci_comments,'
-                . 'm_1,m_2,m_comments,other_comments '
+                . 'm_1,m_2,m_comments,other_comments, id '
                 . 'FROM sessione_eguidance WHERE id_istanza_corso = ' . $id_course_instance
                 . ' ORDER BY id DESC';
 
