@@ -165,6 +165,11 @@
                     <div id="_toolscontent">
 
                         <ul>
+							<li>
+                            <a href="http://ada.lynxlab.com/holis/modules/lex/">
+                            <i18n>Fonti</i18n>
+                            </a>
+                            </li>
                             <!--
                             <li>
                             <a href="#" onclick='openMessenger("../comunica/list_events.php",800,600);'>
