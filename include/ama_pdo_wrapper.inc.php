@@ -417,6 +417,10 @@ class AMA_PDO_wrapper
 			return self::handleException($e);
 		}
 	}
+	
+	public function quote ($string, $parameter_type = PDO::PARAM_STR ) {
+		return $this->connection_object->quote($string, $parameter_type);
+	}
 
 	/**
 	 * Method for handling thrown exceptions all in the same way.
