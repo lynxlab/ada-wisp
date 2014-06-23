@@ -23,14 +23,15 @@ $variableToClearAR = array('node', 'layout', 'course', 'user');
 /**
  * Users (types) allowed to access this module.
 */
-$allowedUsersAr = array(AMA_TYPE_SWITCHER,AMA_TYPE_AUTHOR);
+$allowedUsersAr = array(AMA_TYPE_SWITCHER,AMA_TYPE_AUTHOR,AMA_TYPE_STUDENT);
 
 /**
  * Get needed objects
 */
 $neededObjAr = array(
 		AMA_TYPE_SWITCHER => array('layout'),
-		AMA_TYPE_AUTHOR => array('layout')
+		AMA_TYPE_AUTHOR => array('layout'),
+		AMA_TYPE_STUDENT => array('layout')
 );
 
 /**
@@ -50,7 +51,17 @@ $self = 'lex';
 require_once MODULES_LEX_PATH . '/include/management/lexManagement.inc.php';
 
 $lex = new lexManagement($userObj);
-$data = $lex->run();
+
+if (isset($op) && strlen($op)>0) {
+	switch ($op) {
+		case 'zoom':
+			$sourceID = (isset($id) && intval($id)>0) ? intval($id) : null;
+			$data = $lex->runSourceZoom($sourceID);
+			break;
+	}
+} else {
+	$data = $lex->run();
+}
 
 
 /**
@@ -76,6 +87,7 @@ else
 array_push($layout_dataAr['CSS_filename'], JQUERY_DATATABLE_CSS);
 array_push($layout_dataAr['CSS_filename'], ROOT_DIR . '/js/include/jquery/pekeUpload/pekeUpload.css' );
 array_push($layout_dataAr['CSS_filename'], MODULES_LEX_PATH.'/layout/'.$templateFamily.'/css/skin-vista/ui.fancytree.css' );
+array_push($layout_dataAr['CSS_filename'], MODULES_LEX_PATH.'/layout/tooltips.css');
 
 $content_dataAr = array(
 		'user_name' => $user_name,
@@ -88,6 +100,7 @@ $content_dataAr = array(
 
 $layout_dataAr['JS_filename'] = array(
 		JQUERY,
+		MODULES_LEX_PATH . '/js/jquery.jeditable.js',
 		JQUERY_DATATABLE,
 		JQUERY_DATATABLE_DATE,
 		JQUERY_UI,
@@ -100,7 +113,7 @@ $layout_dataAr['JS_filename'] = array(
 );
 
 $maxFileSize = (int) (ADA_FILE_UPLOAD_MAX_FILESIZE / (1024*1024));
-$optionsAr['onload_func'] = 'initDoc('.$maxFileSize.','. $userObj->getId().');';
+$optionsAr['onload_func'] = 'initDoc('.$maxFileSize.','. $userObj->getId().','.intval($userObj->getType()==AMA_TYPE_AUTHOR).');';
 
 $avatar = CDOMElement::create('img','class:img_user_avatar,src:'.$userObj->getAvatar());
 $content_dataAr['user_avatar'] = $avatar->getHtml();

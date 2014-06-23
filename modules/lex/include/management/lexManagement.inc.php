@@ -22,6 +22,7 @@ class lexManagement
 {
 	private $_userObj;
 	private $_canDO;
+	private $_tabNeeded;
 	
     /**
      * name constructor
@@ -33,6 +34,52 @@ class lexManagement
     	}
     }
     
+    /**
+     * build, manage and display the index.php?op=zoom page
+     * 
+     * @param number  $sourceID the id of the source to be displayed
+     * 
+     * @return multitype:string Ambigous <NULL, CBaseElement, unknown> Ambigous <string, string>
+     * 
+     * @access public
+     */
+    public function runSourceZoom ($sourceID) {
+    	/* @var $html string holds html code to be retuned */
+    	$htmlObj = null;
+    	/* @var $path   string  path var to render in the help message */
+    	$help = translateFN('Benvenuto nel modulo LEX');
+    	/* @var $status string status var to render in the breadcrumbs */
+    	$title= translateFN('lex');
+    	
+    	if (isset ($this->_canDO) && count ($this->_canDO)>0 && in_array(ZOOM_SOURCE, $this->_canDO)) {
+    		
+    		$jexObj = new jexManagement($this->_userObj);
+    		$sourceArr = $jexObj->getSource($sourceID);
+    		
+    		$htmlObj = CDOMElement::create('div','id:sourceZoom');
+    		$htmlObj->addChild (jexManagement::getSourceZoomContent($sourceArr['titolo'],$sourceArr[AMALexDataHandler::$PREFIX.'fonti_id']));
+    		
+    	} else {
+			// user cannot do anything, report it as a message
+			$htmlObj = CDOMElement::create('div','class:no-permissions');
+			$htmlObj->addChild (new CText(translateFN('Non hai permessi sufficienti per fare nessuna azione')));			
+		}
+
+		return array(
+			'htmlObj'   => $htmlObj,
+			'help'      => $help,
+			'title'     => $title,
+		);
+    	
+    }
+    
+    /**
+     * build, manage and display the module's pages
+     * 
+     * @return array
+     * 
+     * @access public
+     */
 	public function run() {
 		/* @var $html string holds html code to be retuned */
 		$htmlObj = null;		
@@ -51,6 +98,9 @@ class lexManagement
 			$tabsContainerDIV = CDOMElement::create('div','class:tabscontainer');
 			
 			foreach ($this->_canDO as $currentTab => $actionCode) {
+
+				if  (!in_array($actionCode,$GLOBALS['tabNeeded'])) continue;
+				
 				// generate the link for the current tab, in a li element
 				$li = CDOMElement::create('li');
 				$a  = CDOMElement::create('a','href:#tabs-'.$currentTab);					
@@ -66,7 +116,7 @@ class lexManagement
 						$a->addChild (new CText(jexManagement::getTabTitle(IMPORT_JEX)));
 						$div->addChild (jexManagement::getImportForm());
 						break;
-					case EDIT_ASSET:
+					case EDIT_SOURCE:
 						$a->addChild (new CText(jexManagement::getTabTitle(EDIT_SOURCE)));
 						$div->addChild (jexManagement::getEditContent());
 						break;

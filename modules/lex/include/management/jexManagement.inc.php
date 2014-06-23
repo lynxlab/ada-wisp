@@ -93,6 +93,31 @@ class jexManagement extends importManagement
 	}
 	
 	/**
+	 * gets a sources from the module lex table
+	 * 
+	 * @param string $id the id of the source to load
+	 * 
+	 * @return NULL|array
+	 */
+	public function getSource($id=null) {		
+		if (!is_null($id)) {
+			// load the source by passing a clause to the datahandler
+			$res = $this->_dh->get_sources(array(),true,'`'.AMALexDataHandler::$PREFIX.'fonti_id`='.$id);
+			if (!AMA_DB::isError($res)) {
+				/**
+				 * if it's only one element (as it should be) return it
+				 * else return the whole array
+				 */
+				if (count($res)===1) return $res[0];
+				else return $res;
+				
+			} else return $res;
+		} else {
+			return null;
+		}
+	}
+	
+	/**
 	 * This will read the attributes of the root node and
 	 * call the appropriate method to import the tableName
 	 *
@@ -195,6 +220,52 @@ class jexManagement extends importManagement
     }
     
     /**
+     * gets the HTML to be rendered on index.php?op=zoom page
+     * basically, it's a table for asset data display and an
+     * empty div that will be used by jQuery fancytree plugin
+     * 
+     * @param string $title title and caption of the table
+     * @param number $sourceID the id of the source to be displayed
+     * 
+     * @return CDOMElement
+     * 
+     * @access public
+     */
+    public static function getSourceZoomContent($title, $sourceID) {
+    	
+    	$htmlObj = CDOMElement::create('div','id:assetsContainer_'.$sourceID);
+    	
+    	/**
+    	 * generate an empty table that will be filled by the jQuery dataTable ajax calls
+    	 */
+    	$labels = array ('&nbsp;',translateFN('etichetta'), translateFN('URL'), translateFN('Data Inserimento') , translateFN('Data Verifica'), translateFN('stato'));
+    	
+    	foreach ($labels as $label) {
+    		$assetsData[0][$label] = '';
+    	}
+    	
+    	$assetsTable = new Table();
+    	$assetsTable->initTable('0','center','1','1','90%','','','','','1','0','','default','assetsTable');
+    	$assetsTable->setTable($assetsData,$title,$title);
+    	
+    	$tableDIV = CDOMElement::create('div','class:assetTableContainer');
+    	$treeDIV = CDOMElement::create('div','class:assetTreeContainer');
+    	
+    	$tableDIV->addChild(new CText($assetsTable->getTable()));
+    	
+    	$fancyTree = CDOMElement::create('div','id:selectEurovocTerms');
+    	$echo = CDOMElement::create('div','id:echoSelection');
+    	$treeDIV->addChild($fancyTree);
+    	$treeDIV->addChild($echo);
+    	
+    	$htmlObj->addChild($treeDIV);
+    	$htmlObj->addChild($tableDIV);
+    	$htmlObj->addChild(CDOMElement::create('div','class:clearfix'));
+    	
+    	return $htmlObj;
+    }
+    
+    /**
      * gets the HTML form to be rendered as the UI tab edit
      * 
      * @return CDOMElement
@@ -203,47 +274,24 @@ class jexManagement extends importManagement
      */
     public static function getEditContent() {
     	
-    	$dh = AMALexDataHandler::instance(MultiPort::getDSN($_SESSION['sess_selected_tester']));
-    	
     	$htmlObj = CDOMElement::create('div','id:editSourceContainer');
-    	
-//     	$fancyTree = CDOMElement::create('div','id:selectEurovocTerms');
-//     	$echo = CDOMElement::create('div','id:echoSelection');
-//     	$htmlObj->addChild($fancyTree);
-//     	$htmlObj->addChild($echo);
 
-    	$sourcesData = array();
-    	
-    	$sourcesList = $dh->get_sources( array ( $dh::$PREFIX.'fonti_id','numero', 'titolo','data_pubblicazione','tipologia' ));
-    	
-//     	for ($j=1;$j<33;$j++) {
-//     		$sourcesList[$j]=$sourcesList[0];
-//     	}
-    	
-    	
-    	if (!AMA_DB::isError($sourcesList)) {
-    	
+		/**
+         * generate an empty table that will be filled by the jQuery dataTable ajax calls
+		 */    	
     	$labels = array (translateFN('Numero'), translateFN('Titolo'), translateFN('Data Pubb. G.U.') , translateFN('Tipologia'), translateFN('azioni'));
     	
-    	foreach ($sourcesList as $i=>$source) {
-    		$sourcesData[$i] = array (
-    				$labels[0]=>$source['numero'],
-    				$labels[1]=>$source['titolo'],
-    				$labels[2]=>$source['data_pubblicazione'],
-    				$labels[3]=>$source['tipologia'],
-    				$labels[4]=>'nessuna');
+    	foreach ($labels as $label) {
+    		$sourcesData[0][$label] = '';
     	}
-    	
+
     	$sourcesTable = new Table();
     	$sourcesTable->initTable('0','center','1','1','90%','','','','','1','0','','default','sourcesTable');
     	$sourcesTable->setTable($sourcesData,translateFN('Archivio Fonti'),translateFN('Archivio Fonti'));
 
     	$htmlObj->addChild(new CText($sourcesTable->getTable()));
     	
-    	}
-    	
     	return $htmlObj;
-    	
     }
     
     /**

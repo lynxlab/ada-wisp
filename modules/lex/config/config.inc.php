@@ -15,6 +15,7 @@
 	define ('IMPORT_EUROVOC', 1);
 	define ('IMPORT_JEX', 2);
 	define ('EDIT_SOURCE', 3);
+	define ('ZOOM_SOURCE', 4);
 	
 	/**
 	 * constants for asset state
@@ -37,10 +38,15 @@
 	 * here you specify which actions a user can do and the order
 	 * they appear in the UI tabs
 	 */
-	$canDO[AMA_TYPE_SWITCHER] = array( IMPORT_JEX, IMPORT_EUROVOC );
-	$canDO[AMA_TYPE_AUTHOR]   = array( EDIT_ASSET );
-	$canDO[AMA_TYPE_TUTOR]    = array();
-	$canDO[AMA_TYPE_STUDENT]  = array();
+	$GLOBALS['canDO'][AMA_TYPE_SWITCHER] = array( EDIT_SOURCE, ZOOM_SOURCE, IMPORT_JEX, IMPORT_EUROVOC );
+	$GLOBALS['canDO'][AMA_TYPE_AUTHOR]   = array( EDIT_SOURCE, ZOOM_SOURCE );
+	$GLOBALS['canDO'][AMA_TYPE_TUTOR]    = array();
+	$GLOBALS['canDO'][AMA_TYPE_STUDENT]  = array( EDIT_SOURCE, ZOOM_SOURCE );
+	
+	/**
+	 * array of actions that need a tab in the UI
+	 */
+	$GLOBALS['tabNeeded'] = array (EDIT_SOURCE, IMPORT_JEX, IMPORT_EUROVOC);
 
 	require_once MODULES_LEX_PATH.'/include/AMALexDataHandler.inc.php';
 ?>

@@ -125,6 +125,47 @@ class AMALexDataHandler extends AMA_DataHandler {
 	}
 	
 	/**
+	 * gets the asset text
+	 * 
+	 * @param number $assetID the id of the asset
+	 * 
+	 * @return AMA_Error|string
+	 * 
+	 * @access public
+	 */
+	public function asset_get_text ($assetID) {
+						
+		$sql = 'SELECT `testo` FROM `'.self::$PREFIX.'testi` T JOIN `'.self::$PREFIX.'assets` A '.
+			   'ON `T`.`'.self::$PREFIX.'testi_id`=`A`.`'.self::$PREFIX.'testi_id` AND '.
+			   '`A`.`'.self::$PREFIX.'assets_id`=?';
+		return $this->getOnePrepared($sql,$assetID);
+	}
+	
+	/**
+	 * gets descripteur_id, libelle and weight of terms associated with asset
+	 * 
+	 * @param string $id
+	 * @param string $lng
+	 * @param double $version
+	 * 
+	 * @return NULL|array
+	 * 
+	 * @access public
+	 */
+	public function get_asset_eurovoc($id, $lng, $version=EUROVOC_VERSION) {
+		
+		$sql = 'SELECT `R`.`descripteur_id`, `D`.`libelle`, `R`.`weight` '.
+			   'FROM `'.self::$PREFIX.'eurovoc_rel` AS R JOIN `'.self::$PREFIX.'EUROVOC_DESCRIPTEUR` AS D '.
+		       'ON  `R`.`descripteur_id`= `D`.`descripteur_id` WHERE `'.self::$PREFIX.'assets_id`=? '.
+		       'AND `D`.`version`=? AND `D`.`lng`=? ORDER BY `R`.`weight` DESC';
+
+		$result = $this->getAllPrepared($sql,array($id,$version,$lng),AMA_FETCH_ASSOC);
+		
+		if (AMA_DB::isError($result) || count($result)<=0) return null;
+		else return $result;
+	}
+	
+	/**
 	 * Insert and update for table testi
 	 * 
 	 * @param array $testoHa the array to be saved in the DB
@@ -304,7 +345,7 @@ class AMALexDataHandler extends AMA_DataHandler {
 	 * 
 	 * @access public
 	 */
-	public function get_sources($fields=array(),$idOrdered=true) {
+	public function get_sources($fields=array(),$idOrdered=true, $clause=null) {
 		$sql = 'SELECT ';
 		
 		$typologyKey = array_search('tipologia', $fields);
@@ -326,6 +367,8 @@ class AMALexDataHandler extends AMA_DataHandler {
 			        ' = `T`.`'.self::$PREFIX.'tipologie_fonti_id`';
 		}
 		
+		if (!is_null($clause)) $sql .= ' WHERE ' .$clause;
+		
 		if ($idOrdered) $sql .= ' ORDER BY `'.self::$PREFIX.'fonti_id` DESC';
 		
 		$res = $this->getAllPrepared($sql, null, AMA_FETCH_ASSOC);
@@ -337,6 +380,213 @@ class AMALexDataHandler extends AMA_DataHandler {
 		}
 		
 		return $res;
+	}
+	
+	/**
+	 * gets the data to fill a table managed by jQuery dataTable plugin
+	 * usually this method gets called using ajax
+	 * 
+	 * aoColumns is an array of table field name to be loaded and
+	 * if one of its elements is an array it has to be passed this way:
+ 	 *	array (
+	 *		'fieldName'=>alias for the selected column,
+	 *		'columnName'=>column name to be selected,
+	 *		'primaryKey'=>primary key of target joined table,
+	 *		'tableName'=>name of the table to be joined 
+	 *	)
+	 *
+	 * see ajax/getAssetsTableData.php or 
+	 * ajax/getSourcesTableData.php for examples
+	 * 
+	 * @param array  $aColumns array of columns to load
+	 * @param string $sIndexColumn primary key name of the table
+	 * @param string $sTable the table to load
+	 * @param string $sMainClause main where clause
+	 * 
+	 * @return array
+	 * 
+	 * @access public
+	 */
+	public function getDataForDataTable ($aColumns, $sIndexColumn, $sTable, $sMainClause='') {
+		/*
+		 * Paging
+		 */
+		$sLimit = "";
+		if ( isset( $_GET['iDisplayStart'] ) && $_GET['iDisplayLength'] != '-1' )
+		{
+			$sLimit = "LIMIT ".intval( $_GET['iDisplayStart'] ).", ".
+					intval( $_GET['iDisplayLength'] );
+		}
+		
+		/*
+		 * Ordering
+		 */
+		$sOrder = "";
+		if ( isset( $_GET['iSortCol_0'] ) )
+		{
+			$sOrder = "ORDER BY  ";
+			for ( $i=0 ; $i<intval( $_GET['iSortingCols'] ) ; $i++ )
+			{
+				if ( $_GET[ 'bSortable_'.intval($_GET['iSortCol_'.$i]) ] == "true" )
+				{
+					if (in_array(strtolower($_GET['sSortDir_'.$i]),array('asc','desc'))) $direction = $_GET['sSortDir_'.$i];
+					else $direction = '';
+					
+					$realColumnName = (is_array($aColumns[ intval( $_GET['iSortCol_'.$i] ) ])) ? 
+										$aColumns[ intval( $_GET['iSortCol_'.$i] ) ]['columnName'] : 
+										$aColumns[ intval( $_GET['iSortCol_'.$i] ) ];
+					 
+					$sOrder .= "`".$realColumnName."` ".$direction.", ";
+				}
+			}
+		
+			$sOrder = substr_replace( $sOrder, "", -2 );
+			if ( $sOrder == "ORDER BY" )
+			{
+				$sOrder = "";
+			}
+		}
+		
+		/*
+		 * Filtering
+		 */
+		$sWhere = "";
+		if ( isset($_GET['sSearch']) && $_GET['sSearch'] != "" )
+		{
+			$sWhere = "WHERE (";
+			for ( $i=0 ; $i<count($aColumns) ; $i++ )
+			{
+				if ( isset($_GET['bSearchable_'.$i]) && $_GET['bSearchable_'.$i] == "true" )
+				{
+					if (!is_array($aColumns[$i]))
+						$sWhere .= "`".$aColumns[$i]."`";
+					else
+						$sWhere .= "`".$aColumns[$i]['tableName']."`.`".$aColumns[$i]['columnName']."`";
+					
+					$sWhere .= " LIKE ".$this->getConnection()->quote( '%'.$_GET['sSearch'].'%' )." OR ";
+				}
+			}
+			$sWhere = substr_replace( $sWhere, "", -3 );
+			$sWhere .= ')';
+		}
+		
+		/* Individual column filtering */
+		for ( $i=0 ; $i<count($aColumns) ; $i++ )
+		{			
+			$realColumnName = (is_array($aColumns[$i])) ? $aColumns[$i]['columnName'] : $aColumns[$i];		
+									
+			if ( isset($_GET['bSearchable_'.$i]) && $_GET['bSearchable_'.$i] == "true" && $_GET['sSearch_'.$i] != '' )
+			{
+				if ( $sWhere == "" )
+				{
+					$sWhere = "WHERE ";
+				}
+				else
+				{
+					$sWhere .= " AND ";
+				}
+				
+				if (!is_array($aColumns[$i]))
+					$sWhere .= "`".$aColumns[$i]."`";
+				else
+					$sWhere .= "`".$aColumns[$i]['tableName']."`.`".$aColumns[$i]['columnName']."`";
+				
+				$sWhere .= "` LIKE ".$this->getConnection()->quote('%'.$_GET['sSearch_'.$i].'%')." ";
+			}
+		}
+		
+		if (strlen ($sMainClause)>0) {
+			if ( $sWhere == "" )
+			{
+				$sWhere = "WHERE ";
+			}
+			else
+			{
+				$sWhere .= " AND ";
+			}
+			$sWhere .= $sMainClause;
+		}
+		
+		
+		/*
+		 * SQL queries
+		 * set up joined tables
+		 */
+		$sqlColumns = array();
+		$joinTables = array(); 
+		
+		foreach ($aColumns as $column) {
+			if (is_array($column)) {
+				$sqlColumns[] = '`'.$column['tableName'].'`.`'.$column['columnName'].'` AS `'.$column['fieldName'].'`';
+				$joinTables[] = 'JOIN `'.$column['tableName'].'` ON `'.
+								$sTable.'`.`'.$column['primaryKey'].'`=`'.$column['tableName'].'`.`'.$column['primaryKey'].'`';
+			} else {
+				$sqlColumns[] = '`'.$column.'`';
+			}	
+		}
+		
+		/*
+		 * SQL queries
+		 * Get data to display
+		 */
+		$sQuery = 'SELECT SQL_CALC_FOUND_ROWS '.implode(", ", $sqlColumns).' FROM  `'.$sTable.'`';
+		$sQuery .= implode(' ', $joinTables);
+		$sQuery .= $sWhere.' '.$sOrder.' '.$sLimit;
+		
+		$rResult = $this->getAllPrepared($sQuery,null,AMA_FETCH_ASSOC);
+		
+		if (AMA_DB::isError($rResult)) {
+			$iTotalDisplayRecords = 0;
+			$iTotal = 0;
+		} else {
+			$iTotalDisplayRecords = $this->getOnePrepared('SELECT FOUND_ROWS()');
+			/* Total data set length */
+			$sTotalClause = '';
+			if (strlen ($sMainClause)>0) $sTotalClause .= ' WHERE '.$sMainClause;
+			$iTotal = $this->getOnePrepared('SELECT COUNT(?) FROM `'.$sTable.'`'.$sTotalClause,$sIndexColumn);			
+		}
+		
+		/*
+		 * Output
+		*/
+		$output = array(
+				"sEcho" => intval($_GET['sEcho']),
+				"iTotalRecords" => $iTotal,
+				"iTotalDisplayRecords" => $iTotalDisplayRecords,
+				"aaData" => array()
+		);
+		
+		if (!AMA_DB::isError($rResult)) {
+			foreach ($rResult as $count=>$aRow)
+			{
+				$row = array();
+				
+				// Add the row ID and class (if needed) to the object
+				$row['DT_RowId'] = $sTable.':'.$aRow[$sIndexColumn];
+// 				$row['DT_RowClass'] = 'grade'.$aRow['grade'];
+				
+				foreach ($aColumns as $column) {
+					$resultArrayKey = (is_array($column)) ? $column['fieldName'] : $column;
+					if ( $resultArrayKey == "version" )
+					{
+						/* Special output formatting for 'version' column */
+						$row[] = ($aRow[ $resultArrayKey ]=="0") ? '-' : $aRow[ $resultArrayKey ];
+					}
+					else if (strpos($resultArrayKey,'data')!==false) {
+						/* if is a date, format it */
+						$row[] = $this->ts_to_date($aRow[ $resultArrayKey ]);
+					}
+					else if ( $resultArrayKey != ' ' )
+					{
+						/* General output */
+						$row[] = $aRow[ $resultArrayKey ];
+					}
+				}
+				$output['aaData'][] = $row;
+			}
+		}
+		
+		return $output;
 	}
 	
 	/**

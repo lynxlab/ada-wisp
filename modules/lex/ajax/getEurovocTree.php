@@ -45,7 +45,6 @@ require_once(ROOT_DIR.'/browsing/include/browsing_functions.inc.php');
 require_once MODULES_LEX_PATH .'/config/config.inc.php';
 require_once MODULES_LEX_PATH . '/include/management/eurovocManagement.inc.php';
 
-
 if (isset($_SERVER['REQUEST_METHOD']) && $_SERVER['REQUEST_METHOD'] == 'GET') {
 	
 	if (isset($_SESSION['sess_userObj'])) {
@@ -55,20 +54,6 @@ if (isset($_SERVER['REQUEST_METHOD']) && $_SERVER['REQUEST_METHOD'] == 'GET') {
 	else $languageId = null;
 	
 	$eurovocObj = new eurovocManagement($languageId);
-	
-	$selected = array(
-			'688',
-			'1519',
-			'2440',
-			'3908',
-			'4045',
-			'4779'
-	);
-	
-	
-	$eurovocTree = $eurovocObj->getEurovocTree($selected);
-	
-	echo json_encode($eurovocTree);
+	echo json_encode($eurovocObj->getEurovocTree());
 	die();
-	
 }
