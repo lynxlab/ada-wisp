@@ -63,7 +63,8 @@ if (isset($_SERVER['REQUEST_METHOD']) && $_SERVER['REQUEST_METHOD'] == 'GET') {
      * build and add the expand/reudce button
 	 */
 	$expandImg = CDOMElement::create('img','src:'.MODULES_LEX_HTTP.'/layout/'.$templateFamily.'/img/trasp.png');
-	$expandImg->setAttribute('class', 'expandAssetButton');
+	$expandImg->setAttribute('class', 'expandAssetButton tooltip');
+	$expandImg->setAttribute('title', translateFN('Clic: Mostra/Nasconde i dettagli dell\'asset'));
 	
 	$dh = AMALexDataHandler::instance(MultiPort::getDSN($_SESSION['sess_selected_tester']));
 	

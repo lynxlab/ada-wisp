@@ -261,14 +261,14 @@ function showfancyTreeObj(selectedNodes) {
 	
 	if (!$j('.assetTreeContainer').is(':visible')) {
 		// if tree is not visible, show it with an animation
-		finalWidth = tableWidth - treeWidth;
+		finalWidth = tableWidth - treeWidth - 10;
 		$j('.assetTableContainer').animate({ width: finalWidth }, speed, function() {
 			$j('.assetTreeContainer').show('slide',speed/2);
 		} );
 	} else if (clearSelection) {
 		// if selected row was clicked, hide the tree with an animation
 		$j('.assetTreeContainer').hide('slide',speed/2, function() {
-			$j('.assetTableContainer').animate({ width: tableWidth },speed);
+			$j('.assetTableContainer').animate({ width: tableWidth-10 },speed);
 		} );
 	}
 }
