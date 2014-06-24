@@ -57,15 +57,6 @@ public function videoroom_info($id_course_instance,$tempo_avvio=NULL, $interval=
     if (AMA_DataHandler::isError($video_roomAr) || !is_array($video_roomAr)) {
       // FIXME: prima restituiva una stringa di testo
       $this->full = 0;
-      /*
-    	$this->id_room = 1;
-    	$this->id_tutor = 7;
-    	$this->id = 1;
-    	$this->descrizione_videochat = "descrizione";
-//    	$this->tempo_avvio = $video_roomAr['tempo_avvio'];
-//    	$this->tempo_fine = $video_roomAr['tempo_fine'];
-    	$this->tipo_videochat = "pubblica";
-    	*/
       
     }
     else {
@@ -96,9 +87,22 @@ public function add_openmeetings_room($name="service", $sess_id_course_instance,
 	$port = OPENMEETINGS_PORT;
 	$dir = OPENMEETINGS_DIR;
 
-//	$room_type = intval(CONFERENCE_TYPE);
-	$room_type = intval(AUDIENCE_TYPE);
+	$room_type = intval(CONFERENCE_TYPE);
+//	$room_type = intval(AUDIENCE_TYPE);
         $ispublic = ROOM_IS_PUBLIC;
+        $allowUserQuestions = ROOM_ALLOW_QUESTIONS;
+        $isAudioOnly = ROOM_AUDIO_ONLY;
+        $hideTopBar = ROOM_HIDE_TOP_BAR;
+        $hideChat = ROOM_HIDE_CHAT;
+        $hideActivitiesAndActions = ROOM_HIDE_ACTIONS;
+        $hideFilesExplorer = ROOM_HIDE_FILE_EXPLORER;
+        $hideActionsMenu = ROOM_ACTION_MENU;
+        $hideScreenSharing = ROOM_HIDE_SCREEN_SHARING;
+        $hideWhiteboard = ROOM_HIDE_WHITEBOARD;
+                
+        /*
+         * DEPRECATED
+         *
 	$videoPodWidth = VIDEO_POD_WIDTH;
 	$videoPodHeight = VIDEO_POD_HEIGHT;
 	$videoPodXPosition = VIDEO_POD_X_POSITION;
@@ -114,42 +118,15 @@ public function add_openmeetings_room($name="service", $sess_id_course_instance,
 	$filesPanelYPosition = FILES_PANEL_Y_POSITION;
 	$filesPanelHeight = FILES_PANEL_HEIGHT;
 	$filesPanelWidth = FILES_PANEL_WIDTH;
+         * 
+         * DEPRECATED
+         */
 	
 	
 	//Create the SoapClient object
 	$this->client_room = new SoapClient("http://".$host.$port."/".$dir."/services/RoomService?wsdl");
 
-	
-	/*
-		$params = array(
-			'SID' => $this->session_id,
-			'name' => $name,
-			'roomtypes_id' => intval($room_type), //1,
-			'comment' => $comment,
-			'numberOfPartizipants' => intval($num_user),
-			'ispublic' => $ispublic,
-			'videoPodWidth' => intval($videoPodWidth),
-			'videoPodHeight' => intval($videoPodHeight),
-			'videoPodXPosition' => intval($videoPodXPosition),
-			'videoPodYPosition' => intval($videoPodYPosition),
-			'moderationPanelXPosition' => intval($moderationPanelXPosition),
-			'showWhiteBoard' => $showWhiteBoard,
-			'whiteBoardPanelXPosition' => intval($whiteBoardPanelXPosition),
-			'whiteBoardPanelYPosition' => intval($whiteBoardPanelYPosition),
-			'whiteBoardPanelHeight' => intval($whiteBoardPanelHeight),
-			'whiteBoardPanelWidth' => intval($whiteBoardPanelWidth),
-			'showFilesPanel' => $showFilesPanel,
-			'filesPanelXPosition' => intval($filesPanelXPosition),
-			'filesPanelYPosition' => intval($filesPanelYPosition),
-			'filesPanelHeight' => intval($filesPanelHeight),
-			'filesPanelWidth' => intval($filesPanelWidth)
-		);
-	
-	$this->id_room = $this->client_room->addRoom($params);
-	$this->id_room = $this->id_room->return;
-         * 
-         */
-
+        /*
         $addRoomWithModerationParams = array(
                 'SID' => $this->session_id,
                 'name' => $name,
@@ -164,6 +141,42 @@ public function add_openmeetings_room($name="service", $sess_id_course_instance,
         );
 	$this->resultAddRoom = $this->client_room->addRoomWithModeration($addRoomWithModerationParams);
 	$this->id_room = $this->resultAddRoom->return;
+         * 
+         */
+
+        $addRoomWithModerationHideOptionsParams = array(
+            'SID' => $this->session_id,
+            'name' => $name,
+            'roomtypes_id' => intval($room_type), 
+            'comment' => $comment,
+            'numberOfPartizipants' => intval($num_user),
+            'ispublic' => $ispublic,
+            'appointment'=> FALSE,
+            'isDemoRoom'=> FALSE,
+            'demoTime' => 0,
+            'isModeratedRoom'=> TRUE,
+            'allowUserQuestions' => $allowUserQuestions,
+            'isAudioOnly' => $isAudioOnly,
+            'hideTopBar' => $hideTopBar,
+            'hideChat' => $hideChat,
+            'hideActivitiesAndActions' => $hideActivitiesAndActions,
+            'hideFilesExplorer' => $hideFilesExplorer,
+            'hideActionsMenu' => $hideActionsMenu,
+            'hideScreenSharing' => $hideScreenSharing,
+            'hideWhiteboard' => $hideWhiteboard
+            
+        );
+	$this->resultAddRoom = $this->client_room->addRoomWithModerationQuestionsAudioTypeAndHideOptions($addRoomWithModerationHideOptionsParams);
+	$this->id_room = $this->resultAddRoom->return;        
+        /*
+         * forza apertura della stanza
+         */
+        $closeParameterAr = array (
+                'SID' => $this->session_id,
+                'room_id'=> $this->id_room,
+                'status'=> 0
+        );
+        $this->closeRoom = $this->client_room->closeRoom($closeParameterAr);
         
         	
 	$interval = 60*60;
@@ -192,8 +205,8 @@ public function list_rooms() {
 	    'SID' => $this->session_id,
 	    'start' => 1,
 	    'max' => 999,
-		'orderby' => "name",
-		'asc' => 1
+            'orderby' => "name",
+            'asc' => 1
 	);
 	
 	$this->list_rooms = $this->client_room->getRooms($rooms_params);
@@ -265,13 +278,15 @@ public function room_access($username,$nome,$cognome,$user_email,$sess_id_user,$
 	$this->client_room = new SoapClient("http://".$host.$port."/".$dir."/services/RoomService?wsdl");
 
         $becomeModeratorAsInt = 0; // 0 = no Moderator 1 = Moderator @todo impostare a moderatore se practitioner
+        $allowRecording = 0; // 0 means don't allow Recording, 1 means allow Recording
         if ($id_profile == AMA_TYPE_TUTOR ) {
-            $becomeModeratorAsInt = 1;    
+            $becomeModeratorAsInt = 1;
+            $allowRecording = 1;
         }
 	$room_id = $this->id_room;
-        $externalUserId = "";
-        $externalUserType = "1"; // potrebbe essere preso da $userObj->type
-        $showAudioVideoTestAsInt = 0; // 0 = no audio/video test
+        $externalUserId = $sess_id_user;
+        $externalUserType = "ADA"; // potrebbe essere preso da $userObj->type
+        $showAudioVideoTestAsInt = 1; // 0 = no audio/video test
         if ( OPENMEETINGS_VERSION > 0) {
             $user_params   = array(
                 'SID' => $this->session_id,
@@ -287,10 +302,31 @@ public function room_access($username,$nome,$cognome,$user_email,$sess_id_user,$
                 'showAudioVideoTestAsInt' => $showAudioVideoTestAsInt
             );
                 /* @var $secureHash <array> needed to access openmeetings room*/
-//        	$this->secureHash = $this->client_user->setUserObjectAndGenerateRoomHash($user_params);
         	$this->secureHash = $this->client_user->setUserObjectAndGenerateRoomHashByURL($user_params);
                 $secureHash = $this->secureHash->return;
-//                print_r($secureHash);
+            
+             /*   
+             $user_params_flags   = array(
+                'SID' => $this->session_id,
+                'username' => $username,
+                'firstname' => $nome,
+                'lastname' => $cognome,
+		'profilePictureUrl' => "",
+		'email' => $user_email,
+                'externalUserId' => $externalUserId,
+                'externalUserType' => $externalUserType,
+                'room_id' => $room_id,
+                'becomeModeratorAsInt' => $becomeModeratorAsInt,
+                'showAudioVideoTestAsInt' => $showAudioVideoTestAsInt,
+                'allowRecording' => $allowRecording
+            );
+
+            
+        	$this->secureHash = $this->client_user->setUserObjectAndGenerateRoomHashByURLAndRecFlag($user_params_flags);
+                $secureHash = $this->secureHash->return;
+              * 
+              */
+                
 
         } else {
             $user_params   = array(
@@ -307,26 +343,13 @@ public function room_access($username,$nome,$cognome,$user_email,$sess_id_user,$
 	//echo "<br> Istanza root: ";
 	//print_r($client_room);
 	
-	$type_params   = array(
-	    'SID' => $this->session_id,
-	    'rooms_id' => $this->id_room
-	);
-	$this->roomTypes = $this->client_room->getRoomById($type_params);
+//	$type_params   = array(
+//	    'SID' => $this->session_id,
+//	    'rooms_id' => $this->id_room
+//	);
+//	$this->roomTypes = $this->client_room->getRoomById($type_params);
 	
 
-/*
- * ELENCO STANZE: SPOSTARE IN METODO APPOSITO
-	$rooms_params   = array(
-	    'SID' => $this->session_id,
-	    'start' => 1,
-	    'max' => 99,
-		'orderby' => "name",
-		'asc' => 1
-	);
-	
-	$this->rooms = $this->client_room->getRooms($rooms_params);
- */
-	/** FINO QUI' */
 	
 	/*
 	 * LINK A STANZA
@@ -338,18 +361,14 @@ public function room_access($username,$nome,$cognome,$user_email,$sess_id_user,$
 		$language = constant($videochat_lang); 
 	}
         if ( OPENMEETINGS_VERSION > 0) {
-           $this->link_to_room = "http://".$host.$port."/".$dir."/?secureHash=".$secureHash."&scopeRoomId=".$this->id_room."&language=".$language."&user_id=".$sess_id_user;
+           $this->link_to_room = "http://".$host.$port."/".$dir."/?secureHash=".$secureHash."&language=".$language;
+//           print_r($this->link_to_room); die();
+//           $this->link_to_room = "http://".$host.$port."/".$dir."/?secureHash=".$secureHash."&scopeRoomId=".$this->id_room."&language=".$language."&user_id=".$sess_id_user;
         } else {
             $this->link_to_room = "http://".$host.$port."/".$dir."/main.lzx.lzr=swf8.swf?roomid=".$this->id_room."&sid=".$this->session_id."&language=".$language;
        }
-
-	// Versione 0.7
-//	echo "<a href=\"http://localhost:5080/openmeetings/maindebug.lzx.swf8.swf?roomid=3&sid=".$sid ."&language=4\"> entra</a>";
-// Versione 0-8
-//	echo "<a href=\"http://nina.altrascuola.it:5080/openmeetings/main.lzx.lzr=swf8.swf?roomid=3&sid=".$sid ."&language=4\"> entra</a>";
-//	echo "<a href=\"http://localhost:5080/openmeetings/main.lzx.lzr=swf8.swf?roomid=3&sid=".$sid ."&language=4\"> entra</a>";
-//	echo "<a href=\"http://lynx.comunicyou.it/lynx/main.lzx.lzr=swf8.swf?roomid=3&sid=".$sid ."&language=4\"> entra</a>";
-	//	echo "<a href=\"http://77.72.193.243:5080/lynx/main.lzx.lzr=swf8.swf?roomid=7&sid=".$sid ."&language=4\"> entra</a>";
+//       print_r($this->link_to_room);
+       
 }
 
 public function delete_room($id_room) {

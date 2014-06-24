@@ -20,7 +20,7 @@ require_once realpath(dirname(__FILE__)).'/../config_path.inc.php';
 /**
  * Specific Openmeetings config file 
  */
-require_once 'include/videochat_config.inc.php';
+require_once ROOT_DIR. '/comunica/include/videochat_config.inc.php';
 
 /**
  * Clear node and layout variable in $_SESSION
@@ -78,9 +78,9 @@ $content = "<object classid=\"clsid:D27CDB6E-AE6D-11cf-96B8-444553540000\" codeb
 
 $width = FRAME_WIDTH;
 $height = FRAME_HEIGHT;
+$src = $videoroomObj->link_to_room;
 $iframe = "
-    <iframe src='$videoroomObj->link_to_room' width='$width' height = '$height' ></iframe>;
-
+    <iframe src='$src' width='$width' height = '$height' ></iframe>;
     ";
 
 $menu_01 = "<a href=\"close_videochat.php?id_room=".$videoroomObj->id_room ."&event_token=$event_token\">" . translateFN("Chiudi") . "</a>";
