@@ -248,7 +248,7 @@ class jexManagement extends importManagement
     	$assetsTable->initTable('0','center','1','1','90%','','','','','1','0','','default','assetsTable');
     	$assetsTable->setTable($assetsData,$title,$title);
     	
-    	$tableDIV = CDOMElement::create('div','class:assetTableContainer');
+    	$tableDIV = CDOMElement::create('div','class:assetTableContainer ui-widget-content');
     	$treeDIV = CDOMElement::create('div','class:assetTreeContainer');
     	
     	$tableDIV->addChild(new CText($assetsTable->getTable()));

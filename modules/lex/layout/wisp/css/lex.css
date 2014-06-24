@@ -271,6 +271,7 @@ div.show_error {
 #assetsTable tr.odd.selectedRow img.expandAssetButton,
 #assetsTable tr.even.selectedRow img.expandAssetButton { background-image: url("../img/details_close.png"); }
 
+#assetsTable_processing {  -moz-box-shadow: 0 0 15px #888; -webkit-box-shadow: 0 0 15px #888; box-shadow: 0 0 15px #888; }
 /*
  * end assetsTable jQuery dataTable
  */
