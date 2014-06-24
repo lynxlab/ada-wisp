@@ -29,6 +29,29 @@ function rrmdir($dir) {
 }
 
 /**
+ * returns the two digit language code for session user or the default
+ */
+function getLanguageCode() {
+	if (isset ($_SESSION['sess_userObj']) && $_SESSION['sess_userObj'] instanceof ADALoggableUser) {
+		$languageInfo = Translator::getLanguageInfoForLanguageId( $_SESSION['sess_userObj']->getLanguage() );
+		$languageId = $languageInfo['codice_lingua'];
+	} else {
+		$languageId = null;
+	}
+	
+	if (is_null($languageId) || strlen($languageId)<=0) {
+		if (!isset($_SESSION['sess_user_language'])) {
+			$languageId = ADA_LOGIN_PAGE_DEFAULT_LANGUAGE;
+		}
+		else {
+			$languageId = $_SESSION['sess_user_language'];
+		}
+	}
+	
+	return $languageId;
+}
+
+/**
  * sends a string to the browser output buffer
  * 
  * @param string $message the message to output

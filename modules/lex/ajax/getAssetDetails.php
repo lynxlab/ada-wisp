@@ -54,12 +54,7 @@ if (isset($_SERVER['REQUEST_METHOD']) && $_SERVER['REQUEST_METHOD'] == 'GET' &&
 	
 	$dh = AMALexDataHandler::instance(MultiPort::getDSN($_SESSION['sess_selected_tester']));
 	
-	if (isset ($userObj) && $userObj instanceof ADALoggableUser) {
-		$languageInfo = Translator::getLanguageInfoForLanguageId( $userObj->getLanguage() );
-		$languageId = $languageInfo['codice_lingua'];
-	} else {
-		$languageId = null;
-	}
+	$languageId = getLanguageCode();
 	
 	$assetText = $dh->asset_get_text($assetID);
 	

@@ -50,13 +50,12 @@ if (isset($_SERVER['REQUEST_METHOD']) && $_SERVER['REQUEST_METHOD'] == 'GET') {
 
 	$sourceID = (isset($sourceID) && intval($sourceID)>0) ? intval($sourceID) : -1;
 	
+	$languageId = getLanguageCode();
+	
 	if (isset ($userObj) && $userObj instanceof ADALoggableUser) {
 		$templateFamily = (isset($userObj->template_family) && strlen($userObj->template_family)>0) ? $userObj->template_family : ADA_TEMPLATE_FAMILY;
-		$languageInfo = Translator::getLanguageInfoForLanguageId( $userObj->getLanguage() );
-		$languageId = $languageInfo['codice_lingua'];
 	} else {
 		$templateFamily = ADA_TEMPLATE_FAMILY;
-		$languageId = null;
 	}
 	
 	/**

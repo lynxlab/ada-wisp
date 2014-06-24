@@ -47,11 +47,7 @@ require_once MODULES_LEX_PATH . '/include/management/eurovocManagement.inc.php';
 
 if (isset($_SERVER['REQUEST_METHOD']) && $_SERVER['REQUEST_METHOD'] == 'GET') {
 	
-	if (isset($_SESSION['sess_userObj'])) {
-		$languageInfo = Translator::getLanguageInfoForLanguageId( $_SESSION['sess_userObj']->getLanguage() );
-		$languageId = $languageInfo['codice_lingua'];
-	}
-	else $languageId = null;
+	$languageId = getLanguageCode();
 	
 	$eurovocObj = new eurovocManagement($languageId);
 	echo json_encode($eurovocObj->getEurovocTree());
