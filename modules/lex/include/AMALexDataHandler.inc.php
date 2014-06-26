@@ -183,6 +183,11 @@ class AMALexDataHandler extends AMA_DataHandler {
 		
 	}
 	
+	public function asset_get ($assetID) {
+		$sql = 'SELECT * FROM `'.self::$PREFIX.'assets` WHERE `'.self::$PREFIX.'assets_id`=?';
+		return $this->getRowPrepared($sql,$assetID,AMA_FETCH_OBJECT);		
+	}
+	
 	/**
 	 * gets the asset text
 	 * 
