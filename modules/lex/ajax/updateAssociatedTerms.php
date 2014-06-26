@@ -22,13 +22,14 @@ $variableToClearAR = array();
 /**
  * Users (types) allowed to access this module.
 */
-$allowedUsersAr = array(AMA_TYPE_SWITCHER);
+$allowedUsersAr = array(AMA_TYPE_SWITCHER, AMA_TYPE_AUTHOR);
 
 /**
  * Get needed objects
 */
 $neededObjAr = array(
-		AMA_TYPE_SWITCHER => array('layout')
+		AMA_TYPE_SWITCHER => array('layout'),
+		AMA_TYPE_AUTHOR => array('layout')
 );
 
 /**
@@ -40,28 +41,25 @@ require_once(ROOT_DIR.'/browsing/include/browsing_functions.inc.php');
 
 // MODULE's OWN IMPORTS
 require_once MODULES_LEX_PATH .'/config/config.inc.php';
+require_once MODULES_LEX_PATH . '/include/management/eurovocManagement.inc.php';
 
 
-$GLOBALS['dh'] = AMALexDataHandler::instance(MultiPort::getDSN($_SESSION['sess_selected_tester']));
+$dh = AMALexDataHandler::instance(MultiPort::getDSN($_SESSION['sess_selected_tester']));
 
 $retArray = array();
 
-if (isset($_SERVER['REQUEST_METHOD']) && $_SERVER['REQUEST_METHOD'] == 'POST') {
-
-	if (!isset($_POST['typology'])) $retArray = array("status"=>"ERROR", "msg"=>translateFN("Tipologia vuota"));
-	else
-	{
-		$result = $dh->addTypology (trim($_POST['typology']));
-		
-		if (!AMA_DB::isError($result))
-		{		
-			$retArray = array ("status"=>"OK", "msg"=>translateFN("Tipologia Aggiunta"), "id"=>$result);
-		}
-		else
-			$retArray = array ("status"=>"ERROR", "msg"=>translateFN("Errore di inserimento") );
+if (isset($_SERVER['REQUEST_METHOD']) && $_SERVER['REQUEST_METHOD'] == 'POST' && 
+    isset ($assetID) && intval($assetID)>0 && isset ($selectedNodes) && is_array($selectedNodes) && count($selectedNodes)>=0) {
+	
+	$result = $dh->updateAssociatedTerms(intval ($assetID), $selectedNodes);
+	
+	if (!AMA_DB::isError($result)) {
+		$retArray = array ("status"=>"OK", "msg"=>translateFN("Termini Aggiornati"));
+	} else {
+		$retArray = array ("status"=>"ERROR", "msg"=>translateFN("Errore nel salvataggio").' '.$result->errorMessage());
 	}
-}
-else {
+	
+} else {
 	$retArray = array ("status"=>"ERROR", "msg"=>translateFN("Errore nella trasmissione dei dati"));
 }
 

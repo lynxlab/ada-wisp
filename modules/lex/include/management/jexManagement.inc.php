@@ -148,7 +148,7 @@ class jexManagement extends importManagement
 						AMALexDataHandler::$PREFIX.'testi_id' => $savedTestoHa[AMALexDataHandler::$PREFIX.'testi_id'],
 						'data_inserimento' => $this->_dh->date_to_ts('now'),
 						'data_verifica'    => null,
-						'stato'            => MODULES_LEX_ASSET_STATE_UNVERIFIED
+						AMALexDataHandler::$PREFIX.'stati_id' => MODULES_LEX_ASSET_STATE_UNVERIFIED
 					);					
 					$savedAssetHa = $this->_dh->asset_set ($assetHa);
 					
@@ -217,6 +217,8 @@ class jexManagement extends importManagement
     		return translateFN('Nuova Fonte');
     	else if ($actionCode===EDIT_SOURCE)
     		return translateFN('Modifica Fonte');
+    	else if ($actionCode===VIEW_SOURCE)
+    		return translateFN('Fonti');
     }
     
     /**
@@ -238,7 +240,7 @@ class jexManagement extends importManagement
     	/**
     	 * generate an empty table that will be filled by the jQuery dataTable ajax calls
     	 */
-    	$labels = array ('&nbsp;',translateFN('etichetta'), translateFN('URL'), translateFN('Data Inserimento') , translateFN('Data Verifica'), translateFN('stato'));
+    	$labels = array ('&nbsp;',translateFN('etichetta'), translateFN('URL'), translateFN('Data Inserimento') , translateFN('Data Verifica'), translateFN('Stato'));
     	
     	foreach ($labels as $label) {
     		$assetsData[0][$label] = '';
@@ -255,7 +257,14 @@ class jexManagement extends importManagement
     	
     	$fancyTree = CDOMElement::create('div','id:selectEurovocTerms');
     	$echo = CDOMElement::create('div','id:echoSelection');
+    	
+    	$saveTreeButton = CDOMElement::create('button','class:saveTreeButton');
+    	$saveTreeButton->setAttribute('onclick', 'javascript:saveTree(this)');
+    	$saveTreeButton->addChild(new CText(translateFN('Salva Associazioni')));
+    	
+    	$treeDIV->addChild($saveTreeButton);
     	$treeDIV->addChild($fancyTree);
+    	$treeDIV->addChild($saveTreeButton);
     	$treeDIV->addChild($echo);
     	
     	$htmlObj->addChild($treeDIV);
@@ -279,7 +288,7 @@ class jexManagement extends importManagement
 		/**
          * generate an empty table that will be filled by the jQuery dataTable ajax calls
 		 */    	
-    	$labels = array (translateFN('Numero'), translateFN('Titolo'), translateFN('Data Pubb. G.U.') , translateFN('Tipologia'), translateFN('azioni'));
+    	$labels = array (translateFN('Numero'), translateFN('Titolo'), translateFN('Data Pubb.') , translateFN('Tipologia'), translateFN('azioni'));
     	
     	foreach ($labels as $label) {
     		$sourcesData[0][$label] = '';

@@ -74,8 +74,12 @@ if (isset($_SERVER['REQUEST_METHOD']) && $_SERVER['REQUEST_METHOD'] == 'GET') {
 					'url',
 					'data_inserimento',
 					'data_verifica',
-					'stato'
-			      ),
+					array (
+ 							'fieldName'=>'stato',
+ 							'columnName'=>'descrizione',
+ 							'primaryKey'=>$dh::$PREFIX.'stati_id',
+ 							'tableName'=>$dh::$PREFIX.'stati') 
+			        ),
 					$dh::$PREFIX.'assets_id',
 					$dh::$PREFIX.'assets',
 					'`'.$dh::$PREFIX.'assets`.`'.$dh::$PREFIX.'fonti_id`='.$sourceID);
@@ -97,8 +101,15 @@ if (isset($_SERVER['REQUEST_METHOD']) && $_SERVER['REQUEST_METHOD'] == 'GET') {
 		}										
 		$linkExpand = 'assetExpand (this, '.json_encode($parameters).');';					
 		$expandImg->setAttribute('onclick', 'javascript:'.$linkExpand);					
-		// add expand button
-		$output['aaData'][$i][0] = $expandImg->getHtml();
-	}	
+		// add expand button replacing duplicate id selected field
+		$output['aaData'][$i][1] = $expandImg->getHtml();
+	}
+	
+	// fix the sColumns used by dataTable by adding the
+	// expand button sName at array index number 1
+	$sColumns = explode (',',$output['sColumns']);
+	array_splice($sColumns, 1 ,0, 'expandAssetButton');
+	$output['sColumns'] = implode(',', $sColumns);
+	
 	echo json_encode($output);	
 }

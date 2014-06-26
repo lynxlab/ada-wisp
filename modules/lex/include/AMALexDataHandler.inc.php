@@ -72,6 +72,65 @@ class AMALexDataHandler extends AMA_DataHandler {
 	}
 	
 	/**
+	 * gets all typologies as an array
+	 *
+	 * @return array [module_lex_stati_id]=>'descrizione'
+	 *
+	 * @access public
+	 */
+	public function getStates() {
+		$sql = 'SELECT * FROM `'.self::$PREFIX.'stati` ORDER BY `descrizione` ASC';
+		return $this->getConnection()->getAssoc($sql);
+	}
+	
+	public function updateAssociatedTerms($assetID, $selectedNodes) {
+		
+		/**
+         * get asset terms stored in the DB.
+         * language is of no importance, pass 'it' just to
+         * be sure no duplicates are returned
+		 */		
+		$assetEurovocAr = $this->get_asset_eurovoc ($assetID,'it');
+		
+		/**
+		 * must set the array with descripteur_id as the key
+		 * for easier look up, at the end storedArr will be
+		 * $storedArr[<DESCRIPTEUR_ID>] = WEIGHT
+		 */
+		$storedArr = array();
+		if (count($assetEurovocAr)>0) {
+			foreach ($assetEurovocAr as $assetEurovoc) {
+				$storedArr[$assetEurovoc['descripteur_id']] = $assetEurovoc['weight'];
+			}
+		}
+		
+		/**
+		 * build array data to be saved
+		 */
+		if (count($selectedNodes)>0) {
+			foreach ($selectedNodes as $selectedNode) {
+				$weight = (isset($storedArr[$selectedNode])) ? $storedArr[$selectedNode] : DEFAULT_WEIGHT;
+				$saveRelHa[] = array(
+						'descripteur_id' => $selectedNode,
+						AMALexDataHandler::$PREFIX.'assets_id' => $assetID,
+						'weight' => $weight
+				);
+			}
+		}
+		
+		$sql = 'DELETE FROM `'.self::$PREFIX.'eurovoc_rel` WHERE `'.self::$PREFIX.'assets_id`=?';		
+		$result = $this->queryPrepared($sql,$assetID);
+		
+		if (!AMA_DB::isError($result)) {			
+			if (isset($saveRelHa) && count($saveRelHa)>0) {
+				$result = $this->insertMultiRow($saveRelHa,'eurovoc_rel');
+			}
+		}
+		
+		return $result;
+	}
+	
+	/**
 	 * Inserts a new typology in the module_lex_tipologie_fonti DB table
 	 * 
 	 * @param string $newTypology
@@ -517,11 +576,11 @@ class AMALexDataHandler extends AMA_DataHandler {
 		
 		foreach ($aColumns as $column) {
 			if (is_array($column)) {
-				$sqlColumns[] = '`'.$column['tableName'].'`.`'.$column['columnName'].'` AS `'.$column['fieldName'].'`';
+				$sqlColumns[] = '`'.$column['tableName'].'`.`'.$column['columnName'].'` AS `'.$column['fieldName'].'` ';
 				$joinTables[] = 'JOIN `'.$column['tableName'].'` ON `'.
-								$sTable.'`.`'.$column['primaryKey'].'`=`'.$column['tableName'].'`.`'.$column['primaryKey'].'`';
+								$sTable.'`.`'.$column['primaryKey'].'`=`'.$column['tableName'].'`.`'.$column['primaryKey'].'` ';
 			} else {
-				$sqlColumns[] = '`'.$column.'`';
+				$sqlColumns[] = '`'.$sTable.'`.`'.$column.'`';
 			}	
 		}
 		
@@ -553,10 +612,14 @@ class AMALexDataHandler extends AMA_DataHandler {
 				"sEcho" => intval($_GET['sEcho']),
 				"iTotalRecords" => $iTotal,
 				"iTotalDisplayRecords" => $iTotalDisplayRecords,
-				"aaData" => array()
+				"aaData" => array(),
+				"sColumns" => ''
 		);
 		
-		if (!AMA_DB::isError($rResult)) {
+		if (!AMA_DB::isError($rResult) && count($rResult)>0) {
+			
+			$output['sColumns'] = implode(',', array_keys(reset($rResult)));
+			
 			foreach ($rResult as $count=>$aRow)
 			{
 				$row = array();
@@ -587,6 +650,25 @@ class AMALexDataHandler extends AMA_DataHandler {
 		}
 		
 		return $output;
+	}
+	
+	public function updateModuleLexRow ($table, $columnName, $value, $id) {
+		
+		$sql = 'UPDATE `'.$table.'` SET `'.$columnName.'`=?';
+		
+		/**
+		 * if setting an asset as verified, update verification date to now
+		 */
+		if ($columnName===self::$PREFIX.'stati_id' && $table===self::$PREFIX.'assets') {
+			$sql .= ', `data_verifica`=';
+			if (intval($value)===MODULES_LEX_ASSET_STATE_VERIFIED) {
+				$sql .= $this->date_to_ts('now');
+			} else $sql .= 'NULL';
+		} 
+		
+		$sql .=' WHERE `'.$table.'_id`=?';
+		
+		return $this->queryPrepared($sql, array($value,$id));
 	}
 	
 	/**

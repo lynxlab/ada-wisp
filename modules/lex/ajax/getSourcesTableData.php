@@ -55,12 +55,12 @@ if (isset($_SERVER['REQUEST_METHOD']) && $_SERVER['REQUEST_METHOD'] == 'GET') {
 					'numero',
 					'titolo',
 					'data_pubblicazione',
-					array (
-							'fieldName'=>'tipologia',
-							'columnName'=>'descrizione',
-							'primaryKey'=>$dh::$PREFIX.'tipologie_fonti_id',
-							'tableName'=>$dh::$PREFIX.'tipologie_fonti') 
-			      ),
+ 					array (
+ 							'fieldName'=>'tipologia',
+ 							'columnName'=>'descrizione',
+ 							'primaryKey'=>$dh::$PREFIX.'tipologie_fonti_id',
+ 							'tableName'=>$dh::$PREFIX.'tipologie_fonti') 
+			        ),
 					$dh::$PREFIX.'fonti_id',
 					$dh::$PREFIX.'fonti');
 	
@@ -80,7 +80,7 @@ if (isset($_SERVER['REQUEST_METHOD']) && $_SERVER['REQUEST_METHOD'] == 'GET') {
 					$link = 'self.document.location.href=\'index.php?op='.$type.'&id='.$id.'\';';
 					break;
 				case 1:
-					if (in_array(EDIT_SOURCE, $canDO[$userObj->getType()])) {
+					if (in_array(DELETE_SOURCE, $canDO[$userObj->getType()])) {
 						$type = 'delete';
 						$title = translateFN ('Clicca per cancellare la fonte');
 						$link = 'deleteSource ($j(this), '.$id.' , \''.urlencode(translateFN("Questo cancellerà l'elemento selezionato")).'\');';
@@ -111,6 +111,8 @@ if (isset($_SERVER['REQUEST_METHOD']) && $_SERVER['REQUEST_METHOD'] == 'GET') {
 		
 		array_push($output['aaData'][$i], $linksHtml);
 	}
+	
+	$output['sColumns'] .= ',azioni';
 	
 	echo json_encode($output);
 	

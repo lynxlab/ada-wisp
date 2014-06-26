@@ -248,7 +248,10 @@ div.show_error {
 
  
 .assetTableContainer { width: 100%; float: right; }
-.assetTreeContainer  { width: 33%; float: left; display:none; }
+.assetTreeContainer  { width: 33%; float: left; display:none; border:1px dotted gray; }
+.assetTreeContainer ul.fancytree-container,
+.assetTreeContainer ul.fancytree-treefocus { border: none; outline: none; }
+.assetTreeContainer .saveTreeButton { display: block; margin: 5px; }
 
 #assetsTable td.details { padding:0; margin:0; border: none;}
 #assetsTable td.details p { margin: 0; line-height: initial; }

@@ -22,13 +22,16 @@ $variableToClearAR = array();
 /**
  * Users (types) allowed to access this module.
 */
-$allowedUsersAr = array(AMA_TYPE_SWITCHER);
+$allowedUsersAr = array(AMA_TYPE_SWITCHER, AMA_TYPE_AUTHOR, AMA_TYPE_TUTOR, AMA_TYPE_STUDENT);
 
 /**
  * Get needed objects
 */
 $neededObjAr = array(
-		AMA_TYPE_SWITCHER => array('layout')
+		AMA_TYPE_SWITCHER => array('layout','user'),
+		AMA_TYPE_AUTHOR => array('layout','user'),
+		AMA_TYPE_TUTOR => array('layout','user'),
+		AMA_TYPE_STUDENT => array('layout','user')
 );
 
 /**
@@ -40,32 +43,31 @@ require_once(ROOT_DIR.'/browsing/include/browsing_functions.inc.php');
 
 // MODULE's OWN IMPORTS
 require_once MODULES_LEX_PATH .'/config/config.inc.php';
+require_once MODULES_LEX_PATH . '/include/management/eurovocManagement.inc.php';
 
+$retArray = null;
 
-$GLOBALS['dh'] = AMALexDataHandler::instance(MultiPort::getDSN($_SESSION['sess_selected_tester']));
+if (isset($_SERVER['REQUEST_METHOD']) && $_SERVER['REQUEST_METHOD'] == 'GET' &&
+    isset($what) && strlen($what)>0) {
+	
+	$dh = AMALexDataHandler::instance(MultiPort::getDSN($_SESSION['sess_selected_tester']));
+	
+	switch ($what) {
+		case 'stati':
+				$selectAr = $dh->getStates();
+			break;
+		case 'tipologie':
+				$selectAr = $dh->getTypologies();				
+			break;
+	}
 
-$retArray = array();
-
-if (isset($_SERVER['REQUEST_METHOD']) && $_SERVER['REQUEST_METHOD'] == 'POST') {
-
-	if (!isset($_POST['typology'])) $retArray = array("status"=>"ERROR", "msg"=>translateFN("Tipologia vuota"));
-	else
-	{
-		$result = $dh->addTypology (trim($_POST['typology']));
-		
-		if (!AMA_DB::isError($result))
-		{		
-			$retArray = array ("status"=>"OK", "msg"=>translateFN("Tipologia Aggiunta"), "id"=>$result);
-		}
-		else
-			$retArray = array ("status"=>"ERROR", "msg"=>translateFN("Errore di inserimento") );
+	if (!AMA_DB::isError($selectAr) && count($selectAr)>0) {
+		// translate all values
+		array_walk ($selectAr, function (&$value, $index){
+			$value = translateFN($value);
+		});
+		$retArray = array ('status'=>'OK', 'data'=>$selectAr);		
 	}
 }
-else {
-	$retArray = array ("status"=>"ERROR", "msg"=>translateFN("Errore nella trasmissione dei dati"));
-}
-
-if (empty($retArray)) $retArray = array("status"=>"ERROR", "msg"=>translateFN("Errore sconosciuto"));
 
 echo json_encode($retArray);
-?>
