@@ -27,7 +27,7 @@ $variableToClearAR = array('layout');
 /**
  * Users (types) allowed to access this module.
  */
-$allowedUsersAr = array(AMA_TYPE_ADMIN);
+$allowedUsersAr = array(AMA_TYPE_ADMIN,AMA_TYPE_SWITCHER,AMA_TYPE_AUTHOR);
 
 if (!MULTIPROVIDER) { 
     array_push($allowedUsersAr, AMA_TYPE_SWITCHER); 
