@@ -703,3 +703,12 @@ float: left;
 a.RSSheader {
 	text-decoration: none;
 }
+#advanced_searchLink
+{
+    margin-top: 0px;
+}
+#div_advancedSearch_form
+{
+    display: none;
+    height: 830px;
+}

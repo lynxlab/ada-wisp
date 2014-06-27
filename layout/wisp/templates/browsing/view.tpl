@@ -244,13 +244,13 @@
                                 <a href="lemming.php">
                                     <i18n>lessico</i18n>
                                 </a>
-                            </li>
+                            </li-->
                             <li>
                                 <a href="search.php">
                                     <i18n>cerca</i18n>
                                 </a>
                             </li>
-                            -->
+                            
 							
                             <li>
                             <template_field class="template_field" name="go_print">go_print</template_field>
