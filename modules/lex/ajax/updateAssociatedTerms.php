@@ -56,7 +56,7 @@ if (isset($_SERVER['REQUEST_METHOD']) && $_SERVER['REQUEST_METHOD'] == 'POST' &&
 	if (!AMA_DB::isError($result)) {
 		$retArray = array ("status"=>"OK", "msg"=>translateFN("Termini Aggiornati"));
 	} else {
-		$retArray = array ("status"=>"ERROR", "msg"=>translateFN("Errore nel salvataggio").' '.$result->errorMessage());
+		$retArray = array ("status"=>"ERROR", "msg"=>translateFN("Errore nel salvataggio"));
 	}
 	
 } else {
