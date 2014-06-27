@@ -107,6 +107,7 @@ $layout_dataAr['JS_filename'] = array(
 		MODULES_LEX_PATH . '/js/jquery.selectric.min.js',
 		MODULES_LEX_PATH . '/js/jquery.fancytree.js',
 		MODULES_LEX_PATH . '/js/jquery.fancytree.childcounter.js',
+		MODULES_LEX_PATH . '/js/jquery.fancytree.filter.js',		
 		ROOT_DIR . '/js/include/jquery/ui/i18n/datepickerLang.php',
 		JQUERY_NO_CONFLICT,
 		ROOT_DIR . '/js/include/jquery/pekeUpload/pekeUpload.js'		

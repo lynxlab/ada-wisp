@@ -240,7 +240,7 @@ class jexManagement extends importManagement
     	/**
     	 * generate an empty table that will be filled by the jQuery dataTable ajax calls
     	 */
-    	$labels = array ('&nbsp;',translateFN('etichetta'), translateFN('URL'), translateFN('Data Inserimento') , translateFN('Data Verifica'), translateFN('Stato'));
+    	$labels = array ('&nbsp;',translateFN('etichetta'), translateFN('URL'), translateFN('Data Inserimento') , translateFN('Data Verifica'), translateFN('Stato'), translateFN('link'));
     	
     	foreach ($labels as $label) {
     		$assetsData[0][$label] = '';
@@ -250,25 +250,97 @@ class jexManagement extends importManagement
     	$assetsTable->initTable('0','center','1','1','90%','','','','','1','0','','default','assetsTable');
     	$assetsTable->setTable($assetsData,$title,$title);
     	
+    	/**
+         * container div for the assets main table
+    	 */
     	$tableDIV = CDOMElement::create('div','class:assetTableContainer ui-widget-content');
-    	$treeDIV = CDOMElement::create('div','class:assetTreeContainer');
-    	
     	$tableDIV->addChild(new CText($assetsTable->getTable()));
     	
+    	/**
+         * container div for the terms tree
+    	 */
+    	$treeDIV = CDOMElement::create('div','class:assetTreeContainer');
+    	
+    	/**
+         * fancytree div
+    	 */
     	$fancyTree = CDOMElement::create('div','id:selectEurovocTerms');
-    	$echo = CDOMElement::create('div','id:echoSelection');
+		/**
+         * container div for tree tools: save button and filter text with reset filter button
+		 */    	
+    	$toolsContainer = CDOMElement::create('div','class:treeTools');
+		
+    		/**
+             * button container for proper css styling
+    		 */
+	    	$buttonContainer = CDOMElement::create('div','class:saveTreeButtonContainer');
+	    	    /**
+                 * save association button (aka saveTree)
+	    	     */
+	    		$saveTreeButton = CDOMElement::create('button','class:saveTreeButton');
+	    		$saveTreeButton->setAttribute('onclick', 'javascript:saveTree()');
+	    		$saveTreeButton->addChild(new CText(translateFN('Salva Associazioni')));
+	    	$buttonContainer->addChild($saveTreeButton);
+	    	
+	    	/**
+             * filter container for label, input text and filter reset button
+	    	 */
+	    	$divFilter = CDOMElement::create('div','class:treeFilter');
+	    	    /**
+                 * label
+	    	     */
+	    		$lblFilter = CDOMElement::create('label','for:treeFilterInput');
+	    		$lblFilter->addChild (new CText(translateFN('filtra').': '));
+	    		/**
+                 * input text
+	    		 */
+	    		$inputFilter = CDOMElement::create('text','id:treeFilterInput');
+	    		/**
+                 * filter reset button
+	    		 */
+	    		$resetFilter = CDOMElement::create('button','id:resetTreeFilter');
+	    		$resetFilter->addChild (new CText('&times;'));
+	    		
+	    	$divFilter->addChild($lblFilter);
+	    	$divFilter->addChild($inputFilter);
+	    	$divFilter->addChild($resetFilter);
+			
+	    	/**
+             * cloned button container to be added above the tree
+	    	 */
+	    	$cloneButtonContainer = clone $buttonContainer;
+	    	$cloneButtonContainer->setAttribute('class', $buttonContainer->getAttribute('class').' top');
+	    
+	    /**
+	     * add button and filter container to tree tools
+	     */	
+    	$toolsContainer->addChild($cloneButtonContainer);
+    	$toolsContainer->addChild($divFilter);
     	
-    	$saveTreeButton = CDOMElement::create('button','class:saveTreeButton');
-    	$saveTreeButton->setAttribute('onclick', 'javascript:saveTree(this)');
-    	$saveTreeButton->addChild(new CText(translateFN('Salva Associazioni')));
-    	
-    	$treeDIV->addChild($saveTreeButton);
+    	/**
+    	 * add tools to tree container
+    	 */
+    	$treeDIV->addChild($toolsContainer);
+    	// div to fix firefox display
+    	$treeDIV->addChild(CDOMElement::create('div','class:clearfix'));
+    	/**
+    	 * add tree to tree container
+    	 */
     	$treeDIV->addChild($fancyTree);
-    	$treeDIV->addChild($saveTreeButton);
-    	$treeDIV->addChild($echo);
-    	
+    	/**
+         * cloned button container to be added below the tree
+    	 */
+    	$cloneButtonContainer = clone $buttonContainer;
+	    $cloneButtonContainer->setAttribute('class', $buttonContainer->getAttribute('class').' bottom');
+    	$treeDIV->addChild($cloneButtonContainer);
+
+    	/**
+    	 * add tree container and table container to main html
+    	 */
     	$htmlObj->addChild($treeDIV);
     	$htmlObj->addChild($tableDIV);
+    	
+    	// div to fix firefox display    	
     	$htmlObj->addChild(CDOMElement::create('div','class:clearfix'));
     	
     	return $htmlObj;
@@ -288,7 +360,7 @@ class jexManagement extends importManagement
 		/**
          * generate an empty table that will be filled by the jQuery dataTable ajax calls
 		 */    	
-    	$labels = array (translateFN('Numero'), translateFN('Titolo'), translateFN('Data Pubb.') , translateFN('Tipologia'), translateFN('azioni'));
+    	$labels = array (translateFN('Numero'), translateFN('Titolo'), translateFN('Data Pubblicazione') , translateFN('Tipologia'), translateFN('azioni'));
     	
     	foreach ($labels as $label) {
     		$sourcesData[0][$label] = '';

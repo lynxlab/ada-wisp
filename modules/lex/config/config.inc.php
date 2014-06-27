@@ -23,7 +23,15 @@
 	/**
 	 * constants for asset state
 	 */
+	/**
+	 * initial asset state
+	 * if set causes verification date to be set to null
+	 */
 	define ('MODULES_LEX_ASSET_STATE_UNVERIFIED', 1);
+	/**
+	 * verified asset state
+	 * if set causes verification date to be set to now
+	 */
 	define ('MODULES_LEX_ASSET_STATE_VERIFIED', 2);
 	
 	/**

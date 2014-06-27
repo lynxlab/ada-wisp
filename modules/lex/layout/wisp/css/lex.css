@@ -218,9 +218,10 @@ div.show_error {
  */
 #sourcesTable { width: 100% !important; }
 #sourcesTable caption { width: 20%; margin: -25px auto 0 auto; position: relative; top: -10px; font-weight: bold;	color: #fff; }
-#sourcesTable tbody td { height:0; line-height: 2.5em; }
-#sourcesTable .DataTables_sort_wrapper { padding: 5px 0 5px 0; }
-#sourcesTable .DataTables_sort_icon { float: right; }
+#sourcesTable tbody td { height: 2.5em; border:none; vertical-align: middle; }
+#sourcesTable thead th { padding-right: 5px; }
+#sourcesTable .DataTables_sort_wrapper { padding: 5px 0 5px 0; width:90%; text-overflow: ellipsis; white-space: nowrap; overflow: hidden; }
+#sourcesTable .DataTables_sort_icon { float: right; margin-top: -20px; }
 #sourcesTable_previous,
 #sourcesTable_next { margin:0; padding: 3px; }
 #sourcesTable_length,
@@ -236,22 +237,26 @@ div.show_error {
  */
 #assetsTable { width: 100% !important; }
 #assetsTable caption { width: 60%; margin: -25px auto 0 auto; position: relative; top: -10px; font-weight: bold;	color: #fff; }
-#assetsTable tbody td { height:0; line-height: 2.5em; border:none; }
-#assetsTable .DataTables_sort_wrapper { padding: 5px 0 5px 0; }
-#assetsTable .DataTables_sort_icon { float: right; }
+#assetsTable tbody td { height: 3em; border:none; vertical-align: middle; }
+#assetsTable thead th { padding-right: 5px; }
+#assetsTable .DataTables_sort_wrapper { padding: 5px 0 5px 0; width:90%; text-overflow: ellipsis; white-space: nowrap; overflow: hidden; }
+#assetsTable .DataTables_sort_icon { float: right; margin-top: -20px; }
 #assetsTable_previous,
 #assetsTable_next { margin:0; padding: 3px; }
 #assetsTable_length,
 #assetsTable_filter,
 #assetsTable_paginate { padding: 5px; }
 #assetsTable_info { padding: 8px 0 0 5px; }
-
  
 .assetTableContainer { width: 100%; float: right; }
-.assetTreeContainer  { width: 33%; float: left; display:none; border:1px dotted gray; }
+.assetTreeContainer  { width: 30%; float: left; display:none; border:1px dotted gray; }
 .assetTreeContainer ul.fancytree-container,
-.assetTreeContainer ul.fancytree-treefocus { border: none; outline: none; }
-.assetTreeContainer .saveTreeButton { display: block; margin: 5px; }
+.assetTreeContainer ul.fancytree-treefocus { border: none; outline: none; width: 98%; }
+.assetTreeContainer .treeTools { width:95%; height:35px; margin: 5px 5px 0 5px; }
+.assetTreeContainer .treeTools .saveTreeButtonContainer { width: 48%; float: left; }
+.assetTreeContainer .treeTools .treeFilter { width: 51%; float: right; line-height:30px; text-align:right; }
+.assetTreeContainer .treeTools .treeFilter #treeFilterInput { width: 50%; }
+.assetTreeContainer .saveTreeButtonContainer.bottom { margin: 5px; }
 
 #assetsTable td.details { padding:0; margin:0; border: none;}
 #assetsTable td.details p { margin: 0; line-height: initial; }
@@ -263,7 +268,7 @@ div.show_error {
 #assetsTable tr.even.selectedRow td.sorting_1,
 #assetsTable tr.even.selectedRow td.sorting_2,
 #assetsTable tr.even.selectedRow td.sorting_3,
-#assetsTable .selectedRow { background: orange; color: white; font-weight: bold; }
+#assetsTable .selectedRow { background: orange; color: white; }
 
 #assetsTable .assetWordsTitle { margin: 10px 10px 5px 10px; padding: 0 0 5px 0; font-weight:bold; line-height: initial; display: block; border-bottom: 1px solid #cacaca; }
 #assetsTable .assetWords { margin: 0; }
@@ -278,12 +283,13 @@ div.show_error {
 /*
  * end assetsTable jQuery dataTable
  */
+ 
 /*
  * sourcesTable actions
  */ 
 .ulactions { list-style-type: none; display: table-cell; padding:0; }
 .liactions { float: left; border: none !important; }
-.zoomButton, .deleteButton, .showTreeButton { height: 1.5em; }
+.zoomButton, .deleteButton, .linkAssetButton { height: 1.5em; }
 /*
  * end sourcesTable actions
  */

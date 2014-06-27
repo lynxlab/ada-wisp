@@ -83,6 +83,23 @@ class AMALexDataHandler extends AMA_DataHandler {
 		return $this->getConnection()->getAssoc($sql);
 	}
 	
+	/**
+	 * updates terms associated to an assets (aka saveTree)
+	 * 
+	 * reads the associated terms id and weights from the DB
+	 * if a passed id already has a weight then use it
+	 * else set the weight to the default
+	 * 
+	 * Then, delete all the associations and save
+	 * the new ones with an insertMultiRow method call
+	 * 
+	 * @param number $assetID
+	 * @param array $selectedNodes
+	 * 
+	 * @return Ambigous <mixed, boolean, object, AMA_Error, PDOException, PDOStatement, unknown_type>
+	 * 
+	 * @access public
+	 */
 	public function updateAssociatedTerms($assetID, $selectedNodes) {
 		
 		/**
@@ -657,6 +674,18 @@ class AMALexDataHandler extends AMA_DataHandler {
 		return $output;
 	}
 	
+	/**
+	 * updates a row for both the source and asset in-table saving
+	 * 
+	 * @param string $table table to update
+	 * @param string $columnName column in table to update
+	 * @param unknown $value value to be set
+	 * @param string $id id value of the key of the table defined as '<TABLE>_id'
+	 * 
+	 * @return Ambigous <mixed, boolean, object, AMA_Error, PDOException, PDOStatement, unknown_type>
+	 * 
+	 * @access public
+	 */
 	public function updateModuleLexRow ($table, $columnName, $value, $id) {
 		
 		$sql = 'UPDATE `'.$table.'` SET `'.$columnName.'`=?';

@@ -103,6 +103,15 @@ if (isset($_SERVER['REQUEST_METHOD']) && $_SERVER['REQUEST_METHOD'] == 'GET') {
 		$expandImg->setAttribute('onclick', 'javascript:'.$linkExpand);					
 		// add expand button replacing duplicate id selected field
 		$output['aaData'][$i][1] = $expandImg->getHtml();
+		
+		// generate link button
+		$link = MODULES_LEX_HTTP . '/view.php?assetID='.$id;
+		$linkAssetButton = CDOMElement::create('button');
+		$linkAssetButton->setAttribute('onclick','javascript:self.document.location.href=\''.$link.'\';');
+		$linkAssetButton->setAttribute('class', 'linkAssetButton tooltip');
+		$linkAssetButton->setAttribute('title',translateFN('Clicca per andare alla pagina dell\'asset'));
+		// add link button to output array
+		array_push($output['aaData'][$i], $linkAssetButton->getHtml());
 	}
 	
 	// fix the sColumns used by dataTable by adding the
@@ -110,6 +119,8 @@ if (isset($_SERVER['REQUEST_METHOD']) && $_SERVER['REQUEST_METHOD'] == 'GET') {
 	$sColumns = explode (',',$output['sColumns']);
 	array_splice($sColumns, 1 ,0, 'expandAssetButton');
 	$output['sColumns'] = implode(',', $sColumns);
+	// add link button to output column list
+	$output['sColumns'] .= ',azioni';
 	
 	echo json_encode($output);	
 }
