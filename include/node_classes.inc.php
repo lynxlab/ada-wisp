@@ -2317,6 +2317,53 @@ function isNodeExercise($type) {
            break;
     }
 }
+function executeSearch($name,$title,$text,$dh,$count,$id_user)
+{
+  $out_fields_ar=array('nome','titolo','testo','tipo','id_utente');
+  $operator=array(0=>' AND ',1=>' OR ',2=>' AND ',3=>' OR ');
+  $operator2=array(0=>' AND ',1=>' AND ',2=>' OR ',3=>' OR ');
+  if($count==2)
+  {
+      $operator2=array(0=>' AND ',1=>' OR ');
+  }
+ if($count==3)
+ {
+     $count=$count+1;
+ }
+  
+  for($i=0;$i<$count;$i++)
+  {
+    if (!empty($name)) {
+          $clause = "nome LIKE '%$name%'";
+     }
+    if (!empty($title)){ //keywors
+        if ($clause) {
+            $clause = $clause . $operator[$i]. "titolo LIKE '%$title%'";
+       }
+       else
+       {
+           $clause ="titolo LIKE '%$title%'";
+       }
+    }
+    if (!empty($text)){
+        if ($clause) {
+            $clause = $clause . $operator2[$i]. "testo LIKE '%$text%'";
+       }
+        else
+       {
+           $clause ="testo LIKE '%$text%'";
+       }
+   }
+    $clause = '('.$clause.') and ((tipo <> '.ADA_PRIVATE_NOTE_TYPE.') OR (tipo ='.ADA_PRIVATE_NOTE_TYPE.' AND id_utente = '.$id_user.'))';
+    $resHa = $dh->find_course_nodes_list($out_fields_ar, $clause,$_SESSION['sess_id_course']);
+    if(!AMA_DataHandler::isError($resHa) and is_array($resHa) and !empty($resHa))
+    {
+        break;
+    }
+  }
+    return $resHa;
+    
+}
 
 } //end class node
 

@@ -324,7 +324,7 @@ if (in_array('videoroom',$thisUserNeededObjAr)) {
           }
         } else {
 
-	        $room_name = translateFN("course: ") . $course_title . ", Tutor " . $user_uname . " date: " .$creationDate;
+	        $room_name = translateFN("servizio: ") . $course_title . ", Tutor " . $user_uname . " date: " .$creationDate;
 	        $id_room = $videoroomObj->add_openmeetings_room($room_name, $sess_id_course_instance, $sess_id_user);
 	        if ($videoroomObj->login->return >=0) {
 	          $videoroomObj->room_access($user_uname,$user_name,$user_surname,$user_mail,$sess_id_user,$id_profile);

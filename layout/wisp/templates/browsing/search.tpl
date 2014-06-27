@@ -21,6 +21,7 @@
             <!--dati utente-->
             <div id="status_bar">
                     <template_field class="microtemplate_field" name="user_data_micro">user_data_micro</template_field>
+                    
             <!-- / dati utente -->            <!-- label -->
             <div id="label">
                 <div class="topleft">
@@ -29,39 +30,70 @@
                             <div class="bottomright">
                                 <div class="contentlabel">
                                     <h1><i18n>cerca</i18n></h1>
+                                    
                                 </div>
+                                
                             </div>
+                            
                         </div>
+                       
                     </div>
+                     
                 </div>
             </div><!-- /label -->
             </div>
             <!-- contenuto -->
             <div id="content">
                 <div id="contentcontent" class="contentcontent_default">
+                    <div id="div_advancedSearch_form">
+                        <div class="search_formAdvanced">
+                            <template_field class="template_field" name="advancedSearch_form">advancedSearch_form</template_field>
+                        </div>
+                        <div id="div_menuAdvanced">
+                            <template_field class="template_field" name="menu">menu</template_field>
+                                <span>
+                                    <template_field class="template_field" name="simpleSearch">simpleSearch</template_field>
+                                </span>
+                                    <div id="result_AdvancedSearch">
+                                        <i18n>Risultati:</i18n>
+                                            <div id="results">
+                                                <template_field class="template_field" name="result_AdvancedSearch">result_AdvancedSearch</template_field>
+                                            </div>
+                                    </div>
+                      </div>
+                  </div>
+                <div id="div_form">
                     <div class="first">
                         <div class="search">
+                            <div id="label_result">
+                                    <i18n>Risultati:</i18n>
+                            </div> 
                             <i18n>Cerca per: </i18n>
-                            <span>
                                 <template_field class="template_field" name="form">form</template_field>
-                            </span>
-                        </div>
-                        <div class="search_results">
-                            <template_field class="template_field" name="menu">menu</template_field>
-                            <div>
-                                <i18n>Risultati: </i18n>
-                                <span>
-                                    <template_field class="template_field" name="results">results</template_field>
-                                </span>
                             </div>
                         </div>
+                 </div>
+                <div class="search_results">
+                    <div id="div_menu">
+                            <template_field class="template_field" name="menu">menu</template_field>
+                    </div>
+                    <div id="advanced_searchLink">
+                    <span>
+                        <template_field class="template_field" name="advanced_search">advanced_search</template_field>
+                    </span>
+                </div>
+                <div class="table_result">
+                    <div id="div_Result">
+                        <span>
+                            <template_field class="template_field" name="results">results</template_field>
+                         </span>
                     </div>
                 </div>
-                <span>
-                    <template_field class="template_field" name="advanced_search">advanced_search</template_field>
-                </span>
-                <div id="bottomcont">
-                </div>
+               </div>
+              </div>
+             </div>
+             <div id="bottomcont">
+            </div>
             </div> <!--  / contenuto -->
             <!-- com_tools -->
             <div id="com_tools">
@@ -203,7 +235,7 @@
                     <div class="bottomsubmenu">
                     </div>
                 </div><!-- /strumenti -->
-                <! -- azioni -->
+                <!-- azioni -->
                 <div id="submenu_actions" class="sottomenu sottomenu_off">
                     <div id="_actionscontent">
                         <ul>
@@ -239,6 +271,8 @@
             </div> <!-- /tendina-->
         </div> <!-- / MENU A TENDINA -->
         <!-- PIEDE -->
+        <div class="clearfix"></div>
+            
         <div id="footer">
             <template_field class="microtemplate_field" name="footer">footer</template_field>
         </div> <!-- / piede -->
