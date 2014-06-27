@@ -52,7 +52,7 @@
                         <div id="div_menuAdvanced">
                             <template_field class="template_field" name="menu">menu</template_field>
                                 <span>
-                                    <template_field class="template_field" name="simpleSearch">simpleSearch</template_field>
+                                    <template_field class="template_field" name="simpleSearchLink">simpleSearchLink</template_field>
                                 </span>
                                     <div id="result_AdvancedSearch">
                                         <i18n>Risultati:</i18n>
@@ -79,7 +79,7 @@
                     </div>
                     <div id="advanced_searchLink">
                     <span>
-                        <template_field class="template_field" name="advanced_search">advanced_search</template_field>
+                        <template_field class="template_field" name="advanced_searchLink">advanced_searchLink</template_field>
                     </span>
                 </div>
                 <div class="table_result">

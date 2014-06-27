@@ -2360,6 +2360,7 @@ function executeSearch($name,$title,$text,$dh,$count,$id_user)
     {
         break;
     }
+    $clause="";
   }
     return $resHa;
     
