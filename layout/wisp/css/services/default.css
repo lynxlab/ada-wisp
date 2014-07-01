@@ -17,10 +17,16 @@
  width: 720px;
 }
 #jsbuttons .unselected{
-	background: url(../../img/buttonb.png) no-repeat top left;
+	/* background: url(../../img/buttonb.png) no-repeat top left; */
+	border-top-left-radius: 20px;
+	border-top-right-radius: 20px;
+	background-color: #a6a6a6;
 }
 #jsbuttons .selected{
-	background: url(../../img/selected_buttonb.png) no-repeat top left;
+/*	background: url(../../img/selected_buttonb.png) no-repeat top left; */
+	border-top-left-radius: 20px;
+	border-top-right-radius: 20px;
+	background-color: #c2c2c2;
 }
 
 #jsdata_textarea {
@@ -49,17 +55,17 @@
 }
 
 #jsnode_data_div {
-	left: 740px;
+	left: 738px;
 	/*top: -320px;*/
 	top: 310px;
 	position: absolute;
 	height: 0;
-	width: 349px;
+	width: 353px;
 	background: #c2c2c2;
 	right:10px;
 }
 #jsnode_data_div div {
-	background: #88a6c1;
+	background: #c2c2c2;
 	margin:0;
 	padding: 5px;
 }
@@ -95,7 +101,7 @@
 	text-align: center;
 	cursor: pointer;
 	position: relative;
-	width: 170px;
+	width: 162px;
 	top: -128px;
 	left: -2px;
 	z-index: 1;
@@ -121,7 +127,7 @@
 	text-align: center;
 	cursor: pointer;
 	position: relative;
-	width: 170px;
+	width: 162px;
 	height: 63px;
 	top: -25px;
 	left: -2px;
