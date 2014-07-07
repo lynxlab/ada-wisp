@@ -18,9 +18,6 @@
 require_once MODULES_LEX_PATH. '/include/management/abstractImportManagement.inc.php';
 require_once MODULES_LEX_PATH. '/include/form/formUploadFile.php';
 
-define ('EUROVOC_VERSION',4.40);
-
-		
 class eurovocManagement extends importManagement
 {
 	/**
