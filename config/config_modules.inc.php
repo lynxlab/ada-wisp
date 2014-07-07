@@ -53,4 +53,17 @@
 		define('MODULES_LEX', false);
 	}
 	
+	//defines for module HolisSearch
+	define('MODULES_HOLISSEARCH_PATH', MODULES_DIR.'/HolisSearch');
+	if (file_exists(MODULES_HOLISSEARCH_PATH.'/index.php'))
+	{
+		require_once(MODULES_HOLISSEARCH_PATH.'/config/config.inc.php');
+	
+		define('MODULES_HOLISSEARCH', true);
+		define('MODULES_HOLISSEARCH_HTTP', HTTP_ROOT_DIR.'/modules/HolisSearch');
+	}
+	else {
+		define('MODULES_HOLISSEARCH', false);
+	}
+	
 ?>
