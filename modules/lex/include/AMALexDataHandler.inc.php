@@ -441,7 +441,7 @@ class AMALexDataHandler extends AMA_DataHandler {
 			}
 		}
 		
-		$sql = 'SELECT `'.self::$PREFIX.'EUROVOC_DESCRIPTEUR`.`descripteur_id` FROM '.
+		$sql = 'SELECT DISTINCT(`'.self::$PREFIX.'EUROVOC_DESCRIPTEUR`.`descripteur_id`) FROM '.
 			   '`'.self::$PREFIX.'EUROVOC_DESCRIPTEUR` WHERE ';
 		if (strlen($wordsClause)>0) $sql .= $wordsClause;
 		else $sql .= '1';
@@ -477,17 +477,23 @@ class AMALexDataHandler extends AMA_DataHandler {
 	 * @access public
 	 */
 	public function get_asset_from_text($searchTerms, $verifiedOnly=false) {
+		/**
+		 * weight selection with a subquery
+		 */
+		$subquery = ' (SELECT TESTI.`'.self::$PREFIX.'testi_id`, MATCH (TESTI.`testo`) AGAINST (\''.implode(' ', $searchTerms).'\' IN NATURAL LANGUAGE MODE) as weight '.
+		            'FROM `'.self::$PREFIX.'testi` AS TESTI WHERE MATCH (TESTI.`testo`) AGAINST (\''.implode(' ', $searchTerms).'\' IN NATURAL LANGUAGE MODE)>0 ORDER BY weight DESC)'.
+		            ' AS TTESTI ';
 		
-		$sql = 'SELECT FONTI.`'.self::$PREFIX.'fonti_id`, ASSETS.`'.self::$PREFIX.'assets_id`, ASSETS.`label`, '.
-		       'MATCH (TESTI.`testo`) AGAINST (\''.implode(' ', $searchTerms).'\' IN NATURAL LANGUAGE MODE) as weight  ,  FONTI.`titolo` '.
-               'FROM `'.self::$PREFIX.'testi` TESTI JOIN `'.self::$PREFIX.'assets` ASSETS ON TESTI.`'.self::$PREFIX.'testi_id` = ASSETS.`'.self::$PREFIX.'testi_id` JOIN `'.self::$PREFIX.'fonti` AS FONTI ON FONTI.`'.self::$PREFIX.'fonti_id` = ASSETS.`'.self::$PREFIX.'fonti_id` '.
-               'WHERE 1 ';
+		$sql = 'SELECT FONTI.`'.self::$PREFIX.'fonti_id`, ASSETS.`'.self::$PREFIX.'assets_id`, ASSETS.`label`, weight, FONTI.`titolo` '.
+		       'FROM `'.self::$PREFIX.'assets` AS ASSETS INNER JOIN'.$subquery.' ON TTESTI.`'.self::$PREFIX.'testi_id` = ASSETS.`'.self::$PREFIX.'testi_id` '.
+		       'JOIN `'.self::$PREFIX.'fonti` AS FONTI ON FONTI.`'.self::$PREFIX.'fonti_id` = ASSETS.`'.self::$PREFIX.'fonti_id`';
+		
 		// gets only verified assets if requested
 		if ($verifiedOnly===true) {
-			$sql .= 'AND ASSETS.`'.self::$PREFIX.'stati_id`='.MODULES_LEX_ASSET_STATE_VERIFIED;
+			$sql .= ' AND ASSETS.`'.self::$PREFIX.'stati_id`='.MODULES_LEX_ASSET_STATE_VERIFIED;
 		}
-		$sql .= 'AND  MATCH (TESTI.`testo`) AGAINST (\''.implode(' ', $searchTerms).'\' IN NATURAL LANGUAGE MODE)>0 '.
- 				'ORDER BY FONTI.`'.self::$PREFIX.'fonti_id` ASC , weight DESC';
+		
+		$sql .= ' ORDER BY FONTI.`'.self::$PREFIX.'fonti_id` ASC , weight DESC';
 		
 		$res =  $this->getAllPrepared($sql, null, AMA_FETCH_ASSOC);
 		
@@ -521,24 +527,28 @@ class AMALexDataHandler extends AMA_DataHandler {
 	 * @access public
 	 */
 	public function get_asset_from_descripteurs ($descripteurAr, $verifiedOnly=false) {
-		
-		$sql = 'SELECT FONTI.`'.self::$PREFIX.'fonti_id`, ASSETS.`'.self::$PREFIX.'assets_id`, ASSETS.`label`, REL.`weight` as weight,  FONTI.`titolo` '.
- 	           'FROM `'.self::$PREFIX.'eurovoc_rel` REL JOIN `'.self::$PREFIX.'assets` ASSETS ON REL.`'.self::$PREFIX.'assets_id` = ASSETS.`'.self::$PREFIX.'assets_id` JOIN `'.self::$PREFIX.'fonti` AS FONTI ON FONTI.`'.self::$PREFIX.'fonti_id` = ASSETS.`'.self::$PREFIX.'fonti_id` '.
-               'WHERE 1 ';
-		// gets only verified assets if requested
-		if ($verifiedOnly===true) {
-			$sql .= 'AND ASSETS.`'.self::$PREFIX.'stati_id`='.MODULES_LEX_ASSET_STATE_VERIFIED;
-		}
-		
+		/**
+         * max weight selection with a subquery
+		 */
+		$subquery = '(SELECT `'.self::$PREFIX.'assets_id`, MAX(weight) as weight FROM `'.self::$PREFIX.'eurovoc_rel` REL';
 		// build descripteur clause
 		if (is_array($descripteurAr) && count($descripteurAr)>0) {
-			$sql .= ' AND REL.`descripteur_id` IN (';
-			$sql .= implode(',', $descripteurAr);
-			$sql .= ' )';
+			$subquery .= ' WHERE REL.`descripteur_id` IN (';
+			$subquery .= implode(',', $descripteurAr);
+			$subquery .= ' ) ';
+		}
+		$subquery .='GROUP BY `REL`.`'.self::$PREFIX.'assets_id` ) AS `GROUPEDREL`';
+		
+		$sql  = 'SELECT FONTI.`'.self::$PREFIX.'fonti_id`, ASSETS.`'.self::$PREFIX.'assets_id`, ASSETS.`label`, weight,  FONTI.`titolo` ';
+		$sql .= 'FROM `'.self::$PREFIX.'assets` ASSETS INNER JOIN '.$subquery.' ON `GROUPEDREL`.`'.self::$PREFIX.'assets_id` = `ASSETS`.`'.self::$PREFIX.'assets_id` ';
+		$sql .= 'JOIN `'.self::$PREFIX.'fonti` AS `FONTI` ON  `FONTI`.`'.self::$PREFIX.'fonti_id`=`ASSETS`.`'.self::$PREFIX.'fonti_id`';		 
+
+		if ($verifiedOnly===true) {
+			$sql .= ' AND ASSETS.`'.self::$PREFIX.'stati_id`='.MODULES_LEX_ASSET_STATE_VERIFIED;
 		}
 		
-		$sql .=' ORDER BY FONTI.`'.self::$PREFIX.'fonti_id` ASC , REL.`weight` DESC ';
-		
+		$sql .=' ORDER BY FONTI.`'.self::$PREFIX.'fonti_id` ASC , weight DESC ';
+						
 		$res =  $this->getAllPrepared($sql, null, AMA_FETCH_ASSOC);
 		
 		if (!AMA_DB::isError($res) && count($res)>0) {
