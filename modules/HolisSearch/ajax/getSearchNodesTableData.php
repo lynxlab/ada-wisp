@@ -122,16 +122,14 @@ if (isset($_SERVER['REQUEST_METHOD']) && $_SERVER['REQUEST_METHOD'] == 'POST' &&
 							$queryParams[] = 'id_course='.$courseID;
 							
 							if ($userObj->getType()==AMA_TYPE_STUDENT) {
-								$instancesAr = $dh->get_course_instances_active_for_this_student($userObj->getId());
+								$instancesAr = $dh->get_course_instance_for_this_student_and_course_model($userObj->getId(),$courseID);
 								/**
 								 * user should not have more than one active instance
-								 * anyway, just take the first one returned by method call...
+								 * anyway, just take the first one as $getAll is not passed to $dh method call above
 								 * 
-								 * if the instancesAr is an error, the generated link is
-								 * not going to work for the student
 								 */
 								if (!AMA_DB::isError($instancesAr)) {
-									$queryParams[] = 'id_course_instance='.$instancesAr[0]['id_istanza_corso'];
+									$queryParams[] = 'id_course_instance='.$instancesAr['istanza_id'];
 								}
 							}
 							
