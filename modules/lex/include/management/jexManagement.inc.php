@@ -233,7 +233,7 @@ class jexManagement extends importManagement
      * 
      * @access public
      */
-    public static function getSourceZoomContent($title, $sourceID) {
+    public static function getSourceZoomContent($title, $sourceID, $canEdit) {
     	
     	$htmlObj = CDOMElement::create('div','id:assetsContainer_'.$sourceID);
     	
@@ -277,10 +277,12 @@ class jexManagement extends importManagement
 	    	    /**
                  * save association button (aka saveTree)
 	    	     */
+	    	if ($canEdit) {
 	    		$saveTreeButton = CDOMElement::create('button','class:saveTreeButton');
 	    		$saveTreeButton->setAttribute('onclick', 'javascript:saveTree()');
 	    		$saveTreeButton->addChild(new CText(translateFN('Salva Associazioni')));
-	    	$buttonContainer->addChild($saveTreeButton);
+	    		$buttonContainer->addChild($saveTreeButton);
+	    	}
 	    	
 	    	/**
              * filter container for label, input text and filter reset button

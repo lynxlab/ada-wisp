@@ -124,7 +124,7 @@ function initDoc(maxSize, userId, canEdit) {
 		// for performance reason, it's better to load the fancyTreeObj as the last element
 		if ($j('#selectEurovocTerms').length>0) {
 			// init main fancyTreeObj object
-			fancyTreeObj = initfancyTreeObj ($j('#selectEurovocTerms'),null);
+			fancyTreeObj = initfancyTreeObj ($j('#selectEurovocTerms'),null,canEdit);
 			
 			/**
 			 * init tree filter text input
@@ -415,6 +415,8 @@ function assetExpand(clickedObj, selectedNodes) {
 		// get the asset if from the row id
     	assetID = parseInt($j(nTr).attr('id').replace(/^.*?:/, ''));
     	if (!isNaN(assetID)) {
+    		// clear the tree filter
+    		$j("button#resetTreeFilter").click();
     		// Open this row with an ajax loader
     		openAssetDetails(assetID, nTr, clickedObj);    		
     	}    	
@@ -796,7 +798,8 @@ function initToolTips() {
  * 
  * @returns fancyTree
  */
-function initfancyTreeObj (element, selectOnLoad) {
+function initfancyTreeObj (element, selectOnLoad, canEdit) {
+	var isInit = true;
     return element.fancytree({
     	extensions: ["childcounter", "filter"],
         childcounter: {
@@ -811,6 +814,9 @@ function initfancyTreeObj (element, selectOnLoad) {
         checkbox: true,
         selectMode: 2,
         select: function(event, data) {
+        	
+        	if (!canEdit) return;
+        	
             var isSelected = data.node.isSelected();
       	  	var nodeKey = data.node.key;
       	  	
@@ -825,6 +831,13 @@ function initfancyTreeObj (element, selectOnLoad) {
       	  			targetNodes[i].setSelected(isSelected);
       	  		}
       	  	}       
+          },
+          beforeSelect: function(event, data){
+              /**
+               *  handle all code generated events and discard
+               *  mouse or keyboard generated events if the user cannot edit
+               */ 
+        	  return (event.which) ? canEdit : true;        	  
           },
           source: {
             url: 'ajax/getEurovocTree.php'
