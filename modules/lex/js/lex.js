@@ -30,6 +30,8 @@ var commonPekeOptions = {
 };
 
 function initDoc(maxSize, userId, canEdit) {
+	// conver canEdit to a boolean
+	canEdit = (canEdit > 0);
 	
 	$j(document).ready(function() {
 		// init the tabs
