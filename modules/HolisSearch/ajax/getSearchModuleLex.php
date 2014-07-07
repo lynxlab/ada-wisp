@@ -44,6 +44,7 @@ require_once(ROOT_DIR.'/browsing/include/browsing_functions.inc.php');
 
 // MODULE's OWN IMPORTS
 require_once MODULES_HOLISSEARCH_PATH .'/config/config.inc.php';
+require_once MODULES_LEX_PATH . '/include/functions.inc.php';
 
 $retArray = null;
 
@@ -52,16 +53,19 @@ if (isset($_SERVER['REQUEST_METHOD']) && $_SERVER['REQUEST_METHOD'] == 'POST' &&
 	
 	$dh = AMALexDataHandler::instance(MultiPort::getDSN(MODULES_LEX_PROVIDER_POINTER));
 	
-	// close the session if not needed, this is important for
-	// the ajax call to not be block until the script ends and the session is closed	
-	session_write_close();
-	
 	if (!AMA_DB::isError($dh)) {
 		/**
 		 * 1. ask the datahandler for the DESCRIPTEUR_ID of
-		 *    the passed word. One day this will be done by a webservice
+		 *    the passed word. One day this will be done by a
+		 *    webservice hopefully using the $querystring only
+		 *    
+		 *    NOTE: $querystring is passed in POST
 		 */
-		$descripteurAr = $dh->getEurovocDESCRIPTEURIDS($searchTerms, 'it');
+		$descripteurAr = $dh->getEurovocDESCRIPTEURIDS(array_merge($searchTerms,array($querystring)), getLanguageCode());
+		
+		// close the session if not needed, this is important for
+		// the ajax call to not be block until the script ends and the session is closed
+		session_write_close();
 		
 		if (AMA_DB::isError($descripteurAr)) $descripteur_ids = array();
 		else {
