@@ -80,6 +80,12 @@ if (isset($_SERVER['REQUEST_METHOD']) && $_SERVER['REQUEST_METHOD'] == 'POST' &&
 			$searchResults = $dh->get_asset_from_descripteurs($descripteur_ids);			
 		} else $searchResults = array();
 		
+		$foundAssetsID = array();
+		foreach ($searchResults as $j=>$aResult) {
+			foreach ($aResult['data'] as $key=>$aDataRow)
+				$foundAssetsID[$j][$key] = $aDataRow[AMALexDataHandler::$PREFIX.'assets_id'];
+		}
+		
 		/**
 		 * 3. now do a fulltext search on asset associated text and merge the results
 		 *    with point 2
@@ -91,9 +97,20 @@ if (isset($_SERVER['REQUEST_METHOD']) && $_SERVER['REQUEST_METHOD'] == 'POST' &&
 				if (!isset($searchResults[$j]) || count($searchResults)<=0) {
 					$searchResults[$j] = $fulltextEl;
 				} else {
-					// merge the data arrays
-					$searchResults[$j]['data'] = array_merge($searchResults[$j]['data'],$fulltextEl['data']);
+					// merge the data arrays if needed
+					foreach ($fulltextEl['data'] as $aFullTextDataRow)
+					{
+						$key = array_search($aFullTextDataRow[AMALexDataHandler::$PREFIX.'assets_id'],$foundAssetsID[$j]);
+						if (false===$key) {
+							array_push($searchResults[$j]['data'],$aFullTextDataRow);
+						} else {
+							if ($searchResults[$j]['data'][$key]['weight'] < $aFullTextDataRow['weight']) {
+								// if the new found weight is higher than the old one, update it
+								$searchResults[$j]['data'][$key]['weight'] = $aFullTextDataRow['weight'];
+							}
+						}
 					// results sorting is handled by jQuery dataTable
+					}
 				}
 			}
 		}
