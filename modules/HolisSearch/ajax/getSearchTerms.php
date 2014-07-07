@@ -85,5 +85,9 @@ if (isset($_SERVER['REQUEST_METHOD']) && $_SERVER['REQUEST_METHOD'] == 'POST' &&
 	curl_close($ch);
 }
 
+// substitute underscores with spaces
+if (!is_null($retArray)) {
+	array_walk ($retArray,function(&$value){ $value = str_replace('_', ' ', $value); });
+}
+// return the array
 echo json_encode(array_values($retArray));
-
