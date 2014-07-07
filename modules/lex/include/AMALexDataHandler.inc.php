@@ -417,6 +417,145 @@ class AMALexDataHandler extends AMA_DataHandler {
 	}
 	
 	/**
+	 * given a term or an array of terms, gets its or their descripteur_id
+	 * 
+	 * @param string $terms the term or arrray of terms
+	 * @param string $lng
+	 * @param double $version
+	 * 
+	 * @return Ambigous <mixed, unknown, object, AMA_Error, PDOException, PDOStatement, unknown_type>
+	 * 
+	 * @access public
+	 */
+	public function getEurovocDESCRIPTEURIDS ($terms, $lng, $version=EUROVOC_VERSION) {
+		
+		if (!is_array($terms)) $libelles = array ($terms);
+		else $libelles = $terms;
+		
+		$wordsClause = '';
+		
+		foreach ($libelles as $num=>$libelle) {
+			if (strlen($libelle)>0) {
+				$wordsClause .= '(`'.self::$PREFIX.'EUROVOC_DESCRIPTEUR`.`libelle` LIKE ?)';
+				if ($num < count($libelles)-1) $wordsClause .= ' OR ';
+			}
+		}
+		
+		$sql = 'SELECT `'.self::$PREFIX.'EUROVOC_DESCRIPTEUR`.`descripteur_id` FROM '.
+			   '`'.self::$PREFIX.'EUROVOC_DESCRIPTEUR` WHERE ';
+		if (strlen($wordsClause)>0) $sql .= $wordsClause;
+		else $sql .= '1';
+		
+		$sql .= ' AND `version`=? AND `lng`=? ';
+		
+		if (strlen($wordsClause)>0) {
+			// prepend and append % to libelles value for LIKE operand
+			array_walk($libelles, function(&$value){ $value = '%'.$value.'%'; });
+			$params = array_merge(array_values($libelles),array($version,$lng));
+		} else {
+			$params = array($version,$lng);
+		}
+		
+		return $this->getAllPrepared($sql,$params,AMA_FETCH_ASSOC);
+	}
+	
+	/**
+	 * gets the asset list associated to the passed searchTerms matched
+	 * with MySQL NATURAL LANGUAGE MODE FULLTEXT search
+	 * the following fields are returned
+	 * associated source id, field name: module_lex_fonti_id
+	 * asset id, field name: module_lex_assets_id
+	 * asset label, field name: label
+	 * asset/descripteur_id weight, field name: weight
+	 * associated source title, field name: title
+	 *
+	 * @param array $searchTerm the array of terms to be matched
+	 * @param bool $verifiedOnly true if verified assets only are to be returned. defaults to false
+	 *
+	 * @retrun NULL|Array
+	 *
+	 * @access public
+	 */
+	public function get_asset_from_text($searchTerms, $verifiedOnly=false) {
+		
+		$sql = 'SELECT FONTI.`'.self::$PREFIX.'fonti_id`, ASSETS.`'.self::$PREFIX.'assets_id`, ASSETS.`label`, '.
+		       'MATCH (TESTI.`testo`) AGAINST (\''.implode(' ', $searchTerms).'\' IN NATURAL LANGUAGE MODE) as weight  ,  FONTI.`titolo` '.
+               'FROM `'.self::$PREFIX.'testi` TESTI JOIN `'.self::$PREFIX.'assets` ASSETS ON TESTI.`'.self::$PREFIX.'testi_id` = ASSETS.`'.self::$PREFIX.'testi_id` JOIN `'.self::$PREFIX.'fonti` AS FONTI ON FONTI.`'.self::$PREFIX.'fonti_id` = ASSETS.`'.self::$PREFIX.'fonti_id` '.
+               'WHERE 1 ';
+		// gets only verified assets if requested
+		if ($verifiedOnly===true) {
+			$sql .= 'AND ASSETS.`'.self::$PREFIX.'stati_id`='.MODULES_LEX_ASSET_STATE_VERIFIED;
+		}
+		$sql .= 'AND  MATCH (TESTI.`testo`) AGAINST (\''.implode(' ', $searchTerms).'\' IN NATURAL LANGUAGE MODE)>0 '.
+ 				'ORDER BY FONTI.`'.self::$PREFIX.'fonti_id` ASC , weight DESC';
+		
+		$res =  $this->getAllPrepared($sql, null, AMA_FETCH_ASSOC);
+		
+		if (!AMA_DB::isError($res) && count($res)>0) {
+			$retArray = array();
+			foreach ($res as $count=>$element) {
+				$key = $element[self::$PREFIX.'fonti_id'];
+				$retArray[$key]['titolo'] = $element['titolo'];
+				unset($element[self::$PREFIX.'fonti_id']);
+				unset($element['titolo']);
+				$retArray[$key]['data'][] = $element;
+			}
+			return $retArray;
+		} else return null;
+	}
+
+	/**
+	 * gets the asset list associated to the passed descripteur_id array
+	 * the following fields are returned
+	 * associated source id, field name: module_lex_fonti_id
+	 * asset id, field name: module_lex_assets_id
+	 * asset label, field name: label
+	 * asset/descripteur_id weight, field name: weight
+	 * associated source title, field name: title
+	 * 
+	 * @param array $descripteurAr the array of descripteur_id
+	 * @param bool $verifiedOnly true if verified assets only are to be returned. defaults to false
+	 * 
+	 * @retrun NULL|Array
+	 * 
+	 * @access public
+	 */
+	public function get_asset_from_descripteurs ($descripteurAr, $verifiedOnly=false) {
+		
+		$sql = 'SELECT FONTI.`'.self::$PREFIX.'fonti_id`, ASSETS.`'.self::$PREFIX.'assets_id`, ASSETS.`label`, REL.`weight` as weight,  FONTI.`titolo` '.
+ 	           'FROM `'.self::$PREFIX.'eurovoc_rel` REL JOIN `'.self::$PREFIX.'assets` ASSETS ON REL.`'.self::$PREFIX.'assets_id` = ASSETS.`'.self::$PREFIX.'assets_id` JOIN `'.self::$PREFIX.'fonti` AS FONTI ON FONTI.`'.self::$PREFIX.'fonti_id` = ASSETS.`'.self::$PREFIX.'fonti_id` '.
+               'WHERE 1 ';
+		// gets only verified assets if requested
+		if ($verifiedOnly===true) {
+			$sql .= 'AND ASSETS.`'.self::$PREFIX.'stati_id`='.MODULES_LEX_ASSET_STATE_VERIFIED;
+		}
+		
+		// build descripteur clause
+		if (is_array($descripteurAr) && count($descripteurAr)>0) {
+			$sql .= ' AND REL.`descripteur_id` IN (';
+			$sql .= implode(',', $descripteurAr);
+			$sql .= ' )';
+		}
+		
+		$sql .=' ORDER BY FONTI.`'.self::$PREFIX.'fonti_id` ASC , REL.`weight` DESC ';
+		
+		$res =  $this->getAllPrepared($sql, null, AMA_FETCH_ASSOC);
+		
+		if (!AMA_DB::isError($res) && count($res)>0) {
+			$retArray = array();
+			foreach ($res as $count=>$element) {
+				$key = $element[self::$PREFIX.'fonti_id'];
+				$retArray[$key]['titolo'] = $element['titolo'];
+				unset($element[self::$PREFIX.'fonti_id']);
+				unset($element['titolo']);
+				$retArray[$key]['data'][] = $element;
+			}
+			return $retArray;
+		} else return null;
+		
+	}
+	
+	/**
 	 * gets the sources list from the module_lex_fonti table
 	 * 
 	 * @param array $fields the array of the fields to get, if 'tipologia' is found in the array then a join with module_lex_tipologie_fonti is performed 
