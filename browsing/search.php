@@ -244,6 +244,7 @@ if ($op == 'lemma') {
 }
 
 $fObj = new Form();
+$action=whoami().".php";
 /*set get method to prevent the confirmation data on back button's browser*/
 $fObj->initForm($action, 'GET');
 $fObj->setForm($form_dataHa);
@@ -305,8 +306,8 @@ $content_dataAr = array(
   //'results'=>$search_results,
   'results'=>$results,
   'result_AdvancedSearch'=>$result_AdvancedSearch,
-  'simpleSearch'=>$Simple_searchLink,
-  'advanced_search'=>$advanced_searchLink,
+  'simpleSearchLink'=>$Simple_searchLink,
+  'advanced_searchLink'=>$advanced_searchLink,
   'menu'=>$menu,
   'chat_link'=>$chat_link,
   'banner'=> $banner,
