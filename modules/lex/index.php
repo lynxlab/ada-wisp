@@ -23,7 +23,7 @@ $variableToClearAR = array('node', 'layout', 'course', 'user');
 /**
  * Users (types) allowed to access this module.
 */
-$allowedUsersAr = array(AMA_TYPE_SWITCHER,AMA_TYPE_AUTHOR,AMA_TYPE_STUDENT);
+$allowedUsersAr = array(AMA_TYPE_SWITCHER,AMA_TYPE_AUTHOR,AMA_TYPE_TUTOR,AMA_TYPE_STUDENT);
 
 /**
  * Get needed objects
@@ -31,6 +31,7 @@ $allowedUsersAr = array(AMA_TYPE_SWITCHER,AMA_TYPE_AUTHOR,AMA_TYPE_STUDENT);
 $neededObjAr = array(
 		AMA_TYPE_SWITCHER => array('layout'),
 		AMA_TYPE_AUTHOR => array('layout'),
+		AMA_TYPE_TUTOR => array('layout'),
 		AMA_TYPE_STUDENT => array('layout')
 );
 
@@ -114,7 +115,7 @@ $layout_dataAr['JS_filename'] = array(
 );
 
 $maxFileSize = (int) (ADA_FILE_UPLOAD_MAX_FILESIZE / (1024*1024));
-$optionsAr['onload_func'] = 'initDoc('.$maxFileSize.','. $userObj->getId().','.intval($userObj->getType()!=AMA_TYPE_STUDENT).');';
+$optionsAr['onload_func'] = 'initDoc('.$maxFileSize.','. $userObj->getId().','.intval($userObj->getType()==AMA_TYPE_AUTHOR).');';
 
 $avatar = CDOMElement::create('img','class:img_user_avatar,src:'.$userObj->getAvatar());
 $content_dataAr['user_avatar'] = $avatar->getHtml();
