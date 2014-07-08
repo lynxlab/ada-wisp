@@ -131,17 +131,31 @@ if (isset($_SERVER['REQUEST_METHOD']) && $_SERVER['REQUEST_METHOD'] == 'POST' &&
 								if (!AMA_DB::isError($instancesAr)) {
 									$queryParams[] = 'id_course_instance='.$instancesAr['istanza_id'];
 								}
+							} else if ($userObj->getType()==AMA_TYPE_TUTOR) {
+								$instancesAr = $dh->get_tutors_assigned_course_instance($userObj->getId(), $courseID);
+								/**
+								 * in case of tutor, get the first returned instance?!?!
+								 *
+								 */
+								if (!AMA_DB::isError($instancesAr)) {
+									$instance = reset ($instancesAr[$userObj->getId()]);
+									$queryParams[] = 'id_course_instance='.$instance['id_istanza_corso'];
+								}
 							}
 							
 							$queryParams[] = 'id_node='.$res_id_node;
 							if (strlen($querystring)>0) $queryParams[] = $querystring;
 							
-							$html_for_result = "<a href=\"".HTTP_ROOT_DIR."/browsing/view.php?".implode('&', $queryParams)."\">$res_name</a>";
+							$viewNodeLink = CDOMElement::create('a','class:tooltip,target:_blank,href:'.HTTP_ROOT_DIR.'/browsing/view.php?'.implode('&', $queryParams));
+							$viewNodeLink->setAttribute('title', translateFN('Clicca per andare al contenuto'));
+							$viewNodeLink->addChild(new CText($res_name));
+							
+// 							$html_for_result = "<a href=\"".HTTP_ROOT_DIR."/browsing/view.php?".implode('&', $queryParams)."\" target=\"_blank\">$res_name</a>";
 							// clean queryParams for next iteration
 							unset($queryParams);
 						}
 						
-						$temp_results = array($thead_data[0] => $html_for_result,
+						$temp_results = array($thead_data[0] => $viewNodeLink->getHtml(),
 											  $thead_data[1] => $res_course_title,
 											  $thead_data[2] => $res_score);
 						
@@ -163,7 +177,8 @@ if (isset($_SERVER['REQUEST_METHOD']) && $_SERVER['REQUEST_METHOD'] == 'POST' &&
 					$data = null;
 					
 					if (count($nodesAr)>0) {
-						$title = CDOMElement::create('h3');
+						$title = CDOMElement::create('h3','class:tooltip');
+						$title->setAttribute('title', translateFN('Clicca per espandere/ridurre'));
 						$title->addChild (new CText( $caption.'-'.translateFN('Nodi')));
 						$result_table = BaseHtmlLib::tableElement('class:nodesResultsTable', $thead_data, $nodesAr);
 						$data = $title->getHtml().$result_table->getHtml();

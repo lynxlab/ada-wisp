@@ -26,6 +26,33 @@ function initDoc() {
 }
 
 /**
+ * inits the tooltips in all the children of 
+ * passed element having the .tooltip class
+ */
+function initToolTips(elementID) {
+	// inizializzo i tooltip sul title di ogni elemento!
+	if ($j(elementID + ' .tooltip').length>0) {
+		$j(elementID + ' .tooltip').tooltip(
+				{
+					show : {
+						effect : "slideDown",
+						delay : 300,
+						duration : 100
+					},
+					hide : {
+						effect : "slideUp",
+						delay : 100,
+						duration : 100
+					},
+					position : {
+						my : "left bottom-5",
+						at : "left top"
+					}
+				});
+	}
+}
+
+/**
  * renders the passed element as an accordion:
  * all the <h3> becomes clickable accordion header and the
  * div next to the <h3> becomes the collapsible content
@@ -128,7 +155,7 @@ var HolisSearchManagement = (function() {
 	 * run the search on modules lex, and builds the UI upon data arrival
 	 */
 	var _runModuleLexSearch = function() {
-		var thisReference = this;
+		
     	$j.ajax({
 			type	:	'POST',
 			url		:	'ajax/getSearchModuleLex.php',
@@ -155,6 +182,7 @@ var HolisSearchManagement = (function() {
 					});
 					
 					doAccordion('.moduleLexResult');
+					initToolTips('.moduleLexResult');
 				} else {
 					/**
 					 * log the error message to the conosle
@@ -239,6 +267,7 @@ var HolisSearchManagement = (function() {
 							          }
 								});
 								doAccordion(animateTarget);
+								initToolTips(animateTarget);
 								
 								resultObj.fadeIn( function (){
 									// reset target height to auto so that

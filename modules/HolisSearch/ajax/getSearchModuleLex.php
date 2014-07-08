@@ -127,10 +127,12 @@ if (isset($_SERVER['REQUEST_METHOD']) && $_SERVER['REQUEST_METHOD'] == 'POST' &&
 				
 				$resultDIV = CDOMElement::create('div','id:moduleLexResult:'.$j.',class:moduleLexResult');
 				
-				$title = CDOMElement::create('h3');
+				$title = CDOMElement::create('h3','class:tooltip');
+				$title->setAttribute('title', translateFN('Clicca per espandere/ridurre'));				
 				$title->addChild (new CText( $resultEl['titolo'] ));
 				
-				$viewFontLink = CDOMElement::create('a','class:gotofont,href:'.MODULES_LEX_HTTP.'/index.php?op=zoom&id='.$j);
+				$viewFontLink = CDOMElement::create('a','class:gotofont tooltip,target:_blank,href:'.MODULES_LEX_HTTP.'/index.php?op=zoom&id='.$j);
+				$viewFontLink->setAttribute('title', translateFN('Clicca per andare alla fonte'));
 				$viewFontLink->addChild(new CText(translateFN('Vai alla Fonte')));
 				
 				$resultDIV->addChild($viewFontLink);
@@ -141,7 +143,8 @@ if (isset($_SERVER['REQUEST_METHOD']) && $_SERVER['REQUEST_METHOD'] == 'POST' &&
 									
 				foreach ($resultEl['data'] as $dataEl) {
 					
-					$labelHref = CDOMElement::create('a','href:'.$baseLink.$dataEl[AMALexDataHandler::$PREFIX.'assets_id']);
+					$labelHref = CDOMElement::create('a','target:_blank,class:tooltip,href:'.$baseLink.$dataEl[AMALexDataHandler::$PREFIX.'assets_id']);
+					$labelHref->setAttribute('title', translateFN('Clicca per andare al testo'));
 					$labelHref->addChild(new CText($dataEl['label']));
 					
 					$res_name = $labelHref->getHtml();
