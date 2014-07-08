@@ -57,6 +57,7 @@ if (!isset($searchtext) || strlen (trim($searchtext)) <=0) {
 } else if ((isset($searchtext) && strlen (trim($searchtext)) >0)) {
 	
 	$common_dh = $GLOBALS['common_dh'];
+	$dh = $GLOBALS['dh'];
 	
 	/**
 	 * get the ids of the courses to be searched
@@ -69,16 +70,40 @@ if (!isset($searchtext) || strlen (trim($searchtext)) <=0) {
 	 */
 	$searchCoursesIDs = array();
 	
-	$testerPointers = $common_dh->get_testers_for_user($userObj->getId());
-	
-	if (!AMA_DB::isError($testerPointers) && count ($testerPointers)>0) {
-		foreach ($testerPointers as $testerPointer) {
-			$testerInfo = $common_dh->get_tester_info_from_pointer ($testerPointer);
-			if (!AMA_DB::isError($testerInfo) && count($testerInfo)>0) {
-				$courseIDs = $common_dh->get_courses_for_tester($testerInfo[0]);
-				if (!AMA_DB::isError($courseIDs) && count($courseIDs)>0) {
-					$searchCoursesIDs = array_merge($searchCoursesIDs, $courseIDs);
-				}				
+	if ($userObj->getType()==AMA_TYPE_TUTOR) {
+		/**
+         * If user it's a tutor, search only in assigned courses
+         * otherwise the generated browsing/view.php links won't work
+		 */
+		$tutoredInstances = $dh->get_tutors_assigned_course_instance($userObj->getId());
+		
+		if (!AMA_DB::isError($tutoredInstances)) {
+			foreach ($tutoredInstances as $tutoredInstanceAr) {
+				foreach ($tutoredInstanceAr as $instance) {
+					$searchCoursesIDs[] = $instance['id_corso'];
+				}
+			}
+		}
+		// remove duplicate ids, if any
+		if (count($searchCoursesIDs)>0) {
+			$searchCoursesIDs = array_unique($searchCoursesIDs); 
+		}
+	} else {
+		/**
+         * If it's NOT a tutor, it should be okay to search in
+         * all courses of all the providers where the user is listed
+		 */
+		$testerPointers = $common_dh->get_testers_for_user($userObj->getId());
+		
+		if (!AMA_DB::isError($testerPointers) && count ($testerPointers)>0) {
+			foreach ($testerPointers as $testerPointer) {
+				$testerInfo = $common_dh->get_tester_info_from_pointer ($testerPointer);
+				if (!AMA_DB::isError($testerInfo) && count($testerInfo)>0) {
+					$courseIDs = $common_dh->get_courses_for_tester($testerInfo[0]);
+					if (!AMA_DB::isError($courseIDs) && count($courseIDs)>0) {
+						$searchCoursesIDs = array_merge($searchCoursesIDs, $courseIDs);
+					}
+				}
 			}
 		}
 	}
@@ -119,6 +144,7 @@ else
 }
 
 array_push($layout_dataAr['CSS_filename'], JQUERY_DATATABLE_CSS);
+array_push($layout_dataAr['CSS_filename'], MODULES_HOLISSEARCH_PATH.'/layout/tooltips.css');
 
 $content_dataAr = array(
 		'user_name' => $user_name,
