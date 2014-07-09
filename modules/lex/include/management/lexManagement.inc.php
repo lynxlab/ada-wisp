@@ -51,13 +51,13 @@ class lexManagement
     	/* @var $status string status var to render in the breadcrumbs */
     	$title= translateFN('lex');
     	
-    	if (isset ($this->_canDO) && count ($this->_canDO)>0 && in_array(ZOOM_SOURCE, $this->_canDO)) {
+    	if ($this->canDo(ZOOM_SOURCE)) {
     		
     		$jexObj = new jexManagement($this->_userObj);
     		$sourceArr = $jexObj->getSource($sourceID);
     		
     		$htmlObj = CDOMElement::create('div','id:sourceZoom');
-    		$htmlObj->addChild (jexManagement::getSourceZoomContent($sourceArr['titolo'],$sourceArr[AMALexDataHandler::$PREFIX.'fonti_id'], in_array(EDIT_SOURCE, $this->_canDO)));
+    		$htmlObj->addChild (jexManagement::getSourceZoomContent($sourceArr['titolo'],$sourceArr[AMALexDataHandler::$PREFIX.'fonti_id'], $this->canDo(EDIT_SOURCE)));
     		
     	} else {
 			// user cannot do anything, report it as a message
@@ -121,13 +121,24 @@ class lexManagement
 						$a->addChild (new CText(jexManagement::getTabTitle($actionCode)));
 						$div->addChild (jexManagement::getEditContent());
 						break;
+					case SEARCH_SOURCE:
+						if (defined('MODULES_HOLISSEARCH') && MODULES_HOLISSEARCH) {
+							$a->addChild (new CText(translateFN('Cerca')));
+							$a->setAttribute('href', MODULES_HOLISSEARCH_HTTP);
+							$div->addChild (CDOMElement::create('div'));
+						} else {
+							unset($a);
+						}
+						break;
 					default:
 						break;
 				}
 				
-				$li->addChild ($a);
-				$ul->addChild ($li);
-				$tabsContainerDIV->addChild($div);
+				if (isset($a)) {
+					$li->addChild ($a);
+					$ul->addChild ($li);
+					$tabsContainerDIV->addChild($div);
+				}
 			}			
 			$htmlObj->addChild($ul);
 			$htmlObj->addChild($tabsContainerDIV);
@@ -143,5 +154,22 @@ class lexManagement
 			'help'      => $help,
 			'title'     => $title,
 		);
+	}
+	
+	/**
+	 * checks if the user can do an action
+	 * 
+	 * @param string $action the action constant name to check
+	 * 
+	 * @return boolean true if user is allowed to perform the action
+	 * 
+	 * @access public
+	 */
+	public function canDo($action=null) {
+		if (!is_null($action) && isset ($this->_canDO) && 
+		    count ($this->_canDO)>0 && in_array($action, $this->_canDO)) {
+			return true;
+		}
+		return false;
 	}
 } // class ends here
