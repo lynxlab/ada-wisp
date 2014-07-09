@@ -126,7 +126,8 @@ class ADAAddressBook
               if(AMA_DataHandler::isError($tutors_Ar) || !is_array($tutors_Ar)) {
                $tutors_Ar = array();
               }
-              $tutors_Ar = array_unique($tutors_Ar);
+              $tutors_Ar = ADAAddressBook::deleteDuplicate($tutors_Ar);
+//              $tutors_Ar = array_unique($tutors_Ar);
 
               $switcher_Ar =  $tester_dh->get_users_by_type(array(AMA_TYPE_SWITCHER), $retrieve_extended_data);
               if(AMA_DataHandler::isError($switcher_Ar) || !is_array($switcher_Ar)) {
@@ -168,7 +169,8 @@ class ADAAddressBook
           if(AMA_DataHandler::isError($tutors_Ar) || !is_array($tutors_Ar)) {
             $tutors_Ar = array();
           }
-          $tutors_Ar = array_unique($tutors_Ar);
+              $tutors_Ar = ADAAddressBook::deleteDuplicate($tutors_Ar);
+//          $tutors_Ar = array_unique($tutors_Ar);
 
           /*
            * GET SWITCHER OF TESTER
@@ -308,6 +310,23 @@ class ADAAddressBook
     $address_book->addChild($selects);
     return $address_book;
   }
+  
+  static public function deleteDuplicate($usersAddress=array()) {
+    $aux_ini=array(); 
+    $result=array(); 
+    for($n=0;$n<count($usersAddress);$n++) 
+    { 
+        $aux_ini[]=serialize($usersAddress[$n]); 
+    } 
+    $mat=array_unique($aux_ini); 
+    for($n=0;$n<count($mat);$n++) 
+    { 
+        
+            $result[]=unserialize($mat[$n]); 
+        
+    } 
+    return $result; 
+} 
 }
 
 class EventsAddressBook extends ADAAddressBook
