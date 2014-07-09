@@ -18,6 +18,7 @@
 	define ('ZOOM_SOURCE', 4);
 	define ('DELETE_SOURCE', 5);
 	define ('VIEW_SOURCE', 6);
+	define ('SEARCH_SOURCE', 7);
 	
 	
 	/**
@@ -59,15 +60,15 @@
 	 * here you specify which actions a user can do and the order
 	 * they appear in the UI tabs
 	 */
-	$GLOBALS['canDO'][AMA_TYPE_SWITCHER] = array( EDIT_SOURCE, ZOOM_SOURCE, DELETE_SOURCE, IMPORT_JEX, IMPORT_EUROVOC );
-	$GLOBALS['canDO'][AMA_TYPE_AUTHOR]   = array( EDIT_SOURCE, ZOOM_SOURCE );
-	$GLOBALS['canDO'][AMA_TYPE_TUTOR]    = array( VIEW_SOURCE, ZOOM_SOURCE );
-	$GLOBALS['canDO'][AMA_TYPE_STUDENT]  = array( VIEW_SOURCE, ZOOM_SOURCE );
+	$GLOBALS['canDO'][AMA_TYPE_SWITCHER] = array( VIEW_SOURCE, ZOOM_SOURCE, SEARCH_SOURCE, DELETE_SOURCE, IMPORT_JEX, IMPORT_EUROVOC );
+	$GLOBALS['canDO'][AMA_TYPE_AUTHOR]   = array( EDIT_SOURCE, ZOOM_SOURCE, SEARCH_SOURCE );
+	$GLOBALS['canDO'][AMA_TYPE_TUTOR]    = array( VIEW_SOURCE, ZOOM_SOURCE, SEARCH_SOURCE );
+	$GLOBALS['canDO'][AMA_TYPE_STUDENT]  = array( VIEW_SOURCE, ZOOM_SOURCE, SEARCH_SOURCE );
 	
 	/**
 	 * array of actions that need a tab in the UI
 	 */
-	$GLOBALS['tabNeeded'] = array (VIEW_SOURCE, EDIT_SOURCE, IMPORT_JEX, IMPORT_EUROVOC);
+	$GLOBALS['tabNeeded'] = array (VIEW_SOURCE, EDIT_SOURCE, SEARCH_SOURCE, IMPORT_JEX, IMPORT_EUROVOC);
 
 	require_once MODULES_LEX_PATH.'/include/AMALexDataHandler.inc.php';
 ?>
