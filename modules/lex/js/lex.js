@@ -35,7 +35,15 @@ function initDoc(maxSize, userId, canEdit) {
 	
 	$j(document).ready(function() {
 		// init the tabs
-		$j('#lexmenu').tabs();
+		$j('#lexmenu').tabs({
+			beforeActivate: function( event, ui ) {
+				var newHref = $j(ui.newTab).find('a').attr('href');
+				if (newHref.indexOf('#')!=0) {
+					event.preventDefault();
+					document.location.href = newHref;
+				}
+			}
+		});
 
 		// sets maximum upload file size
 		commonPekeOptions.maxSize = maxSize;
