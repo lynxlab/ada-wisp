@@ -319,14 +319,11 @@ class ADAAddressBook
         $aux_ini[]=serialize($usersAddress[$n]); 
     } 
     $mat=array_unique($aux_ini); 
-    for($n=0;$n<count($mat);$n++) 
-    { 
-        
-            $result[]=unserialize($mat[$n]); 
-        
-    } 
+    foreach ($mat as $element) {
+	$result[]=unserialize($element); 
+    }
     return $result; 
-} 
+  } 
 }
 
 class EventsAddressBook extends ADAAddressBook
