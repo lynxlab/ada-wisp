@@ -181,6 +181,11 @@
                             <li> <a href="#" onclick='openMessenger("../comunica/list_events.php",800,600);'>
                                     <i18n>agenda</i18n>
                                 </a> </li>
+                            <li>
+                            	<a href="../modules/lex/">
+                            		<i18n>Fonti</i18n>
+                            	</a>
+                            </li>
                         </ul>
                     </div>
                     <div class="bottomsubmenu"> </div>

@@ -214,6 +214,11 @@
                                     <i18n>agenda</i18n>
                                 </a>
                             </li>
+                            <li>
+                            	<a href="../modules/lex/">
+                            		<i18n>Fonti</i18n>
+                            	</a>
+                            </li>
                         </ul>
                     </div>
                     <div class="bottomsubmenu">

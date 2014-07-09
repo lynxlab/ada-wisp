@@ -166,7 +166,7 @@
 
                         <ul>
 							<li>
-                            <a href="http://ada.lynxlab.com/holis/modules/lex/">
+                            <a href="../modules/lex/">
                             <i18n>Fonti</i18n>
                             </a>
                             </li>

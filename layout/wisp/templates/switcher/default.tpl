@@ -145,6 +145,7 @@
                                 </a>
                             </li>
                             <li><a href="list_users.php?list=authors"><i18n>Lista autori</i18n></a></li>
+                            <li><a href="../modules/lex/"><i18n>Fonti</i18n></a></li>
                             <li><a href="list_users.php?list=tutors"><i18n>Lista professionisti</i18n></a></li>
                             <li><a href="list_users.php?list=students"><i18n>Lista studenti</i18n></a></li>
                             <li><a href="add_user.php"><i18n>Aggiungi utente</i18n></a></li>
