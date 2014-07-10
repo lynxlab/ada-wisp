@@ -503,6 +503,12 @@ if(!AMA_DataHandler::isError($courseInstances)) {
                         $displayWhatsNew = true;
                  }  
                  else {
+                 	// resume 'normal' behaviour
+                 	$access_link = CDOMElement::create('div');
+                 	$link = CDOMElement::create('a','href:sview.php?id_node='.$nodeId.'&id_course='.$courseId.'&id_course_instance='.$courseInstanceId.'#'.$nodeId);
+                 	$link->addChild(new CText(translateFN('Accedi')));
+                 	$access_link->addChild($link);
+                 }
 
 $last_access=$userObj->get_last_accessFN(null,"UT",null);
 $last_access=AMA_DataHandler::ts_to_date($last_access);
