@@ -738,4 +738,12 @@ a.RSSheader {
 	margin-bottom: 25px;
 }
 
-
+#advanced_searchLink
+{
+    margin-top: 0px;
+}
+#div_advancedSearch_form
+{
+    display: none;
+    height: 830px;
+}

@@ -87,7 +87,9 @@ background: url(../../img/back.png) no-repeat center left; display:block; paddin
 
 .content_small { margin-right: 365px;}
 #content li { list-style-type: none; }
-#contentcontent {}
+#contentcontent {
+    
+}
 .contentcontent_default {
     padding: 0 10px 10px 10px;
 	 background-color: White;
