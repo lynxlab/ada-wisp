@@ -503,14 +503,14 @@ if(!AMA_DataHandler::isError($courseInstances)) {
                         $displayWhatsNew = true;
                  }  
                  else {
-                        // resume 'normal' behaviour
-                        $access_link = CDOMElement::create('div');
-                        $link = CDOMElement::create('a','href:sview.php?id_node='.$nodeId.'&id_course='.$courseId.'&id_course_instance='.$courseInstanceId.'#'.$nodeId);
-                        $link->addChild(new CText(translateFN('Accedi')));
-                        $access_link->addChild($link);
-                 }          	
 
+$last_access=$userObj->get_last_accessFN(null,"UT",null);
+$last_access=AMA_DataHandler::ts_to_date($last_access);
 
+if($last_access=='' || is_null($last_access))
+{
+    $last_access='-';
+}
 /*
  * Output
  */
@@ -552,7 +552,8 @@ if(!AMA_DataHandler::isError($courseInstances)) {
 	$content_dataAr['today'] = $ymdhms;
 	$content_dataAr['user_name'] = $user_name;
 	$content_dataAr['user_type'] = $user_type;
-	$content_dataAr['last_visit'] = $userObj->get_last_accessFN();
+	//$content_dataAr['last_visit'] = $userObj->get_last_accessFN();
+        $content_dataAr['last_visit'] = $last_access;
 	$content_dataAr['message'] = $message;
 	$content_dataAr['course_title'] = translateFN("Home dell'utente");
 	$content_dataAr['submenu_actions'] =  $submenu_actions;

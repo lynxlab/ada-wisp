@@ -18,7 +18,7 @@
     <div id="submenubanner">
  <template_field class="template_field" name="infomsg">infomsg</template_field>
 </div>
-
+<template_field class="template_field" name="message">message</template_field>    
 </div>	 
 <div id="contentcontent">
          <div class="first">
@@ -112,9 +112,9 @@
            			 <i18n>Chiedi aiuto</i18n>
 			        </a>
 	 </li>
-        <li id="question_mark" class="unselectedquestion_mark">
-				<a href="help.php" target="_blank">
-					 <i18n>help</i18n>
+        <li id="question_mark" class="unselectedquestion_mark" onclick="toggleElementVisibility('submenu_question_mark','up'); return false;">
+              <a>
+                    <i18n>Help</i18n>
 				</a>
         </li>
 	<!--li id="language_choose" class="language_choose">
@@ -128,6 +128,30 @@
 	</li>
 </ul> <!-- / menu -->
 </div> 
+
+       <!-- tendina -->
+            <div id="dropdownmenu">
+                <!-- puntoint -->
+                <div id="submenu_question_mark" class="sottomenu  sottomenu_off">
+                    <div id="_question_markcontent">
+                        <ul>
+                            <li>
+                                <a href="help.php" target="_blank">
+                                    <i18n>informazioni</i18n>
+                                </a>
+                            </li>
+                            <li>
+                                <a href="credits.php">
+                                    <i18n>credits</i18n>
+                                </a>
+                            </li>
+                        </ul>
+                    </div>
+                    <div class="bottomsubmenu">
+                    </div>
+                </div> <!-- / puntoint -->
+            </div> <!-- /tendina-->
+        </div> <!-- / MENU A TENDINA -->
 <!-- / MENU A TENDINA -->
 <!-- PIEDE -->
 <div id="footer_login">

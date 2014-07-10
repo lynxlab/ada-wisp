@@ -151,6 +151,22 @@ if ($userObj instanceof ADALoggableUser) {
     $history = translateFN('Cronologia non disponibile.');
 }
 
+/*
+ * Last access link
+ */
+
+if(isset($_SESSION['sess_id_course_instance'])){
+    $last_access=$userObj->get_last_accessFN(($_SESSION['sess_id_course_instance']),"UT",null);
+    $last_access=AMA_DataHandler::ts_to_date($last_access);
+  }
+  else {
+    $last_access=$userObj->get_last_accessFN(null,"UT",null);
+    $last_access=AMA_DataHandler::ts_to_date($last_access);
+  }
+if($last_access=='' || is_null($last_access)){
+    $last_access='-';
+}
+
 $banner = include ROOT_DIR . '/include/banner.inc.php';
 $imgAvatar = $userObj->getAvatar();
 $avatar = CDOMElement::create('img','src:'.$imgAvatar);
@@ -162,6 +178,8 @@ $content_dataAr = array(
     'user_name' => $user_name,
     'user_type' => $user_type,
     'user_level' => $user_level,
+    'last_visit' => $last_access,
+    'status'=>$status,
     'path' => $node_path,
     'menu' => $menu,
     'data' => $history,
@@ -169,7 +187,7 @@ $content_dataAr = array(
     'agenda' => $user_agenda->getHtml(),
     'chat_users' => $online_users,
 	'user_avatar'=>$avatar->getHtml(),
-	'user_modprofilelink' => $userObj->getEditProfilePage(),		
+	'user_modprofilelink' => $userObj->getEditProfilePage()
 );
 /**
  * Sends data to the rendering engine
