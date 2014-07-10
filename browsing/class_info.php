@@ -101,8 +101,21 @@ if(!AMA_DataHandler::isError($courseInstances)) {
 }
 
 
+/*
+ * Last access link
+ */
 
-
+if(isset($_SESSION['sess_id_course_instance'])){
+    $last_access=$userObj->get_last_accessFN(($_SESSION['sess_id_course_instance']),"UT",null);
+    $last_access=AMA_DataHandler::ts_to_date($last_access);
+  }
+else {
+    $last_access=$userObj->get_last_accessFN(null,"UT",null);
+    $last_access=AMA_DataHandler::ts_to_date($last_access);
+  }
+if($last_access=='' || is_null($last_access)){
+   $last_access='-';
+}
 /*
  * Output
  */
@@ -111,7 +124,7 @@ $content_dataAr = array(
     'today' => $ymdhms,
     'user_name' => $user_name,
     'user_type' => $user_type,
-    'last_visit' => $userObj->get_last_accessFN(),
+    'last_visit' => $last_access,
     'message' => $message,
 //    'iscritto' => $sub_course_data,
 //    'iscrivibili' => $to_sub_course_data,

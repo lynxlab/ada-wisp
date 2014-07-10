@@ -191,11 +191,6 @@
                     <div id="_actionscontent">
                         <ul>
                             <li>
-                                <a href="edit_user.php" alt="edit profile">
-                                    <i18n>cambia profilo</i18n>
-                                </a>
-                            </li>
-                            <li>
                               <template_field class="template_field" name="class_student">class_student</template_field>
                             </li>
                             <li>

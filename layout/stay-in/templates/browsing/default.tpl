@@ -49,9 +49,10 @@
             <div id="content">
                 <div id="contentcontent" class="contentcontent_default">
                     <div class="first">
-                        <div id="help">
+                        <!-- <div id="help">
                             <template_field class="template_field" name="help">help</template_field>
                         </div>
+                        -->
                         <template_field class="template_field" name="data">data</template_field>
                     </div>
                 </div>
@@ -183,9 +184,7 @@
                     <div id="_actionscontent">
                         <ul>
                             <li>
-                                <a href="edit_user.php">
-                                    <i18n>Modifica il tuo profilo</i18n>
-                                </a>
+                                <template_field class="template_field" name="edit_user">edit_user</template_field>
                             </li>
                             <template_field class="template_field" name="submenu_actions">submenu_actions</template_field>
                         </ul>
@@ -199,7 +198,7 @@
                     <div id="_question_markcontent">
                         <ul>
                             <li>
-                            <template_field class="template_field" name="help">help</template_field>
+                            <!--template_field class="template_field_disabled" name="help">help</template_field> -->
                             </li>
                             <li>
                                 <a href="../help.php" target="_blank">

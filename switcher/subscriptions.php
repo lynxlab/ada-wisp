@@ -64,8 +64,43 @@ if(isset($_SERVER['REQUEST_METHOD']) && $_SERVER['REQUEST_METHOD'] == 'POST') {
     } else {
         $courseId = $_POST['id_course'];
         $courseInstanceId = $_POST['id_course_instance'];
+        $FlagFileWellFormat=true;
         if(is_readable($fileUploader->getPathToUploadedFile())) {
             $usersToSubscribe = file($fileUploader->getPathToUploadedFile());
+            
+            /*remove blanck line form array*/
+            foreach ($usersToSubscribe as $key => $value) {
+                if (!trim($value))
+                    unset($usersToSubscribe[$key]);
+            }
+            
+         
+            foreach($usersToSubscribe as $subscriber) 
+            {
+                $userDataAr = explode(',', $subscriber);
+                $countAr=count($userDataAr);
+                if($countAr!=3)
+                {
+                  $FlagFileWellFormat=false;
+                  break;
+                }
+                if($userDataAr[0]==null)
+                {
+                  $FlagFileWellFormat=false;
+                  break; 
+                }
+                if($userDataAr[1]==null)
+                {
+                  $FlagFileWellFormat=false;
+                  break; 
+                }
+                if($userDataAr[2]==null)
+                {
+                  $FlagFileWellFormat=false;
+                  break; 
+                }
+            }
+            if($FlagFileWellFormat){
             
             $subscribed = 0;
             $alreadySubscribed = 0;
@@ -236,7 +271,13 @@ if(isset($_SERVER['REQUEST_METHOD']) && $_SERVER['REQUEST_METHOD'] == 'POST') {
 
 //            header("Location: course_instance.php?id_course=$courseId&id_course_instance=$courseInstanceId");
 //            exit();
-        } else {
+        } 
+        else
+        {
+            $data = new CText('Il file non è ben formato sottometterlo di nuovo con: nome,cognome,mail');
+        }
+        }
+        else {
             $data = new CText('File non leggibile');
         }
     }

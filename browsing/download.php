@@ -268,6 +268,18 @@ $html .= $divUpload->getHtml();
 $imgAvatar = $userObj->getAvatar();
 $avatar = CDOMElement::create('img','src:'.$imgAvatar);
 $avatar->setAttribute('class', 'img_user_avatar');
+
+/*
+ * Last access link
+ */
+  if(isset($_SESSION['sess_id_course_instance'])){
+        $last_access=$userObj->get_last_accessFN(($_SESSION['sess_id_course_instance']),"UT",null);
+        $last_access=AMA_DataHandler::ts_to_date($last_access);
+  }
+  else {
+        $last_access=$userObj->get_last_accessFN(null,"UT",null);
+        $last_access=AMA_DataHandler::ts_to_date($last_access);
+  }
 $node_data = array(
                'banner'=>$banner,
 //               'data'=>$lista,
@@ -283,7 +295,8 @@ $node_data = array(
                'help'=>$help,
                'back'=>$last_visited_module,
                'user_avatar'=>$avatar->getHtml(),
-			   'user_modprofilelink' => $userObj->getEditProfilePage()
+			   'user_modprofilelink' => $userObj->getEditProfilePage(),
+               'last_visit' => $last_access
 );
 
 
