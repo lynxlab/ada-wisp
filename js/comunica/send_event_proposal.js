@@ -54,7 +54,7 @@ function Appointments (fullCalendar, inputProposalNames, max_proposal_count)
 	/**
 	 * adds a new appointment after user has completed the selecion action
 	 */
-	this.addAppointment = function ( startDate, endDate, allDay, jsEvent, view )
+	this.addAppointment = function ( startDate, endDate, allDay )
 	{
 		var retval = false;
 		var index = findIndex (0, this.idsArray);
@@ -89,8 +89,8 @@ function Appointments (fullCalendar, inputProposalNames, max_proposal_count)
 	/**
 	 * moves an appointment by checking if it has been moved in the past
 	 */
-	this.moveAppointment = function(event,dayDelta,minuteDelta,allDay,revertFunc) {
-		if (!this.startDateAndTimeOk(allDay, event.start)) {
+	this.moveAppointment = function(moveEvent,dayDelta,minuteDelta,allDay,revertFunc) {
+		if (!this.startDateAndTimeOk(allDay, moveEvent.start)) {
 			revertFunc();
 		}
 		else {
@@ -167,7 +167,7 @@ function Appointments (fullCalendar, inputProposalNames, max_proposal_count)
 	 * basically checks if the event is an event proposal and ask to remove it
 	 * and if it's a loaded event it will show the details dialog box
 	 */
-	this.eventClick = function( event, jsEvent, view ) {
+	this.eventClick = function( event ) {
 		if (in_array(event.id,this.idsArray))
 		{
 			jQueryConfirm('#confirmDialog', '#questionDelete', function() { that.deleteAppointment (event.id); });
@@ -195,9 +195,9 @@ function Appointments (fullCalendar, inputProposalNames, max_proposal_count)
 			if (this.idsArray[i]!=0)
 			{
 				eventsArray = this.calendarObj.fullCalendar('clientEvents', this.idsArray[i]);
-				event = eventsArray[0];
-				setDate = this.calendarObj.fullCalendar( 'formatDate' ,event.start , "dd/MM/yyyy" );
-				setTime = this.calendarObj.fullCalendar( 'formatDate' ,event.start , "HH:mm" );				
+				
+				setDate = this.calendarObj.fullCalendar( 'formatDate' ,eventsArray[0].start , "dd/MM/yyyy" );
+				setTime = this.calendarObj.fullCalendar( 'formatDate' ,eventsArray[0].start , "HH:mm" );				
 			}
 			else
 			{
@@ -279,77 +279,78 @@ function initDoc(initDatas, inputProposalNames, max_proposal_count) {
 		if ($j().uniform) $j("select, input, a.button, button, textarea").uniform();
 	});
 	
-    var fullcal = $j('#fullcalendar').fullCalendar({
-        // put your options and callbacks here
-    	theme 	 : true,	// enables jQuery UI theme
-    	firstDay : 1,		// monday is the first day
-    	minTime  : 8,		// events starts at 08AM ,
-    	defaultEventMinutes: 60,
-    	height : 500,
-    	editable : true,
-    	selectable : true,
-    	selectHelper : true,
-    	defaultView : 'agendaWeek',
-    	select :	function( startDate, endDate, allDay, jsEvent, view ) {
-    					appointments.addAppointment ( startDate, endDate, allDay, jsEvent, view );
-    	},
-    	eventClick :function( event, jsEvent, view ) { 
-    					appointments.eventClick ( event, jsEvent, view );
-    	},
-    	eventDrop:  function( event, dayDelta, minuteDelta, allDay, revertFunc ) {
-    					appointments.moveAppointment ( event, dayDelta, minuteDelta, allDay, revertFunc ); 
-    	},
-		header: {
-			left: 'prev,next today',
-			center: 'title',
-			right: 'month,agendaWeek,agendaDay'
-		},
-		eventSources : [  {
-		                	url : GCAL_HOLIDAYS_FEED,
-							className: 'holiday'
-						  },
-						  {
-			                url : HTTP_ROOT_DIR + "/comunica/ajax/getProposals.php",
-			                // WARNING: js code is based on these classnmes, do not change them!
-			                className : 'loadedEvents proposal',
-			                editable  : 	false,
-			                allDayDefault : false			                
-						  },
-						  {
-			                url : HTTP_ROOT_DIR + "/comunica/ajax/getProposals.php?type=C",
-			                // WARNING: js code is based on these classnmes, do not change them!			                
-			                className : 'loadedEvents confirmed',
-			                editable  : 	false,
-			                allDayDefault : false			                
-						  }	
-		                ]
-    });
-    
-    var appointments = new Appointments(fullcal,inputProposalNames, max_proposal_count);
-    appointments.fillWithDatas(initDatas);
-    
-    $j('input:reset').button();
-    $j('input:reset').click (  function ( event ){
-    	// not stopping event propagation will cause the form reset PLUS
-    	// the function specified
-    	event.preventDefault();
-    	jQueryConfirm('#confirmDialog', '#questionReset', function() {
-    		// reset form fields
-    		$j('input:reset').closest('form')[0].reset();
-    		// reset proposed appointments on the calendar
-    		appointments.resetAppointments(); 
-    		});    	
-    } );
-    
-    $j('input:submit').button();
-    $j('input:submit').closest('form').submit( function ( event ) {
-    	if (appointments.currAppointment<=0)
-    	{
-    		event.preventDefault();
-    		showDialogByID('#alertDialog', appointments.alertTitle,'#oneProposalAtLeast');
-    	}    	
-    } );
-    
+	if ($j('#fullcalendar').length>0) {
+	    var fullcal = $j('#fullcalendar').fullCalendar({
+	        // put your options and callbacks here
+	    	theme 	 : true,	// enables jQuery UI theme
+	    	firstDay : 1,		// monday is the first day
+	    	minTime  : 8,		// events starts at 08AM ,
+	    	defaultEventMinutes: 60,
+	    	height : 500,
+	    	editable : true,
+	    	selectable : true,
+	    	selectHelper : true,
+	    	defaultView : 'agendaWeek',
+	    	select :	function( startDate, endDate, allDay, jsEvent, view ) {
+	    					appointments.addAppointment ( startDate, endDate, allDay );
+	    	},
+	    	eventClick :function( event, jsEvent, view ) { 
+	    					appointments.eventClick ( event );
+	    	},
+	    	eventDrop:  function( event, dayDelta, minuteDelta, allDay, revertFunc ) {
+	    					appointments.moveAppointment ( event, dayDelta, minuteDelta, allDay, revertFunc ); 
+	    	},
+			header: {
+				left: 'prev,next today',
+				center: 'title',
+				right: 'month,agendaWeek,agendaDay'
+			},
+			eventSources : [  {
+			                	url : GCAL_HOLIDAYS_FEED,
+								className: 'holiday'
+							  },
+							  {
+				                url : HTTP_ROOT_DIR + "/comunica/ajax/getProposals.php",
+				                // WARNING: js code is based on these classnmes, do not change them!
+				                className : 'loadedEvents proposal',
+				                editable  : 	false,
+				                allDayDefault : false			                
+							  },
+							  {
+				                url : HTTP_ROOT_DIR + "/comunica/ajax/getProposals.php?type=C",
+				                // WARNING: js code is based on these classnmes, do not change them!			                
+				                className : 'loadedEvents confirmed',
+				                editable  : 	false,
+				                allDayDefault : false			                
+							  }	
+			                ]
+	    });
+	
+	    var appointments = new Appointments(fullcal,inputProposalNames, max_proposal_count);
+	    appointments.fillWithDatas(initDatas);
+	    
+	    $j('input:reset').button();
+	    $j('input:reset').click (  function ( event ){
+	    	// not stopping event propagation will cause the form reset PLUS
+	    	// the function specified
+	    	event.preventDefault();
+	    	jQueryConfirm('#confirmDialog', '#questionReset', function() {
+	    		// reset form fields
+	    		$j('input:reset').closest('form')[0].reset();
+	    		// reset proposed appointments on the calendar
+	    		appointments.resetAppointments(); 
+	    		});    	
+	    } );
+	    
+	    $j('input:submit').button();
+	    $j('input:submit').closest('form').submit( function ( event ) {
+	    	if (appointments.currAppointment<=0)
+	    	{
+	    		event.preventDefault();
+	    		showDialogByID('#alertDialog', appointments.alertTitle,'#oneProposalAtLeast');
+	    	}    	
+	    } );
+	}   
 }
 
 
