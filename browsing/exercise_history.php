@@ -135,6 +135,23 @@ if (!ADA_Error::isError($nodeObj) AND isset($courseObj->id)) {
 	$_SESSION['sess_id_course'] = $courseObj->id;
 	$node_path = $nodeObj->findPathFN();
 }
+
+/*
+ * Last access link
+ */
+
+if(isset($_SESSION['sess_id_course_instance'])){
+    $last_access=$userObj->get_last_accessFN(($_SESSION['sess_id_course_instance']),"UT",null);
+    $last_access=AMA_DataHandler::ts_to_date($last_access);
+  }
+else {
+    $last_access=$userObj->get_last_accessFN(null,"UT",null);
+    $last_access=AMA_DataHandler::ts_to_date($last_access);
+  }
+if($last_access=='' || is_null($last_access)){
+   $last_access='-';
+}
+
 $back_link= "<a href='".$_SERVER['HTTP_REFERER']."' class='backLink' title='".translateFN("Torna")."'>".translateFN("Torna")."</a>";
 $content_dataAr = array(
     'banner'=>$banner,
@@ -147,6 +164,7 @@ $content_dataAr = array(
     'student'=>$student_name,
     'level'=>$student_level,
     'data'=>$history,
+    'last_visit' => $last_access,
     'menu_01'=>$menu_01,
     'menu_02'=>$menu_02,
     'menu_03'=>$menu_03,

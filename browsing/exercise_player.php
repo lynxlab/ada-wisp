@@ -253,6 +253,22 @@ $go_back_link = CDOMElement::create('a', "href:$last_visited_node");
 $go_back_link->addChild(new CText(translateFN('Indietro')));
 
 /*
+ * Last access link
+ */
+
+if(isset($_SESSION['sess_id_course_instance'])){
+    $last_access=$userObj->get_last_accessFN(($_SESSION['sess_id_course_instance']),"UT",null);
+    $last_access=AMA_DataHandler::ts_to_date($last_access);
+  }
+  else {
+    $last_access=$userObj->get_last_accessFN(null,"UT",null);
+    $last_access=AMA_DataHandler::ts_to_date($last_access);
+  }
+if($last_access=='' || is_null($last_access)){
+    $last_access='-';
+}
+
+/*
  * Output
 */
 $content_dataAr = array(
@@ -269,6 +285,7 @@ $content_dataAr = array(
         'author' => $nodeObj->author['username'],
         'node_level' => 'livello nodo',
         'messages' => $user_messages->getHtml(),
+        'last_visit' => $last_access,
         'agenda' => $user_agenda->getHtml(),
         //'course_title' => '',
         //'media' => 'media',
