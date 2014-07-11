@@ -56,7 +56,7 @@
             <div id="content">
                 <div id="contentcontent" class="contentcontent_default">
                     <div id="help">
-                        <template_field class="template_field" name="help">help</template_field>
+                        <!--template_field class="template_field" name="help">help</template_field-->
                     </div>
                     <div id="data">
 						<div id="data_reg">
@@ -101,11 +101,11 @@
                 <div id="submenu_question_mark" class="sottomenu  sottomenu_off">
                     <div id="_question_markcontent">
                         <ul>
-                            <li>
+                            <!--li>
                                 <a href="../help.php" target="_blank">
                                     <i18n>help</i18n>
                                 </a>
-                            </li>
+                            </li-->
                             <li>
                                 <a href="../info.php">
                                     <i18n>informazioni</i18n>
