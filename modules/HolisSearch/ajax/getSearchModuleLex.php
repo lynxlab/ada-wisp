@@ -51,6 +51,7 @@ $retArray = null;
 if (isset($_SERVER['REQUEST_METHOD']) && $_SERVER['REQUEST_METHOD'] == 'POST' &&
     isset($searchTerms) && is_array($searchTerms) && count($searchTerms)>0) {
 	
+	if (isset($GLOBALS['dh'])) $GLOBALS['dh']->disconnect();
 	$dh = AMALexDataHandler::instance(MultiPort::getDSN(MODULES_LEX_PROVIDER_POINTER));
 	
 	if (!AMA_DB::isError($dh)) {

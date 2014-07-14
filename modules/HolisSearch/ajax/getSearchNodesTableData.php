@@ -59,7 +59,7 @@ if (isset($_SERVER['REQUEST_METHOD']) && $_SERVER['REQUEST_METHOD'] == 'POST' &&
 	session_write_close();
 	
 	if (!AMA_DB::isError($testerInfo) && count($testerInfo)>0 && isset($testerInfo['puntatore']) && strlen($testerInfo['puntatore'])>0) {
-		
+		if(isset($GLOBALS['dh'])) $GLOBALS['dh']->disconnect();
 		$dh = AMAHolisSearchDataHandler::instance(MultiPort::getDSN($testerInfo['puntatore']));
 		
 		if (!AMA_DB::isError($dh)) {

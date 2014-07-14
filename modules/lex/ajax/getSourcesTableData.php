@@ -48,7 +48,11 @@ require_once MODULES_LEX_PATH . '/include/management/eurovocManagement.inc.php';
 
 if (isset($_SERVER['REQUEST_METHOD']) && $_SERVER['REQUEST_METHOD'] == 'GET') {
 
-	$dh = AMALexDataHandler::instance(MultiPort::getDSN($_SESSION['sess_selected_tester']));
+	$pointer = (!is_null($_SESSION['sess_selected_tester'])) ? $_SESSION['sess_selected_tester'] : MODULES_LEX_PROVIDER_POINTER;
+	
+	if (isset($GLOBALS['dh'])) $GLOBALS['dh']->disconnect();
+	
+	$dh = AMALexDataHandler::instance(MultiPort::getDSN($pointer));
 	
 	$output = $dh->getDataForDataTable (
 			array ( $dh::$PREFIX.'fonti_id',

@@ -66,7 +66,9 @@ abstract class importManagement
     		unset ($_SESSION[UPLOAD_SESSION_VAR]);
     	}
     	
-    	$this->_dh = AMALexDataHandler::instance(MultiPort::getDSN($_SESSION['sess_selected_tester']));
+    	$pointer = (!is_null($_SESSION['sess_selected_tester'])) ? $_SESSION['sess_selected_tester'] : MODULES_LEX_PROVIDER_POINTER;
+    	if (isset($GLOBALS['dh'])) $GLOBALS['dh']->disconnect();
+    	$this->_dh = AMALexDataHandler::instance(MultiPort::getDSN($pointer));
     }
 
     /**

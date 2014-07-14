@@ -54,7 +54,9 @@ require_once MODULES_LEX_PATH . '/include/management/lexManagement.inc.php';
 if (isset($_SERVER['REQUEST_METHOD']) && $_SERVER['REQUEST_METHOD'] == 'GET' &&
 isset($assetID) && intval($assetID)>0) {
 	
-$dh = AMALexDataHandler::instance(MultiPort::getDSN($_SESSION['sess_selected_tester']));
+$pointer = (!is_null($_SESSION['sess_selected_tester'])) ? $_SESSION['sess_selected_tester'] : MODULES_LEX_PROVIDER_POINTER;
+if (isset($GLOBALS['dh'])) $GLOBALS['dh']->disconnect();
+$dh = AMALexDataHandler::instance(MultiPort::getDSN($pointer));
 
 $languageId = getLanguageCode();
 $assetText = $dh->asset_get_text($assetID);
