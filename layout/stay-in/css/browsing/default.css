@@ -523,7 +523,7 @@ margin: 17px 0 0;
     width: 520px;
     height: 0px;
     margin-left: 500px;
-    margin-top: -600px;
+    margin-top: -590px;
     
 }
 #results{
@@ -534,6 +534,7 @@ margin: 17px 0 0;
 #labelAdvanced_search
 {
     display:none;
+    //margin-top: -10px;
 }
         
 /*for self_instruction*/

@@ -26,10 +26,10 @@ function dataTablesExec() {
 
 function advancedSearch()
 {
-    $j("#div_form").animate({"height": "toggle"}, { duration: 500 });
+    $j("#div_form").animate({"height": "toggle"}, { duration: 400 });
     $j("#div_form").css("display","none");
     $j("#div_menu").css("display","none");
-    $j("#div_Result").animate({"height": "toggle"}, { duration: 500 });
+    $j("#div_Result").animate({"height": "toggle"}, { duration: 400 });
     $j("#div_Result").css("margin-top","120px");
     $j("#div_advancedSearch_form").animate({"height": "toggle"}, { duration: 400 });
     $j("#advanced_searchLink").css("display","none");
