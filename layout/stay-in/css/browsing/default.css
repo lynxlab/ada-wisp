@@ -128,7 +128,7 @@ margin: 17px 0 0;
 #table_result_wrapper
 {
     width: 600px;
-    //margin-top: 50px;
+    margin-top: 30px;
 }
 #next_node a {
 	line-height: 50px;
@@ -523,7 +523,7 @@ margin: 17px 0 0;
     width: 520px;
     height: 0px;
     margin-left: 500px;
-    margin-top: -540px;
+    margin-top: -600px;
     
 }
 #results{
