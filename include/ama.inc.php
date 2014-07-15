@@ -8060,7 +8060,6 @@ abstract class AMA_Tester_DataHandler extends Abstract_AMA_DataHandler {
 
         // do the query
         $sqlquery = "select id_nodo$more_fields from nodo where id_nodo LIKE '$course_id%' $clause";
-
         $res_ar =  $db->getAll($sqlquery);
         if (AMA_DB::isError($res_ar)) {
             return new AMA_Error(AMA_ERR_GET);
