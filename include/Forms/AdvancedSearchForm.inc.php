@@ -17,7 +17,7 @@ class AdvancedSearchForm extends FForm
             $this->setAction($action);
         }
         $this->setName('advancedForm');
-        $this->addTextInput('s_node_name', translateFN('Nome'));
+        $this->addTextInput('s_node_name', translateFN('Titolo'));
         $this->addTextInput('s_node_title', translateFN('Keywords'));
         $this->addTextarea('s_node_text', translateFN('Testo'));
         $this->setMethod('GET');
