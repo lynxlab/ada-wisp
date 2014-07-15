@@ -18,39 +18,56 @@
                 </span>
             </div>
             <!-- / percorso -->
-            <!--dati utente-->
             <div id="status_bar">
-                    <template_field class="microtemplate_field" name="user_data_micro">user_data_micro</template_field>
-                    
-            <!-- / dati utente -->            <!-- label -->
+            <!--dati utente-->
+            <div id="user_data" class="user_data_default">
+                <i18n>utente: </i18n>
+                <span>
+                    <template_field class="template_field" name="user_name">user_name</template_field>
+                </span>
+                <i18n>tipo: </i18n>
+                <span>
+                    <template_field class="template_field" name="user_type">user_type</template_field>
+                </span>
+                <i18n>livello:</i18n>
+                <span>
+                    <template_field class="template_field" name="level">level</template_field>
+                </span>
+            </div> <!-- / dati utente -->
+            <!-- label -->
             <div id="label">
                 <div class="topleft">
                     <div class="topright">
                         <div class="bottomleft">
                             <div class="bottomright">
                                 <div class="contentlabel">
-                                    <h1><i18n>cerca</i18n></h1>
-                                    
-                                </div>
-                                
+                                    <!--h1><i18n>cerca</i18n></h1-->
+                                    <h1>
+                                        <div id="labelSimple_search">
+                                            <template_field class="template_field" name="labelSimple_search">labelSimple_search</template_field>
+                                        </div>
+                                    </h1>   
+                                    <h1>
+                                        <div id="labelAdvanced_search">
+                                            <template_field class="template_field" name="labelAdvanced_search">labelAdvanced_search</template_field>
+                                        </div>
+                                    </h1>
+                                    </div>
                             </div>
-                            
                         </div>
-                       
                     </div>
-                     
                 </div>
             </div><!-- /label -->
             </div>
             <!-- contenuto -->
-            <div id="content">
+            <div id="contentSearch">
                 <div id="contentcontent" class="contentcontent_default">
                     <div id="div_advancedSearch_form">
                         <div class="search_formAdvanced">
                             <template_field class="template_field" name="advancedSearch_form">advancedSearch_form</template_field>
                         </div>
                         <div id="div_menuAdvanced">
-                            <template_field class="template_field" name="menu">menu</template_field>
+                            <template_field class="template_field" name="menuAdvanced_search">menuAdvanced_search</template_field>
                                 <span>
                                     <template_field class="template_field" name="simpleSearchLink">simpleSearchLink</template_field>
                                 </span>
@@ -68,32 +85,32 @@
                             <div id="label_result">
                                     <i18n>Risultati:</i18n>
                             </div> 
-                            <i18n>Cerca per: </i18n>
+                            <!--i18n>Ricerca semplice </i18n-->
                                 <template_field class="template_field" name="form">form</template_field>
-                            </div>
+                        </div>
                         </div>
                  </div>
-                <div class="search_results">
+                        <div class="search_results">
                     <div id="div_menu">
                             <template_field class="template_field" name="menu">menu</template_field>
                     </div>
                     <div id="advanced_searchLink">
-                    <span>
+                                <span>
                         <template_field class="template_field" name="advanced_searchLink">advanced_searchLink</template_field>
                     </span>
                 </div>
                 <div class="table_result">
                     <div id="div_Result">
                         <span>
-                            <template_field class="template_field" name="results">results</template_field>
-                         </span>
+                                    <template_field class="template_field" name="results">results</template_field>
+                                </span>
+                            </div>
+                        </div>
                     </div>
                 </div>
-               </div>
-              </div>
              </div>
-             <div id="bottomcont">
-            </div>
+                <div id="bottomcont">
+                </div>
             </div> <!--  / contenuto -->
             <!-- com_tools -->
             <div id="com_tools">

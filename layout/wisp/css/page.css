@@ -209,6 +209,10 @@ font-weight:bold;}
     margin-bottom: 5px;
     background-color: #EFEDED;
 }
+#contentSearch {
+    min-height: 300px;
+    margin-bottom: 200px;
+}
 /*
  * Navigation panel
  */
@@ -702,13 +706,4 @@ float: left;
  */
 a.RSSheader {
 	text-decoration: none;
-}
-#advanced_searchLink
-{
-    margin-top: 0px;
-}
-#div_advancedSearch_form
-{
-    display: none;
-    height: 830px;
 }

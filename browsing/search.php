@@ -193,10 +193,19 @@ if (!is_null($submit)) {
   }
 }  // end Submit
 
-$menu .= "<p>".translateFN("Scrivi la o le parole che vuoi cercare, scegli quali oggetti cercare poi clicca");
-$menu .= "<br>".translateFN("su Cerca.ADA restituir&agrave; una lista con i nodi che contengono TUTTE le parole");
-$menu .= "<br>".translateFN("inserite.Le parole vengono trovate anche all'interno di altre parole e senza");
+$menu .= "<p>".translateFN("Scrivi la o le parole che vuoi cercare, poi clicca su Cerca. Il sistema restituir&agrave;");
+$menu .= "<br>".translateFN(" una lista con i nodi che contengono TUTTE le parole inserite.");
+$menu .= "<br>".translateFN(" Le parole vengono trovate anche all'interno di altre parole e senza");
 $menu .= "<br>".translateFN("distinzioni tra maiuscole e minuscole.")."</p>";
+
+/*menù advanced search*/
+
+$menuAdvanced_search .= "<p>".translateFN("Scrivi la o le parole che vuoi cercare, poi clicca su Cerca. In questo caso puoi");
+$menuAdvanced_search .= "<br>".translateFN(" effettuare la ricerca su più campi contemporaneamente. Il sistema proverà a");
+$menuAdvanced_search .= "<br>".translateFN(" restituituire una lista dei nodi contenenti tutte le parole indicate; se ciò");
+$menuAdvanced_search .= "<br>".translateFN(" non è possibile restituirà la lista dei nodi che ne contengono almeno una.");
+$menuAdvanced_search .= "<br>".translateFN(" Le parole vengono trovate anche all'interno di altre parole e senza");
+$menuAdvanced_search .= "<br>".translateFN("distinzioni tra maiuscole e minuscole.")."</p>";
 // $menu .= "<br>".translateFN("Se vuoi cercare tra i media collegati (immagini, suoni, siti) usa la ")."<a href=search_media.php>".translateFN("Ricerca sui Media")."</a></p>";
 // $menu .= "<br>".translateFN("Se non sai esattamente cosa cercare, prova a consultare il ")."<a href=lemming.php>".translateFN("Lessico")."</a></p>";
 
@@ -295,6 +304,9 @@ $imgAvatar = $userObj->getAvatar();
 $avatar = CDOMElement::create('img','src:'.$imgAvatar);
 $avatar->setAttribute('class', 'img_user_avatar');
 
+$labelSimple_search=  translateFN('Ricerca semplice');
+$labelAdvanced_search=translateFN('Ricerca avanzata');
+
 if(isset($_GET['s_AdvancedForm']))
 {
     $result_AdvancedSearch=$results;
@@ -303,6 +315,9 @@ if(isset($_GET['s_AdvancedForm']))
 $content_dataAr = array(
   'form'=>$search_form,
   'advancedSearch_form'=>$advancedSearch_form,
+  'menuAdvanced_search'=>$menuAdvanced_search,
+  'labelSimple_search'=>$labelSimple_search,
+  'labelAdvanced_search'=>$labelAdvanced_search,
   //'results'=>$search_results,
   'results'=>$results,
   'result_AdvancedSearch'=>$result_AdvancedSearch,
@@ -311,7 +326,7 @@ $content_dataAr = array(
   'menu'=>$menu,
   'chat_link'=>$chat_link,
   'banner'=> $banner,
-  'course_title'=>'<a href="main_index.php">'.$course_title.'</a>',
+  'course_title'=>translateFN(' Ricerca '),
   'user_name'=>$user_name,
   'user_type'=>$user_type,
   'level'=>$user_level,
