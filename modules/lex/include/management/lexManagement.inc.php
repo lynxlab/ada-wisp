@@ -109,8 +109,12 @@ class lexManagement
 				
 				switch ($actionCode) {
 					case IMPORT_EUROVOC:
-						$a->addChild (new CText(eurovocManagement::getTabTitle()));
+						$a->addChild (new CText(eurovocManagement::getTabTitle($actionCode)));
 						$div->addChild (eurovocManagement::getImportForm());
+						break;
+					case EDIT_EUROVOC:
+						$a->addChild (new CText(eurovocManagement::getTabTitle($actionCode)));
+						$div->addChild (eurovocManagement::getEditPage());
 						break;
 					case IMPORT_JEX:
 						$a->addChild (new CText(jexManagement::getTabTitle($actionCode)));

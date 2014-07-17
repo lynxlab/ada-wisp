@@ -11,7 +11,11 @@
 
 // tells if the uploaded file is ok
 var fileError = false;
-//the fancytree object
+/**
+ * the fancytree object
+ * either for switcher to edit the tree
+ * or for source zoom association with terms view/edit 
+ */
 var fancyTreeObj = null;
 // the datatable object
 var dataTableObj = null;
@@ -41,6 +45,10 @@ function initDoc(maxSize, userId, canEdit) {
 				if (newHref.indexOf('#')!=0) {
 					event.preventDefault();
 					document.location.href = newHref;
+				} else if ($j(ui.newPanel).find('#editTerms').length>0) {
+					// if panel with editTerms is made active
+					if (fancyTreeObj==null) fancyTreeObj = initEditfancyTreeObj ($j('#editTerms'));
+					
 				}
 			}
 		});
@@ -131,52 +139,14 @@ function initDoc(maxSize, userId, canEdit) {
 		// init found elements		
 		if ($j('#sourcesTable').length>0) dataTableObj = initDataTables($j('#sourcesTable'),canEdit);
 		if ($j('#assetsTable').length>0) dataTableObj = initDataTables($j('#assetsTable'),canEdit);
+		
+		// show main module container
+		if ($j('#lexmenu').length>0) $j('#lexmenu').toggle('fade');
+		
 		// for performance reason, it's better to load the fancyTreeObj as the last element
 		if ($j('#selectEurovocTerms').length>0) {
 			// init main fancyTreeObj object
-			fancyTreeObj = initfancyTreeObj ($j('#selectEurovocTerms'),null,canEdit);
-			
-			/**
-			 * init tree filter text input
-			 */
-		    $j("input#treeFilterInput").keyup(function(e){
-		        var match = $j(this).val();
-		        
-		        if(e && e.which === $j.ui.keyCode.ESCAPE || $j.trim(match) === ""){
-		          $j("button#resetTreeFilter").click();
-		          return;
-		        } else if (e.which === $j.ui.keyCode.ENTER) {
-			        // Pass a string to perform case insensitive matching
-			        // second parameter is to filter leaves only
-			        n = fancyTreeObj.fancytree('getTree').filterNodes(match, false);
-			        
-			        // if any matched nodes, expand them
-			        if (n>0) {
-			        	fancyTreeObj.fancytree("getRootNode").visit(function(node){
-			        		if (node.title.toLowerCase().indexOf(match.toLowerCase())>-1) {
-			                	if (!node.isExpanded()) node.makeVisible({ noAnimation: true, scrollIntoView:false });
-			        		}
-			            });
-			        	// fix hidden and shown elements
-			        	$j('span.fancytree-hide').parents('li').css('display','none');
-			        	$j('span.fancytree-match').parents('li').css('display','block');
-			        }			        
-			        $j("button#resetTreeFilter").attr("disabled", false);
-		        }
-		      }).focus();
-
-		    /**
-		     * init clear button
-		     */
-		    $j("button#resetTreeFilter").click(function(e){
-		    	// clear text field and tree filter
-		        $j("input#treeFilterInput").val("");
-		        fancyTreeObj.fancytree('getTree').clearFilter();
-	        	// fix hidden and shown elements
-		        $j('span.fancytree-node').parents('li').css('display','block');
-		        // reset object as it previously was
-		        setFancyTreeObjSelection(getSelectedTreeNodesArray());
-		      }).attr("disabled", true);
+			fancyTreeObj = initfancyTreeObj ($j('#selectEurovocTerms'),canEdit,null);
 		}
 	});
 }
@@ -801,65 +771,294 @@ function initToolTips() {
 }
 
 /**
- * inits the fancyTree object
+ * inits the fancyTree object in edit tree mode * 
  * 
  * @param element the jQuery object to attach to
- * @param selectOnLoad selected element array to be set when building, if any
  * 
  * @returns fancyTree
  */
-function initfancyTreeObj (element, selectOnLoad, canEdit) {
-	var isInit = true;
-    return element.fancytree({
-    	extensions: ["childcounter", "filter"],
-        childcounter: {
-            deep: false,
-            hideZeros: true,
-            hideExpanded: true
+function initEditfancyTreeObj (element) {
+	// set the options for this kind of tree
+	var savePromise = null;
+	var options = {
+			checkbox:false,
+			extensions: [ "childcounter", "filter", "edit" ],
+			renderNode: function(event, data) {
+				if (!data.node.isFolder() && data.node.data.isUserDefined)
+					 $j(data.node.span).find('> span.fancytree-icon')
+					 	.removeClass('fancytree-icon').addClass('fancytree-custom-icon ui-icon ui-icon-pencil');
+			},
+			edit: {
+					triggerStart: ["f2", "dblclick", "shift+click", "mac+enter"],
+					triggerCancel: ["esc", "tab", "click"],
+					// Return false to prevent cancel/save (data.input is available)
+				    beforeClose: function (event, data) {
+				    	if(data.save && data.input.val().trim().length<=0) {
+				    		showHideDiv('',$j('#nonEmptyMsg').html(),false);
+				    		return false;
+				    	} else if (!data.save) {
+				    		if (data.node.data.isNew) data.node.remove();
+				    	}
+				    },
+				    beforeEdit: function(event, data) {
+				    	// edit enabled only for userdefined nodes
+				    	return data.node.data.isUserDefined;				    	
+				    },
+				    edit: function (event,data) {
+				    	data.input.select();
+				    },
+				    // Save data.input.val() or return false to keep editor open 
+				    save: function (event, data) {
+				    	// get the new value
+				    	var value = data.input.val().trim();
+				    	// save only user defined nodes
+				    	if (data.node.data.isUserDefined) {
+				    		// prepare common data to be POSTed
+				    		var POSTdata = {  
+									domaineRootNodeID : data.node.getParentList()[0].key,
+									parentNodeID : data.node.parent.key,
+									term : value
+								};
+				    		
+				    		// if it's not a new node, add its key to the POST
+					    	if (!data.node.data.isNew) {
+					    		// add selected node key to update node
+					    		POSTdata = $j.extend ({
+					    			descripteur_id : data.node.key
+					    		},POSTdata);					    		
+					    	}
+				    		
+				    		// if it's not been edited or the input field is empty
+				    		// delete it if it's new
+				    		if (data.node.title == value || value.length<=0) {
+				    			if (data.node.data.isNew) data.node.remove();
+				    		} else {
+						    	// promise is handled in close callback
+						    	savePromise = $j.ajax({
+									type	:	'POST',
+									url		:	'ajax/saveTerm.php',
+									data	:	POSTdata,
+									dataType:	'json'
+								});
+				    		}
+				    	}
+				    },
+				    close : function (event, data) {
+				    	// handle promise made on save callback
+				    	if (savePromise!=null)
+				    	{
+					    	$j.when(savePromise)
+					    	.done(function (JSONObj) {
+								if (JSONObj) {
+									if (JSONObj.status=='OK') {										
+								    	data.node.data.isNew = false;
+								    	data.node.key = JSONObj.nodeKey;
+								    	// sort the active branch after closing the input
+								    	if(data.node.parent!=null) data.node.parent.sortChildren();
+									} else if (JSONObj.status=='ERROR') {
+										if (data.node.data.isNew) data.node.remove();
+									}
+									showHideDiv('',JSONObj.msg,JSONObj.status=='OK');
+								} else {
+									showHideDiv('',$j('#nodeSavingFailMsg').html(),false);
+								}
+					    	})
+					    	.always (function() { savePromise=null; }) 
+					    	.fail(function () {
+					    		if (data.node.data.isNew) data.node.remove();
+					    		else {
+					    			fancyTreeObj.fancytree('getTree').reload();
+					    		}
+					    		showHideDiv('',$j('#nodeSavingFailMsg').html(),false);
+					    	});				    		
+				    	}
+				    }
+			}
+	};
+	
+	// init the tree with its own options to handle
+	// inline edit extension and event handling
+	var returnTree = initfancyTreeObj(element, false, options );
+	
+	// attach a context menu
+    returnTree.contextmenu({
+        delegate: "span.fancytree-title",
+        menu: "#treeContextMenu",
+        show: { effect: "fade", duration: "fast" },
+		hide: { effect: "fade", duration: "fast" },
+        beforeOpen: function(event, ui) {
+          var node = $j.ui.fancytree.getNode(ui.target);
+          /**
+           * show menu only if node has children
+           * and is not in the editing state
+           */
+          if (node.hasChildren() || node.isEditing()) return false;
+          else {
+        	  returnTree.contextmenu("enableEntry", "edit", node.data.isUserDefined);
+        	  returnTree.contextmenu("enableEntry", "delete", node.data.isUserDefined);
+          }
         },
-        filter: {
-        	mode: "hide"
-        },
-        debugLevel: 0,
-        checkbox: true,
-        selectMode: 2,
-        select: function(event, data) {
-        	
-        	if (!canEdit) return;
-        	
-            var isSelected = data.node.isSelected();
-      	  	var nodeKey = data.node.key;
-      	  	
-      	  	root = $j(this).fancytree("getTree").rootNode;
-        
-      	  	var targetNodes = root.findAll(function(node){
-      	  		return node.key==nodeKey;
-      	  	});
-      	  	
-      	  	if (targetNodes.length>1) {
-      	  		for (var i=0; i<targetNodes.length; i++) {
-      	  			targetNodes[i].setSelected(isSelected);
-      	  		}
-      	  	}       
-          },
-          beforeSelect: function(event, data){
-              /**
-               *  handle all code generated events and discard
-               *  mouse or keyboard generated events if the user cannot edit
-               */ 
-        	  return (event.which) ? canEdit : true;        	  
-          },
-          source: {
-            url: 'ajax/getEurovocTree.php'
-          },
-          // make selected nodes visible on init
-//          init: function (event, data) {
-//        	  var s = data.tree.getSelectedNodes();
-//        	  for (var i=0; i<s.length; i++) {
-//        		  s[i].makeVisible({noAnimation: true, scrollIntoView:false });
-//        	  }
-//          }
+        select: function(event, ui) {
+          var node = $j.ui.fancytree.getNode(ui.target);
+          switch (ui.cmd) {
+          case 'new':
+              // delay the event, so the menu can close and the click event does
+              // not interfere with the edit control
+        	  setTimeout (function() { addNewTreeNode(node); } ,100);
+        	  break;
+          case 'edit':
+        	  setTimeout (function() { node.editStart(); } ,100);
+        	  break;
+          case 'delete':
+        	  deleteSelectedTreeNode(node);
+        	  break;
+          default :
+        		  showHideDiv ('Menu Click','Action not defined!',false);
+        	  break;
+          }
+        }
       });
+    
+    initfancyTreeFilter();
+    
+	return returnTree;
+}
+
+/**
+ * adds a new node as a sibling to the selected node
+ * this does only affect the html structure, no call
+ * to the DB is made at all!
+ * 
+ * Saving is handled in edit property/save callback of the fanyTreeObj
+ * 
+ * @param node the node to add to
+ */
+function addNewTreeNode(node) {
+    refNode = node.appendSibling({
+    	title: $j('#defaultNewNodeTitle').text(),
+        isNew: true,
+        isUserDefined: true
+    });    
+    refNode.editStart();
+}
+
+/**
+ * removes the selected node from the tree
+ * 
+ * @param node
+ */
+function deleteSelectedTreeNode(node) {
+	/**
+	 * TODO: ajax remove here!!!
+	 */
+	alert (node.key);
+	// node.remove();
+}
+
+/**
+ * inits the fancyTree object
+ * 
+ * @param element the jQuery object to attach to
+ * @param canEdit true if user can edit associations, sets checkboxes to active
+ * @param extraOptions object of extra options to be used on tree init
+ * 
+ * @returns fancyTree
+ */
+function initfancyTreeObj (element, canEdit, extraOptions) {
+	
+	var options = {
+		extensions: ["childcounter", "filter"],
+	    childcounter: { deep: false, hideZeros: true, hideExpanded: true },
+	    filter: { mode: "hide" },
+	    debugLevel: 0,
+	    checkbox: true,
+	    selectMode: 2,
+	    select: function(event, data) {
+	    	
+	    	if (!canEdit) return;
+	    	
+	        var isSelected = data.node.isSelected();
+	  	  	var nodeKey = data.node.key;
+	  	  	
+	  	  	root = $j(this).fancytree("getTree").rootNode;
+	    
+	  	  	var targetNodes = root.findAll(function(node){
+	  	  		return node.key==nodeKey;
+	  	  	});
+	  	  	
+	  	  	if (targetNodes.length>1) {
+	  	  		for (var i=0; i<targetNodes.length; i++) {
+	  	  			targetNodes[i].setSelected(isSelected);
+	  	  		}
+	  	  	}       
+	      },
+	      beforeSelect: function(event, data){
+	          /**
+	           *  handle all code generated events and discard
+	           *  mouse or keyboard generated events if the user cannot edit
+	           */ 
+	    	  return (event.which) ? canEdit : true;        	  
+	      },
+	      source: {
+	        url: 'ajax/getEurovocTree.php'
+	      },
+	};
+	
+	var returnTree = element.fancytree($j.extend(options,extraOptions));
+	initfancyTreeFilter();
+	return returnTree;
+}
+
+/**
+ * inits the text input to filter the 
+ * fancyTree and the button to clear it
+ */
+function initfancyTreeFilter() {
+	/**
+	 * init tree filter text input
+	 */
+	if ($j("input#treeFilterInput").length>0) {
+	    $j("input#treeFilterInput").keyup(function(e){
+	        var match = $j(this).val();
+	        
+	        if(e && e.which === $j.ui.keyCode.ESCAPE || $j.trim(match) === ""){
+	          $j("button#resetTreeFilter").click();
+	          return;
+	        } else if (e.which === $j.ui.keyCode.ENTER) {
+		        // Pass a string to perform case insensitive matching
+		        // second parameter is to filter leaves only
+		        n = fancyTreeObj.fancytree('getTree').filterNodes(match, false);
+		        
+		        // if any matched nodes, expand them
+		        if (n>0) {
+		        	fancyTreeObj.fancytree("getRootNode").visit(function(node){
+		        		if (node.title.toLowerCase().indexOf(match.toLowerCase())>-1) {
+		                	if (!node.isExpanded()) node.makeVisible({ noAnimation: true, scrollIntoView:false });
+		        		}
+		            });
+		        	// fix hidden and shown elements
+		        	$j('span.fancytree-hide').parents('li').css('display','none');
+		        	$j('span.fancytree-match').parents('li').css('display','block');
+		        }			        
+		        $j("button#resetTreeFilter").attr("disabled", false);
+	        }
+	      }).focus();
+	}
+
+    /**
+     * init clear button
+     */
+	if ($j("button#resetTreeFilter").length>0) {
+	    $j("button#resetTreeFilter").click(function(e){
+	    	// clear text field and tree filter
+	        $j("input#treeFilterInput").val("");
+	        fancyTreeObj.fancytree('getTree').clearFilter();
+	    	// fix hidden and shown elements
+	        $j('span.fancytree-node').parents('li').css('display','block');
+	        // reset object as it previously was
+	        setFancyTreeObjSelection(getSelectedTreeNodesArray());
+	      }).attr("disabled", true);
+	}    
 }
 
 /**

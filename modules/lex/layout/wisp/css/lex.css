@@ -209,6 +209,8 @@ div.show_error {
 	text-shadow: 0 1px 2px #777;
 }
 
+#lexmenu { display: none; }
+
 #selectEurovocTerms li {
 	border:none;
 }
@@ -293,6 +295,22 @@ div.show_error {
 /*
  * end sourcesTable actions
  */
+ 
+ /*
+  * edit terms tree
+  */
+#editTerms ul.fancytree-container,
+#editTerms ul.fancytree-treefocus { border: none; outline: none; width: 98%; }
+#editTerms li { border:none; }
+#editTerms #treeContextMenu { z-index:1; }
+  
+#editTermsContainer  { width: 50%; float: left; border:1px dotted gray; }
+#editTermsContainer .treeTools { width:95%; height:35px; margin: 5px 5px 0 5px; }
+#editTermsContainer .treeTools .treeFilter { width: 100%; float: right; line-height:30px; text-align:right; }
+#editTermsContainer .treeTools .treeFilter #treeFilterInput { width: 85%; }
+ /*
+  * end edit terms tree
+  */  
 
 span.fancytree-icon {
   position: relative;

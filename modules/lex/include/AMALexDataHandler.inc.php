@@ -409,11 +409,75 @@ class AMALexDataHandler extends AMA_DataHandler {
 	 */
 	public function getEurovocDESCRIPTEURTERMS($descripteur_id, $lng, $version) {
 		
-		$sql = ' SELECT B.`descripteur_id`, B.`libelle`  FROM `'.self::$PREFIX.'EUROVOC_RELATIONS_BT` A '.
+		$sql = ' SELECT B.`descripteur_id`, B.`libelle`, B.`is_user_defined`  FROM `'.self::$PREFIX.'EUROVOC_RELATIONS_BT` A '.
 		       'JOIN `'.self::$PREFIX.'EUROVOC_DESCRIPTEUR` B ON A.`source_id`= B.`descripteur_id`  '.
 			   'WHERE `cible_id` =? AND A.version=? AND B.lng=? ORDER BY B.`libelle` ASC ';
 		
 		return $this->getAllPrepared($sql,array($descripteur_id,$version,$lng),AMA_FETCH_OBJECT);
+	}
+	
+	/**
+	 * insert or updates a descripteur_id in the EUROVOC_DESCRIPTEUR table
+	 * USED ONLY FOR USER DEFINED TERMS!! This method cannot edit imported terms!
+     * 
+	 * @param unknown $descripteur_id
+	 * @param unknown $cible_id
+	 * @param unknown $libelle
+	 * @param string $lng
+	 * @param string $version
+	 * 
+	 * @return number descripteur_id on success or -1 on error
+	 * 
+	 * @access public
+	 */
+	public function setEurovocDESCRIPTEURTERMS ($domaineID, $descripteur_id, $cible_id, $libelle, $lng = ADA_LOGIN_PAGE_DEFAULT_LANGUAGE, $version = EUROVOC_VERSION) {
+		
+		$updateCache = false;
+		
+		if (is_null($descripteur_id)) {
+			
+			// get max id +1 in passed lang and for passed version
+			$descripteur_id = $this->getOnePrepared('SELECT MAX(`descripteur_id`)+1 FROM `'.
+					self::$PREFIX.'EUROVOC_DESCRIPTEUR` WHERE `version`=? AND `lng`=?', array ($version,$lng));
+
+			if (!AMA_DB::isError($descripteur_id)) {
+				
+				$sql = 'INSERT INTO `'.self::$PREFIX.'EUROVOC_DESCRIPTEUR` (`descripteur_id`, `libelle`, `version`,`lng`, `is_user_defined`)'.
+					   ' VALUES (?, ?, ?, ?, ?)';
+				$params = array ($descripteur_id, $libelle, $version, $lng, 1);
+				
+				// if descripteur ok, save its relation
+				if (!AMA_DB::isError($this->queryPrepared($sql,$params))) {
+					
+					$sql = 'INSERT INTO `'.self::$PREFIX.'EUROVOC_RELATIONS_BT` VALUES (?,?,?)';
+					$params = array ($descripteur_id, $cible_id, $version);
+					
+					if (!AMA_DB::isError($this->queryPrepared($sql,$params))) {						
+						$updateCache = true;
+					} else {
+						// inserting the relation has failed, delete the term
+						$sql = 'DELETE FROM `'.self::$PREFIX.'EUROVOC_DESCRIPTEUR` '.
+								'WHERE `descripteur_id`=? AND `version`=? AND `lng`=?';
+						$this->queryPrepared($sql,array($descripteur_id,$version,$lng));
+					}
+				}
+			}
+		} else {
+			// update
+			$sql = 'UPDATE `'.self::$PREFIX.'EUROVOC_DESCRIPTEUR` SET `libelle`=? '.
+			       'WHERE `descripteur_id`=? AND `version`=? AND `lng`=?';
+			$params = array ($libelle, $descripteur_id, $version, $lng);
+			$result = $this->queryPrepared($sql,$params);
+			if (!AMA_DB::isError($result)) $updateCache = true;
+		}
+		
+		if ($updateCache) {
+			$eurovocObj = new eurovocManagement($lng);
+			// force a cache rebuild for the passed domain and return
+			$eurovocObj->getEurovocTree(array($domaineID));			
+			return $descripteur_id;
+		}		
+		return -1;
 	}
 	
 	/**

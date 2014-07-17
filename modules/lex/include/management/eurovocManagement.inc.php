@@ -60,22 +60,34 @@ class eurovocManagement extends importManagement
 	 * not found or is invalid, run the code to generate the domaine subtree
 	 * and stores it in the cache table
 	 * 
+	 * @param array $rebuildCache array of domaine_id to force cache rebuild
+	 * 
 	 * @return NULL|array
 	 * 
 	 * @access public
 	 */
 	
-	public function getEurovocTree () {
+	public function getEurovocTree ($rebuildCache=array()) {
 		$treeObj = null;
+		
+		$rebuildOnly = (count($rebuildCache)>0);
 				
 		$domaines = $this->_dh->getEurovocDOMAINES($this->_language,EUROVOC_VERSION);
 		if (!AMA_DB::isError($domaines)) {
 			foreach ($domaines as $count=>$domaine) {
 				// instantiate new empty object
 				$treeObj[$count] = new stdClass();
-				
-				$cachedObj = $this->_dh->getEurovocDOMAINECache($domaine->domaine_id,$this->_language,EUROVOC_VERSION);				
 				$cacheAccepted = false;
+				$cachedObj = null;
+				$mustRebuildCache = in_array($domaine->domaine_id,$rebuildCache);
+				
+				/**
+				 * read the cache only if the current domain is
+				 * not in the array of the rebuild cache ids
+				 */
+				if (!$mustRebuildCache) {
+					$cachedObj = $this->_dh->getEurovocDOMAINECache($domaine->domaine_id,$this->_language,EUROVOC_VERSION);					
+				}
 				
 				if (!is_null($cachedObj) && !AMA_DB::isError($cachedObj)) {
 					// try to json_decode cached object
@@ -92,10 +104,12 @@ class eurovocManagement extends importManagement
 					$treeObj[$count]->hideCheckbox = true;
 					$treeObj[$count]->unselectable = true;
 					
-					$thesaurusTree = $this->getThesaurusTree($domaine->domaine_id);
-					if (!is_null($thesaurusTree)) $treeObj[$count]->children = $thesaurusTree;
-					
-					$this->_dh->setEurovocDOMAINECache($treeObj[$count],$this->_language,EUROVOC_VERSION);
+					if (!$rebuildOnly || ($rebuildOnly && $mustRebuildCache)) {
+						
+						$thesaurusTree = $this->getThesaurusTree($domaine->domaine_id);
+						if (!is_null($thesaurusTree)) $treeObj[$count]->children = $thesaurusTree;
+						$this->_dh->setEurovocDOMAINECache($treeObj[$count],$this->_language,EUROVOC_VERSION);
+					}
 				}
 			}
 		} // if (!AMA_DB::isError($domaines))
@@ -187,6 +201,8 @@ class eurovocManagement extends importManagement
 				$treeObj[$count]->folder= false;
 				$treeObj[$count]->hideCheckbox = false;
 				$treeObj[$count]->unselectable = false;
+				$treeObj[$count]->data['isUserDefined'] = (bool) $term->is_user_defined;
+				$treeObj[$count]->data['isNew'] = false;
 				
 				$descripteurTree = $this->getDescripteurTree($term->descripteur_id);
 				
@@ -676,12 +692,16 @@ class eurovocManagement extends importManagement
      * 
      * @return string
      */
-    public static function getTabTitle() {
-    	return translateFN('Importa XML Eurovoc');
+    public static function getTabTitle($actionCode) {
+    	if ($actionCode===IMPORT_EUROVOC)
+    		return translateFN('Importa XML Eurovoc');
+    	else if ($actionCode===EDIT_EUROVOC)
+    		return translateFN('Modifica Termini');
     }
     
     /**
      * gets the HTML form to be rendered as the UI tab contents
+     * for the import XML tab
      * 
      * @return CDOMElement
      */
@@ -702,4 +722,130 @@ class eurovocManagement extends importManagement
 		
 		return $htmlObj;
 	}
+	
+    /**
+     * gets the HTML form to be rendered as the UI tab contents
+     * for the edit terms tab
+     * 
+     * @return CDOMElement
+     */
+     public static function getEditPage() {
+     	
+     	$htmlObj = CDOMElement::create('div','id:eurovocEditContainer');
+     	
+     	$treeDIV = CDOMElement::create('div','id:editTermsContainer');
+     	
+     	/**
+     	 * new node default title
+     	 */
+     	$defaultNewNode = CDOMElement::create('span','id:defaultNewNodeTitle');
+     	$defaultNewNode->setAttribute('style', 'display:none');
+     	$defaultNewNode->addChild(new CText(translateFN('Nuovo Nodo')));
+     	$treeDIV->addChild($defaultNewNode);
+     	
+     	/**
+     	 * non empty string in node text error message
+     	 */
+     	$nonEmptyMsg = CDOMElement::create('span','id:nonEmptyMsg');
+     	$nonEmptyMsg->setAttribute('style', 'display:none');
+     	$nonEmptyMsg->addChild(new CText(translateFN('Inserire una stringa non vuota')));
+     	$treeDIV->addChild($nonEmptyMsg);
+     	
+     	/**
+     	 * ajax node saving has failed message
+     	 */
+     	$nodeSavingFailMsg = CDOMElement::create('span','id:nodeSavingFailMsg');
+     	$nodeSavingFailMsg->setAttribute('style', 'display:none');
+     	$nodeSavingFailMsg->addChild(new CText(translateFN('Salvataggio del nodo fallito')));
+     	$treeDIV->addChild($nodeSavingFailMsg);
+     	
+     	/**
+     	 * fancytree div, when the 'edit terms' tab is activated
+     	 * the js shall load the tree inside this div if it's not been done already
+     	 */
+     	$fancyTree = CDOMElement::create('div','id:editTerms');
+     	
+     	/**
+     	 * tree context menu, displayed on right click on a node
+     	 */
+     	 
+     	$contextMenuOptions = array (
+     			array (
+     					'action' => 'new',
+     					'label'  => translateFN('Nuovo Termine'),
+     					'icon'   => 'ui-icon-plus' ),
+     			array (
+     					'action' => 'edit',
+     					'label'  => translateFN('Rinomina Termine'),
+     					'icon'   => 'ui-icon-pencil' ),
+     			array (
+     					'action' => 'delete',
+     					'label'  => translateFN('Cancella Termine'),
+     					'icon'   => 'ui-icon-minus' )
+     	);
+     	 
+     	$contextMenuUL = CDOMElement::create('ul','id:treeContextMenu,class:ui-helper-hidden');
+     	foreach ($contextMenuOptions as $contextMenuItem) {
+     		$li = CDOMElement::create('li');
+     		$li->setAttribute('data-command', $contextMenuItem['action']);
+     		$a = CDOMElement::create('a');
+     		$span = CDOMElement::create('span','class:ui-icon '.$contextMenuItem['icon']);
+     		$a->addChild($span);
+     		$a->addChild(new CText($contextMenuItem['label']));
+     		$li->addChild($a);
+     		$contextMenuUL->addChild($li);
+     	}
+     	 
+     	$fancyTree->addChild($contextMenuUL);
+     	
+     	/**
+     	 * container div for tree tools: filter text with reset filter button
+     	 */
+     	$toolsContainer = CDOMElement::create('div','class:treeTools');
+     	     	
+     	/**
+     	 * filter container for label, input text and filter reset button
+     	 */
+     	$divFilter = CDOMElement::create('div','class:treeFilter');
+     	/**
+     	 * label
+     	 */
+     	$lblFilter = CDOMElement::create('label','for:treeFilterInput');
+     	$lblFilter->addChild (new CText(translateFN('filtra').': '));
+     	/**
+     	 * input text
+     	 */
+     	$inputFilter = CDOMElement::create('text','id:treeFilterInput,class:dontuniform');
+     	/**
+     	 * filter reset button
+     	 */
+     	$resetFilter = CDOMElement::create('button','id:resetTreeFilter,class:dontuniform');
+     	$resetFilter->addChild (new CText('&times;'));
+     	 
+     	$divFilter->addChild($lblFilter);
+     	$divFilter->addChild($inputFilter);
+     	$divFilter->addChild($resetFilter);
+     	 
+     	/**
+     	 * add button and filter container to tree tools
+     	 */
+     	$toolsContainer->addChild($divFilter);
+     	 
+     	/**
+     	 * add tools to tree container
+     	 */
+     	$treeDIV->addChild($toolsContainer);
+     	/**
+     	 * add fancytree to the tree container
+     	 */     	
+     	$treeDIV->addChild($fancyTree);
+     	/**
+     	 * add tree container to whole page
+     	 */
+     	$htmlObj->addChild($treeDIV);
+     	
+     	// div to fix firefox display
+     	$htmlObj->addChild(CDOMElement::create('div','class:clearfix'));
+     	return $htmlObj;
+	 }
 } // class ends here
