@@ -45,7 +45,7 @@ if (isset($_SESSION['ada_access_from'])) {
 
 session_unset();
 session_destroy();
-
+header('Location: hp/index.html');
 /**
  * Base config file
  */
