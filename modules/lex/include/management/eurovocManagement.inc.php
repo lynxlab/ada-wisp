@@ -760,6 +760,41 @@ class eurovocManagement extends importManagement
      	$treeDIV->addChild($nodeSavingFailMsg);
      	
      	/**
+     	 * div holding the dialog to display the associated
+     	 * assets when user tries to delete a term
+     	 */
+     	$divCannotDelete = CDOMElement::create('div','id:cannot-delete');
+     	$divCannotDelete->setAttribute('title', translateFN('Impossibile Cancellare'));
+     	$divCannotDelete->setAttribute('style', 'display:none');
+     	
+     	$cannotDeleteMsg = CDOMElement::create('h3');
+     	$cannotDeleteMsg->addChild(new CText(translateFN('I seguenti asset sono associati al termine da cancellare').':'));
+     	
+     	$divCannotDelete->addChild($cannotDeleteMsg);
+     	$divCannotDelete->addChild(CDOMElement::create('div','id:cannot-delete-details'));
+     	
+     	$treeDIV->addChild($divCannotDelete);
+     	
+     	/**
+     	 * div holding the dialog to ask user confirmation before delete
+     	 */
+     	$divAskConfirm = CDOMElement::create('div','id:ask-confirm-delete');
+     	$divAskConfirm->setAttribute('title', translateFN('Conferma cancellazione'));
+     	$divAskConfirm->setAttribute('style', 'display:none');
+     	
+     	$divAskConfirm->addChild(CDOMElement::create('div','id:ask-confirm-message'));
+     	
+     	$treeDIV->addChild ($divAskConfirm);
+     	
+     	/**
+     	 * ajax node deletion has failed message
+     	 */
+     	$nodeDelFailMsg = CDOMElement::create('span','id:nodeDelFailMsg');
+     	$nodeDelFailMsg->setAttribute('style', 'display:none');
+     	$nodeDelFailMsg->addChild(new CText(translateFN('Cancellazione del nodo fallita')));
+     	$treeDIV->addChild($nodeDelFailMsg);
+     	
+     	/**
      	 * fancytree div, when the 'edit terms' tab is activated
      	 * the js shall load the tree inside this div if it's not been done already
      	 */

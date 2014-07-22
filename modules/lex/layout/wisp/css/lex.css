@@ -308,6 +308,18 @@ div.show_error {
 #editTermsContainer .treeTools { width:95%; height:35px; margin: 5px 5px 0 5px; }
 #editTermsContainer .treeTools .treeFilter { width: 100%; float: right; line-height:30px; text-align:right; }
 #editTermsContainer .treeTools .treeFilter #treeFilterInput { width: 85%; }
+
+#cannot-delete-details OL { counter-reset: item; padding-left: 10px; }
+#cannot-delete-details OL LI.mainitem { font-weight: bold; }
+#cannot-delete-details OL LI.subitem  { font-weight: normal; line-height: 1.4em; }
+#cannot-delete-details LI { display: block }
+#cannot-delete-details LI:before { content: counters(item, ".") " "; counter-increment: item }
+#cannot-delete-details OL LI OL LI:last-child { margin-bottom: 10px; }
+
+#ask-confirm-message { padding: 10px 10px 0 10px; font-size: 1.1em; text-align:center; line-height: 1.5em; }
+
+.no-close .ui-dialog-titlebar-close { display: none; }
+
  /*
   * end edit terms tree
   */  

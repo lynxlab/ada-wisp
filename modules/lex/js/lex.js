@@ -784,9 +784,17 @@ function initEditfancyTreeObj (element) {
 			checkbox:false,
 			extensions: [ "childcounter", "filter", "edit" ],
 			renderNode: function(event, data) {
-				if (!data.node.isFolder() && data.node.data.isUserDefined)
-					 $j(data.node.span).find('> span.fancytree-icon')
-					 	.removeClass('fancytree-icon').addClass('fancytree-custom-icon ui-icon ui-icon-pencil');
+				if (!data.node.isFolder() && data.node.data.isUserDefined) {
+					if (!data.node.data.isSaving) {
+						$j(data.node.span).find('> span.fancytree-icon')
+						 	.removeClass('fancytree-icon').addClass('fancytree-custom-icon ui-icon ui-icon-pencil');
+						$j(data.node.span).find('> span.fancytree-title').css('opacity', 1);
+					} else {
+						data.node.extraClasses = 'fancytree-statusnode-wait';
+						$j(data.node.span).addClass(data.node.extraClasses);
+						$j(data.node.span).find('> span.fancytree-title').css('opacity', 0.2);
+					}
+				}
 			},
 			edit: {
 					triggerStart: ["f2", "dblclick", "shift+click", "mac+enter"],
@@ -798,21 +806,30 @@ function initEditfancyTreeObj (element) {
 				    		return false;
 				    	} else if (!data.save) {
 				    		if (data.node.data.isNew) data.node.remove();
+				    		else {
+					    		// delay the rendering of the node so that 
+				    			// the input has time to close
+					    		setTimeout (function() {
+						    		data.node.render(true);
+							    	// sort the active branch after closing the input
+							    	if(data.node.parent!=null) data.node.parent.sortChildren();
+					    		}, 50);
+				    		}
 				    	}
 				    },
 				    beforeEdit: function(event, data) {
-				    	// edit enabled only for userdefined nodes
-				    	return data.node.data.isUserDefined;				    	
+				    	// edit enabled only for user defined and non waiting nodes
+				    	return data.node.data.isUserDefined && !data.node.data.isSaving;   	
 				    },
 				    edit: function (event,data) {
 				    	data.input.select();
 				    },
 				    // Save data.input.val() or return false to keep editor open 
 				    save: function (event, data) {
-				    	// get the new value
-				    	var value = data.input.val().trim();
 				    	// save only user defined nodes
 				    	if (data.node.data.isUserDefined) {
+					    	// get the new value
+					    	var value = data.input.val().trim();
 				    		// prepare common data to be POSTed
 				    		var POSTdata = {  
 									domaineRootNodeID : data.node.getParentList()[0].key,
@@ -833,6 +850,12 @@ function initEditfancyTreeObj (element) {
 				    		if (data.node.title == value || value.length<=0) {
 				    			if (data.node.data.isNew) data.node.remove();
 				    		} else {
+				    			// delay the rendering of the node so that the input 
+				    			// field can close and icon is not overwritten
+				    			setTimeout(function(){
+				    						data.node.data.isSaving = true;
+				    						data.node.render(true);
+						    			   } , 100);
 						    	// promise is handled in close callback
 						    	savePromise = $j.ajax({
 									type	:	'POST',
@@ -840,8 +863,10 @@ function initEditfancyTreeObj (element) {
 									data	:	POSTdata,
 									dataType:	'json'
 								});
+						    	return true;
 				    		}
 				    	}
+				    	return false;
 				    },
 				    close : function (event, data) {
 				    	// handle promise made on save callback
@@ -853,8 +878,6 @@ function initEditfancyTreeObj (element) {
 									if (JSONObj.status=='OK') {										
 								    	data.node.data.isNew = false;
 								    	data.node.key = JSONObj.nodeKey;
-								    	// sort the active branch after closing the input
-								    	if(data.node.parent!=null) data.node.parent.sortChildren();
 									} else if (JSONObj.status=='ERROR') {
 										if (data.node.data.isNew) data.node.remove();
 									}
@@ -863,7 +886,17 @@ function initEditfancyTreeObj (element) {
 									showHideDiv('',$j('#nodeSavingFailMsg').html(),false);
 								}
 					    	})
-					    	.always (function() { savePromise=null; }) 
+					    	.always (function() { 
+					    		savePromise=null;
+					    		// delay the rendering of the node so that 
+				    			// it has time to be sorted by the done callback
+					    		setTimeout (function() {
+						    		data.node.data.isSaving = false;
+						    		data.node.render(true);
+							    	// sort the active branch after closing the input
+							    	if(data.node.parent!=null) data.node.parent.sortChildren();
+					    		}, 200);
+					    	}) 
 					    	.fail(function () {
 					    		if (data.node.data.isNew) data.node.remove();
 					    		else {
@@ -910,7 +943,7 @@ function initEditfancyTreeObj (element) {
         	  setTimeout (function() { node.editStart(); } ,100);
         	  break;
           case 'delete':
-        	  deleteSelectedTreeNode(node);
+        	  deleteSelectedTreeNode(node,'check');
         	  break;
           default :
         		  showHideDiv ('Menu Click','Action not defined!',false);
@@ -936,7 +969,9 @@ function initEditfancyTreeObj (element) {
 function addNewTreeNode(node) {
     refNode = node.appendSibling({
     	title: $j('#defaultNewNodeTitle').text(),
+    	folder: false,
         isNew: true,
+        isSaving: false,
         isUserDefined: true
     });    
     refNode.editStart();
@@ -947,12 +982,76 @@ function addNewTreeNode(node) {
  * 
  * @param node
  */
-function deleteSelectedTreeNode(node) {
-	/**
-	 * TODO: ajax remove here!!!
-	 */
-	alert (node.key);
-	// node.remove();
+function deleteSelectedTreeNode(node, op) {	
+	var POSTdata = {  
+			nodeID : node.key,
+			op : op
+		};
+	
+	$j.ajax({
+		type	:	'POST',
+		url		:	'ajax/deleteTerm.php',
+		data	:	POSTdata,
+		dataType:	'json'
+	})
+	.done (function(JSONObj){
+		if (JSONObj) {
+			// handle response status sent from server
+			if (JSONObj.status=='IMPOSSIBLE') {
+				// display impossible delete dialog
+				$j('#cannot-delete-details').html(JSONObj.msg);
+				$j("#cannot-delete" ).dialog({
+					resizable: false,
+					dialogClass: 'no-close',
+					width: '60%',
+				    height:'auto',
+				    modal: true,
+				    buttons: {
+				    	"OK": function() {
+				    		$j(this).dialog('close');
+				    		}
+				    }
+				});
+			} else if (JSONObj.status=='CONFIRM') {
+				// display ask confirm dialog
+				var dialogButtons = {};
+				
+				dialogButtons[i18n['confirm']] = function() {
+					$j(this).dialog('close');
+					// if user confirms, do the actual delete
+					deleteSelectedTreeNode (node, 'delete');
+				};
+				
+				dialogButtons[i18n['cancel']] = function() {
+					$j(this).dialog('close');
+				};
+				
+				$j('#ask-confirm-message').html(JSONObj.msg);
+				$j("#ask-confirm-delete" ).dialog({
+					resizable: false,
+					dialogClass: 'no-close',
+					width: '50%',
+				    height:'auto',
+				    modal: true,
+				    buttons: dialogButtons
+				});
+			} else if (JSONObj.status=='ERROR') {
+				// display error message
+				showHideDiv('',JSONObj.msg, false);
+			} else if (JSONObj.status=='OK') {
+				// remove the node and display message
+				node.remove();
+				showHideDiv('',JSONObj.msg,true);
+			} else {
+				showHideDiv('',$j('#nodeDelFailMsg').html(),false);
+			}		
+		} else {
+			showHideDiv('',$j('#nodeDelFailMsg').html(),false);
+		}		
+	})
+	.fail (function(){
+		showHideDiv('',$j('#nodeDelFailMsg').html(),false);
+	});	
 }
 
 /**

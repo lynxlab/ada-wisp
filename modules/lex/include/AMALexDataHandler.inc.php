@@ -417,6 +417,34 @@ class AMALexDataHandler extends AMA_DataHandler {
 	}
 	
 	/**
+	 * deletes a descripteur_id in the EUROVOC_DESCRIPTEUR table
+	 * USED ONLY FOR USER DEFINED TERMS!! This method cannot edit imported terms!
+	 * 
+	 * @param unknown $nodeID the id or array of ids to delete
+	 * @param string $lng
+	 * @param string $version
+	 * 
+	 * @return bool true on success, false on failure
+	 * 
+	 * @access public
+	 */
+	public function deleteEurovocDESCRIPTEURTERMS($nodeID, $lng = ADA_LOGIN_PAGE_DEFAULT_LANGUAGE, $version = EUROVOC_VERSION) {
+		if (!is_array($nodeID)) $nodeID = array($nodeID);
+		
+		$sql = 'DELETE FROM `'.self::$PREFIX.'EUROVOC_RELATIONS_BT` '.
+			   'WHERE `source_id` IN ('.implode(',', $nodeID).') AND `version`=?';
+		$params = array ($version);
+		
+		if (!AMA_DB::isError($this->queryPrepared($sql,$params))) {
+			$sql = 'DELETE FROM `'.self::$PREFIX.'EUROVOC_DESCRIPTEUR` '.
+					'WHERE `descripteur_id` IN ('.implode(',', $nodeID).') AND `version`=? AND `lng`=?';
+			$params = array ($version,$lng);
+			return !AMA_DB::isError($this->queryPrepared($sql,$params));
+		}		
+		return false;
+	}
+	
+	/**
 	 * insert or updates a descripteur_id in the EUROVOC_DESCRIPTEUR table
 	 * USED ONLY FOR USER DEFINED TERMS!! This method cannot edit imported terms!
      * 
@@ -452,7 +480,7 @@ class AMALexDataHandler extends AMA_DataHandler {
 					$sql = 'INSERT INTO `'.self::$PREFIX.'EUROVOC_RELATIONS_BT` VALUES (?,?,?)';
 					$params = array ($descripteur_id, $cible_id, $version);
 					
-					if (!AMA_DB::isError($this->queryPrepared($sql,$params))) {						
+					if (!AMA_DB::isError($this->queryPrepared($sql,$params))) {
 						$updateCache = true;
 					} else {
 						// inserting the relation has failed, delete the term
