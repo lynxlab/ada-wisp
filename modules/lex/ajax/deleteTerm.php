@@ -3,7 +3,7 @@
  * LEX MODULE.
  *
  * @package        lex module
- * @author         Giorgio Consorti <g.consorti@lynxlab.com>         
+ * @author         Giorgio Consorti <g.consorti@lynxlab.com>
  * @copyright      Copyright (c) 2014, Lynx s.r.l.
  * @license        http://www.gnu.org/licenses/gpl-2.0.html GNU Public License v.2
  * @link           lex
@@ -48,13 +48,15 @@ $dh = AMALexDataHandler::instance(MultiPort::getDSN($_SESSION['sess_selected_tes
 $retArray = array();
 
 if (isset($_SERVER['REQUEST_METHOD']) && $_SERVER['REQUEST_METHOD'] == 'POST' &&
-	isset($op) && strlen(trim($op))>0 && isset($nodeID) && intval($nodeID)>0) {
-	
+	isset ($domaineRootNodeID) && intval($domaineRootNodeID)>0 &&
+	isset ($op) && strlen(trim($op))>0 && isset($nodeID) && intval($nodeID)>0) {
+
+	$domaineID = intval ($domaineRootNodeID);
 	$nodeID = intval($nodeID);
-	
+
 	switch ($op) {
 		case 'check':
-			
+
 			$assetsAr = $dh->get_asset_from_descripteurs(array($nodeID));
 
 			if (!AMA_DB::isError($assetsAr) && is_array($assetsAr) && count($assetsAr)>0) {
@@ -62,7 +64,7 @@ if (isset($_SERVER['REQUEST_METHOD']) && $_SERVER['REQUEST_METHOD'] == 'POST' &&
 				 * the node you wish to delete has associated
 				 * assets: show impossible to delete with details dialog
 				 */
-				
+
 				$olElement = CDOMElement::create('ol');
 				foreach ($assetsAr as $asset) {
 					$liElement = CDOMElement::create('li','class:mainitem');
@@ -73,10 +75,10 @@ if (isset($_SERVER['REQUEST_METHOD']) && $_SERVER['REQUEST_METHOD'] == 'POST' &&
 						$nestedLi = CDOMElement::create('li','class:subitem');
 						$nestedLi->addChild(new CText($anElement['label']));
 						$nestedOl->addChild($nestedLi);
-					}						
-					$olElement->addChild($liElement);						
-				}					
-								
+					}
+					$olElement->addChild($liElement);
+				}
+
 				$retArray = array ("status"=>'IMPOSSIBLE', "msg"=>$olElement->getHtml());
 			} else if (is_null($assetsAr) || (count($assetsAr)==0)) {
 				/**
@@ -89,13 +91,13 @@ if (isset($_SERVER['REQUEST_METHOD']) && $_SERVER['REQUEST_METHOD'] == 'POST' &&
 				$retArray = array ("status"=>'CONFIRM', "msg"=>$msg);
 			} else {
 				/**
-                 * don't know what's going on...
+				 * don't know what's going on...
 				 */
 				$retArray = array ("status"=>"ERROR", "msg"=>translateFN("Impossibile capire i termini associati a quello da cancellare"));
 			}
 			break;
 		case 'delete':
-				if ($dh->deleteEurovocDESCRIPTEURTERMS($nodeID, getLanguageCode(), EUROVOC_VERSION)) {
+				if ($dh->deleteEurovocDESCRIPTEURTERMS($domaineID, $nodeID, getLanguageCode(), EUROVOC_VERSION)) {
 					$retArray = array ("status"=>"OK", "msg"=>translateFN("Termine cancellato"));
 				} else {
 					$retArray = array ("status"=>"ERROR", "msg"=>translateFN("Errore nella cancellazione del termine"));
@@ -107,6 +109,5 @@ if (isset($_SERVER['REQUEST_METHOD']) && $_SERVER['REQUEST_METHOD'] == 'POST' &&
 }
 
 if (empty($retArray)) $retArray = array("status"=>"ERROR", "msg"=>translateFN("Errore sconosciuto"));
-
 echo json_encode($retArray);
 ?>

@@ -2,7 +2,7 @@
  * LEX MODULE.
  *
  * @package        lex module
- * @author         Giorgio Consorti <g.consorti@lynxlab.com>         
+ * @author         Giorgio Consorti <g.consorti@lynxlab.com>
  * @copyright      Copyright (c) 2014, Lynx s.r.l.
  * @license        http://www.gnu.org/licenses/gpl-2.0.html GNU Public License v.2
  * @link           lex
@@ -14,7 +14,7 @@ var fileError = false;
 /**
  * the fancytree object
  * either for switcher to edit the tree
- * or for source zoom association with terms view/edit 
+ * or for source zoom association with terms view/edit
  */
 var fancyTreeObj = null;
 // the datatable object
@@ -36,7 +36,7 @@ var commonPekeOptions = {
 function initDoc(maxSize, userId, canEdit) {
 	// conver canEdit to a boolean
 	canEdit = (canEdit > 0);
-	
+
 	$j(document).ready(function() {
 		// init the tabs
 		$j('#lexmenu').tabs({
@@ -48,7 +48,7 @@ function initDoc(maxSize, userId, canEdit) {
 				} else if ($j(ui.newPanel).find('#editTerms').length>0) {
 					// if panel with editTerms is made active
 					if (fancyTreeObj==null) fancyTreeObj = initEditfancyTreeObj ($j('#editTerms'));
-					
+
 				}
 			}
 		});
@@ -56,7 +56,7 @@ function initDoc(maxSize, userId, canEdit) {
 		// sets maximum upload file size
 		commonPekeOptions.maxSize = maxSize;
 		commonPekeOptions.url += '?userId='+userId+'&sessionVar='+UPLOAD_SESSION_VAR;
-		
+
 		/**
 		 * set javaScript file upload handler
 		 * on file upload success for eurovoc file upload
@@ -67,7 +67,7 @@ function initDoc(maxSize, userId, canEdit) {
 				 fileError = false;
 			}
 		} , commonPekeOptions));
-		
+
 		/**
 		 * set javaScript file upload handler
 		 * on file upload success for jex file upload
@@ -77,7 +77,7 @@ function initDoc(maxSize, userId, canEdit) {
 				 if (!fileError) fileError = false;
 			}
 		} , commonPekeOptions));
-		
+
 		// make a selectric
 		$j('#tipologia').selectric();
 		// make a datepicker
@@ -85,29 +85,29 @@ function initDoc(maxSize, userId, canEdit) {
 			showOtherMonths: true
 		});
 
-		
+
 		/**
 		 * prevent the jex (aka new fonte) form from
 		 * being submitted on enter key press, but add
 		 * a new typology if enter is pressed on its own input
 		 */
 		$j("form[name='jex']").bind("keypress", function(e) {
-			  var code = e.keyCode || e.which; 
+			  var code = e.keyCode || e.which;
 			  if (code  == 13) {
 				  e.preventDefault();
 				  if ($j(e.target).attr('id')=='nuova_tipologia') {
 					  addTipologia();
-				  } 
+				  }
 				  return false;
 			  }
 			});
-		
+
 		// function to call on submit
 		$j("form[name='jex']").on('submit', function() { doImportJex(); } );
-		
+
 		// autocomplete feature for numero_fonte and titolo_fonte fields
 		var fieldName = null;
-		
+
 		$j('#numero_fonte, #titolo_fonte').autocomplete({
 			minLength: 2,
 			search: function( event, ui ) {
@@ -115,14 +115,14 @@ function initDoc(maxSize, userId, canEdit) {
 				fieldName = $j(event.target).attr('id').replace('_fonte','');
 			},
 			source: function( request, response ) {
-				if (fieldName != null) { 
+				if (fieldName != null) {
 					// term is already in the request,
 					// add tableName and fieldName
 					request = $j.extend ({
 						tableName : 'fonti',
 						fieldName : fieldName
 					}, request);
-					
+
 					$j.getJSON( HTTP_ROOT_DIR+"/modules/lex/ajax/autocomplete.php", request, function( data, status, xhr ) {
 						response( data );
 						fieldName = null;
@@ -130,19 +130,19 @@ function initDoc(maxSize, userId, canEdit) {
 				}
 			}
 		});
-		
+
 		// init buttons
 		initButtons();
 		// init tooltips
 		initToolTips();
-		
-		// init found elements		
+
+		// init found elements
 		if ($j('#sourcesTable').length>0) dataTableObj = initDataTables($j('#sourcesTable'),canEdit);
 		if ($j('#assetsTable').length>0) dataTableObj = initDataTables($j('#assetsTable'),canEdit);
-		
+
 		// show main module container
 		if ($j('#lexmenu').length>0) $j('#lexmenu').toggle('fade');
-		
+
 		// for performance reason, it's better to load the fancyTreeObj as the last element
 		if ($j('#selectEurovocTerms').length>0) {
 			// init main fancyTreeObj object
@@ -219,15 +219,15 @@ function showAddNewButton() {
 /**
  * loads and displays asset details (text and
  * associated terms) with an ajax call
- * 
+ *
  * @param assetID asset id to load
  * @param nTr clicked table row to open after load
  * @param imgObj clicked image to display the ajax loader spinner
  */
 function openAssetDetails(assetID, nTr, imgObj) {
-	
+
 	imgObj.src = HTTP_ROOT_DIR + '/js/include/jquery/ui/images/ui-anim_basic_16x16.gif';
-	
+
 	$j.ajax({
 		type	:	'GET',
 		url		:	'ajax/getAssetDetails.php',
@@ -249,7 +249,7 @@ function openAssetDetails(assetID, nTr, imgObj) {
 
 /**
  * sets the passed array in the fancyTreeObj terms tree
- * 
+ *
  * @param selectedNodes the array to set when showing the tree
  */
 
@@ -258,7 +258,7 @@ function setFancyTreeObjSelection (selectedNodes) {
 		// first unselect and unexpand all expanded and selected nodes
 		if (node.isExpanded()) node.setExpanded(false, { noAnimation: true });
 		if (node.isSelected()) node.setSelected(false);
-		
+
 		// if the current node key is in the passed array
 		// selected and make visible the current node
         if ($j.inArray(parseInt(node.key), selectedNodes)>-1) {
@@ -270,16 +270,16 @@ function setFancyTreeObjSelection (selectedNodes) {
 
 /**
  * shows or hides the fancyTreeObj tree, sets the passed array
- * 
- * @param jqueryObj the table object containing the clicked button 
+ *
+ * @param jqueryObj the table object containing the clicked button
  * @param selectedNodes the array to set when showing the tree
  */
 function showfancyTreeObj(selectedNodes) {
 	var speed = 350;
-	var clearSelection = (selectedNodes==null); 
+	var clearSelection = (selectedNodes==null);
 	// set the selection
-    setFancyTreeObjSelection(selectedNodes);
-	
+	setFancyTreeObjSelection(selectedNodes);
+
 	if (!$j('.assetTreeContainer').is(':visible')) {
 		// if tree is not visible, show it with an animation
 		$j('.assetTableContainer').animate({ width: '69%' }, speed, function() {
@@ -295,7 +295,7 @@ function showfancyTreeObj(selectedNodes) {
 
 /**
  * gets the nodes selected in the tree terms as an array
- * 
+ *
  * @returns {Array} selected nodes ids
  */
 function getSelectedTreeNodesArray() {
@@ -303,7 +303,7 @@ function getSelectedTreeNodesArray() {
 	var selectedNodes = new Array();
 	// put selected nodes keys in an array
 	for (var i=0,j=0; i<s.length; i++) {
-		if ($j.inArray(parseInt(s[i].key), selectedNodes)===-1) selectedNodes[j++] = parseInt(s[i].key); 
+		if ($j.inArray(parseInt(s[i].key), selectedNodes)===-1) selectedNodes[j++] = parseInt(s[i].key);
 	}
 	if (selectedNodes.length<=0) selectedNodes[0] = null;
 	return selectedNodes;
@@ -312,17 +312,17 @@ function getSelectedTreeNodesArray() {
 /**
  * saves the associations between terms and asset
  * makes an ajax request to updateAssociatedTerms.php
- * 
+ *
  */
 function saveTree() {
-	
+
 	var assetID = parseInt(selectedRowID.replace(/^.*?:/, ''));
-	
+
 	if (!isNaN(assetID)) {
-		
+
 		// disable the button
 		$j('.saveTreeButton').button('disable');
-		
+
 		$j.ajax({
 			type	:	'POST',
 			url		:	'ajax/updateAssociatedTerms.php',
@@ -343,31 +343,31 @@ function saveTree() {
 /**
  * sets the selected row, or unset if the selected row was clicked
  * shows or hides the fancyTreeObj as needed
- * 
+ *
  * @param clickedObj the clicked table row
  * @param selectedNodes the array to set when showing the tree
- * 
+ *
  * @returns {Boolean} true if selected row was clicked
  */
 
 function setSelectedRow(clickedObj, selectedNodes) {
 	var jQueryObj = $j(clickedObj);
 	// if the selected row was clicked, clear the selection
-	var clearSelection = (jQueryObj.parents('tr').attr('id')==selectedRowID); 
-	
+	var clearSelection = (jQueryObj.parents('tr').attr('id')==selectedRowID);
+
 	// deselect all rows
 	selectedRowID = null;
-    jQueryObj.parents('table tbody').find('tr').each( function() { $j(this).removeClass('selectedRow'); });
-    
+	jQueryObj.parents('table tbody').find('tr').each( function() { $j(this).removeClass('selectedRow'); });
+
 	// select clicked one
-    if (!clearSelection) {
-    	selectedRowID = jQueryObj.parents('tr').attr('id'); 
-    	jQueryObj.parents('tr').addClass('selectedRow');
-    	showfancyTreeObj (selectedNodes);
-    } else {
-    	showfancyTreeObj (null);
-    }
-    return clearSelection;
+	if (!clearSelection) {
+		selectedRowID = jQueryObj.parents('tr').attr('id');
+		jQueryObj.parents('tr').addClass('selectedRow');
+		showfancyTreeObj (selectedNodes);
+	} else {
+		showfancyTreeObj (null);
+	}
+	return clearSelection;
 }
 
 /**
@@ -375,7 +375,7 @@ function setSelectedRow(clickedObj, selectedNodes) {
  * - setting selectedRow (this shows the fancyTreeObj as well)
  * - closing all table rows
  * - opening asset details and its table row
- * 
+ *
  * @param clickedObj the clicked table row
  * @param selectedNodes the array to set when showing the tree
  */
@@ -383,23 +383,23 @@ function setSelectedRow(clickedObj, selectedNodes) {
 function assetExpand(clickedObj, selectedNodes) {
 	// set selected row, shows or hides, and set the fancyTreeObj
 	var clearSelection = setSelectedRow(clickedObj, selectedNodes);
-	
-	// close all rows	
+
+	// close all rows
 	$j(clickedObj).parents('table tbody').find('tr').each( function() {
 	    if ( dataTableObj.fnIsOpen(this) ) dataTableObj.fnClose( this );
-	});	
+	});
 
 	if (!clearSelection) {
 		// open the clicked row, if it was not the previously selected one
 		var nTr = $j(clickedObj).parents('tr')[0];
 		// get the asset if from the row id
-    	assetID = parseInt($j(nTr).attr('id').replace(/^.*?:/, ''));
-    	if (!isNaN(assetID)) {
-    		// clear the tree filter
-    		$j("button#resetTreeFilter").click();
-    		// Open this row with an ajax loader
-    		openAssetDetails(assetID, nTr, clickedObj);    		
-    	}    	
+		assetID = parseInt($j(nTr).attr('id').replace(/^.*?:/, ''));
+		if (!isNaN(assetID)) {
+			// clear the tree filter
+			$j("button#resetTreeFilter").click();
+			// Open this row with an ajax loader
+			openAssetDetails(assetID, nTr, clickedObj);
+		}
 	}
 }
 
@@ -409,7 +409,7 @@ function assetExpand(clickedObj, selectedNodes) {
 function initButtons() {
 	if ($j('#nuova_tipologia_btn').length>0) $j('#nuova_tipologia_btn').button();
 	if ($j('#nuova_fonte_btn').length>0) $j('#nuova_fonte_btn').button();
-	
+
 	if ($j('.saveTreeButton').length>0) {
 		$j('.saveTreeButton').button({
 			icons : {
@@ -429,42 +429,42 @@ function initButtons() {
 			text : false
 		});
 	}
-	
+
 	if ($j('.zoomButton').length>0) {
 		$j('.zoomButton').button({
 			icons : {
 				primary : 'ui-icon-zoomin'
 			},
 			text : false
-		});		
+		});
 	}
-	
+
 	if ($j('.linkAssetButton').length>0) {
 		$j('.linkAssetButton').button({
 			icons : {
 				primary : 'ui-icon-link'
 			},
 			text : false
-		});		
+		});
 	}
 }
 
 /**
  * inits the passed element as a dataTable
  * with edit controls, if requested
- * 
+ *
  * @param element the element to be dataTabled
  * @param canEdit true if edit controls are required
  * @returns dataTable  object
  */
 function initDataTables (element, canEdit) {
-	
+
 	var theID = $j(element).attr('id').toString();
 	// parameters to init the dataTable
 	var params = null;
 	// object to be returned
 	var oTable = null;
-	
+
 	// set parameters according to object to be dataTabled
 	if (theID == 'sourcesTable') {
 		/**
@@ -473,7 +473,7 @@ function initDataTables (element, canEdit) {
 		 */
 		if (selectArray==null) {
 			$j.when(getSelectValues('tipologie'))
-			.done  (function (JSONObj) {		
+			.done  (function (JSONObj) {
 				if (JSONObj) {
 						if (JSONObj.status=='OK') {
 							selectArray = JSONObj.data;
@@ -481,32 +481,32 @@ function initDataTables (element, canEdit) {
 				}
 			});
 		}
-		
-		params = {	
+
+		params = {
 			"aaSorting": [[ 2, "asc" ]],
 			aoColumns : [
-		                      // first empty column generated by ADA HTML engine, let's hide it
-		                      { "sName":"module_lex_fonti_id", "bSearchable": false, "bVisible": false },
-		                      // hide number field
-		                      { "sName":"numero" ,"sWidth" : "9%" , "bVisible": false } ,
-		                      { "sName":"titolo" },
-		                      { "sName":"data_pubblicazione", "sType": "date-eu", "sWidth" : "15%" },		                      
-		                      { "sName":"tipologia", "sClass":"hasSelect", "sWidth" : "20%" },
-		                      { "sName":"azioni", "sClass": "center noteditable", "bSearchable" : false, "bSortable" : false, "sWidth" : "8%" }
-		                     ],
+			             	  // first empty column generated by ADA HTML engine, let's hide it
+			             	  { "sName":"module_lex_fonti_id", "bSearchable": false, "bVisible": false },
+			             	  // hide number field
+			             	  { "sName":"numero" ,"sWidth" : "9%" , "bVisible": false } ,
+			             	  { "sName":"titolo" },
+			             	  { "sName":"data_pubblicazione", "sType": "date-eu", "sWidth" : "15%" },
+			             	  { "sName":"tipologia", "sClass":"hasSelect", "sWidth" : "20%" },
+			             	  { "sName":"azioni", "sClass": "center noteditable", "bSearchable" : false, "bSortable" : false, "sWidth" : "8%" }
+			            ],
 			sAjaxSource : 'ajax/getSourcesTableData.php'
 		};
 	} else if (theID == 'assetsTable') {
 		// get the source id
 		var sourceID = parseInt($j('[id^=assetsContainer_]').attr('id').replace(/^.*?_/, ''));
-		
+
 		/**
 		 * loads the array to be displayed as html <select>
 		 * when editing a table field that has the hasSelect class
 		 */
 		if (selectArray==null) {
 			$j.when(getSelectValues('stati'))
-			.done  (function (JSONObj) {		
+			.done  (function (JSONObj) {
 				if (JSONObj) {
 						if (JSONObj.status=='OK') {
 							selectArray = JSONObj.data;
@@ -514,21 +514,21 @@ function initDataTables (element, canEdit) {
 				}
 			});
 		}
-		
+
 		if (!isNaN(sourceID)) {
 			params = {
 				"aaSorting": [[ 2, "asc" ]],
 				aoColumns : [
-			                      // first empty column generated by ADA HTML engine, let's hide it
-			                      { "sName":"module_lex_assets_id", "bSearchable": false, "bVisible": false },
-			                      { "sName":"expandAssetButton", "sClass": "center noteditable expandAsset", "bSortable": false, "bSearchable" : false, "sWidth" : "2%" },			                      
-			                      { "sName":"label", "sWidth" : "35%" } ,
-			                      { "sName":"url", "sWidth" : "32%", "bSearchable": false, "bVisible": false  } ,
-			                      { "sName":"data_inserimento", "sClass": "center", "sType": "date-eu", "sWidth" : "7%" },
-			                      { "sName":"data_verifica", "sType": "date-eu", "sClass": "center noteditable", "sWidth" : "7%" },
-			                      { "sName":"stato", "sClass":"hasSelect", "sWidth" : "4%" },
-			                      { "sName":"azioni", "sClass": "center noteditable", "bSearchable" : false, "bSortable" : false, "sWidth" : "2%" }
-			                     ],
+				             	  // first empty column generated by ADA HTML engine, let's hide it
+				             	  { "sName":"module_lex_assets_id", "bSearchable": false, "bVisible": false },
+				             	  { "sName":"expandAssetButton", "sClass": "center noteditable expandAsset", "bSortable": false, "bSearchable" : false, "sWidth" : "2%" },
+				             	  { "sName":"label", "sWidth" : "35%" } ,
+				             	  { "sName":"url", "sWidth" : "32%", "bSearchable": false, "bVisible": false  } ,
+				             	  { "sName":"data_inserimento", "sClass": "center", "sType": "date-eu", "sWidth" : "7%" },
+				             	  { "sName":"data_verifica", "sType": "date-eu", "sClass": "center noteditable", "sWidth" : "7%" },
+				             	  { "sName":"stato", "sClass":"hasSelect", "sWidth" : "4%" },
+				             	  { "sName":"azioni", "sClass": "center noteditable", "bSearchable" : false, "bSortable" : false, "sWidth" : "2%" }
+				            ],
 				sAjaxSource : 'ajax/getAssetsTableData.php',
 				// send the sourceID to the server
 				"fnServerParams": function ( aoData ) {
@@ -537,34 +537,34 @@ function initDataTables (element, canEdit) {
 			};
 		}
 	}
-	
+
 	if (params!=null) {
 		/**
 		 * build a datatable by extending common default params
-		 * with specific parms array set above 
+		 * with specific parms array set above
 		 */
 		oTable = element.dataTable(
-    		$j.extend({} , params,
-    				{
-				 		"bJQueryUI": true,
-				        "bFilter": true,
-				        "bInfo": true,
-				        "bSort": true,
-				        "bPaginate" : true,
-				        "bProcessing": true,
-				        "bServerSide": true,
+			$j.extend({} , params,
+					{
+						"bJQueryUI": true,
+						"bFilter": true,
+						"bInfo": true,
+						"bSort": true,
+						"bPaginate" : true,
+						"bProcessing": true,
+						"bServerSide": true,
 						"oLanguage": {
-				            "sUrl": HTTP_ROOT_DIR + "/js/include/jquery/dataTables/dataTablesLang.php"
-				        },
-						"fnDrawCallback": 
+							"sUrl": HTTP_ROOT_DIR + "/js/include/jquery/dataTables/dataTablesLang.php"
+						},
+						"fnDrawCallback":
 							function () {
 								initButtons();
 								initToolTips();
-								
+
 								// set css class for selected row in the assetsTable
 								if ($j(dataTableObj).attr('id')=='assetsTable') {
 									$j('#'+dataTableObj.attr('id')+' tbody tr').each( function() {
-										
+
 										if ((typeof $j(this).attr('id') != 'undefined')
 												&& $j(this).attr('id')==selectedRowID) {
 											$j(this).addClass('selectedRow');
@@ -575,7 +575,7 @@ function initDataTables (element, canEdit) {
 										}
 									});
 								}
-								
+
 								// put the sort icon outside of the DataTables_sort_wrapper div
 								// for better display styling with CSS
 								oTable.find("thead th div.DataTables_sort_wrapper").each(function(){
@@ -583,29 +583,29 @@ function initDataTables (element, canEdit) {
 									$j(this).find('span').remove();
 									$j(this).parents('th').append(sortIcon);
 								});
-								
+
 								// if user cannot edit, we're done
 								if (!canEdit) return;
-								
+
 								/**
 								 * attach editable for cells that must have a select type
 								 */
 								$j('#'+element.attr('id')+' tbody td.hasSelect').not('.noteditable').editable( 'ajax/updateRow.php', {
 									 data    : function() {
-										 // selected value is autodetected											
+										 // selected value is autodetected
 										 return selectArray;
 									 },
-								     type    : 'select',
-								     submit  : 'OK',
-								     "placeholder" : "",
-								     "submitdata"  : function() {
-								    	 return dataTableSubmitData( this, oTable );
+									 type    : 'select',
+									 submit  : 'OK',
+									 "placeholder" : "",
+									 "submitdata"  : function() {
+										 return dataTableSubmitData( this, oTable );
 									 },
 									 "callback": function( value, settings ) {
 										 return dataTableSubmitCallback( this, oTable, value, true );
 									 }
 								});
-								
+
 								/**
 								 * attach an editable for cells that do not have 'hasSelect' class
 								 * and therefore have a standard input field to be edited
@@ -621,22 +621,22 @@ function initDataTables (element, canEdit) {
 									"height": "14px"
 								});
 							}
-    				})
-		).show();		
+					})
+		).show();
 	}
 	return oTable;
 }
 
 /**
  * function called after editable has done its submission
- * 
+ *
  * shows the confirmation popup to the user and updates
  * the edited row with returned value.
- * 
+ *
  * NOTE: returned value can be an array. If this is the case
  * then the array is looped and if a column exists having the
  * same sName of the array keys, the value is updated accordingly.
- * 
+ *
  * @param cellObj the cell where the editable is
  * @param oTable  the datatable object where the cell is
  * @param value   the value returned from server
@@ -662,16 +662,16 @@ function dataTableSubmitCallback( cellObj, oTable, value, isSelect )  {
 			 * we must update the cell were the editable was (i.e. the current cell)
 			 * using the JSONObj.value.value property and then loop all other properties
 			 * and update fields accordingly. e.g. JSONObj.value.data_verifica will
-			 * hold the new value for the corresponding column 
+			 * hold the new value for the corresponding column
 			 */
-			
+
 			// first update the current cell
 			if (isSelect) {
-				oTable.fnUpdate (selectArray[JSONObj.value.value], position[0], position[2], false);				
+				oTable.fnUpdate (selectArray[JSONObj.value.value], position[0], position[2], false);
 			} else {
 				oTable.fnUpdate (JSONObj.value.value, position[0], position[2], false);
 			}
-			
+
 			// delete its value in the returned object
 			delete JSONObj.value.value;
 			// loop the other object properties, if any and update columns accordingly
@@ -684,31 +684,31 @@ function dataTableSubmitCallback( cellObj, oTable, value, isSelect )  {
 				for (var colPos=0, colFound=false; colPos<oTable.fnSettings().aoColumns.length && !colFound; colPos++) {
 					if (colFound = oTable.fnSettings().aoColumns[colPos].sName==lookfor) --colPos;
 				}
-				
+
 				if (colFound) {
 					// if col is found, update it
 					oTable.fnUpdate (JSONObj.value[lookfor], position[0], colPos, false);
-				}				
+				}
 			}
 		}
 	} catch (err) {
 		showHideDiv('', 'Error: '+err, false);
 		/* Redraw the table from the new data on the server */
 		oTable.fnDraw();
-	}		
+	}
 }
 
 /**
  * function called just before the editable is being submitted
  * to retrieve and pass proper parameters along with the ajax call
- * 
+ *
  * @param cellObj the cell where the editable is
  * @param oTable  the datatable object where the cell is
  * @returns object with data for the updateRow.php call
  */
 function dataTableSubmitData( cellObj, oTable ) {
 	// get editable control position
-	var position = oTable.fnGetPosition( cellObj ); 
+	var position = oTable.fnGetPosition( cellObj );
 	var row = position[0];
 	var col = position[2];
 	// get the row
@@ -722,15 +722,15 @@ function dataTableSubmitData( cellObj, oTable ) {
 	var colName = oSettings.aoColumns[col].sName;
 	// send data with ajax call
 	return { columnName : colName, table : rowDetails[0],
-		     id : rowDetails[1], oldValue: dataRow[col] };
+			id : rowDetails[1], oldValue: dataRow[col] };
 }
 
 /**
  * gets the html select object values and labels
  * this is done with a synchronous call because
  * the datatable must have the values to populate
- * the select as soon as it's  being drawn 
- * 
+ * the select as soon as it's  being drawn
+ *
  * @param what the select to get
  * @returns a jQuery promise resolved when ajax call return
  */
@@ -741,7 +741,7 @@ function getSelectValues(what) {
 		data	:	{ what: what },
 		dataType:	'json',
 		async   :   false
-	});	
+	});
 }
 
 /**
@@ -771,10 +771,10 @@ function initToolTips() {
 }
 
 /**
- * inits the fancyTree object in edit tree mode * 
- * 
+ * inits the fancyTree object in edit tree mode *
+ *
  * @param element the jQuery object to attach to
- * 
+ *
  * @returns fancyTree
  */
 function initEditfancyTreeObj (element) {
@@ -800,84 +800,84 @@ function initEditfancyTreeObj (element) {
 					triggerStart: ["f2", "dblclick", "shift+click", "mac+enter"],
 					triggerCancel: ["esc", "tab", "click"],
 					// Return false to prevent cancel/save (data.input is available)
-				    beforeClose: function (event, data) {
-				    	if(data.save && data.input.val().trim().length<=0) {
-				    		showHideDiv('',$j('#nonEmptyMsg').html(),false);
-				    		return false;
-				    	} else if (!data.save) {
-				    		if (data.node.data.isNew) data.node.remove();
-				    		else {
-					    		// delay the rendering of the node so that 
-				    			// the input has time to close
-					    		setTimeout (function() {
-						    		data.node.render(true);
-							    	// sort the active branch after closing the input
-							    	if(data.node.parent!=null) data.node.parent.sortChildren();
-					    		}, 50);
-				    		}
-				    	}
-				    },
-				    beforeEdit: function(event, data) {
-				    	// edit enabled only for user defined and non waiting nodes
-				    	return data.node.data.isUserDefined && !data.node.data.isSaving;   	
-				    },
-				    edit: function (event,data) {
-				    	data.input.select();
-				    },
-				    // Save data.input.val() or return false to keep editor open 
-				    save: function (event, data) {
-				    	// save only user defined nodes
-				    	if (data.node.data.isUserDefined) {
-					    	// get the new value
-					    	var value = data.input.val().trim();
-				    		// prepare common data to be POSTed
-				    		var POSTdata = {  
+					beforeClose: function (event, data) {
+						if(data.save && data.input.val().trim().length<=0) {
+							showHideDiv('',$j('#nonEmptyMsg').html(),false);
+							return false;
+						} else if (!data.save) {
+							if (data.node.data.isNew) data.node.remove();
+							else {
+								// delay the rendering of the node so that
+								// the input has time to close
+								setTimeout (function() {
+									data.node.render(true);
+									// sort the active branch after closing the input
+									if(data.node.parent!=null) data.node.parent.sortChildren();
+								}, 50);
+							}
+						}
+					},
+					beforeEdit: function(event, data) {
+						// edit enabled only for user defined and non waiting nodes
+						return data.node.data.isUserDefined && !data.node.data.isSaving;
+						},
+					edit: function (event,data) {
+						data.input.select();
+					},
+					// Save data.input.val() or return false to keep editor open
+					save: function (event, data) {
+						// save only user defined nodes
+						if (data.node.data.isUserDefined) {
+							// get the new value
+							var value = data.input.val().trim();
+							// prepare common data to be POSTed
+							var POSTdata = {
 									domaineRootNodeID : data.node.getParentList()[0].key,
 									parentNodeID : data.node.parent.key,
 									term : value
 								};
-				    		
-				    		// if it's not a new node, add its key to the POST
-					    	if (!data.node.data.isNew) {
-					    		// add selected node key to update node
-					    		POSTdata = $j.extend ({
-					    			descripteur_id : data.node.key
-					    		},POSTdata);					    		
-					    	}
-				    		
-				    		// if it's not been edited or the input field is empty
-				    		// delete it if it's new
-				    		if (data.node.title == value || value.length<=0) {
-				    			if (data.node.data.isNew) data.node.remove();
-				    		} else {
-				    			// delay the rendering of the node so that the input 
-				    			// field can close and icon is not overwritten
-				    			setTimeout(function(){
-				    						data.node.data.isSaving = true;
-				    						data.node.render(true);
-						    			   } , 100);
-						    	// promise is handled in close callback
-						    	savePromise = $j.ajax({
+
+							// if it's not a new node, add its key to the POST
+							if (!data.node.data.isNew) {
+								// add selected node key to update node
+								POSTdata = $j.extend ({
+									descripteur_id : data.node.key
+								},POSTdata);
+							}
+
+							// if it's not been edited or the input field is empty
+							// delete it if it's new
+							if (data.node.title == value || value.length<=0) {
+								if (data.node.data.isNew) data.node.remove();
+							} else {
+								// delay the rendering of the node so that the input
+								// field can close and icon is not overwritten
+								setTimeout(function(){
+									data.node.data.isSaving = true;
+									data.node.render(true);
+								} , 100);
+								// promise is handled in close callback
+								savePromise = $j.ajax({
 									type	:	'POST',
 									url		:	'ajax/saveTerm.php',
 									data	:	POSTdata,
 									dataType:	'json'
 								});
-						    	return true;
-				    		}
-				    	}
-				    	return false;
-				    },
-				    close : function (event, data) {
-				    	// handle promise made on save callback
-				    	if (savePromise!=null)
-				    	{
-					    	$j.when(savePromise)
-					    	.done(function (JSONObj) {
+								return true;
+							}
+						}
+						return false;
+					},
+					close : function (event, data) {
+						// handle promise made on save callback
+						if (savePromise!=null)
+						{
+							$j.when(savePromise)
+							.done(function (JSONObj) {
 								if (JSONObj) {
-									if (JSONObj.status=='OK') {										
-								    	data.node.data.isNew = false;
-								    	data.node.key = JSONObj.nodeKey;
+									if (JSONObj.status=='OK') {
+										data.node.data.isNew = false;
+										data.node.key = JSONObj.nodeKey;
 									} else if (JSONObj.status=='ERROR') {
 										if (data.node.data.isNew) data.node.remove();
 									}
@@ -885,75 +885,75 @@ function initEditfancyTreeObj (element) {
 								} else {
 									showHideDiv('',$j('#nodeSavingFailMsg').html(),false);
 								}
-					    	})
-					    	.always (function() { 
-					    		savePromise=null;
-					    		// delay the rendering of the node so that 
-				    			// it has time to be sorted by the done callback
-					    		setTimeout (function() {
-						    		data.node.data.isSaving = false;
-						    		data.node.render(true);
-							    	// sort the active branch after closing the input
-							    	if(data.node.parent!=null) data.node.parent.sortChildren();
-					    		}, 200);
-					    	}) 
-					    	.fail(function () {
-					    		if (data.node.data.isNew) data.node.remove();
-					    		else {
-					    			fancyTreeObj.fancytree('getTree').reload();
-					    		}
-					    		showHideDiv('',$j('#nodeSavingFailMsg').html(),false);
-					    	});				    		
-				    	}
-				    }
+							})
+							.always (function() {
+								savePromise=null;
+								// delay the rendering of the node so that
+								// it has time to be sorted by the done callback
+								setTimeout (function() {
+									data.node.data.isSaving = false;
+									data.node.render(true);
+									// sort the active branch after closing the input
+									if(data.node.parent!=null) data.node.parent.sortChildren();
+								}, 200);
+							})
+							.fail(function () {
+								if (data.node.data.isNew) data.node.remove();
+								else {
+									fancyTreeObj.fancytree('getTree').reload();
+								}
+								showHideDiv('',$j('#nodeSavingFailMsg').html(),false);
+							});
+						}
+					}
 			}
 	};
-	
+
 	// init the tree with its own options to handle
 	// inline edit extension and event handling
 	var returnTree = initfancyTreeObj(element, false, options );
-	
+
 	// attach a context menu
-    returnTree.contextmenu({
-        delegate: "span.fancytree-title",
-        menu: "#treeContextMenu",
-        show: { effect: "fade", duration: "fast" },
+	returnTree.contextmenu({
+		delegate: "span.fancytree-title",
+		menu: "#treeContextMenu",
+		show: { effect: "fade", duration: "fast" },
 		hide: { effect: "fade", duration: "fast" },
-        beforeOpen: function(event, ui) {
-          var node = $j.ui.fancytree.getNode(ui.target);
-          /**
-           * show menu only if node has children
-           * and is not in the editing state
-           */
-          if (node.hasChildren() || node.isEditing()) return false;
-          else {
-        	  returnTree.contextmenu("enableEntry", "edit", node.data.isUserDefined);
-        	  returnTree.contextmenu("enableEntry", "delete", node.data.isUserDefined);
-          }
-        },
-        select: function(event, ui) {
-          var node = $j.ui.fancytree.getNode(ui.target);
-          switch (ui.cmd) {
-          case 'new':
-              // delay the event, so the menu can close and the click event does
-              // not interfere with the edit control
-        	  setTimeout (function() { addNewTreeNode(node); } ,100);
-        	  break;
-          case 'edit':
-        	  setTimeout (function() { node.editStart(); } ,100);
-        	  break;
-          case 'delete':
-        	  deleteSelectedTreeNode(node,'check');
-        	  break;
-          default :
-        		  showHideDiv ('Menu Click','Action not defined!',false);
-        	  break;
-          }
-        }
-      });
-    
-    initfancyTreeFilter();
-    
+		beforeOpen: function(event, ui) {
+			var node = $j.ui.fancytree.getNode(ui.target);
+			/**
+			 * show menu only if node has children
+			 * and is not in the editing state
+			 */
+			if (node.hasChildren() || node.isEditing()) return false;
+			else {
+				returnTree.contextmenu("enableEntry", "edit", node.data.isUserDefined);
+				returnTree.contextmenu("enableEntry", "delete", node.data.isUserDefined);
+			}
+		},
+		select: function(event, ui) {
+			var node = $j.ui.fancytree.getNode(ui.target);
+			switch (ui.cmd) {
+			case 'new':
+				// delay the event, so the menu can close and the click event does
+				// not interfere with the edit control
+				setTimeout (function() { addNewTreeNode(node); } ,100);
+				break;
+			case 'edit':
+				setTimeout (function() { node.editStart(); } ,100);
+				break;
+			case 'delete':
+				deleteSelectedTreeNode(node,'check');
+				break;
+			default :
+				showHideDiv ('Menu Click','Action not defined!',false);
+			break;
+			}
+		}
+	});
+
+	initfancyTreeFilter();
+
 	return returnTree;
 }
 
@@ -961,33 +961,34 @@ function initEditfancyTreeObj (element) {
  * adds a new node as a sibling to the selected node
  * this does only affect the html structure, no call
  * to the DB is made at all!
- * 
+ *
  * Saving is handled in edit property/save callback of the fanyTreeObj
- * 
+ *
  * @param node the node to add to
  */
 function addNewTreeNode(node) {
-    refNode = node.appendSibling({
-    	title: $j('#defaultNewNodeTitle').text(),
-    	folder: false,
-        isNew: true,
-        isSaving: false,
-        isUserDefined: true
-    });    
-    refNode.editStart();
+	refNode = node.appendSibling({
+		title: $j('#defaultNewNodeTitle').text(),
+		folder: false,
+		isNew: true,
+		isSaving: false,
+		isUserDefined: true
+	});
+	refNode.editStart();
 }
 
 /**
  * removes the selected node from the tree
- * 
+ *
  * @param node
  */
-function deleteSelectedTreeNode(node, op) {	
-	var POSTdata = {  
+function deleteSelectedTreeNode(node, op) {
+	var POSTdata = {
+			domaineRootNodeID : node.getParentList()[0].key,
 			nodeID : node.key,
 			op : op
 		};
-	
+
 	$j.ajax({
 		type	:	'POST',
 		url		:	'ajax/deleteTerm.php',
@@ -1015,17 +1016,19 @@ function deleteSelectedTreeNode(node, op) {
 			} else if (JSONObj.status=='CONFIRM') {
 				// display ask confirm dialog
 				var dialogButtons = {};
-				
+
 				dialogButtons[i18n['confirm']] = function() {
 					$j(this).dialog('close');
 					// if user confirms, do the actual delete
+					node.data.isSaving = true;
+					node.render(true);
 					deleteSelectedTreeNode (node, 'delete');
 				};
-				
+
 				dialogButtons[i18n['cancel']] = function() {
 					$j(this).dialog('close');
 				};
-				
+
 				$j('#ask-confirm-message').html(JSONObj.msg);
 				$j("#ask-confirm-delete" ).dialog({
 					resizable: false,
@@ -1044,72 +1047,76 @@ function deleteSelectedTreeNode(node, op) {
 				showHideDiv('',JSONObj.msg,true);
 			} else {
 				showHideDiv('',$j('#nodeDelFailMsg').html(),false);
-			}		
+			}
 		} else {
 			showHideDiv('',$j('#nodeDelFailMsg').html(),false);
-		}		
+		}
 	})
 	.fail (function(){
+		if (node.data.isSaving) {
+			node.data.isSaving=false;
+			node.render(true);
+		}
 		showHideDiv('',$j('#nodeDelFailMsg').html(),false);
-	});	
+	});
 }
 
 /**
  * inits the fancyTree object
- * 
+ *
  * @param element the jQuery object to attach to
  * @param canEdit true if user can edit associations, sets checkboxes to active
  * @param extraOptions object of extra options to be used on tree init
- * 
+ *
  * @returns fancyTree
  */
 function initfancyTreeObj (element, canEdit, extraOptions) {
-	
+
 	var options = {
 		extensions: ["childcounter", "filter"],
-	    childcounter: { deep: false, hideZeros: true, hideExpanded: true },
-	    filter: { mode: "hide" },
-	    debugLevel: 0,
-	    checkbox: true,
-	    selectMode: 2,
-	    select: function(event, data) {
-	    	
-	    	if (!canEdit) return;
-	    	
-	        var isSelected = data.node.isSelected();
-	  	  	var nodeKey = data.node.key;
-	  	  	
-	  	  	root = $j(this).fancytree("getTree").rootNode;
-	    
-	  	  	var targetNodes = root.findAll(function(node){
-	  	  		return node.key==nodeKey;
-	  	  	});
-	  	  	
-	  	  	if (targetNodes.length>1) {
-	  	  		for (var i=0; i<targetNodes.length; i++) {
-	  	  			targetNodes[i].setSelected(isSelected);
-	  	  		}
-	  	  	}       
-	      },
-	      beforeSelect: function(event, data){
-	          /**
-	           *  handle all code generated events and discard
-	           *  mouse or keyboard generated events if the user cannot edit
-	           */ 
-	    	  return (event.which) ? canEdit : true;        	  
-	      },
-	      source: {
-	        url: 'ajax/getEurovocTree.php'
-	      },
+		childcounter: { deep: false, hideZeros: true, hideExpanded: true },
+		filter: { mode: "hide" },
+		debugLevel: 0,
+		checkbox: true,
+		selectMode: 2,
+		select: function(event, data) {
+
+			if (!canEdit) return;
+
+			var isSelected = data.node.isSelected();
+			var nodeKey = data.node.key;
+
+			root = $j(this).fancytree("getTree").rootNode;
+
+			var targetNodes = root.findAll(function(node){
+				return node.key==nodeKey;
+			});
+
+			if (targetNodes.length>1) {
+				for (var i=0; i<targetNodes.length; i++) {
+					targetNodes[i].setSelected(isSelected);
+				}
+			}
+		},
+		beforeSelect: function(event, data){
+			/**
+			 *  handle all code generated events and discard
+			 *  mouse or keyboard generated events if the user cannot edit
+			 */
+			return (event.which) ? canEdit : true;
+		},
+		source: {
+			url: 'ajax/getEurovocTree.php'
+		},
 	};
-	
+
 	var returnTree = element.fancytree($j.extend(options,extraOptions));
 	initfancyTreeFilter();
 	return returnTree;
 }
 
 /**
- * inits the text input to filter the 
+ * inits the text input to filter the
  * fancyTree and the button to clear it
  */
 function initfancyTreeFilter() {
@@ -1117,54 +1124,54 @@ function initfancyTreeFilter() {
 	 * init tree filter text input
 	 */
 	if ($j("input#treeFilterInput").length>0) {
-	    $j("input#treeFilterInput").keyup(function(e){
-	        var match = $j(this).val();
-	        
-	        if(e && e.which === $j.ui.keyCode.ESCAPE || $j.trim(match) === ""){
-	          $j("button#resetTreeFilter").click();
-	          return;
-	        } else if (e.which === $j.ui.keyCode.ENTER) {
-		        // Pass a string to perform case insensitive matching
-		        // second parameter is to filter leaves only
-		        n = fancyTreeObj.fancytree('getTree').filterNodes(match, false);
-		        
-		        // if any matched nodes, expand them
-		        if (n>0) {
-		        	fancyTreeObj.fancytree("getRootNode").visit(function(node){
-		        		if (node.title.toLowerCase().indexOf(match.toLowerCase())>-1) {
-		                	if (!node.isExpanded()) node.makeVisible({ noAnimation: true, scrollIntoView:false });
-		        		}
-		            });
-		        	// fix hidden and shown elements
-		        	$j('span.fancytree-hide').parents('li').css('display','none');
-		        	$j('span.fancytree-match').parents('li').css('display','block');
-		        }			        
-		        $j("button#resetTreeFilter").attr("disabled", false);
-	        }
-	      }).focus();
+		$j("input#treeFilterInput").keyup(function(e){
+			var match = $j(this).val();
+
+			if(e && e.which === $j.ui.keyCode.ESCAPE || $j.trim(match) === ""){
+				$j("button#resetTreeFilter").click();
+				return;
+			} else if (e.which === $j.ui.keyCode.ENTER) {
+				// Pass a string to perform case insensitive matching
+				// second parameter is to filter leaves only
+				n = fancyTreeObj.fancytree('getTree').filterNodes(match, false);
+
+				// if any matched nodes, expand them
+				if (n>0) {
+					fancyTreeObj.fancytree("getRootNode").visit(function(node){
+						if (node.title.toLowerCase().indexOf(match.toLowerCase())>-1) {
+							if (!node.isExpanded()) node.makeVisible({ noAnimation: true, scrollIntoView:false });
+						}
+					});
+					// fix hidden and shown elements
+					$j('span.fancytree-hide').parents('li').css('display','none');
+					$j('span.fancytree-match').parents('li').css('display','block');
+				}
+				$j("button#resetTreeFilter").attr("disabled", false);
+			}
+		}).focus();
 	}
 
-    /**
-     * init clear button
-     */
+	/**
+	 * init clear button
+	 */
 	if ($j("button#resetTreeFilter").length>0) {
-	    $j("button#resetTreeFilter").click(function(e){
-	    	// clear text field and tree filter
-	        $j("input#treeFilterInput").val("");
-	        fancyTreeObj.fancytree('getTree').clearFilter();
-	    	// fix hidden and shown elements
-	        $j('span.fancytree-node').parents('li').css('display','block');
-	        // reset object as it previously was
-	        setFancyTreeObjSelection(getSelectedTreeNodesArray());
-	      }).attr("disabled", true);
-	}    
+		$j("button#resetTreeFilter").click(function(e){
+			// clear text field and tree filter
+			$j("input#treeFilterInput").val("");
+			fancyTreeObj.fancytree('getTree').clearFilter();
+			// fix hidden and shown elements
+			$j('span.fancytree-node').parents('li').css('display','block');
+			// reset object as it previously was
+			setFancyTreeObjSelection(getSelectedTreeNodesArray());
+		}).attr("disabled", true);
+	}
 }
 
 /**
  * function to delete a source with an ajax call
- * 
+ *
  * TODO: not yet implemented
- * 
+ *
  * @param jqueryObj
  * @param id_source
  * @param message
@@ -1175,7 +1182,7 @@ function deleteSource (jqueryObj, id_source, message) {
 	{
 		showHideDiv('','Funzione ancora non implememtata',false);
 		return;
-		
+
 		$j.ajax({
 			type	:	'POST',
 			url		:	'ajax/delete_source.php',
@@ -1205,15 +1212,15 @@ function deleteSource (jqueryObj, id_source, message) {
  * - submitting the form by returning true
  */
 function doImportJex() {
-	
-	var theForm = $j("form[name='jex']");	
+
+	var theForm = $j("form[name='jex']");
 	theForm.attr("target","jexResults");
-	
+
 	theForm.slideUp(500, function() {
 		$j("#jexResults").slideDown(500, function (){
 			return true;
 		});
-	});	
+	});
 }
 
 /**
@@ -1223,13 +1230,13 @@ function doImportJex() {
  * - forcing the form to being submitted, since no button is clicked
  */
 function doImportEurovoc() {
-	
-	var theForm = $j("form[name='eurovoc']");	
+
+	var theForm = $j("form[name='eurovoc']");
 	theForm.attr("target","eurovocResults");
 
 	theForm.slideUp(500, function() {
 		$j("#eurovocResults").slideDown(500, function (){
-			theForm.submit();			
+			theForm.submit();
 		});
 	});
 }
