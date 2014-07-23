@@ -200,7 +200,7 @@ if(isset($p_login)) {
 					$GLOBALS ['user_provider'] = $user_default_tester;		    
 		  }
 		  
-		  if (isset($p_redirect) && strlen(trim($p_redirect))>0) {
+		  if ($userObj->getType()==AMA_TYPE_STUDENT && isset($p_redirect) && strlen(trim($p_redirect))>0) {
 		  	if ($p_redirect{0}!=='/') $p_redirect = '/' . $p_redirect;
 		  	// get the filename to redirect to
 		  	list ($filename) = explode('?', $p_redirect);
