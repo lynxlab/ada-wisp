@@ -199,7 +199,21 @@ if(isset($p_login)) {
 					// sets var for non multiprovider environment
 					$GLOBALS ['user_provider'] = $user_default_tester;		    
 		  }
-		  $redirectURL = $userObj->getHomePage();      	
+		  
+		  if (isset($p_redirect) && strlen(trim($p_redirect))>0) {
+		  	if ($p_redirect{0}!=='/') $p_redirect = '/' . $p_redirect;
+		  	// get the filename to redirect to
+		  	list ($filename) = explode('?', $p_redirect);
+		  	// if the file exists, redirect else go to user homepage
+		  	if (is_file (ROOT_DIR . $filename) || is_dir(ROOT_DIR . $filename)) {
+		  		$redirectURL = HTTP_ROOT_DIR . $p_redirect;
+		  	} else {
+		  		$redirectURL = $userObj->getHomePage();
+		  	}
+		  } else {
+		  	$redirectURL = $userObj->getHomePage();
+		  }
+		  
 		  header('Location:'.$redirectURL);
 		  exit();
 		}
