@@ -48,7 +48,9 @@ function initDoc(maxSize, userId, canEdit) {
 				} else if ($j(ui.newPanel).find('#editTerms').length>0) {
 					// if panel with editTerms is made active
 					if (fancyTreeObj==null) fancyTreeObj = initEditfancyTreeObj ($j('#editTerms'));
-
+				} else if ($j(ui.newPanel).find('#sourcesTable').length>0) {
+					// if panel with sources is made active, reload table to reflect possible changes
+					if (dataTableObj!=null) dataTableObj.fnDraw();
 				}
 			}
 		});
@@ -1180,9 +1182,6 @@ function deleteSource (jqueryObj, id_source, message) {
 	// the trick below should emulate php's urldecode behaviour
 	if (confirm ( decodeURIComponent((message + '').replace(/\+/g, '%20')) ))
 	{
-		showHideDiv('','Funzione ancora non implememtata',false);
-		return;
-
 		$j.ajax({
 			type	:	'POST',
 			url		:	'ajax/delete_source.php',
@@ -1196,10 +1195,11 @@ function deleteSource (jqueryObj, id_source, message) {
 					{
 						// deletes the corresponding row from the DOM with a fadeout effect
 						jqueryObj.parents("tr").fadeOut("slow", function () {
-							var pos = datatable.fnGetPosition(this);
-							datatable.fnDeleteRow(pos);
+							var pos = dataTableObj.fnGetPosition(this);
+							dataTableObj.fnDeleteRow(pos);
 							});
 					}
+					showHideDiv('', JSONObj.msg, JSONObj.status=='OK');
 				}
 		});
 	}

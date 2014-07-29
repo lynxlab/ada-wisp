@@ -587,9 +587,10 @@ class AMALexDataHandler extends AMA_DataHandler {
 		            'FROM `'.self::$PREFIX.'testi` AS TESTI WHERE MATCH (TESTI.`testo`) AGAINST (\''.implode(' ', $searchTerms).'\' IN NATURAL LANGUAGE MODE)>0 ORDER BY weight DESC)'.
 		            ' AS TTESTI ';
 
-		$sql = 'SELECT FONTI.`'.self::$PREFIX.'fonti_id`, ASSETS.`'.self::$PREFIX.'assets_id`, ASSETS.`label`, weight, FONTI.`titolo` '.
+		$sql = 'SELECT FONTI.`'.self::$PREFIX.'fonti_id`, ASSETS.`'.self::$PREFIX.'assets_id`, ASSETS.`label`, weight, FONTI.`titolo`, TIPOLOGIE.`descrizione` AS `tipologia` '.
 		       'FROM `'.self::$PREFIX.'assets` AS ASSETS INNER JOIN'.$subquery.' ON TTESTI.`'.self::$PREFIX.'testi_id` = ASSETS.`'.self::$PREFIX.'testi_id` '.
-		       'JOIN `'.self::$PREFIX.'fonti` AS FONTI ON FONTI.`'.self::$PREFIX.'fonti_id` = ASSETS.`'.self::$PREFIX.'fonti_id`';
+		       'JOIN `'.self::$PREFIX.'fonti` AS FONTI ON FONTI.`'.self::$PREFIX.'fonti_id` = ASSETS.`'.self::$PREFIX.'fonti_id` '.
+		       'JOIN `'.self::$PREFIX.'tipologie_fonti` AS `TIPOLOGIE` ON `FONTI`.`'.self::$PREFIX.'tipologie_fonti_id` = `TIPOLOGIE`.`'.self::$PREFIX.'tipologie_fonti_id` ';
 
 		// gets only verified assets if requested
 		if ($verifiedOnly===true) {
@@ -642,9 +643,10 @@ class AMALexDataHandler extends AMA_DataHandler {
 		}
 		$subquery .='GROUP BY `REL`.`'.self::$PREFIX.'assets_id` ) AS `GROUPEDREL`';
 
-		$sql  = 'SELECT FONTI.`'.self::$PREFIX.'fonti_id`, ASSETS.`'.self::$PREFIX.'assets_id`, ASSETS.`label`, weight,  FONTI.`titolo` ';
+		$sql  = 'SELECT FONTI.`'.self::$PREFIX.'fonti_id`, ASSETS.`'.self::$PREFIX.'assets_id`, ASSETS.`label`, weight,  FONTI.`titolo`, TIPOLOGIE.`descrizione` AS `tipologia` ';
 		$sql .= 'FROM `'.self::$PREFIX.'assets` ASSETS INNER JOIN '.$subquery.' ON `GROUPEDREL`.`'.self::$PREFIX.'assets_id` = `ASSETS`.`'.self::$PREFIX.'assets_id` ';
-		$sql .= 'JOIN `'.self::$PREFIX.'fonti` AS `FONTI` ON  `FONTI`.`'.self::$PREFIX.'fonti_id`=`ASSETS`.`'.self::$PREFIX.'fonti_id`';
+		$sql .= 'JOIN `'.self::$PREFIX.'fonti` AS `FONTI` ON  `FONTI`.`'.self::$PREFIX.'fonti_id`=`ASSETS`.`'.self::$PREFIX.'fonti_id` ';
+		$sql .= 'JOIN `'.self::$PREFIX.'tipologie_fonti` AS `TIPOLOGIE` ON `FONTI`.`'.self::$PREFIX.'tipologie_fonti_id` = `TIPOLOGIE`.`'.self::$PREFIX.'tipologie_fonti_id` ';
 
 		if ($verifiedOnly===true) {
 			$sql .= ' AND ASSETS.`'.self::$PREFIX.'stati_id`='.MODULES_LEX_ASSET_STATE_VERIFIED;
@@ -666,6 +668,36 @@ class AMALexDataHandler extends AMA_DataHandler {
 			return $retArray;
 		} else return null;
 
+	}
+	
+	/**
+	 * deletes a source (aka fonti) together with all its linked
+	 * assets and testi; relations between eurovoc terms and assets are as well deleted.
+	 * 
+	 * @param number $id the id of the source to be deleted
+	 * 
+	 * @return AMA_Error|boolean true on success
+	 * 
+	 * @access public
+	 */
+	public function delete_source ($id) {
+		// get all assets and testi id for the source
+		$sql = 'SELECT `'.self::$PREFIX.'assets_id` AS `assetID`, `'.self::$PREFIX.'testi_id` AS `testoID` '.
+			   'FROM `'.self::$PREFIX.'assets` WHERE `'.self::$PREFIX.'fonti_id`=?';
+		
+		$res = $this->getAllPrepared($sql,$id,AMA_FETCH_OBJECT);
+		
+		if (!AMA_DB::isError($res) && is_array($res) && count($res)>0) {
+			foreach ($res as $element) {
+				$this->queryPrepared('DELETE FROM `'.self::$PREFIX.'eurovoc_rel` WHERE `'.self::$PREFIX.'assets_id`=?',$element->assetID);
+				$this->queryPrepared('DELETE FROM `'.self::$PREFIX.'assets` WHERE `'.self::$PREFIX.'assets_id`=?',$element->assetID);
+				$this->queryPrepared('DELETE FROM `'.self::$PREFIX.'testi` WHERE `'.self::$PREFIX.'testi_id`=?',$element->testoID);
+			}			
+		} else return $res;
+		
+		$res = $this->queryPrepared('DELETE FROM `'.self::$PREFIX.'fonti` WHERE `'.self::$PREFIX.'fonti_id`=?',$id);
+		
+		return (!AMA_DB::isError($res) ? true : $res);
 	}
 
 	/**
