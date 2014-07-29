@@ -171,10 +171,16 @@ var HolisSearchManagement = (function() {
 					$j('.moduleLexResult').fadeIn();
 					
 					$j('table.moduleLexResultsTable').dataTable({
-						"aaSorting": [[ 1, "desc" ]],
+						"aaSorting": [[ 2, "desc" ]],
 						"oLanguage": {
 				            "sUrl": HTTP_ROOT_DIR + "/js/include/jquery/dataTables/dataTablesLang.php"
 				        },
+				        "bAutoWidth": false,
+				        "aoColumns" : [
+				                       { "sWidth": "70%" },
+				                       { "sWidth": "20%" },
+				                       { "sWidth": "10%" },
+				                       ],
 				        "fnInitComplete": function(settings, json) {
 				        	// reset dataTables_wrapper classes that were removed by dataTable
 				            $j(this).closest('.dataTables_wrapper').addClass('ui-accordion-content ui-helper-reset ui-widget-content ui-corner-bottom');
@@ -182,7 +188,7 @@ var HolisSearchManagement = (function() {
 					});
 					
 					doAccordion('.moduleLexResult');
-					initToolTips('.moduleLexResult');
+					// initToolTips('.moduleLexResult');
 				} else {
 					/**
 					 * log the error message to the conosle

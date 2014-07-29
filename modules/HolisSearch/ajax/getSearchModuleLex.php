@@ -119,7 +119,7 @@ if (isset($_SERVER['REQUEST_METHOD']) && $_SERVER['REQUEST_METHOD'] == 'POST' &&
 		/**
          * 4. build the html tables to be returned
 		 */
-		$thead_data = array(translateFN('Label'), translateFN('Peso'));
+		$thead_data = array(translateFN('Label'), translateFN('Tipologia'), translateFN('Peso'));
 		$resAr = array();
 		$data = '';
 		
@@ -145,13 +145,15 @@ if (isset($_SERVER['REQUEST_METHOD']) && $_SERVER['REQUEST_METHOD'] == 'POST' &&
 				foreach ($resultEl['data'] as $dataEl) {
 					
 					$labelHref = CDOMElement::create('a','target:_blank,class:tooltip,href:'.$baseLink.$dataEl[AMALexDataHandler::$PREFIX.'assets_id']);
-					$labelHref->setAttribute('title', translateFN('Clicca per andare al testo'));
+					// $labelHref->setAttribute('title', translateFN('Clicca per andare al testo'));
+					$labelHref->setAttribute('title', $dataEl['label']);
 					$labelHref->addChild(new CText($dataEl['label']));
 					
 					$res_name = $labelHref->getHtml();
 					$res_score =  number_format($dataEl['weight'],2);
+					$res_tipology = $dataEl['tipologia'];
 			
-					$temp_results = array($thead_data[0] => $res_name, $thead_data[1] => $res_score );
+					$temp_results = array($thead_data[0] => $res_name, $thead_data[1]=>$res_tipology, $thead_data[2] => $res_score );
 			
 					array_push ($resAr,$temp_results);
 				}
