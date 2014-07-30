@@ -47,7 +47,7 @@ function initDoc(maxSize, userId, canEdit) {
 					document.location.href = newHref;
 				} else if ($j(ui.newPanel).find('#editTerms').length>0) {
 					// if panel with editTerms is made active
-					if (fancyTreeObj==null) fancyTreeObj = initEditfancyTreeObj ($j('#editTerms'));
+					if (fancyTreeObj==null) fancyTreeObj = initEditFancyTreeObj ($j('#editTerms'));
 				} else if ($j(ui.newPanel).find('#sourcesTable').length>0) {
 					// if panel with sources is made active, reload table to reflect possible changes
 					if (dataTableObj!=null) dataTableObj.fnDraw();
@@ -148,7 +148,7 @@ function initDoc(maxSize, userId, canEdit) {
 		// for performance reason, it's better to load the fancyTreeObj as the last element
 		if ($j('#selectEurovocTerms').length>0) {
 			// init main fancyTreeObj object
-			fancyTreeObj = initfancyTreeObj ($j('#selectEurovocTerms'),canEdit,null);
+			fancyTreeObj = initFancyTreeObj ($j('#selectEurovocTerms'),canEdit,null);
 		}
 	});
 }
@@ -276,7 +276,7 @@ function setFancyTreeObjSelection (selectedNodes) {
  * @param jqueryObj the table object containing the clicked button
  * @param selectedNodes the array to set when showing the tree
  */
-function showfancyTreeObj(selectedNodes) {
+function showFancyTreeObj(selectedNodes) {
 	var speed = 350;
 	var clearSelection = (selectedNodes==null);
 	// set the selection
@@ -365,9 +365,9 @@ function setSelectedRow(clickedObj, selectedNodes) {
 	if (!clearSelection) {
 		selectedRowID = jQueryObj.parents('tr').attr('id');
 		jQueryObj.parents('tr').addClass('selectedRow');
-		showfancyTreeObj (selectedNodes);
+		showFancyTreeObj (selectedNodes);
 	} else {
-		showfancyTreeObj (null);
+		showFancyTreeObj (null);
 	}
 	return clearSelection;
 }
@@ -779,7 +779,7 @@ function initToolTips() {
  *
  * @returns fancyTree
  */
-function initEditfancyTreeObj (element) {
+function initEditFancyTreeObj (element) {
 	// set the options for this kind of tree
 	var savePromise = null;
 	var options = {
@@ -897,6 +897,8 @@ function initEditfancyTreeObj (element) {
 									data.node.render(true);
 									// sort the active branch after closing the input
 									if(data.node.parent!=null) data.node.parent.sortChildren();
+									clearFancyTreeFilter();
+									if(data.node!=null) data.node.makeVisible({ noAnimation: true, scrollIntoView:false }); 
 								}, 200);
 							})
 							.fail(function () {
@@ -913,7 +915,7 @@ function initEditfancyTreeObj (element) {
 
 	// init the tree with its own options to handle
 	// inline edit extension and event handling
-	var returnTree = initfancyTreeObj(element, false, options );
+	var returnTree = initFancyTreeObj(element, false, options );
 
 	// attach a context menu
 	returnTree.contextmenu({
@@ -954,7 +956,7 @@ function initEditfancyTreeObj (element) {
 		}
 	});
 
-	initfancyTreeFilter();
+	initFancyTreeFilter();
 
 	return returnTree;
 }
@@ -976,6 +978,9 @@ function addNewTreeNode(node) {
 		isSaving: false,
 		isUserDefined: true
 	});
+	// run the filter to show new node if a filter is active
+	filterFancyTree();
+	
 	refNode.editStart();
 }
 
@@ -1046,6 +1051,7 @@ function deleteSelectedTreeNode(node, op) {
 			} else if (JSONObj.status=='OK') {
 				// remove the node and display message
 				node.remove();
+				setTimeout( function(){ filterFancyTree(); }, 10);
 				showHideDiv('',JSONObj.msg,true);
 			} else {
 				showHideDiv('',$j('#nodeDelFailMsg').html(),false);
@@ -1072,7 +1078,7 @@ function deleteSelectedTreeNode(node, op) {
  *
  * @returns fancyTree
  */
-function initfancyTreeObj (element, canEdit, extraOptions) {
+function initFancyTreeObj (element, canEdit, extraOptions) {
 
 	var options = {
 		extensions: ["childcounter", "filter"],
@@ -1113,15 +1119,70 @@ function initfancyTreeObj (element, canEdit, extraOptions) {
 	};
 
 	var returnTree = element.fancytree($j.extend(options,extraOptions));
-	initfancyTreeFilter();
+	initFancyTreeFilter();
 	return returnTree;
+}
+
+/**
+ * clear (aka reset) the FancyTree node filter
+ */
+function clearFancyTreeFilter() {
+	// clear text field and tree filter
+	$j("input#treeFilterInput").val("");
+	fancyTreeObj.fancytree('getTree').clearFilter();
+	// fix hidden and shown elements
+	$j('span.fancytree-node').parents('li').css('display','block');
+	// reset object as it previously was
+	setFancyTreeObjSelection(getSelectedTreeNodesArray());
+}
+
+/**
+ * Performs the actual FancyTree node filtering doing a case insensitive search
+ * for titles containig passed text and checking if node is new so that a new
+ * node will be visible even with an active filter
+ *  
+ * @param text the string to be filtered
+ * @returns number of matched nodes
+ */
+function filterFancyTree(text) {
+
+	var n = 0;
+	
+	if (typeof text == 'undefined') {
+		text = ($j("input#treeFilterInput").length>0) ? $j("input#treeFilterInput").val().trim() : ''; 
+	} else {
+		text = text.trim();
+	}
+	
+	if (text.length > 0) {
+		var matchRegExp = new RegExp (text, 'i');
+		
+		// NOTE: second parameter is to filter leaves only
+		n = fancyTreeObj.fancytree('getTree').filterNodes(function(node) {
+					return matchRegExp.test(node.title) || node.data.isNew;
+				}, false);
+	}
+	
+	// if any matched nodes, expand them
+	if (n>0) {
+		fancyTreeObj.fancytree("getRootNode").visit(function(node){
+			if (node.title.toLowerCase().indexOf(text.toLowerCase())>-1) {
+				if (!node.isExpanded()) node.makeVisible({ noAnimation: true, scrollIntoView:false });
+			}
+		});
+		// fix hidden and shown elements' css
+		 $j('span.fancytree-hide').parents('li').css('display','none');
+		 $j('span.fancytree-match').parents('li').css('display','block');
+	}
+	
+	return n;
 }
 
 /**
  * inits the text input to filter the
  * fancyTree and the button to clear it
  */
-function initfancyTreeFilter() {
+function initFancyTreeFilter() {
 	/**
 	 * init tree filter text input
 	 */
@@ -1132,22 +1193,8 @@ function initfancyTreeFilter() {
 			if(e && e.which === $j.ui.keyCode.ESCAPE || $j.trim(match) === ""){
 				$j("button#resetTreeFilter").click();
 				return;
-			} else if (e.which === $j.ui.keyCode.ENTER) {
-				// Pass a string to perform case insensitive matching
-				// second parameter is to filter leaves only
-				n = fancyTreeObj.fancytree('getTree').filterNodes(match, false);
-
-				// if any matched nodes, expand them
-				if (n>0) {
-					fancyTreeObj.fancytree("getRootNode").visit(function(node){
-						if (node.title.toLowerCase().indexOf(match.toLowerCase())>-1) {
-							if (!node.isExpanded()) node.makeVisible({ noAnimation: true, scrollIntoView:false });
-						}
-					});
-					// fix hidden and shown elements
-					$j('span.fancytree-hide').parents('li').css('display','none');
-					$j('span.fancytree-match').parents('li').css('display','block');
-				}
+			} else if (e.which === $j.ui.keyCode.ENTER) {				
+				filterFancyTree(match);
 				$j("button#resetTreeFilter").attr("disabled", false);
 			}
 		}).focus();
@@ -1157,22 +1204,14 @@ function initfancyTreeFilter() {
 	 * init clear button
 	 */
 	if ($j("button#resetTreeFilter").length>0) {
-		$j("button#resetTreeFilter").click(function(e){
-			// clear text field and tree filter
-			$j("input#treeFilterInput").val("");
-			fancyTreeObj.fancytree('getTree').clearFilter();
-			// fix hidden and shown elements
-			$j('span.fancytree-node').parents('li').css('display','block');
-			// reset object as it previously was
-			setFancyTreeObjSelection(getSelectedTreeNodesArray());
+		$j("button#resetTreeFilter").click(function() {
+			clearFancyTreeFilter();
 		}).attr("disabled", true);
 	}
 }
 
 /**
  * function to delete a source with an ajax call
- *
- * TODO: not yet implemented
  *
  * @param jqueryObj
  * @param id_source
@@ -1189,10 +1228,8 @@ function deleteSource (jqueryObj, id_source, message) {
 			dataType:	'json'
 		})
 		.done  (function (JSONObj) {
-			if (JSONObj)
-				{
-					if (JSONObj.status=='OK')
-					{
+			if (JSONObj) {
+					if (JSONObj.status=='OK') {
 						// deletes the corresponding row from the DOM with a fadeout effect
 						jqueryObj.parents("tr").fadeOut("slow", function () {
 							var pos = dataTableObj.fnGetPosition(this);
