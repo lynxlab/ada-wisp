@@ -8,40 +8,47 @@ function initDoc()
 {
     
 }
+var isLoaded=false;
 function initDataTable()
 {
-  $j.ajax({
-        type	: 'POST',
-        url	: HTTP_ROOT_DIR+ '/switcher/ajax/get_Translation.php',
-        data	: $j('form[name="translatorForm"]').serialize(),
-        dataType:'json',
-        async	: false
-        })   
-       .done   (function( JSONObj )
-       {
-           if(JSONObj.status=="OK")
-           {
-                var content=JSONObj.html;
-                $j('.translationResults').html(content); 
-                createDataTable();
-            }
-            else
-            {
-                var content=JSONObj.html;
-                
-                $j('.translationResults').html(content); 
-                $j('#table_result').dataTable({"bJQueryUI": true});
-            }
-            $j('.translationData').effect('drop', function() {
-                    $j('.translationResults').effect('slide');
-            });
-            $j('#torna').toggle();
-            $j('#home').css('display','none');
-            $j('#question_mark').css('display','none');
-      })
-      .fail   (function() { 
-            console.log("ajax call has failed"); 
-       } )
+  if(!isLoaded){
+        $j.ajax({
+              type	: 'POST',
+              url	: HTTP_ROOT_DIR+ '/switcher/ajax/get_Translation.php',
+              data	: $j('form[name="translatorForm"]').serialize(),
+              dataType:'json',
+              async	: false
+              })   
+             .done   (function( JSONObj )
+             {
+                 if(JSONObj.status=="OK")
+                 {
+                      var content=JSONObj.html;
+                      $j('.translationResults').html(content); 
+                      createDataTable();
+                  }
+                  else
+                  {
+                      var content=JSONObj.html;
+
+                      $j('.translationResults').html(content); 
+                      $j('#table_result').dataTable({"bJQueryUI": true});
+                  }
+                  $j('.translationData').effect('drop', function() {
+                          $j('.translationResults').effect('slide');
+                  });
+                  $j('#torna').toggle();
+                  $j('#home').css('display','none');
+                  $j('#question_mark').css('display','none');
+                  $j('.EditTranslation').css({'marginRight':'-380px'});
+                  $j('.EditTranslation').css({'marginTop':'-12px'});
+                  isLoaded=true;
+            })
+            .fail   (function() { 
+                  console.log("ajax call has failed"); 
+                  isLoaded=true;
+             } )
+   }
    return false;
 }
 
@@ -143,7 +150,7 @@ function initButton()
             $j('.translationResults').animate({'marginLeft':'1%'});
             $j('.translationResults').animate({'width':'40%'},"slow");
             $j('.EditTranslation').effect('slide');
-            $j('.EditTranslation').animate({'marginRight':'30%'},"slow");
+            $j('.EditTranslation').animate({'marginRight':'1%'},"slow");
             $j('#TranslationTextArea').val(aData[3]);
             $j('form[name="EditranslatorForm"]').append('<input type="hidden" id="id_record" name="id_record" value="'+aData[5]+'" />');  
             $j('form[name="EditranslatorForm"]').append('<input type="hidden" id="cod_lang" name="cod_lang" value="'+aData[4]+'"/>'); 
