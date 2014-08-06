@@ -39,7 +39,7 @@ abstract class FForm
         		{
         			// must include jquery
         			var jq = document.createElement("script"); jq.type = "text/javascript";        			
-  					jq.src = "'.str_replace(ROOT_DIR, '', JQUERY).'";  					
+  					jq.src = "'.str_replace(ROOT_DIR, HTTP_ROOT_DIR, JQUERY).'";  					
   					document.getElementsByTagName("head")[0].appendChild(jq);
 					jQueryReady (applyUniform);  							
         		}
@@ -53,11 +53,11 @@ abstract class FForm
   				{
 					// must include jquery uniform
         			var jq = document.createElement("script"); jq.type = "text/javascript";        			
-  					jq.src = "'.str_replace(ROOT_DIR, '', JQUERY_UNIFORM).'";  					
+  					jq.src = "'.str_replace(ROOT_DIR, HTTP_ROOT_DIR, JQUERY_UNIFORM).'";  					
   					document.getElementsByTagName("head")[0].appendChild(jq);
   					// must include css
   					var jqcss = document.createElement("link"); jqcss.setAttribute("rel","stylesheet");
-  					jqcss.setAttribute("type", "text/css"); jqcss.setAttribute("href", "'.str_replace(ROOT_DIR, '', JQUERY_UNIFORM_CSS).'");  					
+  					jqcss.setAttribute("type", "text/css"); jqcss.setAttribute("href", "'.str_replace(ROOT_DIR, HTTP_ROOT_DIR, JQUERY_UNIFORM_CSS).'");  					
   					document.getElementsByTagName("head")[0].appendChild(jqcss);  							  							
   				}
   							
