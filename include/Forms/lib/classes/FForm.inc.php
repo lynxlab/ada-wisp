@@ -39,7 +39,7 @@ abstract class FForm
         		{
         			// must include jquery
         			var jq = document.createElement("script"); jq.type = "text/javascript";        			
-  					jq.src = "'.str_replace(ROOT_DIR, '', JQUERY).'";  					
+  					jq.src = "'.str_replace(ROOT_DIR, HTTP_ROOT_DIR, JQUERY).'";  					
   					document.getElementsByTagName("head")[0].appendChild(jq);
 					jQueryReady (applyUniform);  							
         		}
