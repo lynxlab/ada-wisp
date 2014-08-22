@@ -37,8 +37,9 @@ class FormJexImport extends FForm {
 		     ->setRequired()
 		     ->setValidator(FormValidator::NOT_EMPTY_STRING_VALIDATOR);
 		
-		$this->addTextInput('data_pubblicazione', translateFN('Data Pubblicazione in G.U.'))
+		$this->addTextInput('data_pubblicazione', translateFN('Data Pubblicazione'))
 			 ->setAttribute('class', 'dontuniform')
+			 ->setRequired()
 		     ->setValidator(FormValidator::DATE_VALIDATOR);
 		
 		$sel_tipologia = FormControl::create(FormControl::SELECT, 'tipologia', translateFN('tipologia'));
