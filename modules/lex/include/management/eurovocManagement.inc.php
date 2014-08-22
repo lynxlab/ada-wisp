@@ -222,6 +222,8 @@ class eurovocManagement extends importManagement
      * @param DOMElement $XMLObj
      * @param unknown $tablename
      * 
+     * @return number total count of imported items or -1 on aborted import
+     * 
      * @access protected
      */
     protected function _importXMLRoot ($XMLObj, $tableName) {
@@ -257,11 +259,16 @@ class eurovocManagement extends importManagement
 	    	
 	    	if (AMA_DB::isError($result)) {
 	    		$this->_logMessage('**'.translateFN('Errore').'**');
-	    		$this->_logMessage('**'.print_r($result, true).'**');
+	    		$msg = ($result instanceof PDOException) ? $result->getMessage() : print_r($result, true); 	    		
+	    		$this->_logMessage('**'.$msg.'**');
+	    		// return error
+	    		return -1;
 	    	} else {
 	    		$this->_logMessage('['.translateFN('OK').']');
 	    	}
     	}
+    	
+    	return count($toSaveha);
     }
     
     /**
@@ -276,7 +283,30 @@ class eurovocManagement extends importManagement
      * @access private
      */
     private function _importUSED_FOR  ($record=null, $lng=null, $version=null) {
+    	/**
+    	 * it looks like the EuroVoc uf_*.xml files may have some duplicate rows, here's
+    	 * an example from the italian file uf_it.xml:
+    	 * <RECORD>
+    	 * 	<DESCRIPTEUR_ID>3667</DESCRIPTEUR_ID>
+    	 * 		<UF>
+    	 * 			<UF_EL>sperimentazione animale</UF_EL>
+    	 * 			<UF_EL>allevamento di cavie</UF_EL>
+    	 * 			<UF_EL>allevamento di cavie</UF_EL> <!-- this is a duplicate -->
+    	 * 			<UF_EL>cavia</UF_EL>
+    	 * 			<UF_EL>animale da laboratorio</UF_EL>
+    	 * 			<UF_EL>esperimento su cavie</UF_EL>
+    	 * 		</UF>
+    	 * </RECORD>
+    	 * 
+    	 * but in the online version at http://eurovoc.europa.eu/3667&language=it
+    	 * the UF section has 5 items, so it really should be a bug in the Eurovoc XML
+    	 * 
+    	 * the $preventDuplicate array stores each uf_el value for the current record
+    	 * and prevents it to be added to the saved array ($record_ha)
+    	 */
     	$record_ha = array();
+    	$preventDuplicate = array();
+    	
     	$count=0; 
     	foreach ($record->childNodes as $node) {
     		switch (strtoupper($node->nodeName)) {
@@ -287,26 +317,31 @@ class eurovocManagement extends importManagement
     			case 'UF':
     				if ($node->hasChildNodes()) {
     					foreach ($node->childNodes as $uf_el) {
+    						// prevents duplicate rows
+    						if (!in_array($uf_el->nodeValue, $preventDuplicate)) {
+    							$preventDuplicate[] = $uf_el->nodeValue;
     						
-    						if (!isset($record_ha[$count]['descripteur_id'])) $record_ha[$count]['descripteur_id'] = $desc_id;
-    						 
-    						$record_ha[$count]['uf_el'] = $uf_el->nodeValue;
-    						if ($uf_el->hasAttribute('FORM')) {
-    							$record_ha[$count]['uf_el_form'] = $uf_el->getAttribute('FORM');
-    						} else {
-    							$record_ha[$count]['uf_el_form'] = null;
+	    						if (!isset($record_ha[$count]['descripteur_id'])) $record_ha[$count]['descripteur_id'] = $desc_id;
+	
+    							$record_ha[$count]['uf_el'] = $uf_el->nodeValue;
+	    						
+	    						if ($uf_el->hasAttribute('FORM')) {
+	    							$record_ha[$count]['uf_el_form'] = $uf_el->getAttribute('FORM');
+	    						} else {
+	    							$record_ha[$count]['uf_el_form'] = null;
+	    						}
+	    						
+	    						if ($uf_el->hasAttribute('DEF')) {
+	    							$record_ha[$count]['def'] = $uf_el->getAttribute('DEF');
+	    						} else {
+	    							$record_ha[$count]['def'] = null;
+	    						}
+	    						
+	    						if (!is_null($lng) && strlen($lng)>0) $record_ha[$count]['lng'] = $lng;
+	    						if (!is_null($version) && strlen($version)>0) $record_ha[$count]['version'] = doubleval($version);
+	    						
+	    						$count++;
     						}
-    						
-    						if ($uf_el->hasAttribute('DEF')) {
-    							$record_ha[$count]['def'] = $uf_el->getAttribute('DEF');
-    						} else {
-    							$record_ha[$count]['def'] = null;
-    						}
-    						
-    						if (!is_null($lng) && strlen($lng)>0) $record_ha[$count]['lng'] = $lng;
-    						if (!is_null($version) && strlen($version)>0) $record_ha[$count]['version'] = doubleval($version);
-    						
-    						$count++;    						
     					}
     				}
     				break;

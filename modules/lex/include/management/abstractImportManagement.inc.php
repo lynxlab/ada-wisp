@@ -73,9 +73,12 @@ abstract class importManagement
 
     /**
      * runs the import from the XML found in the uploaded zip file
+     * 
+     * @return number total count of imported items from all xml files
      */
 	public function run() {
 		$zip = new ZipArchive();
+		$importedItems = 0; // counts total imported items from all xml files
 		if ($zip->open($this->_importFileName)) {
 			// flush and terminate output buffer
 			ob_end_flush();
@@ -111,7 +114,15 @@ abstract class importManagement
 						$htmlDTDMessage .= $filesIterator->getFilename().' '.translateFN('è valido').' DTD: '.$dom->doctype->systemId;
 						$this->_logMessage($htmlDTDMessage);
 						// call the extending class own import method on XML root node
-						$this->_importXMLRoot ($dom->documentElement, $dom->doctype->name);
+						$currentLoopImportedItems = $this->_importXMLRoot ($dom->documentElement, $dom->doctype->name);
+						if ($currentLoopImportedItems==-1) {
+							// an error has occoured, stop running since it would be useless
+							$this->_logMessage('**'.translateFN('Questo errore è fatale, l\'importazione è stata interrotta.').'**');
+							break;
+						} else {
+							$importedItems += $currentLoopImportedItems;
+						}
+						 
 					} else {
 						$htmlDTDMessage .= $filesIterator->getFilename().' '.translateFN('NON è valido').' DTD: '.$dmc->doctype->publicId;;
 						$errors = libxml_get_errors();
@@ -135,6 +146,7 @@ abstract class importManagement
 			$this->_logMessage(translateFN('Tempo impiegato').'(min.) ...');
 			$this->_logMessage('['.((microtime(true) - $time_start)/60).']');
 		}
+		return $importedItems;
 	}
 	
 	/**
