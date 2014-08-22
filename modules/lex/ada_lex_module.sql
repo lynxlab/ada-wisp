@@ -170,6 +170,19 @@ CREATE TABLE IF NOT EXISTS `module_lex_EUROVOC_DOMAINES_CACHE` (
   FULLTEXT KEY `content_idx` (`content`)
 ) ENGINE=MyISAM DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
 
+
+-- -----------------------------------------------------
+-- Alter a few tables to create proper PRIMARY KEYS, 22/8/2014
+
+ALTER TABLE `module_lex_EUROVOC_LANGUES` CHANGE `libelle` `libelle` VARCHAR(255);
+ALTER TABLE `module_lex_EUROVOC_LANGUES` ADD PRIMARY KEY (`libelle`, `courte`, `tri`, `version`);
+
+ALTER TABLE `module_lex_EUROVOC_USED_FOR` CHANGE `uf_el` `uf_el` VARCHAR(255);
+ALTER TABLE `module_lex_EUROVOC_USED_FOR` DROP INDEX `USED_FOR_IDX`, ADD PRIMARY KEY (`descripteur_id`, `lng`, `version`, `uf_el`, `uf_el_form`);
+
+ALTER TABLE `module_lex_EUROVOC_COMPOUND_NON_PT` CHANGE `uf_el` `uf_el` VARCHAR(255);
+ALTER TABLE `module_lex_EUROVOC_COMPOUND_NON_PT` ADD PRIMARY KEY (`use_descripteur_id_1`, `use_descripteur_id_2`, `uf_el`, `version`, `lng`);
+
 -- -----------------------------------------------------
 -- Table `module_lex_testi`
 -- -----------------------------------------------------
