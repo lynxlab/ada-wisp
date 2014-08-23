@@ -58,7 +58,12 @@ class jexManagement extends importManagement
 			$this->_logMessage(translateFN('Fonte salvata correttamente').' id='.$this->_id_fonte);
 			
 			// fonte saved ok, now run the import on the zip file
-			parent::run();
+			if (parent::run()<=0) {
+				// nothing was imported, let's delete the font and log the event
+				$this->_dh->delete_source($this->_id_fonte);
+				$this->_logMessage('**'.translateFN('File caricato non valido o non contenente nessun asset valido').'**');
+				$this->_logMessage('**'.translateFN('FONTE NON IMPORTATA').'**');
+			}
 		} else {
 			$this->_logMessage('**'.translateFN('Problema nel salvataggio della fonte').'**');
 			$this->_logMessage('**'.print_r($result, true).'**');
@@ -123,6 +128,8 @@ class jexManagement extends importManagement
 	 *
 	 * @param DOMElement $XMLObj
 	 * @param string $tablename
+	 * 
+	 * @return number total count of imported items
 	 *
 	 * @access protected
 	 */
@@ -202,6 +209,7 @@ class jexManagement extends importManagement
 		}
 		
 		$this->_logMessage($savedAssetCount.' '.translateFN('asset importati'));
+		return $savedAssetCount;
 	}
 	
 	/**

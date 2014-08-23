@@ -92,16 +92,23 @@ abstract class importManagement
 											str_ireplace('.zip', '', basename($this->_importFileName));
 			$zip->extractTo($this->_destDir);
 			$this->_logMessage('['.translateFN('OK').']');
+			
+			/**
+			 * cannot use GlobIteartor object as in commented code because of
+			 * this PhP bug: https://bugs.php.net/bug.php?id=55701
+			 *
+			 * unusable code is commented out, workaround is implemented
+			 */
 		
 			// iterate all *.xml files found inside the uploaded zip
-			$filesIterator = new GlobIterator($this->_destDir . DIRECTORY_SEPARATOR . '*.xml');
-		
-			if ($filesIterator->count()>0) {
+			
+			// $filesIterator = new GlobIterator($this->_destDir . DIRECTORY_SEPARATOR . '*.xml');
+			// if ($filesIterator->count()>0) {
 				 
 				$dom = new DOMDocument();
 				libxml_use_internal_errors(true);
 				 
-				foreach ($filesIterator as $file) {
+				foreach (new GlobIterator($this->_destDir . DIRECTORY_SEPARATOR . '*.xml') as $filesIterator) {
 					$htmlDTDMessage = '';
 					// load the xml
 					$dom->load($filesIterator->getPath(). DIRECTORY_SEPARATOR . $filesIterator->getFilename());
@@ -134,9 +141,12 @@ abstract class importManagement
 					}
 				}
 				libxml_use_internal_errors(false);
-			} else {
-				$this->_logMessage(translateFN('Nessun file XML trovato.'));
-			}
+			
+			if ($importedItems <=0) $this->_logMessage(translateFN('Nessun file XML trovato.'));
+			// this is commented because of the bug described above
+			// } else {
+			// 	$this->_logMessage(translateFN('Nessun file XML trovato.'));
+			// }
 			$this->_logMessage(translateFN('Importazione terminata').'...');
 			$this->_logMessage('['.date('d/m/Y H:i:s').']');
 			$this->_logMessage(translateFN('Rimozione files'));
