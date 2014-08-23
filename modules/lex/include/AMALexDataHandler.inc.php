@@ -693,7 +693,7 @@ class AMALexDataHandler extends AMA_DataHandler {
 				$this->queryPrepared('DELETE FROM `'.self::$PREFIX.'assets` WHERE `'.self::$PREFIX.'assets_id`=?',$element->assetID);
 				$this->queryPrepared('DELETE FROM `'.self::$PREFIX.'testi` WHERE `'.self::$PREFIX.'testi_id`=?',$element->testoID);
 			}			
-		} else return $res;
+		}
 		
 		$res = $this->queryPrepared('DELETE FROM `'.self::$PREFIX.'fonti` WHERE `'.self::$PREFIX.'fonti_id`=?',$id);
 		
