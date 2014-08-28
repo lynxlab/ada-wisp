@@ -1,0 +1,22 @@
+
+<!-- DTD pour le fichier des permutations  -->
+
+<!ELEMENT PERMUTATION (RECORD+)>
+
+<!ELEMENT RECORD (DESCRIPTEUR_ID, PERM)>
+		<!-- ev:ThesaurusConcept[xl:prefLabel/ev:permutedLiteralForm/@xml:lang = /DESCRIPTEUR/@LNG] -->
+
+<!ELEMENT PERM (PERM_EL+)><!-- group by ev:ThesaurusConcept/dc:identifer -->
+
+<!ELEMENT DESCRIPTEUR_ID	(#PCDATA)><!-- ev:ThesaurusConcept/dc:identifer -->
+
+<!ELEMENT PERM_EL				(#PCDATA)>
+		<!-- ev:ThesaurusConcept/xl:prefLabel/ev:permutedLiteralForm[@xml:lang = /DESCRIPTEUR/@LNG] -->
+<!ATTLIST PERM_EL
+			FORM		(pt | npt)		"pt">		
+
+<!ATTLIST PERMUTATION
+
+			LNG					CDATA		#REQUIRED
+			VERSION				CDATA		#REQUIRED >
+<!-- calculate version on change, initial value is config, algorithm is needed (date ?, thes version?) -->
