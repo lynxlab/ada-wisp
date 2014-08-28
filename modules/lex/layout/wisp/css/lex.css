@@ -136,6 +136,7 @@ div.show_error {
  * Hide unwanted submit buttons
  */
 #submit_eurovoc,
+#submit_exporteurovoc,
 #eurovocResults,
 #jexResults
 {
@@ -196,7 +197,8 @@ div.show_error {
 	width: 20em;
 }
 
-.importTitle {
+.importTitle,
+.impexportseparator {
 	width: 100%;
 	background: #eee;
 	text-align: center;
@@ -213,6 +215,30 @@ div.show_error {
 
 #selectEurovocTerms li {
 	border:none;
+}
+
+/*
+ * style import and export form
+ */
+form#eurovocForm fieldset.form,
+form#exporteurovocForm fieldset.form {
+	text-align: center;
+}
+/* form#eurovocForm ol.form, */
+form#exporteurovocForm ol.form {
+	display: inline-block;
+}
+form#eurovocForm li.form,
+form#exporteurovocForm li.form {
+	border:none; 	
+}
+
+form#exporteurovocForm li.form {
+    float:left;
+}
+
+form#exporteurovocForm #l_exportLang {
+	margin-right: 5px;
 }
 
 /*

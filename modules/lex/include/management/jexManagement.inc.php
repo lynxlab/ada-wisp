@@ -128,12 +128,13 @@ class jexManagement extends importManagement
 	 *
 	 * @param DOMElement $XMLObj
 	 * @param string $tablename
+	 * @param isUserDefined true if importing user defined data, only used in eurovocManagement class
 	 * 
 	 * @return number total count of imported items
 	 *
 	 * @access protected
 	 */
-	protected function _importXMLRoot ($XMLObj, $tableName) {
+	protected function _importXMLRoot ($XMLObj, $tableName, $isUserDefined=false) {
 		
 		$documents = $XMLObj->getElementsByTagName('document');
 		$savedAssetCount = 0;

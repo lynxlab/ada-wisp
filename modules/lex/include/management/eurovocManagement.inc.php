@@ -17,6 +17,7 @@
 
 require_once MODULES_LEX_PATH. '/include/management/abstractImportManagement.inc.php';
 require_once MODULES_LEX_PATH. '/include/form/formUploadFile.php';
+require_once MODULES_LEX_PATH. '/include/form/formExportEurovoc.php';
 
 class eurovocManagement extends importManagement
 {
@@ -30,7 +31,7 @@ class eurovocManagement extends importManagement
 	 * eurovoc tables prefix inside the module
 	 * @var string
 	 */
-	private static $_SUBPREFIX = 'EUROVOC';
+	public static $_SUBPREFIX = 'EUROVOC';
 	
 	public function __construct($language='en') {
 		parent::__construct();
@@ -52,6 +53,122 @@ class eurovocManagement extends importManagement
 		parent::run();
 		$this->_buildImportedJSONCache();
 		$this->_logMessage(translateFN('Importazione EUROVOC terminata'));
+	}
+	
+	/**
+	 * runs the export
+	 * 
+	 * @param string $exportLang 2 char language code to be exported or '*' for all langs
+	 */
+	public function export($exportLang) {
+		$this->_setLogFileName("eurovoc-export_".date('d-m-Y_His').".log");
+
+		ini_set('max_execution_time', 1800); //1800 seconds = 30 minutes
+		set_time_limit(0);
+		
+		if ($exportLang!=='*') $exportLangs = array($exportLang);
+		else $exportLangs = $this->_dh->getSupportedLanguages();
+		
+		$tableFileArray = array(
+				'COMPOUND_NON_PT' =>
+					array ('xml' => 'compnpt_', 'dtd' => 'compound_non_pt'),
+				'DESCRIPTEUR' => 
+					array ('xml' => 'desc_', 'dtd' => 'descripteur'),
+				'DESCRIPTEUR_THESAURUS' =>
+					array ('xml' => 'desc_thes', 'dtd' => 'descripteur_thesaurus'),
+				'DOMAINES' => 
+					array ('xml' => 'dom_', 'dtd' => 'domaine'),
+				'LANGUES' =>
+					array ('xml' => 'langue', 'dtd' => 'langue'),
+				'RELATIONS_BT' =>
+					array ('xml' => 'relation_bt', 'dtd' => 'relation_bt'),
+				'RELATIONS_RT' =>
+					array ('xml' => 'relation_rt', 'dtd' => 'relation_rt'),
+				'RELATIONS_UI' =>
+					array ('xml' => 'relation_ui', 'dtd' => 'relation_ui'),
+				'SCOPE_NOTE' =>
+					array ('xml' => 'sn_', 'dtd' => 'scope_note'),
+				'THESAURUS' =>
+					array ('xml' => 'thes_', 'dtd' => 'thesaurus'),
+				'USED_FOR' =>
+					array ('xml' => 'uf_', 'dtd' => 'used_for'),
+				'USERDEFINED_DESCRIPTEUR' => 
+					array ('xml' => 'userdefined_desc_', 'dtd' => 'descripteur'),
+				'USERDEFINED_RELATIONS_BT' =>
+					array ('xml' => 'userdefined_relation_bt', 'dtd' => 'relation_bt'),
+		);
+		
+		$exportDir = ADA_UPLOAD_PATH . $_SESSION['sess_userObj']->getId() . DIRECTORY_SEPARATOR .'eurovoc';
+		if (!is_dir($exportDir) && !mkdir($exportDir)) {
+			// dir is not there and cannot be created, abort
+			$this->_logMessage('Export dir '.$exportDir.' does not exists and cannot be created, export aborted.', false);
+		} else {
+			$this->_logMessage('**** EXPORT STARTED at '.date('d/m/Y H:i:s'). '(timestamp: '.$this->_dh->date_to_ts('now').') ****', false);
+			
+			foreach (array_values($exportLangs) as $count=>$language) {
+				foreach ($tableFileArray as $tableName=>$elementData) {
+					if (substr($elementData['xml'],-1)==='_') {
+						// if filename ends with _ it's a language xml file
+						$XMLFilename = $elementData['xml'].$language;
+						$doExport = true;
+					} else {
+						$XMLFilename = $elementData['xml'];
+						$doExport = ($count==0);
+					}
+					
+					if ($doExport) {						
+						$XMLFilename .= '.xml';						
+						$DTDFilename = $elementData['dtd'].'.dtd';
+
+						$this->_logMessage('Exporting '.$tableName.' into '.$XMLFilename, false);
+						
+						$fp = fopen ($exportDir . DIRECTORY_SEPARATOR .$XMLFilename , 'w');
+						$writtenElements = $this->_writeExport($fp, $tableName, $DTDFilename, $language);
+						fclose ($fp);
+						
+						$this->_logMessage('DONE',false);
+						
+						if ($writtenElements<=0) {
+							$this->_logMessage($XMLFilename.' has 0 records, deleting it', false);
+							unlink ($exportDir . DIRECTORY_SEPARATOR .$XMLFilename);
+						}
+						else {
+							// copy DTDs to exportDir
+							@copy (MODULES_LEX_PATH . DIRECTORY_SEPARATOR .'exportDTD'.
+									DIRECTORY_SEPARATOR . $DTDFilename, $exportDir . DIRECTORY_SEPARATOR .$DTDFilename );
+						}						
+					}
+				}
+			}
+			
+			// make the zipfile
+			$zip = new ZipArchive();
+			$ret = $zip->open($exportDir . DIRECTORY_SEPARATOR . EXPORT_FILENAME, ZipArchive::OVERWRITE);			
+			if ($ret !== TRUE) {
+				$this->_logMessage('ZIP creation failed, import aborted.',false);
+			} else {
+				$this->_logMessage('ZIP creation:',false);
+				$files = glob( $exportDir . DIRECTORY_SEPARATOR .'*.{dtd,xml}', GLOB_BRACE);
+				// first add the files, then unlink them
+				foreach (array ('add','delete') as $op) {
+					foreach ($files as $file) {
+						if ($op==='add') {
+							$this->_logMessage('ZIP adding: '.$file,false);
+							$zip->addFile($file,substr($file,strrpos($file,'/') + 1));
+						} else if ($op==='delete') {
+							$this->_logMessage('DELETE: '.$file,false);
+							unlink ($file);
+						}
+					}
+					if ($op==='add') $zip->close();
+				}    			
+			}
+			
+			$this->_logMessage('**** EXPORT ENDED   at '.date('d/m/Y H:i:s'). '(timestamp: '.$this->_dh->date_to_ts('now').') ****', false);
+			
+			if (is_file($exportDir.DIRECTORY_SEPARATOR.EXPORT_FILENAME)) return $exportDir.DIRECTORY_SEPARATOR.EXPORT_FILENAME;
+			else return false; 
+		} 
 	}
 	
 	/**
@@ -220,13 +337,14 @@ class eurovocManagement extends importManagement
      * call the appropriate method to import the tableName
      * 
      * @param DOMElement $XMLObj
-     * @param unknown $tablename
+     * @param string $tablename
+     * @param isUserDefined true if importing user defined data, only used in eurovoc class
      * 
      * @return number total count of imported items or -1 on aborted import
      * 
      * @access protected
      */
-    protected function _importXMLRoot ($XMLObj, $tableName) {
+    protected function _importXMLRoot ($XMLObj, $tableName, $isUserDefined = false) {
     	
     	$lng = $XMLObj->getAttribute('LNG');
     	$version = $XMLObj->getAttribute('VERSION');
@@ -238,6 +356,7 @@ class eurovocManagement extends importManagement
     	foreach ($records as $record) {
     		$method = '_import'.$tableName;
     		if (method_exists($this, $method)) {
+    			if ($isUserDefined) $record->is_user_defined = 1;
     			$tmpToSaveha = $this->{$method}($record, $lng, $version);
     			
     			if (count($tmpToSaveha)>1) {
@@ -652,6 +771,7 @@ class eurovocManagement extends importManagement
     		}
     	}
     	
+    	if (isset($record->is_user_defined)) $record_ha['is_user_defined'] = 1;
     	if (!isset($record_ha['def'])) $record_ha['def'] = null;
     	if (!is_null($lng) && strlen($lng)>0) $record_ha['lng'] = $lng;
     	if (!is_null($version) && strlen($version)>0) $record_ha['version'] = doubleval($version);
@@ -711,7 +831,7 @@ class eurovocManagement extends importManagement
     		$this->_logMessage(translateFN('Generazione degli oggetti in cache'));
     		
     		foreach ($langArr as $lang) {
-    			$this->_language = $lang[0];
+    			$this->_language = $lang;
     			$this->_logMessage(translateFN('codice lingua').': '.$this->_language.' ...');
     			$this->getEurovocTree();
     			$this->_logMessage('['.translateFN('OK').']');
@@ -721,39 +841,351 @@ class eurovocManagement extends importManagement
     	}
     }
     
+    /**
+     * writes XML into passed file handle
+     * 
+     * @param resource $fp the opened file to write to
+     * @param string $tableName the table name to use
+     * @param string $DTDFilename the DTD filename to use
+     * @param string $lng
+     * @param string $version
+     * 
+     * @access private
+     */
+    private function _writeExport ($fp, $tableName, $DTDFilename ,$lng, $version=EUROVOC_VERSION) {
+    	$elementCount = 0;
+    	$isUserDefined = (strpos($tableName, 'USERDEFINED')!==false);    	 
+    	if ($isUserDefined)  {
+    		// if it's the user defined descripteur
+    		$tableName = str_replace('USERDEFINED_', '', $tableName);
+    	}
+    	    	 
+    	$string = '<?xml version="1.0" encoding ="'.ADA_CHARSET.'"?>' . PHP_EOL .
+				  '<!DOCTYPE '.$tableName.' SYSTEM "'.$DTDFilename.'">';
+    	
+    	fwrite ($fp, $string);
+    	
+    	$noLangAttr = array ('DESCRIPTEUR_THESAURUS', 'LANGUES', 'RELATIONS_BT', 'RELATIONS_RT', 'RELATIONS_UI');
+    	
+    	if (!in_array($tableName, $noLangAttr)) {
+    		fwrite ($fp, sprintf ('<%s VERSION="%.2f" LNG="%2s">',$tableName, $version, $lng));
+    	} else {
+    		fwrite ($fp, sprintf ('<%s VERSION="%.2f">',$tableName, $version));
+    	}
+    	
+    	$method = '_writeExport'.$tableName;
+    	
+    	if (method_exists($this, $method)) {
+    		if (!in_array($tableName, $noLangAttr)) {	    		
+    			$res = $this->_dh->getEurovocRawTable(self::$_SUBPREFIX.'_'.$tableName, $lng, $version, $isUserDefined);
+    		} else {
+    			$res = $this->_dh->getEurovocRawTable(self::$_SUBPREFIX.'_'.$tableName, null, $version, $isUserDefined);
+    		}    		 
+    		if (!AMA_DB::isError($res) && count($res)>0) {    		
+    			$elementCount = $this->$method($fp, $res);
+    		}    		
+    	}
+    	fwrite ($fp, '</'.$tableName.'>');
+    	
+    	return $elementCount;
+    }
     
+    /**
+     * writes COMPOUND_NON_PT records to xml file
+     * 
+     * @param unknown $fp the opened file to write to
+     * @param unknown $res resultset to be written
+     * 
+     * @return number count of written records
+     * 
+     * @access private
+     */
+    private function _writeExportCOMPOUND_NON_PT ($fp, $res) {
+    	foreach ($res as $element) {
+    		fwrite ($fp, sprintf('<RECORD><UF_EL>%s</UF_EL><USE><DESCRIPTEUR_ID>%s</DESCRIPTEUR_ID><DESCRIPTEUR_ID>%s</DESCRIPTEUR_ID></USE></RECORD>',
+    		$element['uf_el'],
+    		$element['use_descripteur_id_1'],
+    		$element['use_descripteur_id_2']));
+    	}
+    	return count($res);
+    }
+    
+    /**
+     * writes DESCRIPTEUR records to xml file
+     *
+     * @param unknown $fp the opened file to write to
+     * @param unknown $res resultset to be written
+     *
+     * @return number count of written records
+     *
+     * @access private
+     */    
+    private function _writeExportDESCRIPTEUR ($fp, $res) {
+    	foreach ($res as $element) {
+    		fwrite ($fp, '<RECORD>');
+    		fwrite ($fp, sprintf('<DESCRIPTEUR_ID>%s</DESCRIPTEUR_ID>',$element['descripteur_id']));
+    		fwrite ($fp, '<LIBELLE');
+    		if (strlen($element['libelle_form'])>0) fwrite ($fp, sprintf(' FORM="%s"',$element['libelle_form'])); 
+    		fwrite ($fp, sprintf('>%s</LIBELLE>',$element['libelle']));
+    		if (strlen($element['def'])>0) fwrite ($fp, sprintf('<DEF>%s</DEF>',$element['def'])); 
+    		fwrite ($fp, '</RECORD>');
+    	}
+    	return count($res);
+    }
+    
+    /**
+     * writes DESCRIPTEUR_THESAURUS records to xml file
+     *
+     * @param unknown $fp the opened file to write to
+     * @param unknown $res resultset to be written
+     *
+     * @return number count of written records
+     *
+     * @access private
+     */    
+    private function _writeExportDESCRIPTEUR_THESAURUS ($fp, $res) {
+    	foreach ($res as $element) {
+    		fwrite ($fp, '<RECORD>');
+    		fwrite ($fp, sprintf('<THESAURUS_ID>%s</THESAURUS_ID>',$element['thesaurus_id']));
+    		fwrite ($fp, '<DESCRIPTEUR_ID');
+    		if (strlen($element['country'])>0) fwrite ($fp, sprintf(' COUNTRY="%s"',$element['country']));
+    		if (strlen($element['iso_country_code'])>0) fwrite ($fp, sprintf(' ISO_COUNTRY_CODE="%s"',$element['iso_country_code']));
+    		fwrite ($fp, sprintf('>%s</DESCRIPTEUR_ID>',$element['descripteur_id']));
+    		fwrite ($fp, sprintf('<TOPTERM>%s</TOPTERM>',$element['topterm']));
+    		fwrite ($fp, '</RECORD>');
+    	}
+    	return count($res);
+    }
+    
+    /**
+     * writes DOMAINES records to xml file
+     *
+     * @param unknown $fp the opened file to write to
+     * @param unknown $res resultset to be written
+     *
+     * @return number count of written records
+     *
+     * @access private
+     */
+    private function _writeExportDOMAINES ($fp, $res) {
+    	foreach ($res as $element) {
+    		fwrite ($fp, '<RECORD>');
+    		fwrite ($fp, sprintf('<DOMAINE_ID>%s</DOMAINE_ID>',$element['domaine_id']));
+    		fwrite ($fp, sprintf('<LIBELLE>%s</LIBELLE>',$element['libelle']));
+    		fwrite ($fp, '</RECORD>');
+    	}
+    	return count($res);
+    }
+
+    /**
+     * writes LANGUES records to xml file
+     *
+     * @param unknown $fp the opened file to write to
+     * @param unknown $res resultset to be written
+     *
+     * @return number count of written records
+     *
+     * @access private
+     */
+    private function _writeExportLANGUES ($fp, $res) {
+    	foreach ($res as $element) {
+    		fwrite ($fp, '<RECORD>');
+    		fwrite ($fp, sprintf('<LIBELLE>%s</LIBELLE>',$element['libelle']));
+    		fwrite ($fp, sprintf('<COURTE>%s</COURTE>',$element['courte']));
+    		fwrite ($fp, sprintf('<TRI>%s</TRI>',$element['tri']));
+    		fwrite ($fp, '</RECORD>');
+    	}
+    	return count($res);
+    }
+    
+    /**
+     * writes RELATIONS_BT records to xml file
+     *
+     * @param unknown $fp the opened file to write to
+     * @param unknown $res resultset to be written
+     *
+     * @return number count of written records
+     *
+     * @access private
+     */
+    private function _writeExportRELATIONS_BT ($fp, $res) {
+    	foreach ($res as $element) {
+    		fwrite ($fp, '<RECORD>');
+    		fwrite ($fp, sprintf('<SOURCE_ID>%s</SOURCE_ID>',$element['source_id']));
+    		fwrite ($fp, sprintf('<CIBLE_ID>%s</CIBLE_ID>',$element['cible_id']));
+    		fwrite ($fp, '</RECORD>');
+    	}
+    	return count($res);
+    }
+    
+    /**
+     * writes RELATIONS_RT records to xml file
+     *
+     * @param unknown $fp the opened file to write to
+     * @param unknown $res resultset to be written
+     *
+     * @return number count of written records
+     *
+     * @access private
+     */    
+    private function _writeExportRELATIONS_RT ($fp, $res) {
+    	foreach ($res as $element) {
+    		fwrite ($fp, '<RECORD>');
+    		fwrite ($fp, sprintf('<DESCRIPTEUR1_ID>%s</DESCRIPTEUR1_ID>',$element['descripteur1_id']));
+    		fwrite ($fp, sprintf('<DESCRIPTEUR2_ID>%s</DESCRIPTEUR2_ID>',$element['descripteur2_id']));
+    		fwrite ($fp, '</RECORD>');
+    	}
+    	return count($res);
+    }
+    
+    /**
+     * writes RELATIONS_UI records to xml file
+     *
+     * @param unknown $fp the opened file to write to
+     * @param unknown $res resultset to be written
+     *
+     * @return number count of written records
+     *
+     * @access private
+     */
+    private function _writeExportRELATIONS_UI ($fp, $res) {
+    	return $this->_writeExportRELATIONS_BT($fp, $res);
+    }
+    
+    /**
+     * writes SCOPE_NOTE records to xml file
+     *
+     * @param unknown $fp the opened file to write to
+     * @param unknown $res resultset to be written
+     *
+     * @return number count of written records
+     *
+     * @access private
+     */
+    private function _writeExportSCOPE_NOTE ($fp, $res) {
+    	foreach ($res as $element) {
+    		fwrite ($fp, '<RECORD>');
+    		fwrite ($fp, sprintf('<DESCRIPTEUR_ID>%s</DESCRIPTEUR_ID>',$element['descripteur_id']));
+    		if (strlen($element['scope_note'])>0) fwrite ($fp, sprintf('<SN>%s</SN>',$element['scope_note']));
+    		if (strlen($element['history_note'])>0) fwrite ($fp, sprintf('<HN>%s</HN>',$element['history_note']));
+    		fwrite ($fp, '</RECORD>');
+    	}
+    	return count($res);
+    }
+    
+    /**
+     * writes THESAURUS records to xml file
+     *
+     * @param unknown $fp the opened file to write to
+     * @param unknown $res resultset to be written
+     *
+     * @return number count of written records
+     *
+     * @access private
+     */
+    private function _writeExportTHESAURUS ($fp, $res) {
+    	foreach ($res as $element) {
+    		fwrite ($fp, '<RECORD>');
+    		fwrite ($fp, sprintf('<THESAURUS_ID>%s</THESAURUS_ID>',$element['thesaurus_id']));
+    		fwrite ($fp, sprintf('<LIBELLE>%s</LIBELLE>',$element['libelle']));
+    		fwrite ($fp, '</RECORD>');
+    	}
+    	return count($res);
+    }
+        
+    /**
+     * writes USED_FOR records to xml file
+     *
+     * @param unknown $fp the opened file to write to
+     * @param unknown $res resultset to be written
+     *
+     * @return number count of written records
+     *
+     * @access private
+     */
+    private function _writeExportUSED_FOR ($fp, $res) {
+    	
+    	foreach ($res as $element) {
+    		if (!isset($writeArr[$element['descripteur_id']]['elements'])) $writeArr[$element['descripteur_id']]['elements'] = array();
+    		$writeArr[$element['descripteur_id']]['elements'][] = array ( 'uf_el'=>$element['uf_el'], 'uf_el_form'=>$element['uf_el_form'] );
+    		if (strlen($element['def'])>0) {
+    			$writeArr[$element['descripteur_id']]['def'] = $element['def'];
+    		}
+    	}
+    	
+    	foreach ($writeArr as $descripteur_id=>$writeElement) {
+    		fwrite ($fp, '<RECORD>');
+    		fwrite ($fp, sprintf('<DESCRIPTEUR_ID>%s</DESCRIPTEUR_ID>',$descripteur_id));
+    		if (is_array($writeElement['elements']) && count($writeElement['elements'])>0) {
+    			fwrite ($fp, '<UF>');
+    			foreach ($writeElement['elements'] as $ufElement) {
+    				fwrite($fp, '<UF_EL');
+    				if (strlen($ufElement['uf_el_form'])>0) fwrite ($fp, sprintf(' FORM="%s"',$ufElement['uf_el_form']));
+    				fwrite($fp, sprintf('>%s</UF_EL>', str_replace('&', '&amp;', $ufElement['uf_el'] )));    				
+    			}
+    			fwrite ($fp, '</UF>');
+    		}
+    		
+    		if (strlen($writeElement['def'])>0) {
+    			fwrite ($fp, sprintf('<DEF>%s</DEF>',$writeElement['def']));
+    		}
+    		fwrite ($fp, '</RECORD>');
+    	}
+    	return count($writeArr);
+    }
+                
     /**
      * gets the label to be used in the UI tab
      * 
      * @return string
      */
     public static function getTabTitle($actionCode) {
-    	if ($actionCode===IMPORT_EUROVOC)
-    		return translateFN('Importa XML Eurovoc');
+    	if ($actionCode===IMPEXPORT_EUROVOC)
+    		return translateFN('Importa/Esporta Ontologia Eurovoc');
     	else if ($actionCode===EDIT_EUROVOC)
     		return translateFN('Modifica Termini');
     }
     
     /**
      * gets the HTML form to be rendered as the UI tab contents
-     * for the import XML tab
+     * for the import/export XML tab
      * 
      * @return CDOMElement
      */
-	public static function getImportForm() {
+	public static function getImpExportForm() {
 		$htmlObj = CDOMElement::create('div','id:eurovocContainer');
 		
 		$title = CDOMElement::create('span', 'class:importTitle');
 		$title->addChild (new CText(translateFN('Importa da EUROVOC')));
 		
-		$form = new FormUploadImportFile('eurovoc', MODULES_LEX_HTTP. '/doImportEurovoc.php' );
+		$importForm = new FormUploadImportFile('eurovoc', MODULES_LEX_HTTP. '/doImportEurovoc.php' );
+		
+		$tmpManagement = new eurovocManagement();
+		$supportedLangsArray = $tmpManagement->_dh->getSupportedLanguages();
+		if (is_array($supportedLangsArray) && count ($supportedLangsArray)>0) {
+			
+			$exportForm = new FormExportEurovoc('exporteurovoc', $supportedLangsArray );
+			
+			$exportStartedMsgSpan = CDOMElement::create('span','id:exportStartedMsg');
+			$exportStartedMsgSpan->setAttribute('style', 'display:none');
+			$exportStartedMsgSpan->addChild (new CText(translateFN('Esportazione in corso, il download si avvierà automaticamente.')));
+			
+			$h2Sep = CDOMElement::create('h2','class:impexportseparator');
+			$h2Sep->addChild(new CText('oppure'));
+		}		
 		
 		$iFrame = CDOMElement::create('iframe','id:eurovocResults,name:eurovocResults');
 		$iFrame->setAttribute('style', 'background-color:#000');
 
 		$htmlObj->addChild($title);
-		$htmlObj->addChild(new CText($form->getHtml()));		
+		$htmlObj->addChild(new CText($importForm->getHtml()));
 		$htmlObj->addChild($iFrame);
+		
+		if (isset($exportForm)) {
+			$htmlObj->addChild($h2Sep);
+			$htmlObj->addChild(new CText($exportForm->getHtml()));
+			$htmlObj->addChild($exportStartedMsgSpan);
+		}
 		
 		return $htmlObj;
 	}

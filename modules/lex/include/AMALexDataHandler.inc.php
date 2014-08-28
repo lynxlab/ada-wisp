@@ -295,7 +295,15 @@ class AMALexDataHandler extends AMA_DataHandler {
 	public function getSupportedLanguages () {
 		$sql = 'SELECT DISTINCT(`lng`) FROM `'.self::$PREFIX.'EUROVOC_DOMAINES` '.
 			   'WHERE `version`='.EUROVOC_VERSION;
-		return $this->getConnection()->getAll($sql);
+		$res = $this->getAllPrepared($sql, null, AMA_FETCH_ASSOC);
+		
+		if (!AMA_DB::isError($res) && count($res)>0) {
+			foreach ($res as $langArray) {
+				$supportedLangsArray[$langArray['lng']] = $langArray['lng'];
+			}
+		} else $supportedLangsArray = null;
+		
+		return $supportedLangsArray;		
 	}
 
 	/**
@@ -414,6 +422,45 @@ class AMALexDataHandler extends AMA_DataHandler {
 			   'WHERE `cible_id` =? AND A.version=? AND B.lng=? ORDER BY B.`libelle` ASC ';
 
 		return $this->getAllPrepared($sql,array($descripteur_id,$version,$lng),AMA_FETCH_OBJECT);
+	}
+
+	/**
+	 * gets raw table data to be used when exporting eurovoc in XML
+	 * 
+	 * @param string $tableName table name to be queryed
+	 * @param string $lng
+	 * @param string $version
+	 * @param boolean $isUserDefined true if query must get user defined descripteurs
+	 * 
+	 * @return mixed whatever getAllPrepared method call returns
+	 * 
+	 * @access public
+	 */
+	public function getEurovocRawTable ($tableName, $lng, $version, $isUserDefined) {
+		$sql = 'SELECT `'.self::$PREFIX.$tableName.'`.* FROM `'.self::$PREFIX.$tableName.'`';				
+		
+		if ($tableName==eurovocManagement::$_SUBPREFIX.'_RELATIONS_BT') {
+			$sql .= ' LEFT JOIN `'.self::$PREFIX.eurovocManagement::$_SUBPREFIX.
+				    '_DESCRIPTEUR` ON `source_id`=`descripteur_id`';
+		}
+		
+		$sql .= ' WHERE `'.self::$PREFIX.$tableName.'`.version=?';
+		$params = array ( $version );		
+
+		if (!is_null($lng)) {
+			$sql .= ' AND `'.self::$PREFIX.$tableName.'`.lng=?';
+			$params[] = $lng;
+		}
+		
+		if ($tableName==eurovocManagement::$_SUBPREFIX.'_DESCRIPTEUR' ||
+			$tableName==eurovocManagement::$_SUBPREFIX.'_RELATIONS_BT') {
+				$sql .= ' AND `is_user_defined`=' . ($isUserDefined ? '1' : '0');
+				if ($tableName==eurovocManagement::$_SUBPREFIX.'_RELATIONS_BT') {
+					$sql .= ' GROUP BY `source_id`, `cible_id`';
+				}
+		}
+		
+		return $this->getAllPrepared($sql, $params, AMA_FETCH_ASSOC);
 	}
 
 	/**

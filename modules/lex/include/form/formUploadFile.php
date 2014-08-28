@@ -22,6 +22,7 @@ class FormUploadImportFile extends FForm {
 	public function __construct( $formName, $action=null ) {
 		parent::__construct();
 		$this->setName($formName);
+		$this->setId($formName.'Form');
 		
 		if (!is_null($action)) $this->setAction($action);
 		

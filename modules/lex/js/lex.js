@@ -1277,3 +1277,50 @@ function doImportEurovoc() {
 		});
 	});
 }
+
+/**
+ * Runs eurovoc tree export by making an ajax call
+ * to the script that generate the zip file and
+ * if no errors, starts the download
+ */
+var exportRunning = false;
+
+function doExportEurovoc() {
+	
+	var theForm = $j("form[name='exporteurovoc']");
+	
+	if (!exportRunning && theForm.length>0) {
+		
+		var imgObj = $j('<img>');
+		imgObj.attr ('style', 'vertical-align:middle;');
+		imgObj.attr ('src', HTTP_ROOT_DIR + '/js/include/jquery/ui/images/ui-anim_basic_16x16.gif');
+		
+		$j.ajax({
+			type	: 'POST',
+			url		: 'ajax/doExportEurovoc.php',
+			data	: $j(theForm).serialize(),
+			beforeSend : function() {
+				exportRunning = true;
+				$j(theForm).find('select, button').attr('disabled',exportRunning);
+				// show the spinner
+				imgObj.appendTo($j('#eurovoc-exportButton').parents('li'));
+				// show a notification pop up
+				showHideDiv('', $j('#exportStartedMsg').html(), true);				
+			},
+			dataType:'json'
+		})
+		.done  (function (JSONObj) {
+			if (JSONObj) {
+					if (JSONObj.status=='OK') {
+						document.location.href = 'downloadEurovoc.php?filename='+JSONObj.filename;
+					}
+				}
+		})
+		.always(function () { 
+			exportRunning = false;
+			$j(theForm).find('select, button').attr('disabled',exportRunning);
+			imgObj.remove();
+		})
+		.fail(function () { showHideDiv('', 'Fatal export error', false); });
+	}
+}

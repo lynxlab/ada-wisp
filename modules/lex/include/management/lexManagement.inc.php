@@ -108,9 +108,9 @@ class lexManagement
 				$div = CDOMElement::create('div','id:tabs-'.$currentTab);
 				
 				switch ($actionCode) {
-					case IMPORT_EUROVOC:
+					case IMPEXPORT_EUROVOC:
 						$a->addChild (new CText(eurovocManagement::getTabTitle($actionCode)));
-						$div->addChild (eurovocManagement::getImportForm());
+						$div->addChild (eurovocManagement::getImpExportForm());
 						break;
 					case EDIT_EUROVOC:
 						$a->addChild (new CText(eurovocManagement::getTabTitle($actionCode)));

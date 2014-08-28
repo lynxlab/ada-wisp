@@ -112,7 +112,8 @@ abstract class importManagement
 					$htmlDTDMessage = '';
 					// load the xml
 					$dom->load($filesIterator->getPath(). DIRECTORY_SEPARATOR . $filesIterator->getFilename());
-					
+					// check if it's userdefined datas
+					$isUserDefined = (stripos($filesIterator->getFilename(), 'USERDEFINED')!==false);
 					$validate = ($this->_mustValidate) ? $dom->validate() : true;
 					
 					if ($validate) {
@@ -121,7 +122,7 @@ abstract class importManagement
 						$htmlDTDMessage .= $filesIterator->getFilename().' '.translateFN('è valido').' DTD: '.$dom->doctype->systemId;
 						$this->_logMessage($htmlDTDMessage);
 						// call the extending class own import method on XML root node
-						$currentLoopImportedItems = $this->_importXMLRoot ($dom->documentElement, $dom->doctype->name);
+						$currentLoopImportedItems = $this->_importXMLRoot ($dom->documentElement, $dom->doctype->name, $isUserDefined);
 						if ($currentLoopImportedItems==-1) {
 							// an error has occoured, stop running since it would be useless
 							$this->_logMessage('**'.translateFN('Questo errore è fatale, l\'importazione è stata interrotta.').'**');
@@ -176,16 +177,17 @@ abstract class importManagement
 	 * and sends output to the iframe in the browser as well
 	 *
 	 * @param string $text the message to be logged
+	 * @param boolean $sendToBrowser true if text must be send to the browser, false to log into logfile only
 	 *
 	 * @return unknown_type
 	 *
 	 * @access private
 	 */
-	protected function _logMessage ($text)
+	protected function _logMessage ($text, $sendToBrowser = true)
 	{
 		// the file must exists, otherwise logger won't log
 		if (!is_file($this->_logFile)) touch ($this->_logFile);
 		ADAFileLogger::log($text, $this->_logFile);
-		sendToBrowser($text);
+		if ($sendToBrowser) sendToBrowser($text);
 	}	
 } // class ends here
