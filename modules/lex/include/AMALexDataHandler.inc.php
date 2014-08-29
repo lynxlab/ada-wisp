@@ -567,6 +567,48 @@ class AMALexDataHandler extends AMA_DataHandler {
 	}
 
 	/**
+	 * deletes all user defined DESCRIPTEUR in the Eurovoc Tree,
+	 * together with all their RELATIONS in the tree and
+	 * associations with assets
+	 * 
+	 * @param string $lng
+	 * @param double $version
+	 * 
+	 * @return boolean true on success
+	 */
+	public function deleteAllUserDefinedDESCRIPTEURS ($lng, $version=EUROVOC_VERSION) {
+		$sql = array();
+		$result = true;
+		
+		$sql[] = 'DELETE rel FROM `'.self::$PREFIX.'eurovoc_rel` AS rel '.
+		         'JOIN `'.self::$PREFIX.'EUROVOC_DESCRIPTEUR` AS D ON '.
+		         'rel.`descripteur_id`=D.`descripteur_id` WHERE is_user_defined=1';
+		
+		$sql[] = 'DELETE BT FROM `'.self::$PREFIX.'EUROVOC_RELATIONS_BT`'.
+		         ' AS BT JOIN `'.self::$PREFIX.'EUROVOC_DESCRIPTEUR` AS D ON '.
+		         '(BT.`source_id`=D.`descripteur_id` OR BT.`cible_id`=D.`descripteur_id`) '.
+		         'WHERE is_user_defined=1';
+		
+		$sql[] = 'DELETE D FROM `'.self::$PREFIX.'EUROVOC_DESCRIPTEUR` AS D WHERE `is_user_defined` = 1';
+		
+		$sql[] = 'DELETE D FROM `'.self::$PREFIX.'EUROVOC_DOMAINES_CACHE` AS D WHERE `content` LIKE '.
+				 '\'%"isUserDefined":true%\'';
+		
+		foreach ($sql as $q) {
+			$q .= ' AND D.`lng`=? AND D.`version`=?';
+			$result = $result && !AMA_DB::isError($this->queryPrepared($q, array($lng, $version)));
+		}
+		
+		if ($result) {
+			$eurovocObj = new eurovocManagement($lng);
+			// force a cache rebuild
+			$eurovocObj->getEurovocTree();
+		}
+		
+		return $result;
+	}
+
+	/**
 	 * given a term or an array of terms, gets its or their descripteur_id
 	 *
 	 * @param string $terms the term or arrray of terms

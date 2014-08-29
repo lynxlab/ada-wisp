@@ -1170,8 +1170,19 @@ class eurovocManagement extends importManagement
 			$exportStartedMsgSpan->setAttribute('style', 'display:none');
 			$exportStartedMsgSpan->addChild (new CText(translateFN('Esportazione in corso, il download si avvierà automaticamente.')));
 			
-			$h2Sep = CDOMElement::create('h2','class:impexportseparator');
-			$h2Sep->addChild(new CText('oppure'));
+			$h2SepExport = CDOMElement::create('h2','class:impexportseparator');
+			$h2SepExport->addChild(new CText('Esporta Ontologia in XML EUROVOC'));
+			
+			$resetBtnContainer = CDOMElement::create('div','id:resetEurovocBtnContainer');
+			
+			$resetButton = CDOMElement::create('button','id:resetEurovocBtn');
+			$resetButton->setAttribute('onclick', 'javascript:doResetEurovoc(\'confirm\');');
+			$resetButton->addChild (new CText(translateFN('Reset Albero EUROVOC')));
+			
+			$resetBtnContainer->addChild($resetButton);
+			
+			$h2SepReset = CDOMElement::create('h2','class:impexportseparator');
+			$h2SepReset->addChild(new CText('Reset Ontologia EUROVOC'));
 		}		
 		
 		$iFrame = CDOMElement::create('iframe','id:eurovocResults,name:eurovocResults');
@@ -1182,9 +1193,14 @@ class eurovocManagement extends importManagement
 		$htmlObj->addChild($iFrame);
 		
 		if (isset($exportForm)) {
-			$htmlObj->addChild($h2Sep);
+			$htmlObj->addChild($h2SepExport);
 			$htmlObj->addChild(new CText($exportForm->getHtml()));
 			$htmlObj->addChild($exportStartedMsgSpan);
+		}
+		
+		if (isset($resetBtnContainer)) {
+			$htmlObj->addChild($h2SepReset);
+			$htmlObj->addChild($resetBtnContainer);
 		}
 		
 		return $htmlObj;

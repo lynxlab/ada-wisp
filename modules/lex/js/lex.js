@@ -1324,3 +1324,72 @@ function doExportEurovoc() {
 		.fail(function () { showHideDiv('', 'Fatal export error', false); });
 	}
 }
+
+/**
+ * deletes all user defined DESCRIPTEURS from
+ * Eurovoc database, together with asset associations
+ */
+var isResetting = false;
+function doResetEurovoc(op) {
+	if (isResetting) return;	
+	isResetting = true;
+	
+	var POSTdata = {
+			op : op
+		};
+	
+	if (op=='delete') {
+		var imgObj = $j('<img>');
+		imgObj.attr ('style', 'vertical-align:middle;');
+		imgObj.attr ('src', HTTP_ROOT_DIR + '/js/include/jquery/ui/images/ui-anim_basic_16x16.gif');
+		imgObj.appendTo($j('#resetEurovocBtnContainer'));
+	}
+
+	$j.ajax({
+		type	:	'POST',
+		url		:	'ajax/resetEurovoc.php',
+		data	:	POSTdata,
+		dataType:	'json'
+	})
+	.done (function(JSONObj){
+		if (JSONObj) {
+			// handle response status sent from server
+			if (JSONObj.status=='CONFIRM') {
+				// display ask confirm dialog
+				var dialogButtons = {};
+
+				dialogButtons[i18n['confirm']] = function() {
+					$j(this).dialog('close');
+					// if user confirms, do the actual delete
+					doResetEurovoc ('delete');
+				};
+
+				dialogButtons[i18n['cancel']] = function() {
+					$j(this).dialog('close');
+				};
+
+				$j('#ask-confirm-message').html(JSONObj.msg);
+				$j("#ask-confirm-delete" ).dialog({
+					resizable: false,
+					dialogClass: 'no-close',
+					width: '50%',
+				    height:'auto',
+				    modal: true,
+				    buttons: dialogButtons
+				});
+			} else if (JSONObj.status=='ERROR') {
+				// display error message
+				showHideDiv('',JSONObj.msg, false);
+			} else if (JSONObj.status=='OK') {
+				// reload fancyTreeObj
+				if (fancyTreeObj!=null) fancyTreeObj.fancytree('getTree').reload();
+				// display message
+				showHideDiv('',JSONObj.msg,true);
+			}
+		}
+	})
+	.always(function(){ isResetting=false; if(op=='delete') imgObj.remove(); })
+	.fail (function(xhr){
+		showHideDiv('Server Error', xhr.responseText, false);
+	});	
+}

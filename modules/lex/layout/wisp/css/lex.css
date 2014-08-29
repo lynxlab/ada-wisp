@@ -220,7 +220,7 @@ div.show_error {
 /*
  * style import and export form
  */
-form#eurovocForm fieldset.form,
+form#eurovocForm fieldset.form li,
 form#exporteurovocForm fieldset.form {
 	text-align: center;
 }
@@ -239,6 +239,17 @@ form#exporteurovocForm li.form {
 
 form#exporteurovocForm #l_exportLang {
 	margin-right: 5px;
+}
+
+#resetEurovocBtnContainer {
+	text-align: center;
+}
+/*
+ * this is needed to have the dialog
+ * and the overlay on top of the menu bar
+ */
+.ui-front {
+z-index: 1200 !important;
 }
 
 /*
