@@ -14,6 +14,7 @@
  * @version		0.1
  */
 
+
 /**
  * Prefix for GET/POST/Cookie variables when imported with
  * import_request_variables
@@ -102,13 +103,21 @@ define('ADA_COURSEINSTANCE_STATUS_RESERVED', 1);
 define('ADA_COURSEINSTANCE_STATUS_PUBLIC',   2);
 
 /**
- * ADA generic services types
+ * HOLIS services types
  */
-define('ADA_SERVICE_HELP', 0);
-define('ADA_SERVICE_COMMON', 1);
-define('ADA_SERVICE_COMMON_STUDENT',2);
+define('ADA_SERVICE_HELP', 0); // consulenza
+define('ADA_SERVICE_LEG', 1); // LEG per magistrato
+define('ADA_SERVICE_LEG_NO_TIMELINE',2); 
 define('ADA_SERVICE_COMMON_TUTOR',3);
+define('ADA_SERVICE_GIUR',4);
+define('ADA_SERVICE_ORG',5); // ORG 
+define('ADA_SERVICE_MANUALE',6); // MANUALE 
+define('ADA_SERVICE_TEMI_RISOLTI',7); 
+define('ADA_SERVICE_ELEARNING',8); // E-learning
 define('ADA_SERVICE_COURSE',9);
+
+require_once 'config_HOLIS.inc.php';
+
 
 /**
  * ADA token

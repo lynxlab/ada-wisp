@@ -20,4 +20,8 @@ define ('ID_SEARCHTYPE_DISPLAY', 'ID');
 
 define ('MODULES_LEX_PROVIDER_POINTER','client0');
 
+$GLOBALS['searchable_service_type'] = array(
+    ADA_SERVICE_LEG,
+    ADA_SERVICE_TEMI_RISOLTI
+);
 ?>

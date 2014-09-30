@@ -114,6 +114,24 @@ abstract class ADAGenericUser {
                 return translateFN('Ospite');
         }
     }
+    
+    public function getSubType() {
+        return $this->getSerialNumber();
+    }
+    
+    public function getSubTypeAsString() {
+        switch($this->getSubType()) {
+            case AMA_TYPE_USER_MAGISTRATE:
+                return translateFN('Magistrato');
+            case AMA_TYPE_USER_LAWYER:
+                return translateFN('Avvocato');
+            case AMA_TYPE_USER_AUX:
+                return translateFN('Ausiliario');
+            case AMA_TYPE_USER_GENERIC:
+                return translateFN('Utente');
+        }
+    }
+    
     public function getEmail() {
         return $this->email;
     }
@@ -378,6 +396,10 @@ abstract class ADAGenericUser {
         $this->SerialNumber = $matricola;
     }
 
+    public function setSubType($matricola) {
+        $this->setSerialNumber($matricola);
+    }
+    
     public function setAvatar($avatar) {
         $this->avatar = $avatar;
     }

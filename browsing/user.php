@@ -62,7 +62,7 @@ if(!AMA_DataHandler::isError($courseInstances)) {
                 if (!AMA_DataHandler::isError($serviceForInstanceAr)) {
                     if ($serviceForInstanceAr[3] == ADA_SERVICE_HELP) {
                         $courseInstanceHelpAr[] = $c;
-                    }elseif ($serviceForInstanceAr[3] == ADA_SERVICE_COMMON || ($serviceForInstanceAr[3] == ADA_SERVICE_COMMON_STUDENT && $userObj->getSerialNumber () != '')) {
+                    }elseif ($serviceForInstanceAr[3] == ADA_SERVICE_LEG || ($serviceForInstanceAr[3] == ADA_SERVICE_LEG_NO_TIMELINE && $userObj->getSerialNumber () != '')) {
                         $courseInstanceCommonAreaAr[] = $c;
                     } 
                 }
@@ -325,7 +325,7 @@ if(!AMA_DataHandler::isError($courseInstances)) {
                      $courseIdToSub = $singleServiceInstanceAr[1];
                      $serviceForInstanceAr = $common_dh->get_service_info_from_course($courseIdToSub);
                      if (!AMA_DataHandler::isError($serviceForInstanceAr)) {
-                         if ($serviceForInstanceAr[3] == ADA_SERVICE_COMMON || ($serviceForInstanceAr[3] == ADA_SERVICE_COMMON_STUDENT && $userObj->getSerialNumber() != '')) {
+                         if ($serviceForInstanceAr[3] == ADA_SERVICE_LEG || ($serviceForInstanceAr[3] == ADA_SERVICE_LEG_NO_TIMELINE && $userObj->getSerialNumber() != '')) {
                              array_push($commonAreaToSubscibeAr, $singleServiceInstanceAr);
                          }
                      }
