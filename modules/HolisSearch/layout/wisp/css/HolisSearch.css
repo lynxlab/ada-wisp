@@ -57,7 +57,7 @@
 #searchResults #resultsWrapper #nodeResults .nodeResult tbody td { border: none; padding-right:0; }
 
 #searchResults #resultsWrapper #moduleLexResults .moduleLexResultsTable tbody tr td a.tooltip {
-	display: block; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; max-width: 27em;
+	display: block; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; max-width: 25em;
 }
 
 /*

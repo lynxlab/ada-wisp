@@ -697,6 +697,8 @@ class AMALexDataHandler extends AMA_DataHandler {
 				$retArray[$key]['titolo'] = $element['titolo'];
 				unset($element[self::$PREFIX.'fonti_id']);
 				unset($element['titolo']);
+				// set element type to fulltext search
+				$element['type'] = FULLTEXT_SEARCHTYPE_DISPLAY;
 				$retArray[$key]['data'][] = $element;
 			}
 			return $retArray;
@@ -752,6 +754,8 @@ class AMALexDataHandler extends AMA_DataHandler {
 				$retArray[$key]['titolo'] = $element['titolo'];
 				unset($element[self::$PREFIX.'fonti_id']);
 				unset($element['titolo']);
+				// set element type to descripteur_id match search
+				$element['type'] = ID_SEARCHTYPE_DISPLAY;
 				$retArray[$key]['data'][] = $element;
 			}
 			return $retArray;

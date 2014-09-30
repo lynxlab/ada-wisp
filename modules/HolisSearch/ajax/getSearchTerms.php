@@ -47,47 +47,79 @@ require_once MODULES_HOLISSEARCH_PATH .'/config/config.inc.php';
 
 $retArray = null;
 
+/**
+ * terms can be searched in two ways:
+ * 1. by passing an array of search terms
+ * 2. by passing a query string
+ * 
+ * if an array is passed, its pieces are glued together and worked as a query string
+ * 
+ */
+
 if (isset($_SERVER['REQUEST_METHOD']) && $_SERVER['REQUEST_METHOD'] == 'POST' &&
-    isset($searchTerms) && is_array($searchTerms) && count($searchTerms)>0) {
-	$retArray = $searchTerms;
-	
-	// create curl resource
-	$ch = curl_init();	
-	//return the transfer as a string
-	curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1);	
-	
-	foreach ($searchTerms as $searchTerm) {
-		// first use the search service
-		$url = OPENLABOR_SEARCH_SERVICE_URL . $searchTerm;		
-		// set url
-		curl_setopt($ch, CURLOPT_URL, $url);		
-		// run the request
-		$responseObj = json_decode(curl_exec($ch));
-		
-		if (!is_null($responseObj)) {
-			if (isset($responseObj->synonyms) && count ($responseObj->synonyms)>0)
-				$retArray = array_unique(array_merge($retArray, $responseObj->synonyms));
-			else {
-				// no synonyms found, ask the multiwordnet if it has something
-				$url = MULTIWORDNET_ANCESTORS_URL . $searchTerm;
+   (isset($searchTerms) && is_array($searchTerms) && count($searchTerms)>0) || 
+   (isset($querystring) && strlen(trim($querystring))>0)) {
+
+   	$retArray = array ( 'searchTerms'=>array(), 'descripteurIds'=>array(), 'searchedURI'=>array() );
+   	
+   	// create curl resource
+   	$ch = curl_init();
+   	//return the transfer as a string
+   	curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1);
+   	
+   	if (!isset ($querystring)) $querystring = '';
+   	
+   	if (isset($searchTerms)) {
+   		$querystring .= ' '.implode(' ', $searchTerms);
+   		$retArray['searchTerms'] = $searchTerms;
+   	} else {
+   		$retArray['searchTerms'] = array();
+   		$searchTerms = explode(' ', trim($querystring));
+   	}
+   	
+	// first use the search service
+	$url = EUROVOC_SEARCH_SERVICE_URL . urlencode($querystring);
+	$retArray['searchedURI'][] = $url;
+	// set url
+	curl_setopt($ch, CURLOPT_URL, $url);
+	// run the request
+	$responseObj = json_decode(curl_exec($ch));
+
+	if (!is_null($responseObj)) {
+		// get the synonyms from the response
+		if (isset($responseObj->synonyms) && count ($responseObj->synonyms)>0)
+			$retArray['searchTerms'] = array_unique(array_merge($retArray['searchTerms'], $responseObj->synonyms));
+		else {
+			// no synonyms found, ask the multiwordnet if it has something, word by word
+			foreach ($searchTerms as $searchTerm) {
+				$url = MULTIWORDNET_SYNONYMS_URL . urlencode($searchTerm);
+				$retArray['searchedURI'][] = $url;
 				// set url
 				curl_setopt($ch, CURLOPT_URL, $url);
 				// run the request
 				$responseObj = json_decode(curl_exec($ch));	
 				if (!is_null($responseObj)) {
 					if (isset($responseObj->answer) && count ($responseObj->answer)>0)
-						$retArray = array_unique(array_merge($retArray, $responseObj->answer));
-				}	
+						$retArray['searchTerms'] = array_unique(array_merge($retArray['searchTerms'], $responseObj->answer));
+				}
+			}
+		}
+		
+		// get the descripteur_ids from the response
+		if (isset($responseObj->categories) && count($responseObj->categories)>0) {
+			foreach ($responseObj->categories as $category) {
+				$retArray['descripteurIds'][] = $category->category;
 			}
 		}
 	}
+	
 	// close curl resource to free up system resources
 	curl_close($ch);
 }
 
 // substitute underscores with spaces
-if (!is_null($retArray)) {
-	array_walk ($retArray,function(&$value){ $value = str_replace('_', ' ', $value); });
+if (!is_null($retArray['searchTerms'])) {
+	array_walk ($retArray['searchTerms'],function(&$value){ $value = str_replace('_', ' ', $value); });
 }
 // return the array
-echo json_encode(array_values($retArray));
+echo json_encode($retArray);

@@ -94,6 +94,8 @@ var HolisSearchManagement = (function() {
 		this.searchCoursesIDs = Array();
 		// array of terms to be searched
 		this.searchTermsArray = Array();
+		// array of descripteur id returned by the web service
+		this.descripteurIds = Array();
 	};
 	
 	/**
@@ -146,7 +148,9 @@ var HolisSearchManagement = (function() {
 	    return $j.ajax({
 				type	:	'POST',
 				url		:	'ajax/getSearchTerms.php',
-				data	:	{ searchTerms: this.searchTermsArray },
+				data	:	{ // searchTerms: this.searchTermsArray,
+							  querystring: $j('#querystring').text() 
+							},
 				dataType:	'json'
 		});
 	}; // ends _initSearchArray
@@ -160,6 +164,7 @@ var HolisSearchManagement = (function() {
 			type	:	'POST',
 			url		:	'ajax/getSearchModuleLex.php',
 			data	:	{ searchTerms: this.searchTermsArray,
+						  descripteurAr: this.descripteurIds,
 						  searchtext: $j('#searchtext').text(),
 						  querystring: $j('#querystring').text() },
 			dataType:	'json'
@@ -177,8 +182,9 @@ var HolisSearchManagement = (function() {
 				        },
 				        "bAutoWidth": false,
 				        "aoColumns" : [
-				                       { "sWidth": "70%" },
+				                       { "sWidth": "60%" },
 				                       { "sWidth": "20%" },
+				                       { "sWidth": "10%" },
 				                       { "sWidth": "10%" },
 				                       ],
 				        "fnInitComplete": function(settings, json) {
@@ -320,13 +326,18 @@ HolisSearchManagement.prototype.doSearch = function(searchCoursesIDs, hasModuleL
 		// and when the ajax call has finished (aka sync call)
 		$j.when(_initSearchArray.call(thisReference)).done ( function (returnedObj) {
 			// set the searchTermsArray to the returned JSON array
-			thisReference.searchTermsArray = returnedObj;
+			thisReference.searchTermsArray = returnedObj.searchTerms;
+			// set the descripteurIds to the returned JSON array
+			thisReference.descripteurIds = returnedObj.descripteurIds;
 			
 			/**
 			 * REMOVE THESE 2 LINES IN PRODUCTION
 			 */
+			console.log (returnedObj.searchedURI);
 			console.log (thisReference.searchTermsArray.length + ' terms searched:');
 			console.log (thisReference.searchTermsArray);
+			console.log (thisReference.descripteurIds.length + ' descripteur ids searched:');
+			console.log (thisReference.descripteurIds);
 			
 			// start the module lex search if needed
 			if (thisReference.hasModuleLex) _runModuleLexSearch.call(thisReference);

@@ -49,29 +49,35 @@ require_once MODULES_LEX_PATH . '/include/functions.inc.php';
 $retArray = null;
 
 if (isset($_SERVER['REQUEST_METHOD']) && $_SERVER['REQUEST_METHOD'] == 'POST' &&
-    isset($searchTerms) && is_array($searchTerms) && count($searchTerms)>0) {
+    (isset($searchTerms) && is_array($searchTerms) && count($searchTerms)>0) ||
+    (isset($descripteurAr) && is_array($descripteurAr) && count($descripteurAr)>0)) {
 	
 	if (isset($GLOBALS['dh'])) $GLOBALS['dh']->disconnect();
 	$dh = AMALexDataHandler::instance(MultiPort::getDSN(MODULES_LEX_PROVIDER_POINTER));
 	
 	if (!AMA_DB::isError($dh)) {
 		/**
-		 * 1. ask the datahandler for the DESCRIPTEUR_ID of
-		 *    the passed word. One day this will be done by a
-		 *    webservice hopefully using the $querystring only
+		 * 1. if a descripteurAr has been passed, use it since
+		 *    it's coming from the semantic search in EUROVOC
+		 *    else, try to figure out a set of descripteur_ids
+		 *    by performing a search in the databese
 		 *    
 		 *    NOTE: $querystring is passed in POST
 		 */
-		$descripteurAr = $dh->getEurovocDESCRIPTEURIDS(array_merge($searchTerms,array($querystring)), getLanguageCode());
+		if (isset($descripteurAr) && is_array($descripteurAr) && count($descripteurAr)>0) {
+			$descripteur_ids = $descripteurAr;
+		} else {
+			$descripteurAr = $dh->getEurovocDESCRIPTEURIDS(array_merge($searchTerms,array($querystring)), getLanguageCode());
+			
+			if (AMA_DB::isError($descripteurAr)) $descripteur_ids = array();
+			else {
+				foreach ($descripteurAr as $el) $descripteur_ids[] = $el['descripteur_id'];
+			}				
+		}
 		
 		// close the session if not needed, this is important for
 		// the ajax call to not be block until the script ends and the session is closed
 		session_write_close();
-		
-		if (AMA_DB::isError($descripteurAr)) $descripteur_ids = array();
-		else {
-			foreach ($descripteurAr as $el) $descripteur_ids[] = $el['descripteur_id'];
-		}
 		
 		/**
 		 * 2. ask for the assets associated with the descripteur_ids,
@@ -119,7 +125,7 @@ if (isset($_SERVER['REQUEST_METHOD']) && $_SERVER['REQUEST_METHOD'] == 'POST' &&
 		/**
          * 4. build the html tables to be returned
 		 */
-		$thead_data = array(translateFN('Label'), translateFN('Tipologia'), translateFN('Peso'));
+		$thead_data = array(translateFN('Label'), translateFN('Tipologia'), translateFN('Peso'), translateFN('Tipo'));
 		$resAr = array();
 		$data = '';
 		
@@ -153,7 +159,7 @@ if (isset($_SERVER['REQUEST_METHOD']) && $_SERVER['REQUEST_METHOD'] == 'POST' &&
 					$res_score =  number_format($dataEl['weight'],2);
 					$res_tipology = $dataEl['tipologia'];
 			
-					$temp_results = array($thead_data[0] => $res_name, $thead_data[1]=>$res_tipology, $thead_data[2] => $res_score );
+					$temp_results = array($thead_data[0] => $res_name, $thead_data[1]=>$res_tipology, $thead_data[2] => $res_score, $thead_data[3]=>$dataEl['type'] );
 			
 					array_push ($resAr,$temp_results);
 				}

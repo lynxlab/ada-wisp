@@ -12,8 +12,11 @@
 
 require_once MODULES_HOLISSEARCH_PATH.'/include/AMAHolisSearchDataHandler.inc.php';
 
-define ('MULTIWORDNET_ANCESTORS_URL','http://openlabor.lynxlab.com/services/taxonomy/MWNL/ancestors/');
-define ('OPENLABOR_SEARCH_SERVICE_URL','http://openlabor.lynxlab.com/services/search/lavori4/');
+define ('MULTIWORDNET_SYNONYMS_URL','http://serendipity.lynxlab.com:81/services/DEMO2014/taxonomy/MWNL/synonyms/');
+define ('EUROVOC_SEARCH_SERVICE_URL','http://serendipity.lynxlab.com:81/services/DEMO2014/search/HOLIS/');
+
+define ('FULLTEXT_SEARCHTYPE_DISPLAY', 'FT');
+define ('ID_SEARCHTYPE_DISPLAY', 'ID');
 
 define ('MODULES_LEX_PROVIDER_POINTER','client0');
 
