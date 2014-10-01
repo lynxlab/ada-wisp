@@ -45,16 +45,32 @@ class FormJexImport extends FForm {
 		$sel_tipologia = FormControl::create(FormControl::SELECT, 'tipologia', translateFN('tipologia'));
 		$sel_tipologia->setRequired();
 		$sel_tipologia->setAttribute('class', 'dontuniform');
-		$sel_tipologia->withData($typologiesArr);
+		$firstTipology = reset(array_keys($typologiesArr));
+		$sel_tipologia->withData($typologiesArr,$firstTipology);
 		
-		$add_tipologia = FormControl::create(FormControl::INPUT_TEXT,'nuova_tipologia','&nbsp;');
-		$add_tipologia->setAttribute('class', 'dontuniform');
+		$categoriesArr = sourceTypologyManagement::getTypologyChildren($firstTipology);
+
+		$sel_categoria = FormControl::create(FormControl::SELECT, 'categoria', translateFN('categoria'));
+		$sel_categoria->setAttribute('class', 'dontuniform');
+		$firstCategory = reset(array_keys($categoriesArr));
+		$sel_categoria->withData($categoriesArr,$firstCategory);
 		
-		$add_btn = FormControl::create(FormControl::INPUT_BUTTON,'nuova_tipologia_btn',translateFN('aggiungi tipologia'));
-		$add_btn->setAttribute('class', 'dontuniform');
-		$add_btn->setAttribute('onClick', 'javascript:addTipologia();');
+		$classesArr = sourceTypologyManagement::getCategoryChildren($firstTipology, $firstCategory);
 		
-		$this->addFieldset('','set_tipologia')->withData(array ($sel_tipologia,$add_tipologia,$add_btn));
+		$sel_classe = FormControl::create(FormControl::SELECT, 'classe', translateFN('classe'));
+		$sel_classe->setAttribute('class', 'dontuniform');
+		$sel_classe->withData($classesArr,reset(array_keys($classesArr)));
+		
+		$this->addFieldset('','set_tipologia')->withData(array ($sel_tipologia, $sel_categoria, $sel_classe));
+		
+// 		$add_tipologia = FormControl::create(FormControl::INPUT_TEXT,'nuova_tipologia','&nbsp;');
+// 		$add_tipologia->setAttribute('class', 'dontuniform');
+		
+// 		$add_btn = FormControl::create(FormControl::INPUT_BUTTON,'nuova_tipologia_btn',translateFN('aggiungi tipologia'));
+// 		$add_btn->setAttribute('class', 'dontuniform');
+// 		$add_btn->setAttribute('onClick', 'javascript:addTipologia();');
+		
+// 		$this->addFieldset('','set_tipologia')->withData(array ($sel_tipologia,$add_tipologia,$add_btn));
 		
 		$control = FormControl::create(FormControl::INPUT_FILE, 'importfile-'.$formName, translateFN ('Seleziona un file .zip da importare'));
 		$control->setAttribute('class', 'doPeke');

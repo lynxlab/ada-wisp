@@ -62,13 +62,137 @@ class AMALexDataHandler extends AMA_DataHandler {
 	/**
 	 * gets all typologies as an array
 	 *
-	 * @return array [module_lex_tipologie_fonti_id]=>'descrizione'
+	 * @return array
 	 *
 	 * @access public
 	 */
 	public function getTypologies() {
-		$sql = 'SELECT * FROM `'.self::$PREFIX.'tipologie_fonti` ORDER BY `descrizione` ASC';
-		return $this->getConnection()->getAssoc($sql);
+		$sql = 'SELECT DISTINCT(`descrizione`) FROM `'.self::$PREFIX.'tipologie_fonti` ORDER BY `descrizione` ASC';
+		$result = $this->getAllPrepared($sql, null, AMA_FETCH_ASSOC);
+		if (AMA_DB::isError($result) || $result===false || count($result)<=0) return null;
+		else {
+			$retArray = array();
+			foreach ($result as $id=>$aDescr) {
+				$retArray[urlencode($aDescr['descrizione'])] = $aDescr['descrizione'];
+			}
+			return $retArray;
+		}
+	}
+	
+	/**
+	 * get a typology id given a string triplet
+	 *
+	 * @param string $descrizione
+	 * @param string $categoria
+	 * @param string $classe
+	 *
+	 * @return NULL|mixed null if no record or error
+	 *
+	 * @access public
+	 */
+	public function getTypologyID ($descrizione, $categoria=null, $classe=null) {
+		$sql = 'SELECT `'.self::$PREFIX.'tipologie_fonti_id` FROM `'.self::$PREFIX.'tipologie_fonti`'.
+				' WHERE `descrizione`=? AND `categoria`';
+		
+		$params = array ($descrizione);
+	
+		if (is_null($categoria)) {
+			$sql .= ' IS NULL';
+		} else {
+			$sql .= '=?';
+			array_push($params, $categoria);
+		}
+		
+		$sql .= ' AND `classe`';
+		
+		if (is_null($classe)) {
+			$sql .= ' IS NULL';
+		} else {
+			$sql .= '=?';
+			array_push($params, $classe);
+		}
+		
+		$result = $this->getOnePrepared($sql,$params);
+	
+		if (AMA_DB::isError($result) || $result===false || count($result)<=0) return null;
+		else return $result;
+	}
+	
+	/**
+	 * get a typology array given the id
+	 *
+	 * @param number $id the id to get
+	 *
+	 * @return NULL|array null if no record or error
+	 *
+	 * @access public
+	 */
+	public function getTypologyArray($id) {
+		$sql = 'SELECT `descrizione`, `categoria`, `classe` FROM `'.self::$PREFIX.'tipologie_fonti`'.
+				' WHERE `'.self::$PREFIX.'tipologie_fonti_id`=?';
+	
+		$result = $this->getRowPrepared($sql,$id,AMA_FETCH_ASSOC);
+	
+		if (AMA_DB::isError($result) || $result===false || count($result)<=0) return null;
+		else return $result;
+	}
+	
+	/**
+	 * gets the children of the passed typology
+	 * 
+	 * @param stgring  $typology
+	 * 
+	 * @return NULL|array null if no record or error
+	 * 
+	 * @access public
+	 */
+	public function getTypologyChildren($typology) {
+		$sql = 'SELECT DISTINCT(`categoria`) FROM `'.self::$PREFIX.'tipologie_fonti`'.
+			   ' WHERE `descrizione`=? ORDER BY `categoria` ASC';
+		
+		$result = $this->getAllPrepared($sql, $typology, AMA_FETCH_ASSOC);
+				
+		if (AMA_DB::isError($result) || $result===false || count($result)<=0) return null;
+		else {
+			$retArray = array();
+			foreach ($result as $id=>$aDescr) {
+				$retArray[] = $aDescr['categoria'];
+			}
+			return $retArray;
+		}
+	}
+	
+	/**
+	 * gets the children of the passed typology
+	 *
+	 * @param stgring  $typology
+	 *
+	 * @return NULL|array null if no record or error
+	 *
+	 * @access public
+	 */
+	public function getCategoryChildren($typology, $category) {
+		$sql = 'SELECT DISTINCT(`classe`) FROM `'.self::$PREFIX.'tipologie_fonti`'.
+				' WHERE `descrizione`=? AND `categoria`';
+		if (is_null($category)) {
+			$sql .= ' IS NULL';
+			$params = $typology;
+		} else {
+			$sql .= '=?';
+			$params = array($typology, $category);
+		}
+		$sql.=' ORDER BY `classe` ASC';
+	
+		$result = $this->getAllPrepared($sql, $params, AMA_FETCH_ASSOC);
+		
+		if (AMA_DB::isError($result) || $result===false || count($result)<=0) return null;
+		else {
+			$retArray = array();
+			foreach ($result as $id=>$aDescr) {
+				$retArray[] = $aDescr['classe'];
+			}
+			return $retArray;
+		}
 	}
 
 	/**
@@ -169,7 +293,7 @@ class AMALexDataHandler extends AMA_DataHandler {
 			return new AMA_Error(AMA_ERR_WRONG_ARGUMENTS);
 		}
 	}
-
+	
 	/**
 	 * Insert and update for table fonti
 	 *
@@ -975,9 +1099,11 @@ class AMALexDataHandler extends AMA_DataHandler {
 
 		foreach ($aColumns as $column) {
 			if (is_array($column)) {
-				$sqlColumns[] = '`'.$column['tableName'].'`.`'.$column['columnName'].'` AS `'.$column['fieldName'].'` ';
-				$joinTables[] = 'JOIN `'.$column['tableName'].'` ON `'.
-								$sTable.'`.`'.$column['primaryKey'].'`=`'.$column['tableName'].'`.`'.$column['primaryKey'].'` ';
+				// generate a unique column name
+				$tableAlias = uniqid($column['tableName'].'_');
+				$sqlColumns[] = ''.$tableAlias.'.`'.$column['columnName'].'` AS `'.$column['fieldName'].'` ';
+				$joinTables[] = ' JOIN `'.$column['tableName'].'` AS '.$tableAlias.' ON `'.
+								$sTable.'`.`'.$column['primaryKey'].'`='.$tableAlias.'.`'.$column['primaryKey'].'` ';
 			} else {
 				$sqlColumns[] = '`'.$sTable.'`.`'.$column.'`';
 			}

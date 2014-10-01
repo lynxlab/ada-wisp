@@ -150,7 +150,9 @@ div.show_error {
 	height : 400px;
 }
 
-#l_tipologia {
+#l_tipologia,
+#l_categoria,
+#l_classe {
 	float:left;
 	margin-right: 10px;
 	margin-left: 0px;
@@ -158,6 +160,11 @@ div.show_error {
 
 #set_tipologia {
 	padding:0;
+}
+
+#set_tipologia ol.form > li.form {
+	display:block;
+	margin-bottom: 10px;
 }
 
 #l_nuova_tipologia {
@@ -326,8 +333,8 @@ z-index: 1200 !important;
 /*
  * sourcesTable actions
  */ 
-.ulactions { list-style-type: none; display: table-cell; padding:0; }
-.liactions { float: left; border: none !important; }
+.ulactions { list-style-type: none; display: block; padding:0; margin:0; }
+.liactions { text-align:center; border: none !important; margin-bottom: 5px; }
 .zoomButton, .deleteButton, .linkAssetButton { height: 1.5em; }
 /*
  * end sourcesTable actions

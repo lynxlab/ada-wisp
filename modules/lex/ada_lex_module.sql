@@ -199,6 +199,8 @@ ENGINE = MyISAM DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
 CREATE TABLE IF NOT EXISTS `module_lex_tipologie_fonti` (
   `module_lex_tipologie_fonti_id` INT NOT NULL AUTO_INCREMENT,
   `descrizione` VARCHAR(45) NOT NULL,
+  `categoria` varchar(255) COLLATE utf8_unicode_ci DEFAULT NULL,
+  `classe` varchar(255) COLLATE utf8_unicode_ci DEFAULT NULL  
   PRIMARY KEY (`module_lex_tipologie_fonti_id`))
 ENGINE = MyISAM DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
 

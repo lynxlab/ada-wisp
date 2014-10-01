@@ -16,6 +16,7 @@
  */
 
 require_once MODULES_LEX_PATH. '/include/management/abstractImportManagement.inc.php';
+require_once MODULES_LEX_PATH. '/include/management/sourceTypologyManagement.inc.php';
 require_once MODULES_LEX_PATH. '/include/form/formJexImport.php';
 require_once MODULES_LEX_PATH. '/include/functions.inc.php';
 		
@@ -85,13 +86,17 @@ class jexManagement extends importManagement
 	public function saveFromPOST() {
 		$form = new FormJexImport('jex', null, $this->_dh->getTypologies());
 		$form->fillWithPostData();
-		if ($form->isValid()) {			
+		if ($form->isValid()) {
+			$typologyID = sourceTypologyManagement::getIDFromTriple(
+					urldecode($_POST['tipologia']),
+					urldecode($_POST['categoria']),
+					urldecode($_POST['classe']));			
 			$fonteAr = array(
 					AMALexDataHandler::$PREFIX.'fonti_id' => intval($_POST['id_fonte']),
 					'numero'=> trim($_POST['numero_fonte']),
 					'titolo'=> trim($_POST['titolo_fonte']),
 					'data_pubblicazione'=> $this->_dh->date_to_ts($_POST['data_pubblicazione']),
-					AMALexDataHandler::$PREFIX.'tipologie_fonti_id'=> intval($_POST['tipologia'])
+					AMALexDataHandler::$PREFIX.'tipologie_fonti_id'=> intval($typologyID)
 			);
 			return $this->_dh->fonti_set($fonteAr);
 		} else return new AMA_Error(AMA_ERR_INCONSISTENT_DATA);		
@@ -371,7 +376,8 @@ class jexManagement extends importManagement
 		/**
          * generate an empty table that will be filled by the jQuery dataTable ajax calls
 		 */    	
-    	$labels = array (translateFN('Numero'), translateFN('Titolo'), translateFN('Data Pubblicazione') , translateFN('Tipologia'), translateFN('azioni'));
+    	$labels = array (translateFN('Numero'), translateFN('Titolo'), translateFN('Data Pubblicazione') ,
+    					 translateFN('Tipologia'), translateFN('Categoria'),translateFN('Classe'),translateFN('azioni'));
     	
     	foreach ($labels as $label) {
     		$sourcesData[0][$label] = '';

@@ -63,7 +63,17 @@ if (isset($_SERVER['REQUEST_METHOD']) && $_SERVER['REQUEST_METHOD'] == 'GET') {
  							'fieldName'=>'tipologia',
  							'columnName'=>'descrizione',
  							'primaryKey'=>$dh::$PREFIX.'tipologie_fonti_id',
- 							'tableName'=>$dh::$PREFIX.'tipologie_fonti') 
+ 							'tableName'=>$dh::$PREFIX.'tipologie_fonti'),
+					array (
+							'fieldName'=>'categoria',
+							'columnName'=>'categoria',
+							'primaryKey'=>$dh::$PREFIX.'tipologie_fonti_id',
+							'tableName'=>$dh::$PREFIX.'tipologie_fonti'),
+					array (
+							'fieldName'=>'classe',
+							'columnName'=>'classe',
+							'primaryKey'=>$dh::$PREFIX.'tipologie_fonti_id',
+							'tableName'=>$dh::$PREFIX.'tipologie_fonti')
 			        ),
 					$dh::$PREFIX.'fonti_id',
 					$dh::$PREFIX.'fonti');

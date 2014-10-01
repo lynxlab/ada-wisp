@@ -42,6 +42,7 @@ require_once(ROOT_DIR.'/browsing/include/browsing_functions.inc.php');
 // MODULE's OWN IMPORTS
 require_once MODULES_LEX_PATH .'/config/config.inc.php';
 require_once MODULES_LEX_PATH . '/include/management/eurovocManagement.inc.php';
+require_once MODULES_LEX_PATH. '/include/management/sourceTypologyManagement.inc.php';
 
 
 $dh = AMALexDataHandler::instance(MultiPort::getDSN($_SESSION['sess_selected_tester']));
@@ -83,7 +84,41 @@ if (isset($_SERVER['REQUEST_METHOD']) && $_SERVER['REQUEST_METHOD'] == 'POST') {
 				}
 				break;
 			case 'tipologia':
-				$columnName = $dh::$PREFIX.'tipologie_fonti_id';
+			case 'categoria':
+			case 'classe':				
+				if ($value==='null') $value = null;
+				
+				// nothing to be saved if this condition is true
+				if (urldecode($value)===$oldValue || 
+					($oldValue=='' && is_null($value))) die(json_encode($retArray));
+				
+				// these 3 vars are coming from the POST request
+				if (!isset($typology)) $typology = null;
+				if (!isset($category)) $category = null;
+				$class = null;
+				
+				// set proper values
+				if ($columnName=='tipologia') {
+					$typology = $value;
+				} else if ($columnName=='categoria') {
+					$category = $value;
+				} else if ($columnName=='classe') {
+					$class = $value;
+				}
+				
+				// get the triple id to be saved
+				$tripleID = sourceTypologyManagement::getIDFromTriple(urldecode($typology),
+																   is_null($category) ? null :urldecode($category),
+																   is_null($class) ? null : urldecode($class));
+				if ($tripleID<=0) $value = false;
+				else {
+					$columnName = $dh::$PREFIX.'tipologie_fonti_id';
+					// get triple description
+					$triple = sourceTypologyManagement::getTripleFromID($tripleID);					
+					$retValue = array ( 'value'=>$value, 'tipologia'=>$triple['descrizione'], 'categoria'=>$triple['categoria'], 'classe'=>$triple['classe']);
+					$value = $tripleID;
+				}
+				break;
 			case 'stato':
 				// set the oldvalue
 				$oldValue = is_numeric($oldValue) ? intval($oldValue) : false;
