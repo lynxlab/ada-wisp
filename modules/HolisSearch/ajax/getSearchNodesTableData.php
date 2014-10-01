@@ -64,11 +64,31 @@ if (isset($_SERVER['REQUEST_METHOD']) && $_SERVER['REQUEST_METHOD'] == 'POST' &&
 		
 		if (!AMA_DB::isError($dh)) {
 			
+			if ($userObj->getType()==AMA_TYPE_STUDENT) {
+				$instancesAr = $dh->get_course_instance_for_this_student_and_course_model($userObj->getId(),$courseID, true);
+				if (AMA_DB::isError($instancesAr)) die (json_encode(array('status'=>'ERROR', 'data'=>'Cannot get subscribed instances')));
+				else {
+					$usedInstances = array();
+					foreach ($instancesAr as $instance) {
+						$usedInstances[] = $instance['id_istanza_corso'];
+					}
+				}
+			} else if ($userObj->getType()==AMA_TYPE_TUTOR) {
+				$instancesAr = $dh->get_tutors_assigned_course_instance($userObj->getId(), $courseID);
+				if (AMA_DB::isError($instancesAr)) die (json_encode(array('status'=>'ERROR', 'data'=>'Cannot get subscribed instances')));
+				else {
+					$usedInstances = array();
+					foreach ($instancesAr[$userObj->getId()] as $instance) {
+						$usedInstances[] = $instance['id_istanza_corso'];
+					}
+				}
+			}
+			
 			// search the following columms
 			$colToSearch = array ('nome', 'titolo', 'testo');
 			$match = ' MATCH ('.implode(',', $colToSearch).') AGAINST (\''.implode(' ', $searchTerms).'\' IN NATURAL LANGUAGE MODE)';
-			// ask for the following columns			
-			$out_fields_ar = array('nome','titolo','testo','tipo','id_utente', $match.'AS score');
+			// ask for the following columns
+			$out_fields_ar = array('nome','titolo','testo','tipo','id_utente', $match.'AS score', 'id_istanza');
 			
 			// build the where clause to be used
 			$clause = "(";
@@ -81,8 +101,13 @@ if (isset($_SERVER['REQUEST_METHOD']) && $_SERVER['REQUEST_METHOD'] == 'POST' &&
 
 			$clause .= $match;
 			
-			$clause = $clause . ")";			
+			$clause = $clause . ")";
 			$clause = $clause.' AND ((tipo <> '.ADA_PRIVATE_NOTE_TYPE.') OR (tipo ='.ADA_PRIVATE_NOTE_TYPE.' AND id_utente = '.$userObj->getId().'))';
+			
+			if (isset($usedInstances) && is_array($usedInstances)) {
+				
+				$clause .= ' AND (id_istanza IN (0,'.implode(',', $usedInstances).'))';
+			}
 			
 			// do the search
 			$resHa = $dh->find_course_nodes_list($out_fields_ar, $clause, $courseID);
@@ -114,33 +139,19 @@ if (isset($_SERVER['REQUEST_METHOD']) && $_SERVER['REQUEST_METHOD'] == 'POST' &&
 						$res_course_title = $resultEl[2];
 						$res_text = $resultEl[3];
 						$res_type =  $resultEl[4];
+						$res_instance = $resultEl[7];
 						// 5 is id_utente
 						$res_score =  number_format($resultEl[6],2);
 						
-						if( $res_type == ADA_GROUP_TYPE || $res_type == ADA_LEAF_TYPE || ADA_GROUP_WORD_TYPE || $res_type == ADA_LEAF_WORD_TYPE || $res_type == ADA_NOTE_TYPE || $res_type == ADA_PRIVATE_NOTE_TYPE) {
+						if( $res_type{0} == ADA_GROUP_TYPE || $res_type{0} == ADA_LEAF_TYPE ||
+						    $res_type{0} == ADA_GROUP_WORD_TYPE || $res_type{0} == ADA_LEAF_WORD_TYPE || 
+							$res_type{0} == ADA_NOTE_TYPE || $res_type{0} == ADA_PRIVATE_NOTE_TYPE) {
 							
 							$queryParams[] = 'id_course='.$courseID;
 							
-							if ($userObj->getType()==AMA_TYPE_STUDENT) {
-								$instancesAr = $dh->get_course_instance_for_this_student_and_course_model($userObj->getId(),$courseID);
-								/**
-								 * user should not have more than one active instance
-								 * anyway, just take the first one as $getAll is not passed to $dh method call above
-								 * 
-								 */
-								if (!AMA_DB::isError($instancesAr)) {
-									$queryParams[] = 'id_course_instance='.$instancesAr['istanza_id'];
-								}
-							} else if ($userObj->getType()==AMA_TYPE_TUTOR) {
-								$instancesAr = $dh->get_tutors_assigned_course_instance($userObj->getId(), $courseID);
-								/**
-								 * in case of tutor, get the first returned instance?!?!
-								 *
-								 */
-								if (!AMA_DB::isError($instancesAr)) {
-									$instance = reset ($instancesAr[$userObj->getId()]);
-									$queryParams[] = 'id_course_instance='.$instance['id_istanza_corso'];
-								}
+							if ($userObj->getType()==AMA_TYPE_STUDENT || $userObj->getType()==AMA_TYPE_TUTOR) {
+									if (intval($res_instance)>0) $queryParams[] = 'id_course_instance='.$res_instance;
+									else $queryParams[] = 'id_course_instance='.$usedInstances[0];
 							}
 							
 							$queryParams[] = 'id_node='.$res_id_node;
@@ -155,19 +166,22 @@ if (isset($_SERVER['REQUEST_METHOD']) && $_SERVER['REQUEST_METHOD'] == 'POST' &&
 							unset($queryParams);
 						}
 						
-						$temp_results = array($thead_data[0] => $viewNodeLink->getHtml(),
-											  $thead_data[1] => $res_course_title,
-											  $thead_data[2] => $res_score);
-						
-						if ($resultEl[4]{0}==ADA_NOTE_TYPE) { // 4 is tipo
-							array_push ($notesAr,$temp_results);
-						} else {
-							array_push ($nodesAr,$temp_results);
+						if (isset($viewNodeLink)) {
+							$temp_results = array($thead_data[0] => $viewNodeLink->getHtml(),
+												  $thead_data[1] => $res_course_title,
+												  $thead_data[2] => $res_score);
+							
+							if ($res_type{0}==ADA_NOTE_TYPE) { // 4 is tipo
+								array_push ($notesAr,$temp_results);
+							} else {
+								array_push ($nodesAr,$temp_results);
+							}
+							unset ($viewNodeLink);
 						}
 					}
 					// at this poin $nodesAr has all non notes nodes and $notesAr has notes
 					// build the html tables to be served
-					
+
 					// course info needed for the table caption+
 					$courseInfo = $dh->get_course($courseID);
 					if (!AMA_DB::isError($courseInfo) && count($courseInfo)>0) {
@@ -185,9 +199,12 @@ if (isset($_SERVER['REQUEST_METHOD']) && $_SERVER['REQUEST_METHOD'] == 'POST' &&
 					}
 					
 					if (count($notesAr)>0) {
-						$result_table = BaseHtmlLib::tableElement('class:notesResultsTable', $thead_data, $nodesAr, array(), $caption.'-'.translateFN('Note'));
-						if (is_null($data)) $data=$result_table->getHtml();
-						else $data.=$result_table->getHtml();
+						$title = CDOMElement::create('h3','class:tooltip');
+						$title->setAttribute('title', translateFN('Clicca per espandere/ridurre'));
+						$title->addChild (new CText( $caption.'-'.translateFN('Note')));
+						$result_table = BaseHtmlLib::tableElement('class:notesResultsTable', $thead_data, $notesAr);
+						if (is_null($data)) $data = $title->getHtml().$result_table->getHtml();
+						else $data .= $title->getHtml().$result_table->getHtml();
 					}
 				} else $data = null;
 

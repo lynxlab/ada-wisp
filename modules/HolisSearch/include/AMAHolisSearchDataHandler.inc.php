@@ -35,6 +35,42 @@ class AMAHolisSearchDataHandler extends AMA_DataHandler {
 	}
 	
 	/**
+	 * gets the array of searchable course ids
+	 * 
+	 * @return Ambigous <NULL, multitype:>
+	 * 
+	 * @access public
+	 */
+	public function get_searchable_courses_id() {
+		
+		$retArray = array();
+		/**
+		 * The array of searchable service levels shall
+		 * come from a DB query, one day or the other...
+		 */
+		$searchableServiceTypes = $GLOBALS['searchable_service_type'];
+		
+		if (!AMA_DB::isError($searchableServiceTypes) && is_array($searchableServiceTypes) 
+				&& count($searchableServiceTypes)>0) {
+			foreach ($searchableServiceTypes as $serviceType) {				
+				$servicesRes = $GLOBALS['common_dh']->get_services(null,'s.livello='.$serviceType);
+				if (!AMA_DB::isError($servicesRes) && is_array($servicesRes) && count($servicesRes)>0) {
+					foreach ($servicesRes as $service) {
+						$res = $GLOBALS['common_dh']->get_courses_for_service($service[0]);
+					    if (!AMA_DB::isError($res) && is_array($res) && count($res)>0) {
+					    	foreach ($res as $record) {
+					    		if (!in_array($record['id_corso'], $retArray)) $retArray[] = $record['id_corso'];
+					    	}
+						}
+					}
+				}
+			}
+		}
+		
+		return (count($retArray)>0) ? $retArray : null;		
+	}
+	
+	/**
 	 * wrapper for the connection quote method
 	 * 
 	 * @param string $text

@@ -57,7 +57,9 @@ if (!isset($searchtext) || strlen (trim($searchtext)) <=0) {
 } else if ((isset($searchtext) && strlen (trim($searchtext)) >0)) {
 	
 	$common_dh = $GLOBALS['common_dh'];
-	$dh = $GLOBALS['dh'];
+	$pointer = (!is_null($_SESSION['sess_selected_tester'])) ? $_SESSION['sess_selected_tester'] : MODULES_LEX_PROVIDER_POINTER;
+	if (isset($GLOBALS['dh'])) $GLOBALS['dh']->disconnect();
+	$dh = AMAHolisSearchDataHandler::instance(MultiPort::getDSN($pointer));
 	
 	/**
 	 * get the ids of the courses to be searched
@@ -88,13 +90,27 @@ if (!isset($searchtext) || strlen (trim($searchtext)) <=0) {
 		if (count($searchCoursesIDs)>0) {
 			$searchCoursesIDs = array_unique($searchCoursesIDs); 
 		}
+	} else if ($userObj->getType()==AMA_TYPE_STUDENT) {
+		$testerPointers = $userObj->getTesters();
+		if (!AMA_DB::isError($testerPointers) && count ($testerPointers)>0) {
+			foreach ($testerPointers as $testerPointer) {
+				$provider_dh = AMA_DataHandler::instance(MultiPort::getDSN($testerPointer));
+				if (!AMA_DB::isError($provider_dh)) {					
+					$instances = $provider_dh->get_course_instances_active_for_this_student($userObj->getId());
+					if (!AMA_DB::isError($instances) && is_array($instances) && count($instances)>0) {
+						foreach ($instances as $instance) {
+							if (!AMA_DB::isError($courseID)) $searchCoursesIDs[] = $instance['id_corso'];
+						}
+					}										
+				}
+			}
+		}
 	} else {
 		/**
-         * If it's NOT a tutor, it should be okay to search in
+         * If it's NOT a tutor nor a student, it should be okay to search in
          * all courses of all the providers where the user is listed
 		 */
 		$testerPointers = $common_dh->get_testers_for_user($userObj->getId());
-		
 		if (!AMA_DB::isError($testerPointers) && count ($testerPointers)>0) {
 			foreach ($testerPointers as $testerPointer) {
 				$testerInfo = $common_dh->get_tester_info_from_pointer ($testerPointer);
@@ -108,6 +124,16 @@ if (!isset($searchtext) || strlen (trim($searchtext)) <=0) {
 		}
 	}
 	
+	/**
+	 * Remove non searchable courses from $searchCoursesIDs
+	 * by intersecting it with the $searchableCourseIDs array
+	 */
+	$searchableCourseIDs = $dh->get_searchable_courses_id();
+	
+	if (!is_null($searchableCourseIDs) && is_array($searchableCourseIDs)) {
+		$searchCoursesIDs = array_values(array_intersect($searchableCourseIDs, $searchCoursesIDs));
+	}
+		
 	/**
 	 * if searchCoursesIDs is not empty, cast all its values to integers
 	 */

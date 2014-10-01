@@ -268,7 +268,8 @@ var HolisSearchManagement = (function() {
 								 height: '+=' + parseInt($j(resultObj).outerHeight(true))
 							}, function() {
 								// fade in results
-								$j(animateTarget+' table.nodesResultsTable').dataTable({
+								$j(animateTarget+' table.nodesResultsTable, '+
+								   animateTarget+' table.notesResultsTable').dataTable({
 									"aaSorting": [[ 2, "desc" ]],
 									"oLanguage": {
 							            "sUrl": HTTP_ROOT_DIR + "/js/include/jquery/dataTables/dataTablesLang.php"
