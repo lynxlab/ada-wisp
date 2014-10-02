@@ -1015,7 +1015,7 @@ class AMALexDataHandler extends AMA_DataHandler {
 					else $direction = '';
 
 					$realColumnName = (is_array($aColumns[ intval( $_GET['iSortCol_'.$i] ) ])) ?
-										$aColumns[ intval( $_GET['iSortCol_'.$i] ) ]['columnName'] :
+										$aColumns[ intval( $_GET['iSortCol_'.$i] ) ]['fieldName'] :
 										$aColumns[ intval( $_GET['iSortCol_'.$i] ) ];
 
 					$sOrder .= "`".$realColumnName."` ".$direction.", ";
