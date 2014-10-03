@@ -20,15 +20,27 @@ require_once MODULES_HOLISSEARCH_PATH . '/include/form/formIndexSearch.php';
 
 class holisSearchManagement
 {
+	private $_typologiesArr = null;
+	
+	public function __construct() {
+		if (MODULES_LEX) {
+			// load typologies from the AMALexDataHandler
+			require_once MODULES_LEX_PATH.'/include/AMALexDataHandler.inc.php';
+			$pointer = (!is_null($_SESSION['sess_selected_tester'])) ? $_SESSION['sess_selected_tester'] : MODULES_LEX_PROVIDER_POINTER;
+			if (isset($GLOBALS['dh'])) $GLOBALS['dh']->disconnect();
+			$this->_typologiesArr = AMALexDataHandler::instance(MultiPort::getDSN($pointer))->getTypologies();
+			if (AMA_DB::isError($this->_typologiesArr)) $this->_typologiesArr = null;
+		}
+	}
 	
 	public function index() {
 		/* @var $html string holds html code to be retuned */
-		$htmlObj = new FormIndexSearch();
+		$htmlObj = new FormIndexSearch( array('typologiesArr'=>$this->_typologiesArr ) );
 		/* @var $path   string  path var to render in the help message */
 		$help = translateFN('Benvenuto nella Ricerca Holis/SESPIUS');
 		/* @var $status string status var to render in the breadcrumbs */
 		$title= translateFN('Ricerca');
-		
+				
 		return array(
 			'htmlObj'   => $htmlObj,
 			'help'      => $help,
@@ -50,11 +62,38 @@ class holisSearchManagement
 		$cleantext = $this->cleanSearchText($searchtext);
 		
 		/**
-         * user entered query string echo, it's safe to remove this
+		 * search form
 		 */
-		$youSearched = CDOMElement::create('span','class:yousearched');
-		$youSearched->addChild (new CText(translateFN('Hai cercato').': '.$searchtext));
-		
+		$formdata['searchtext'] = $searchtext;
+		if (MODULES_LEX && !is_null($this->_typologiesArr)) {
+			$formdata['typologiesArr'] = $this->_typologiesArr;
+			$formdata['tipologia'] = null;
+			$formdata['categoria'] = null;
+			$formdata['classe'] = null;
+			
+			// set typology
+			if (isset($_GET['tipologia']) && strlen(trim($_GET['tipologia']))>0 && trim($_GET['tipologia'])!=='null')
+				$formdata['tipologia'] = trim($_GET['tipologia']);
+			// set category
+			if (isset($_GET['categoria']) && strlen(trim($_GET['categoria']))>0 && trim($_GET['categoria'])!=='null')
+				$formdata['categoria'] = trim($_GET['categoria']);
+			// set class
+			if (isset($_GET['classe']) && strlen(trim($_GET['classe']))>0 && trim($_GET['classe'])!=='null')
+				$formdata['classe'] = trim($_GET['classe']);
+			
+			/**
+			 * DO NOT REMOVE THIS span, it's needed
+			 * by the javascript to have the the complete typology id
+			 */
+			require_once MODULES_LEX_PATH. '/include/management/sourceTypologyManagement.inc.php';
+			$tripleID = sourceTypologyManagement::getIDFromTriple($formdata['tipologia'], $formdata['categoria'], $formdata['classe']);
+			
+			$tripleSpan = CDOMElement::create('span','id:tripleID');
+			$tripleSpan->setAttribute('style', 'display:none');
+			$tripleSpan->addChild(new CText(intval($tripleID)));
+		}
+		$searchForm = new FormIndexSearch($formdata);
+
 		/**
 		 * DO NOT REMOVE THIS span, it's needed
 		 * by the javascript to have the $cleantext
@@ -79,12 +118,6 @@ class holisSearchManagement
 		$taxonomyWaitText = CDOMElement::create('span','id:taxonomyWaitText');
 		$taxonomyWaitText->setAttribute('style', 'display:none');
 		$taxonomyWaitText->addChild (new CText(translateFN('Cerco i sinonimi dei termini di ricerca').'...'));
-		
-		/**
-         * display cleant text, it's safe to remove this span
-		 */
-		$termSearched = CDOMElement::create('span');
-		$termSearched->addChild (new CText('Termini di ricerca: '.$cleantext));
 		
 		$resultsWrapper = CDOMElement::create('div','id:resultsWrapper');
 		
@@ -142,9 +175,9 @@ class holisSearchManagement
 				
 		$htmlObj->addChild ($termSpan); // do not remove, see above
 		$htmlObj->addChild ($querySpan); // do not remove, see above
+		if (isset($tripleSpan)) $htmlObj->addChild($tripleSpan); // do not remove, see above
+		$htmlObj->addChild (new CText($searchForm->getHtml()));
 		$htmlObj->addChild ($taxonomyWaitText);
-		$htmlObj->addChild ($youSearched);
-		$htmlObj->addChild ($termSearched);
 		$htmlObj->addChild (CDOMElement::create('div','class:clearfix'));
 		$htmlObj->addChild ($resultsWrapper);
 		

@@ -80,7 +80,7 @@ class AMALexDataHandler extends AMA_DataHandler {
 	}
 	
 	/**
-	 * get a typology id given a string triplet
+	 * get one typology id given a string triplet
 	 *
 	 * @param string $descrizione
 	 * @param string $categoria
@@ -94,13 +94,13 @@ class AMALexDataHandler extends AMA_DataHandler {
 		$sql = 'SELECT `'.self::$PREFIX.'tipologie_fonti_id` FROM `'.self::$PREFIX.'tipologie_fonti`'.
 				' WHERE `descrizione`=? AND `categoria`';
 		
-		$params = array ($descrizione);
+		$params = array (urldecode($descrizione));
 	
 		if (is_null($categoria)) {
 			$sql .= ' IS NULL';
 		} else {
 			$sql .= '=?';
-			array_push($params, $categoria);
+			array_push($params, urldecode($categoria));
 		}
 		
 		$sql .= ' AND `classe`';
@@ -109,13 +109,74 @@ class AMALexDataHandler extends AMA_DataHandler {
 			$sql .= ' IS NULL';
 		} else {
 			$sql .= '=?';
-			array_push($params, $classe);
+			array_push($params, urldecode($classe));
 		}
 		
 		$result = $this->getOnePrepared($sql,$params);
 	
 		if (AMA_DB::isError($result) || $result===false || count($result)<=0) return null;
 		else return $result;
+	}
+	
+
+	/**
+	 * get the array of typologies to search ids given a string triplet
+	 *
+	 * @param string $descrizione
+	 * @param string $categoria
+	 * @param string $classe
+	 *
+	 * @return multitype:unknown |mixed
+	 *
+	 * @access public
+	 */
+	public function getTypologiesToSearch ($descrizione=null, $categoria=null, $classe=null) {
+		$sql = 'SELECT `'.self::$PREFIX.'tipologie_fonti_id` FROM `'.self::$PREFIX.'tipologie_fonti`';
+		
+		$setWhere = true;
+		
+		if (!is_null($descrizione)) {
+			if ($setWhere) {
+				$sql .= ' WHERE ';
+				$setWhere = false;
+			}
+			$sql .= ' `descrizione`=?';
+			$params = array (urldecode($descrizione));
+		}
+		
+		if (!is_null($categoria)) {
+			if ($setWhere) {
+				$sql .= ' WHERE ';
+				$setWhere = false;
+			} else {
+				$sql .= ' AND ';
+			}
+			$sql .= ' `categoria`=?';
+			array_push($params, urldecode($categoria));
+		}
+		
+		if (!is_null($classe)) {
+			if ($setWhere) {
+				$sql .= ' WHERE ';
+				$setWhere = false;
+			} else {
+				$sql .= ' AND ';
+			}
+			$sql .= ' `classe`=?';
+			array_push($params, urldecode($classe));
+		}
+		
+		$result = $this->getAllPrepared($sql,$params,AMA_FETCH_ASSOC);
+		
+		if (!AMA_DB::isError($result) && is_array($result) && count($result)>0) {
+			$retArray = array();
+			foreach ($result as $res) {
+				$retArray[] = $res[self::$PREFIX.'tipologie_fonti_id'];
+			}			
+			return $retArray;
+		} else {
+			return $result;
+		}
 	}
 	
 	/**
@@ -809,12 +870,13 @@ class AMALexDataHandler extends AMA_DataHandler {
 	 *
 	 * @param array $searchTerm the array of terms to be matched
 	 * @param bool $verifiedOnly true if verified assets only are to be returned. defaults to false
+	 * @param number $typologyID typology ID to filter results, 0 means no filter. Defaults to 0.
 	 *
 	 * @retrun NULL|Array
 	 *
 	 * @access public
 	 */
-	public function get_asset_from_text($searchTerms, $verifiedOnly=false) {
+	public function get_asset_from_text($searchTerms, $verifiedOnly=false, $typologyID=0) {
 		/**
 		 * weight selection with a subquery
 		 */
@@ -822,7 +884,7 @@ class AMALexDataHandler extends AMA_DataHandler {
 		            'FROM `'.self::$PREFIX.'testi` AS TESTI WHERE MATCH (TESTI.`testo`) AGAINST (\''.implode(' ', $searchTerms).'\' IN NATURAL LANGUAGE MODE)>0 ORDER BY weight DESC)'.
 		            ' AS TTESTI ';
 
-		$sql = 'SELECT FONTI.`'.self::$PREFIX.'fonti_id`, ASSETS.`'.self::$PREFIX.'assets_id`, ASSETS.`label`, weight, FONTI.`titolo`, TIPOLOGIE.`descrizione` AS `tipologia` '.
+		$sql = 'SELECT FONTI.`'.self::$PREFIX.'fonti_id`, ASSETS.`'.self::$PREFIX.'assets_id`, ASSETS.`label`, weight, FONTI.`titolo` '.
 		       'FROM `'.self::$PREFIX.'assets` AS ASSETS INNER JOIN'.$subquery.' ON TTESTI.`'.self::$PREFIX.'testi_id` = ASSETS.`'.self::$PREFIX.'testi_id` '.
 		       'JOIN `'.self::$PREFIX.'fonti` AS FONTI ON FONTI.`'.self::$PREFIX.'fonti_id` = ASSETS.`'.self::$PREFIX.'fonti_id` '.
 		       'JOIN `'.self::$PREFIX.'tipologie_fonti` AS `TIPOLOGIE` ON `FONTI`.`'.self::$PREFIX.'tipologie_fonti_id` = `TIPOLOGIE`.`'.self::$PREFIX.'tipologie_fonti_id` ';
@@ -830,6 +892,14 @@ class AMALexDataHandler extends AMA_DataHandler {
 		// gets only verified assets if requested
 		if ($verifiedOnly===true) {
 			$sql .= ' AND ASSETS.`'.self::$PREFIX.'stati_id`='.MODULES_LEX_ASSET_STATE_VERIFIED;
+		}
+		
+		// typolgy filter
+		if (intval($typologyID)>0) {
+			// search all typologyes implied from the passed ID
+			$typologyArr = $this->getTypologyArray($typologyID);
+			$typologyIDsToSearch = $this->getTypologiesToSearch($typologyArr['descrizione'],$typologyArr['categoria'],$typologyArr['classe']);			
+			$sql .= ' AND FONTI.`'.self::$PREFIX.'tipologie_fonti_id` IN('.implode(',', $typologyIDsToSearch).')';
 		}
 
 		$sql .= ' ORDER BY FONTI.`'.self::$PREFIX.'fonti_id` ASC , weight DESC';
@@ -862,12 +932,13 @@ class AMALexDataHandler extends AMA_DataHandler {
 	 *
 	 * @param array $descripteurAr the array of descripteur_id
 	 * @param bool $verifiedOnly true if verified assets only are to be returned. defaults to false
+	 * @param number $typologyID typology ID to filter results, 0 means no filter. Defaults to 0.
 	 *
 	 * @retrun NULL|Array
 	 *
 	 * @access public
 	 */
-	public function get_asset_from_descripteurs ($descripteurAr, $verifiedOnly=false) {
+	public function get_asset_from_descripteurs ($descripteurAr, $verifiedOnly=false, $typologyID=0) {
 		/**
          * max weight selection with a subquery
 		 */
@@ -880,13 +951,21 @@ class AMALexDataHandler extends AMA_DataHandler {
 		}
 		$subquery .='GROUP BY `REL`.`'.self::$PREFIX.'assets_id` ) AS `GROUPEDREL`';
 
-		$sql  = 'SELECT FONTI.`'.self::$PREFIX.'fonti_id`, ASSETS.`'.self::$PREFIX.'assets_id`, ASSETS.`label`, weight,  FONTI.`titolo`, TIPOLOGIE.`descrizione` AS `tipologia` ';
+		$sql  = 'SELECT FONTI.`'.self::$PREFIX.'fonti_id`, ASSETS.`'.self::$PREFIX.'assets_id`, ASSETS.`label`, weight,  FONTI.`titolo` ';
 		$sql .= 'FROM `'.self::$PREFIX.'assets` ASSETS INNER JOIN '.$subquery.' ON `GROUPEDREL`.`'.self::$PREFIX.'assets_id` = `ASSETS`.`'.self::$PREFIX.'assets_id` ';
 		$sql .= 'JOIN `'.self::$PREFIX.'fonti` AS `FONTI` ON  `FONTI`.`'.self::$PREFIX.'fonti_id`=`ASSETS`.`'.self::$PREFIX.'fonti_id` ';
 		$sql .= 'JOIN `'.self::$PREFIX.'tipologie_fonti` AS `TIPOLOGIE` ON `FONTI`.`'.self::$PREFIX.'tipologie_fonti_id` = `TIPOLOGIE`.`'.self::$PREFIX.'tipologie_fonti_id` ';
 
 		if ($verifiedOnly===true) {
 			$sql .= ' AND ASSETS.`'.self::$PREFIX.'stati_id`='.MODULES_LEX_ASSET_STATE_VERIFIED;
+		}
+		
+		// typolgy filter
+		if (intval($typologyID)>0) {
+			// search all typologyes implied from the passed ID
+			$typologyArr = $this->getTypologyArray($typologyID);
+			$typologyIDsToSearch = $this->getTypologiesToSearch($typologyArr['descrizione'],$typologyArr['categoria'],$typologyArr['classe']);
+			$sql .= ' AND FONTI.`'.self::$PREFIX.'tipologie_fonti_id` IN('.implode(',', $typologyIDsToSearch).')';
 		}
 
 		$sql .=' ORDER BY FONTI.`'.self::$PREFIX.'fonti_id` ASC , weight DESC ';

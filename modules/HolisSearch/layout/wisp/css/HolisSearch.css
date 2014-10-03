@@ -15,12 +15,31 @@
  * index page
  */
  
-#searchForm { width: 50%; margin: 20px auto 0 auto; }
+#searchForm { width: 100%; margin: 0 auto; }
 #searchForm fieldset.form li.form { border: none; }
  
 /*
  * end index page
  */
+
+ 
+/**
+ * search form
+ */
+
+#searchForm fieldset { margin:0; padding:0; }
+#searchForm #s { float: none; margin-left: 5px; }
+#searchForm fieldset#set_tipologia  li.form > label { display: inline-block; margin:0; float:left; margin-right: 10px; }
+#searchForm fieldset#set_tipologia  li.form > select { float: left; }
+#searchForm fieldset#set_tipologia  li.form > div.selector { width: 75% !important; }
+#searchForm fieldset#set_tipologia  li.form > div.selector > span { width: 90% !important; }
+#searchForm fieldset#set_tipologia  li.form  { float:left; width:30%; }
+#searchFrom p.submit.form { margin: 0; }
+
+/**
+ * end search form
+ */ 
+
  
 /*
  * search results page

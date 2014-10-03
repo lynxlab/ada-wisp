@@ -12,6 +12,17 @@
 var wordSeparator = ' ';
 
 function initDoc() {
+	
+	if (MODULES_LEX) {
+		// hook onchange event of select elements
+		$j('#tipologia').on ('change',function(){
+			$j.when(updateSelect('categoria')).done( function() { updateSelect('classe'); } );
+		});
+		$j('#categoria').on ('change',function(){
+			updateSelect('classe');
+		});		
+	}
+	
 	var hsm = new HolisSearchManagement();
 	
 	if (typeof arguments[0]!='undefined') {
@@ -75,7 +86,43 @@ function doAccordion(elementID) {
 	    .next()
 	      .addClass("ui-accordion-content  ui-helper-reset ui-widget-content ui-corner-bottom")
 	      .show();
-} 
+}
+
+function updateSelect(what) {
+	$j('#'+what).attr('disabled','disabled');
+	
+	var data = {
+			what: what,
+			typology: $j('#tipologia option:selected').val()
+	};
+	
+	if (what=='categoria') {
+		$j('#classe').attr('disabled','disabled');
+		$j.uniform.update('#classe');
+	} else if (what=='classe') {
+		$j.extend(data,{
+			category: $j('#categoria option:selected').val()
+		});
+	} else return;
+	
+	return $j.ajax({	
+		type	:	'GET',
+		url		:	MODULES_LEX_HTTP+'/ajax/getSelectOptions.php',
+		data	:	data,
+		dataType:	'html',
+		beforeSend : function() {
+			$j.uniform.update('#'+what);
+		}
+	}).done(function(html){
+		$j('#'+what).html(html);		
+	}).fail(function() {
+		$j('#'+what).html('<option></option>');
+	}).always (function() {
+		$j('#'+what).removeAttr('disabled');
+		$j('#'+what).val(0);
+		$j.uniform.update('#'+what);
+	});
+}
 
 /**
  * HolisSearchManagement main class
@@ -166,7 +213,9 @@ var HolisSearchManagement = (function() {
 			data	:	{ searchTerms: this.searchTermsArray,
 						  descripteurAr: this.descripteurIds,
 						  searchtext: $j('#searchtext').text(),
-						  querystring: $j('#querystring').text() },
+						  querystring: $j('#querystring').text(),
+						  typologyID : $j('#tripleID').text()
+						  },
 			dataType:	'json'
 		})
 		.done  (function (JSONObj) {
@@ -182,8 +231,7 @@ var HolisSearchManagement = (function() {
 				        },
 				        "bAutoWidth": false,
 				        "aoColumns" : [
-				                       { "sWidth": "60%" },
-				                       { "sWidth": "20%" },
+				                       { "sWidth": "60%" },				                       
 				                       { "sWidth": "10%" },
 				                       { "sWidth": "10%" },
 				                       ],

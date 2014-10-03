@@ -48,14 +48,14 @@ $self = 'HolisSearch';
 
 require_once MODULES_HOLISSEARCH_PATH . '/include/management/holisSearchManagement.inc.php';
 
-// $searchtext is coming from $_GET
-if (!isset($searchtext) || strlen (trim($searchtext)) <=0) {
+// $s is coming from $_GET
+if (!isset($s) || strlen (trim($s)) <=0) {
 	
 	$holisSearch = new HolisSearchManagement();
 	$data = $holisSearch->index();
 	 
-} else if ((isset($searchtext) && strlen (trim($searchtext)) >0)) {
-	
+} else if ((isset($s) && strlen (trim($s)) >0)) {
+	$searchtext = trim($s);	
 	$common_dh = $GLOBALS['common_dh'];
 	$pointer = (!is_null($_SESSION['sess_selected_tester'])) ? $_SESSION['sess_selected_tester'] : MODULES_LEX_PROVIDER_POINTER;
 	if (isset($GLOBALS['dh'])) $GLOBALS['dh']->disconnect();

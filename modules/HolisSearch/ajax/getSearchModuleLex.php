@@ -47,6 +47,7 @@ require_once MODULES_HOLISSEARCH_PATH .'/config/config.inc.php';
 require_once MODULES_LEX_PATH . '/include/functions.inc.php';
 
 $retArray = null;
+$getOnlyVerifiedAssets = false;
 
 if (isset($_SERVER['REQUEST_METHOD']) && $_SERVER['REQUEST_METHOD'] == 'POST' &&
     (isset($searchTerms) && is_array($searchTerms) && count($searchTerms)>0) ||
@@ -84,20 +85,22 @@ if (isset($_SERVER['REQUEST_METHOD']) && $_SERVER['REQUEST_METHOD'] == 'POST' &&
 		 *    the weight and the source they belong to
 		 */
 		if (is_array($descripteur_ids) && count($descripteur_ids)>0) {			
-			$searchResults = $dh->get_asset_from_descripteurs($descripteur_ids);			
+			$searchResults = $dh->get_asset_from_descripteurs($descripteur_ids, $getOnlyVerifiedAssets, $typologyID);			
 		} else $searchResults = array();
 		
-		$foundAssetsID = array();
-		foreach ($searchResults as $j=>$aResult) {
-			foreach ($aResult['data'] as $key=>$aDataRow)
-				$foundAssetsID[$j][$key] = $aDataRow[AMALexDataHandler::$PREFIX.'assets_id'];
+		if (count($searchResults)>0) {
+			$foundAssetsID = array();
+			foreach ($searchResults as $j=>$aResult) {
+				foreach ($aResult['data'] as $key=>$aDataRow)
+					$foundAssetsID[$j][$key] = $aDataRow[AMALexDataHandler::$PREFIX.'assets_id'];
+			}
 		}
 		
 		/**
 		 * 3. now do a fulltext search on asset associated text and merge the results
 		 *    with point 2
 		 */
-		$fulltextResults = $dh->get_asset_from_text($searchTerms);
+		$fulltextResults = $dh->get_asset_from_text($searchTerms, $getOnlyVerifiedAssets,$typologyID);
 		if (!is_null($fulltextResults)) {
 			// merge the results
 			foreach ($fulltextResults as $j=>$fulltextEl) {
@@ -125,7 +128,7 @@ if (isset($_SERVER['REQUEST_METHOD']) && $_SERVER['REQUEST_METHOD'] == 'POST' &&
 		/**
          * 4. build the html tables to be returned
 		 */
-		$thead_data = array(translateFN('Label'), translateFN('Tipologia'), translateFN('Peso'), translateFN('Tipo'));
+		$thead_data = array(translateFN('Label'), translateFN('Peso'), translateFN('Tipo'));
 		$resAr = array();
 		$data = '';
 		
@@ -157,9 +160,8 @@ if (isset($_SERVER['REQUEST_METHOD']) && $_SERVER['REQUEST_METHOD'] == 'POST' &&
 					
 					$res_name = $labelHref->getHtml();
 					$res_score =  number_format($dataEl['weight'],2);
-					$res_tipology = $dataEl['tipologia'];
 			
-					$temp_results = array($thead_data[0] => $res_name, $thead_data[1]=>$res_tipology, $thead_data[2] => $res_score, $thead_data[3]=>$dataEl['type'] );
+					$temp_results = array($thead_data[0] => $res_name, $thead_data[1] => $res_score, $thead_data[2]=>$dataEl['type'] );
 			
 					array_push ($resAr,$temp_results);
 				}

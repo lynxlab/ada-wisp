@@ -19,11 +19,65 @@ require_once(ROOT_DIR.'/include/Forms/lib/classes/FForm.inc.php');
  */
 class FormIndexSearch extends FForm {
 
-	public function __construct() {
+	public function __construct($data=array()) {
 		parent::__construct();
 		$this->setName('searchForm');
 		$this->setId('searchForm');
 		$this->setMethod('GET');
-		$this->addTextInput('searchtext', translateFN('Cosa stai cercando ?'));
+		
+		$label = (isset($data['searchtext']) && strlen($data['searchtext'])>0) ? translateFN('Hai cercato').': ' : translateFN('Cosa stai cercando ?') ;
+		
+		$searchText = FormControl::create(FormControl::INPUT_TEXT, 's', $label)->setValidator(FormValidator::NOT_EMPTY_STRING_VALIDATOR);
+		
+		
+		if (isset($data['searchtext']) && strlen($data['searchtext'])>0) {			
+			$searchText->withData(htmlentities($data['searchtext'], ENT_COMPAT | ENT_HTML401, ADA_CHARSET));
+		}
+		
+		$this->addControl($searchText);
+		
+		if (MODULES_LEX && isset($data['typologiesArr']) && is_array($data['typologiesArr']) && count($data['typologiesArr'])>0) {
+			
+			require_once MODULES_LEX_PATH. '/include/management/sourceTypologyManagement.inc.php';
+			
+			$typologiesArr = array('null'=>translateFN('Tutte')) + $data['typologiesArr'];
+			
+			$sel_tipologia = FormControl::create(FormControl::SELECT, 'tipologia', translateFN('tipologia'));			
+			// $sel_tipologia->setAttribute('class', 'dontuniform');			
+			if (isset($data['tipologia']) && strlen($data['tipologia'])>0) {
+				$selTypology = $data['tipologia']; 
+			} else {
+				$selTypology = reset(array_keys($typologiesArr));				
+			}						
+			$sel_tipologia->withData($typologiesArr,$selTypology);
+			
+			$categoriesArr = sourceTypologyManagement::getTypologyChildren($selTypology);
+			// write 'all' intead of 'none'
+			if (array_key_exists('null', $categoriesArr)) $categoriesArr['null'] = translateFN('Tutte');
+			
+			$sel_categoria = FormControl::create(FormControl::SELECT, 'categoria', translateFN('categoria'));
+			// $sel_categoria->setAttribute('class', 'dontuniform');
+			if (isset($data['categoria']) && strlen($data['categoria'])>0) {
+				$selCategory = $data['categoria'];
+			} else {
+				$selCategory = reset(array_keys($categoriesArr));
+			}
+			$sel_categoria->withData($categoriesArr,$selCategory);
+
+			$classesArr = sourceTypologyManagement::getCategoryChildren($selTypology, $selCategory);
+			// write 'all' intead of 'none'
+			if (array_key_exists('null', $classesArr)) $classesArr['null'] = translateFN('Tutte');
+			
+			$sel_classe = FormControl::create(FormControl::SELECT, 'classe', translateFN('classe'));
+			// $sel_classe->setAttribute('class', 'dontuniform');
+			if (isset($data['classe']) && strlen($data['classe'])>0) {
+				$selClass = $data['classe'];
+			} else {
+				$selClass = reset(array_keys($classesArr));
+			}
+			$sel_classe->withData($classesArr,$selClass);
+			
+			$this->addFieldset('','set_tipologia')->withData(array ($sel_tipologia, $sel_categoria, $sel_classe));
+		}
 	}
 }
