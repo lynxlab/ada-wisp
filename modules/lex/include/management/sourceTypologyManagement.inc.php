@@ -45,10 +45,11 @@ class sourceTypologyManagement
 		$db = self::getDBHandler();
 		
 		if ($what==='typology') {
-			$result = $db->getTypologyChildren($typology);
+			$result = $db->getTypologyChildren(urldecode($typology));
 		}
 		else if ($what==='category') {
-			$result = $db->getCategoryChildren($typology, $category);
+			if (!is_null($category)) $category = urldecode($category);
+			$result = $db->getCategoryChildren(urldecode($typology), $category);
 		}
 		else $result = null;		
 		
