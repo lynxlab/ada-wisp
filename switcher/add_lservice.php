@@ -101,7 +101,7 @@ if (isset($_SERVER['REQUEST_METHOD']) && $_SERVER['REQUEST_METHOD'] == 'POST') {
           $service_dataAr = array(
             'service_name' => $_POST['titolo'],
             'service_description' => $_POST['descrizione'],
-            'service_level' => $_POST['common_area'], 
+            'service_level' => $_POST['common_area'],   
             'service_duration'=> 0,
             'service_min_meetings' => 0,
             'service_max_meetings' => 0,
@@ -121,25 +121,24 @@ if (isset($_SERVER['REQUEST_METHOD']) && $_SERVER['REQUEST_METHOD'] == 'POST') {
                     /* *
                      * if needed it creates the instance and chat...
                      */
-                    if ($_POST['common_area'] == ADA_SERVICE_LEG || $_POST['common_area'] == ADA_SERVICE_LEG_NO_TIMELINE 
-                            || $_POST['common_area'] == ADA_SERVICE_COMMON_TUTOR) {
-                        $course_instanceAr = array(
-                            'data_inizio_previsto' => time(), // dt2tsFN($_POST['data_inizio_previsto']),
-                            'data_inizio' => time(), // dt2tsFN($_POST['data_inizio_previsto']),
-                            'durata' => '730', /* two years*/ // $_POST['durata'],
-                            'price' => '0',
-                            'self_instruction' => '0',
-                            'self_registration' => '1',
-                            'title' => $_POST['titolo'],
-                            'duration_subscription' => '730', //$_POST['duration_subscription'],
-                            'start_level_student' => '99', //$_POST['start_level_student'],
-                            'open_subscription' => '1' // $_POST['open_subscription']
-                        );
-                        $id_instance_course = Course_instance::add_instance($id_course, $course_instanceAr);
-                        if(!AMA_DataHandler::isError($result)) {
-                            $id_chatroom = Course_instance::add_chatRoom($id_course, $course_instanceAr);
-                        }
+                if($_POST['common_area']!= ADA_SERVICE_HELP){ 
+                    $course_instanceAr = array(
+                        'data_inizio_previsto' => time(), // dt2tsFN($_POST['data_inizio_previsto']),
+                        'data_inizio' => time(), // dt2tsFN($_POST['data_inizio_previsto']),
+                        'durata' => '730', /* two years*/ // $_POST['durata'],
+                        'price' => '0',
+                        'self_instruction' => '0',
+                        'self_registration' => '1',
+                        'title' => $_POST['titolo'],
+                        'duration_subscription' => '730', //$_POST['duration_subscription'],
+                        'start_level_student' => '99', //$_POST['start_level_student'],
+                        'open_subscription' => '1' // $_POST['open_subscription']
+                    );
+                    $id_instance_course = Course_instance::add_instance($id_course, $course_instanceAr);
+                    if(!AMA_DataHandler::isError($result)) {
+                        $id_chatroom = Course_instance::add_chatRoom($id_course, $course_instanceAr);
                     }
+                }
                     header('Location: list_lservices.php');
                     exit();
                     

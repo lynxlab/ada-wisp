@@ -23,12 +23,17 @@
                     <template_field class="template_field" name="path">path</template_field>
                 </span>
             </div>
+            <div id="welcomeMsg">
+                <template_field class="template_field" name="welcome_msg">welcome_msg</template_field>
+            </div>
+            
             <!-- / percorso -->
             <div id="status_bar">
-            <!--dati utente-->            
+            <!--dati utente-->   
                     <template_field class="microtemplate_field" name="user_data_micro">user_data_micro</template_field>
             <!-- / dati utente -->
             </div>
+            
             <!-- label -->
             <div id="label">
                 <div class="topleft">
@@ -54,8 +59,21 @@
 
 			<div id="twobox">
 				<div id="boxone">
-								<!-- giorgio, blocco "3" con RSS -->
-				<div id="blocco_tre">
+					<!-- blocco1 -->
+				<div id="blocco_uno">
+					<div id="bloccoUnoTitoloContenitore">
+                                                <template_field class="template_field" name="bloccoUnoTitolo">bloccoUnoTitolo</template_field>
+                                        </div>
+ 					<div id="content_blocco_uno">
+                                                <template_field class="template_field" name="bloccoUnoAppuntamenti">bloccoUnoAppuntamenti</template_field>
+                                                <template_field class="template_field" name="bloccoUnoContenuto">bloccoUnoContenuto</template_field>
+                                                <template_field class="template_field" name="bloccoUnoAskService">bloccoUnoAskService</template_field>
+                                                <template_field class="template_field" name="bloccoUnoH3Widget">bloccoUnoH3Widget</template_field>
+                                                <template_field class="template_field" name="bloccoUnoContenutoWidget">bloccoUnoContenutoWidget</template_field>
+					</div>
+				</div>
+				<!-- blocco1 end -->			<!-- giorgio, blocco "3" con RSS -->
+				<!--div id="blocco_tre">
 					<div id="bloccoTreTitoloContenitore"><h2>RSS</h2>
                                         </div>
 					<div id="content_blocco_tre">
@@ -76,20 +94,7 @@
                                         </div>
 				</div>
 				<!-- blocco2 end -->			
-				<!-- blocco1 -->
-				<div id="blocco_uno">
-					<div id="bloccoUnoTitoloContenitore">
-                                                <template_field class="template_field" name="bloccoUnoTitolo">bloccoUnoTitolo</template_field>
-                                        </div>
- 					<div id="content_blocco_uno">
-                                                <template_field class="template_field" name="bloccoUnoAppuntamenti">bloccoUnoAppuntamenti</template_field>
-                                                <template_field class="template_field" name="bloccoUnoContenuto">bloccoUnoContenuto</template_field>
-                                                <template_field class="template_field" name="bloccoUnoAskService">bloccoUnoAskService</template_field>
-                                                <template_field class="template_field" name="bloccoUnoH3Widget">bloccoUnoH3Widget</template_field>
-                                                <template_field class="template_field" name="bloccoUnoContenutoWidget">bloccoUnoContenutoWidget</template_field>
-					</div>
-				</div>
-				<!-- blocco1 end -->
+				
                 </div> <!--  boxtwo end -->
 			</div>
 			<!-- end due blocchi grafici homepage -->

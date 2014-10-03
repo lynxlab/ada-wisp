@@ -62,7 +62,7 @@ class UserRegistrationForm extends FForm
              ),
              '0');
 
-        $this->addTextInput('matricola', translateFN('numero di matricola (se studente)'));
+        $this->addTextInput('matricola', translateFN('Numero di matricola'));
         
         $accetto = translateFN ('accetto i');
         $termini = translateFN('termini di servizio e le norme sulla privacy');

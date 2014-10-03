@@ -109,7 +109,7 @@ define('ADA_SERVICE_HELP', 0); // consulenza
 define('ADA_SERVICE_LEG', 1); // LEG per magistrato
 define('ADA_SERVICE_LEG_NO_TIMELINE',2); 
 define('ADA_SERVICE_COMMON_TUTOR',3);
-define('ADA_SERVICE_GIUR',4);
+define('ADA_SERVICE_GIUR',4); //fonti
 define('ADA_SERVICE_ORG',5); // ORG 
 define('ADA_SERVICE_MANUALE',6); // MANUALE 
 define('ADA_SERVICE_TEMI_RISOLTI',7); 

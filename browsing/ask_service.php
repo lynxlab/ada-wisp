@@ -63,6 +63,104 @@ if ($message == null || !isset($message))
 $id_user = $userObj->getId();
 $name = $userObj->getFirstName();
 $surname = $userObj->getLastName();
+
+/* open user help services */
+$ServiceDiv = CDOMElement::create('div','id:servicesRequired');
+         
+$courseInstances = array();
+$serviceProviders = $userObj->getTesters();
+
+$courseInstances = array();
+if (count($serviceProviders) == 1) {
+    $provider_dh = AMA_DataHandler::instance(MultiPort::getDSN($serviceProviders[0]));
+    $courseInstances = $provider_dh->get_course_instances_for_this_student($userObj->getId());
+} else {
+    foreach ($serviceProviders as $Provider) {
+        $provider_dh = AMA_DataHandler::instance(MultiPort::getDSN($Provider));
+        $courseInstances = $provider_dh->get_course_instances_for_this_student($userObj->getId());
+        $courseInstances = array_merge($courseInstances, $courseInstances_provider);
+    }
+}
+        
+if(!AMA_DataHandler::isError($courseInstances) && (!empty($courseInstances))){
+    foreach($courseInstances as $instance){
+        $courseId = $instance['id_corso'];
+        /* service level */
+        $clause = ' st.id_corso ='.$courseId;
+        $ServiceInfo = $common_dh->get_services(null,$clause);
+        $serviceLevel=$ServiceInfo[0][2];
+
+        if($serviceLevel==ADA_SERVICE_HELP){
+
+            $nodeId = $courseId . '_0';
+            $courseInstanceId = $instance['id_istanza_corso'];
+            $subscription_status = $instance['status'];
+            $started = ($instance['data_inizio'] > 0 && $instance['data_inizio'] < time()) ? translateFN('Si') : translateFN('No');
+            $start_date = ($instance['data inizio'] > 0) ? $instance['data_inizio'] : $instance['data_inizio_previsto'];
+            $isEnded = ($instance['data_fine'] > 0 && $instance['data_fine'] < time()) ? true : false;
+            $isStarted = ($instance['data_inizio'] > 0 && $instance['data_inizio'] <= time()) ? true : false;
+            $service = CDOMElement::create('div');
+            $service->setAttribute('class', 'single_service');
+            $access_link = BaseHtmlLib::link("#", translateFN('Attendi che ti contatti un consulente...'));
+            if ($subscription_status != ADA_STATUS_SUBSCRIBED && $subscription_status != ADA_STATUS_VISITOR) {
+                    $access_link = BaseHtmlLib::link("#",translateFN('Attendi che ti contatti un consulente...'));
+            } elseif ($isStarted && !$isEnded){
+                $tutorAssignedAR = $dh->course_instance_tutor_info_get($courseInstanceId,1);
+                if (!AMA_DataHandler::isError($tutorAssignedAR) && count($tutorAssignedAR) > 0) {
+                        $tutorText = sprintf(translateFN('ti sta aiutando %s'), ucfirst($tutorAssignedAR[1]) . ' ' . ucfirst($tutorAssignedAR[2]));
+                } else {
+                        $tutorText = '';
+                }
+                $access_link = CDOMElement::create('div','class:helpRequired');
+                $access_link->addChild(new CText($tutorText . ' '));
+                $access_link->addChild(new CText('<br /> '));
+                $link = CDOMElement::create('a');
+                $link->setAttribute('href','sview.php?id_node='.$nodeId.'&id_course='.$courseId.'&id_course_instance='.$courseInstanceId);
+                $link->addChild(new CText(translateFN('Accedi per continuare...')));
+                $access_link->addChild($link);
+            }
+
+           /* ***********************
+            * get new nodes for each instance
+            */
+           $nodeTypesArray = array ( ADA_LEAF_TYPE, ADA_GROUP_TYPE, ADA_NOTE_TYPE );
+           $instancesArray[0]['id_istanza_corso'] = $courseInstanceId;
+           $new_nodes = $dh->get_new_nodes($userObj->getId(), $maxNodes = 3, $nodeTypesArray,$instancesArray);
+           if (!AMA_DataHandler::isError($new_nodes) && sizeof($new_nodes) > 0) {
+               $ulNews = '';
+               foreach ($new_nodes as $new_node) {
+                   $courseOfNewNodeAr = explode('_',$new_node['id_nodo']);
+                   if ($courseId == $courseOfNewNodeAr[0]) {
+                       if ($new_node['tipo'] == ADA_NOTE_TYPE && $new_node['ID_ISTANZA'] == $courseInstanceId) {
+                           if (!is_object($ulNews)) $ulNews = CDOMElement::create('ul','class:ulNews');
+                           $liNews = CDOMElement::create('li');
+                           $link_news = CDOMElement::create('a');
+                           $link_news->setAttribute('href','sview.php?id_node='.$new_node['id_nodo'].'&id_course='.$courseId.'&id_course_instance='.$courseInstanceId.'#'.$new_node['id_nodo']);
+                           $link_news->addChild(new CText($new_node['nome']));
+                           $liNews->addChild($link_news);
+                           $ulNews->addChild($liNews);
+                       }
+                   }
+               }
+               if (is_object($ulNews)) {
+                   $divNews = CDOMElement::create('div','class:newsInHelpRequired');
+                   $newsText = translateFN('Novità');
+                   $divNews->addChild(new CText('<h4>'.$newsText.'</h4>'));
+                   $divNews->addChild($ulNews);
+               }
+
+           }
+        if (is_object($access_link)) $service->addChild($access_link);
+        $ServiceDiv->addChild(new CText('<h3>'.translateFN('Aiuto per Consulenza').'</h3>'));
+
+        if (is_object($service)) $ServiceDiv->addChild($service);
+        if (is_object($divNews)) $ServiceDiv->addChild($divNews);
+        }
+
+
+    }
+}
+        
 switch ($op) {
     case 'subscribe':
       $idProviderAndCourse = DataValidator::validate_node_id($id_service); // ID course is composed by idTtester_idCourse so we can use the Node Data Validator
@@ -386,6 +484,9 @@ switch ($op) {
         } else {
             $data = new CText(translateFN('Non è possibile chiedere aiuto'));
         }
+        
+        
+
         break;
 }
 $title = translateFN('Chiedi aiuto');
@@ -407,10 +508,24 @@ $content_dataAr = array(
     'help' => $help,
     'data' => $data->getHtml(),
     'user_avatar'=>$avatar->getHtml(),
-    'home' => $link_to_home->getHtml()
+    'home' => $link_to_home->getHtml(),
+    'bloccoUnoTitolo'=>'<h2>'.translateFN('Consulenze richieste').'</h2>'
 );
+if(is_object($ServiceDiv)){
+    $content_dataAr['bloccoUnoContenuto']=$ServiceDiv->getHtml();
+}
+$layout_dataAr['JS_filename'] = array(
+    JQUERY,
+    JQUERY_UI,
+    JQUERY_NO_CONFLICT,
+    
+);
+$layout_dataAr['CSS_filename'] = array (
+    JQUERY_UI_CSS,
+);
+$optionsAr['onload_func'] =  "initDoc();";
 
 /**
  * Sends data to the rendering engine
  */
-ARE::render($layout_dataAr, $content_dataAr);
+ARE::render($layout_dataAr, $content_dataAr,NULL,$optionsAr);

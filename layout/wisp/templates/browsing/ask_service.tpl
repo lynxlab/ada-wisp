@@ -44,13 +44,28 @@
                     <div id="help">
                         <template_field class="template_field" name="help">help</template_field>
                     </div>
+                    <div id="boxone">
+					
+				<div id="blocco_uno">
+					<div id="bloccoUnoTitoloContenitore">
+                                                <template_field class="template_field" name="bloccoUnoTitolo">bloccoUnoTitolo</template_field>
+                                        </div>
+ 					<div id="content_blocco_uno" class="ui-accordion ui-accordion-icons ui-widget ui-helper-reset">
+                                                
+                                                <template_field class="template_field" name="bloccoUnoContenuto">bloccoUnoContenuto</template_field>
+					</div>
+				</div>
+				
+                    </div> 
+                    
                     <div id="data">
 					<div id="data_ask">
                         <template_field class="template_field" name="data">data</template_field>
-						</div>
-						<div id="data_ask_img"></div>
+                      </div>
+						<!--div id="data_ask_img"></div-->
                     
-					</div>                     
+                      </div>   
+                    
                 </div>
                 <div id="bottomcont">
                 </div>
