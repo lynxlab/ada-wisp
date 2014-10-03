@@ -66,6 +66,8 @@ if (isset($_SERVER['REQUEST_METHOD']) && $_SERVER['REQUEST_METHOD'] == 'POST' &&
    	$ch = curl_init();
    	//return the transfer as a string
    	curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1);
+    curl_setopt($ch, CURLOPT_CONNECTTIMEOUT, 60); // connection timeout in seconds
+    curl_setopt($ch, CURLOPT_TIMEOUT, 60); // curl timeout in seconds
    	
    	if (!isset ($querystring)) $querystring = '';
    	
@@ -85,7 +87,7 @@ if (isset($_SERVER['REQUEST_METHOD']) && $_SERVER['REQUEST_METHOD'] == 'POST' &&
 	// run the request
 	$responseObj = json_decode(curl_exec($ch));
 
-	if (!is_null($responseObj)) {
+	if (!is_null($responseObj) && curl_errno($ch)===0) {
 		// get the synonyms from the response
 		if (isset($responseObj->synonyms) && count ($responseObj->synonyms)>0)
 			$retArray['searchTerms'] = array_unique(array_merge($retArray['searchTerms'], $responseObj->synonyms));
@@ -111,6 +113,9 @@ if (isset($_SERVER['REQUEST_METHOD']) && $_SERVER['REQUEST_METHOD'] == 'POST' &&
 				$retArray['descripteurIds'][] = $category->category;
 			}
 		}
+	} else {
+		// on curl error use the search terms
+		$retArray['searchTerms'] = array_unique($searchTerms);
 	}
 	
 	// close curl resource to free up system resources
