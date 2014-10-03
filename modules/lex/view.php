@@ -103,6 +103,39 @@ if (!AMA_DB::isError($assetText)) {
 			$htmlObj->addChild($ulElement);
 		}
 	}
+
+
+	/**
+	 * Check if the asset has been abrogated
+	 */
+	$assetAbrogatedAr = $dh->asset_get_abrogated($assetID);
+	
+	if (!AMA_DB::isError($assetAbrogatedAr) && is_array($assetAbrogatedAr) && count($assetAbrogatedAr)>0) {
+		$baseHref = MODULES_LEX_HTTP . '/view.php?assetID=';
+		foreach ($assetAbrogatedAr as $count=>$assetAbrogated) {
+			if (!isset($ulAbrogated)) $ulAbrogated = CDOMElement::create('ol','class:assetAbrogated');
+	
+			$link = CDOMElement::create('a','class:abrogatedLink,href:'.$baseHref.$assetAbrogated['abrogato_da']);
+			$link->addChild (new CText($assetAbrogated['label']));
+	
+			$spanDate = CDOMElement::create('span');
+			$spanDate->addChild (new CText(' '.translateFN('in data').' '.$assetAbrogated['data_abrogazione']));
+	
+			$liAbrogated = CDOMElement::create('li','class:abrogatedElement');
+			$liAbrogated->addChild ($link);
+			$liAbrogated->addChild ($spanDate);
+	
+			$ulAbrogated->addChild ($liAbrogated);
+		}
+			
+		if (isset($ulAbrogated)) {
+			$spanAbrogatedTitle = CDOMElement::create('span','class:assetAbrogatedTitle');
+			$spanAbrogatedTitle->addChild(new CText(translateFN('Abrogato da').': '));
+			$htmlObj->addChild($spanAbrogatedTitle);
+			$htmlObj->addChild($ulAbrogated);
+		}
+	}	
+	
 		$assetHa = $dh->asset_get($assetID);
 		if (!AMA_DB::isError($assetHa)) {
 			$title = str_replace('_', ' ', $assetHa->label);

@@ -347,6 +347,28 @@ class AMALexDataHandler extends AMA_DataHandler {
 	}
 
 	/**
+	 * gets abrogated infos about an asset
+	 * 
+	 * @param number $assetID he id of the asset
+	 * 
+	 * @return AMA_Error|array
+	 * 
+	 *  @access public
+	 */
+	public function asset_get_abrogated ($assetID) {
+		$sql = 'SELECT `abrogato_da`, `data_abrogazione`, `label` FROM `'.self::$PREFIX.'assets_abrogati` '.
+			   ' JOIN `'.self::$PREFIX.'assets` AS ASSET ON `abrogato_da`= ASSET.`'.self::$PREFIX.'assets_id`'.
+			   ' WHERE `'.self::$PREFIX.'assets_abrogati`.`'.self::$PREFIX.'assets_id`=?';
+		
+		$result = $this->getAllPrepared($sql,$assetID,AMA_FETCH_ASSOC);
+		
+		if (!AMA_DB::isError($result) && $result!==false && count($result)>0) {
+			array_walk($result, function (&$value) { $value['data_abrogazione'] = $this->ts_to_date($value['data_abrogazione']); });
+		}
+		return $result;
+	}
+
+	/**
 	 * gets descripteur_id, libelle and weight of terms associated with asset
 	 *
 	 * @param string $id
@@ -984,12 +1006,14 @@ class AMALexDataHandler extends AMA_DataHandler {
 	 * @param string $sIndexColumn primary key name of the table
 	 * @param string $sTable the table to load
 	 * @param string $sMainClause main where clause
+	 * @param bool   $removeDuplicates true to remove duplicates row, based on.
+	 * 				 based on first field of return array (usually the id)Defaults to false
 	 *
 	 * @return array
 	 *
 	 * @access public
 	 */
-	public function getDataForDataTable ($aColumns, $sIndexColumn, $sTable, $sMainClause='') {
+	public function getDataForDataTable ($aColumns, $sIndexColumn, $sTable, $sMainClause='', $removeDuplicates=false) {
 		/*
 		 * Paging
 		 */
@@ -1096,14 +1120,22 @@ class AMALexDataHandler extends AMA_DataHandler {
 		 */
 		$sqlColumns = array();
 		$joinTables = array();
+		$tablesToAlias = array();
 
 		foreach ($aColumns as $column) {
 			if (is_array($column)) {
 				// generate a unique column name
-				$tableAlias = uniqid($column['tableName'].'_');
-				$sqlColumns[] = ''.$tableAlias.'.`'.$column['columnName'].'` AS `'.$column['fieldName'].'` ';
-				$joinTables[] = ' JOIN `'.$column['tableName'].'` AS '.$tableAlias.' ON `'.
-								$sTable.'`.`'.$column['primaryKey'].'`='.$tableAlias.'.`'.$column['primaryKey'].'` ';
+				if (!in_array($column['tableName'], $tablesToAlias)) {
+					$tablesToAlias[] = $column['tableName'];
+					$tableAlias = $column['tableName'];
+				} else {
+					$tableAlias = uniqid($column['tableName'].'_');
+				}
+
+				$sqlColumns[] = $tableAlias.'.`'.$column['columnName'].'` AS `'.$column['fieldName'].'` ';
+				$operation = (isset($column['operation'])) ? $column['operation'] : ' JOIN ';
+				$joinTables[] = $operation.'`'.$column['tableName'].'` AS '.$tableAlias.' ON `'.
+								$sTable. '`.`'.$column['primaryKey'].'`='.$tableAlias.'.`'.$column['primaryKey'].'` ';
 			} else {
 				$sqlColumns[] = '`'.$sTable.'`.`'.$column.'`';
 			}
@@ -1144,9 +1176,17 @@ class AMALexDataHandler extends AMA_DataHandler {
 		if (!AMA_DB::isError($rResult) && count($rResult)>0) {
 
 			$output['sColumns'] = implode(',', array_keys(reset($rResult)));
-
+			$alreadyProcessedIDs = array();
 			foreach ($rResult as $count=>$aRow)
 			{
+				if ($removeDuplicates) {
+					if (!in_array($aRow[$sIndexColumn], $alreadyProcessedIDs)) $alreadyProcessedIDs[] = $aRow[$sIndexColumn];
+					else {
+						$output['iTotalDisplayRecords']--;
+						continue;
+					}
+				}
+				
 				$row = array();
 
 				// Add the row ID and class (if needed) to the object
@@ -1163,6 +1203,14 @@ class AMALexDataHandler extends AMA_DataHandler {
 					else if (strpos($resultArrayKey,'data')!==false) {
 						/* if is a date, format it */
 						$row[] = $this->ts_to_date($aRow[ $resultArrayKey ]);
+					}
+					else if (strpos($resultArrayKey,'abrogato')!==false) {
+						$editAbrogatedLink = CDOMElement::create('a','onclick:javascript:editAbrogated('.$aRow[$sIndexColumn].');');
+						$editAbrogatedLink->setAttribute('class', 'tooltip editAbrogatedLink');
+						$editAbrogatedLink->setAttribute('title', translateFN('Clic per modificare'));
+						$editAbrogatedLink->addChild (new CText(is_null($aRow[ $resultArrayKey ]) ? translateFN('No') : translateFN('Sì')));
+						
+						$row[] = $editAbrogatedLink->getHtml();
 					}
 					else if ( $resultArrayKey != ' ' )
 					{

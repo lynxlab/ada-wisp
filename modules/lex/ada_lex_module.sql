@@ -241,3 +241,15 @@ CREATE TABLE IF NOT EXISTS `module_lex_eurovoc_rel` (
   `weight` DECIMAL(18,17) NOT NULL DEFAULT '0',
   PRIMARY KEY (`descripteur_id`, `module_lex_assets_id`))
 ENGINE = MyISAM DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
+
+-- -----------------------------------------------------
+-- Struttura della tabella `module_lex_assets_abrogati`
+-- -----------------------------------------------------
+
+CREATE TABLE IF NOT EXISTS `module_lex_assets_abrogati` (
+`module_lex_assets_abrogati_id` int(10) unsigned NOT NULL AUTO_INCREMENT,
+  `module_lex_assets_id` int(10) unsigned NOT NULL,
+  `abrogato_da` int(10) unsigned NOT NULL,
+  `data_abrogazione` int(11) NOT NULL,
+  PRIMARY KEY (`module_lex_assets_abrogati_id`)
+) ENGINE=MyISAM DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;

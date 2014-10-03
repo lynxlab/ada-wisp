@@ -82,11 +82,18 @@ if (isset($_SERVER['REQUEST_METHOD']) && $_SERVER['REQUEST_METHOD'] == 'GET') {
  							'fieldName'=>'stato',
  							'columnName'=>'descrizione',
  							'primaryKey'=>$dh::$PREFIX.'stati_id',
- 							'tableName'=>$dh::$PREFIX.'stati') 
+ 							'tableName'=>$dh::$PREFIX.'stati'),
+					array (
+							'fieldName'=>'abrogato',
+							'columnName'=>'abrogato_da',
+							'operation'=>'LEFT JOIN',
+							'primaryKey'=>$dh::$PREFIX.'assets_id',
+							'tableName'=>$dh::$PREFIX.'assets_abrogati' )
 			        ),
 					$dh::$PREFIX.'assets_id',
 					$dh::$PREFIX.'assets',
-					'`'.$dh::$PREFIX.'assets`.`'.$dh::$PREFIX.'fonti_id`='.$sourceID);
+					'`'.$dh::$PREFIX.'assets`.`'.$dh::$PREFIX.'fonti_id`='.$sourceID,
+					true /* true forces duplicate removal */ );
 	
 	foreach ($output['aaData'] as $i=>$elem) {
 		// generate expand link for each row

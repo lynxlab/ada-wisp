@@ -254,7 +254,7 @@ class jexManagement extends importManagement
     	/**
     	 * generate an empty table that will be filled by the jQuery dataTable ajax calls
     	 */
-    	$labels = array ('&nbsp;',translateFN('etichetta'), translateFN('URL'), translateFN('Data Inserimento') , translateFN('Data Verifica'), translateFN('Stato'), translateFN('link'));
+    	$labels = array ('&nbsp;',translateFN('etichetta'), translateFN('URL'), translateFN('Data Inserimento') , translateFN('Data Verifica'), translateFN('Stato'), translateFN('Abrogato'), translateFN('link'));
     	
     	foreach ($labels as $label) {
     		$assetsData[0][$label] = '';
