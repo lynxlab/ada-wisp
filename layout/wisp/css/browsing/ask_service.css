@@ -13,6 +13,7 @@ and open the template in the editor.
 #data{
     margin-top: 0;
 }
+//#boxone { width: 47%; }
 #blocco_uno {
 /*    
 background-color: #D3D6FF;
@@ -20,7 +21,7 @@ border-radius: 10px;
 */
 position: relative;
 width: 40%;
-min-height: 400px;
+min-height: 100px;
 /*height: 300px;
 margin-top: 70px;
 margin-left: 30px;

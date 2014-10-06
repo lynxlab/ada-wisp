@@ -54,8 +54,9 @@
                                                 
                                                 <template_field class="template_field" name="bloccoUnoContenuto">bloccoUnoContenuto</template_field>
 					</div>
+                                   <br class="clearfix">
 				</div>
-				
+			
                     </div> 
                     
                     <div id="data">

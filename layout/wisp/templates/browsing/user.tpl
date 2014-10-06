@@ -256,9 +256,10 @@
                             <!--template_field class="template_field" name="help">help</template_field-->
                             </li>
                             <li>
-                                <a href="../help.php" target="_blank">
+                                <!--a href="../help.php" target="_blank">
                                     <i18n>informazioni</i18n>
-                                </a>
+                                </a-->
+                            <template_field class="template_field" name="manuale">manuale</template_field>
                             </li>
                             <li>
                                 <a href="../credits.php">
