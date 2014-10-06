@@ -51,7 +51,6 @@ if (count($serviceProviders) == 1) {
         $courseInstances = array_merge($courseInstances, $courseInstances_provider);
     }
 }
-
 $courseInstanceCommonAreaAr = array();
 $courseInstanceHelpAr = array();
 if(!AMA_DataHandler::isError($courseInstances)) {
@@ -210,36 +209,34 @@ if(!AMA_DataHandler::isError($courseInstances)) {
         
          if (count($courseInstances) > 0) {
              foreach ($courseInstances as $Instance) {
-                if(!AMA_DataHandler::isError($courseDataAr) && !empty($courseDataAr)){
-                 
-                 
-                    /* ***********************
-                     * INFO for each instance 
-                     */
-                    $divCommonNews = '';
-                    $courseId = $Instance['id_corso'];
-                    
-                    
-                    /* service level */
-                    $clause = ' st.id_corso ='.$courseId;
-                    $ServiceInfo = $common_dh->get_services(null,$clause);
-                    $serviceLevel=$ServiceInfo[0][2];
-                    
-                    $courseDataAr = $dh->get_course($courseId);
+                /* ***********************
+                 * INFO for each instance 
+                 */
+                $divCommonNews = '';
+                $courseId = $Instance['id_corso'];
+
+
+                /* service level */
+                $clause = ' st.id_corso ='.$courseId;
+                $ServiceInfo = $common_dh->get_services(null,$clause);
+                $serviceLevel=$ServiceInfo[0][2];
+
+                $courseDataAr = $dh->get_course($courseId);
+                if(!AMA_DataHandler::isError($courseDataAr) && (!empty($courseDataAr))){
                     if($serviceLevel!=ADA_SERVICE_HELP)
                     {
                         if($serviceLevel == ADA_SERVICE_MANUALE){
-                            
+
                             $courseInstanceId = $Instance['id_istanza_corso'];
                             $nodeId = $courseId . '_0';
 
                             $link_Manuale = CDOMElement::create('a');
                             $link_Manuale->setAttribute('href', 'view.php?id_node='.$nodeId.'&id_course='.$courseId.'&id_course_instance='.$courseInstanceId.'#'.$nodeId);
                             $link_Manuale->addChild(new CText(translateFN('Manuale')));
-    
+
                         }
                         else{
-                            
+
                             $courseName = $courseDataAr['titolo'];
                             $nodeId = $courseId . '_0';
                             $courseInstanceId = $Instance['id_istanza_corso'];
@@ -286,7 +283,7 @@ if(!AMA_DataHandler::isError($courseInstances)) {
                                             if ($courseId == $courseOfNewNodeAr[0]) {
                                                 if (!is_object($ulNews)) $ulNews = CDOMElement::create('ul','class:ulNews');
                                                 $liNews = CDOMElement::create('li');
-        //                                        $access_news->addChild(new CText(translateFN('Hai chiesto di essere aiutato per '). $courseName . ', '. $tutorText . ' '));
+            //                                        $access_news->addChild(new CText(translateFN('Hai chiesto di essere aiutato per '). $courseName . ', '. $tutorText . ' '));
                                                 $link_news = CDOMElement::create('a','href:view.php?id_node='.$new_node['id_nodo'].'&id_course='.$courseId.'&id_course_instance='.$courseInstanceId.'#'.$nodeId);
                                                 $link_news->addChild(new CText($new_node['nome']));
                                                 $liNews->addChild($link_news);
@@ -308,19 +305,20 @@ if(!AMA_DataHandler::isError($courseInstances)) {
                             }
                             $service->addChild($access_link);
                             if (is_object($divCommonNews)) $service->addChild($divCommonNews);
-    //                        $serviceDOM->addChild($divAppointments)
+            //                        $serviceDOM->addChild($divAppointments)
                             $User_Services->addChild(new CText('<h3>'. $courseName.'</h3>'));
                             $User_Services->addChild($service);
 
-                        
+
                     }
                 } 
-             }
+              } 
            }
         } else {
             $data = new CText(translateFN('Non sei ancora iscritto a nessun servizio'));
 //            $CommonAreaDOM->addChild($data);
         }
+        
          $content_dataAr['bloccoDueContenuto'] = $User_Services->getHtml();
 
     
