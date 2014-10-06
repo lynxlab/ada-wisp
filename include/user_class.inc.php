@@ -1566,7 +1566,7 @@ class Batch_Subscription {
                             $testerInfoAr = $common_dh->get_tester_info_from_id($Id_tester); 
                             $tester_dh = AMA_DataHandler::instance(MultiPort::getDSN($testerInfoAr[10])); 
                             $InstanceAr=$tester_dh->course_instance_subscribeable_get_list(array('title'),$id_course);
-                            var_dump($InstanceAr);var_dump('ghhhhhhhh');
+                            
                             if(!AMA_DataHandler::isError($InstanceAr) && !empty($InstanceAr))
                             {
                                 foreach($InstanceAr as $instance)
