@@ -48,10 +48,16 @@ $self = 'HolisSearch';
 
 require_once MODULES_HOLISSEARCH_PATH . '/include/management/holisSearchManagement.inc.php';
 
+/**
+ * $forceAbrogated is set by legSearch.php that is including index.php
+ */
+if (!isset($forceAbrogated) || $forceAbrogated!==true) $forceAbrogated = false;
+
+$holisSearch = new HolisSearchManagement($forceAbrogated);
+
 // $s is coming from $_GET
 if (!isset($s) || strlen (trim($s)) <=0) {
-	
-	$holisSearch = new HolisSearchManagement();
+		
 	$data = $holisSearch->index();
 	 
 } else if ((isset($s) && strlen (trim($s)) >0)) {
@@ -140,9 +146,7 @@ if (!isset($s) || strlen (trim($s)) <=0) {
 	if (count($searchCoursesIDs)>0)
 		array_walk($searchCoursesIDs, function (&$value) { $value = intval($value); });
 	
-	$searchtext = trim ($searchtext);
-	$holisSearch = new HolisSearchManagement();
-	$data = $holisSearch->runSearch ($searchtext, count($searchCoursesIDs));
+	$data = $holisSearch->runSearch (trim($searchtext), count($searchCoursesIDs));
 		
 } else {
 	

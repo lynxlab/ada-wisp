@@ -19,7 +19,7 @@ require_once(ROOT_DIR.'/include/Forms/lib/classes/FForm.inc.php');
  */
 class FormIndexSearch extends FForm {
 
-	public function __construct($data=array()) {
+	public function __construct($data=array(), $forceAbrogated=false) {
 		parent::__construct();
 		$this->setName('searchForm');
 		$this->setId('searchForm');
@@ -77,7 +77,22 @@ class FormIndexSearch extends FForm {
 			}
 			$sel_classe->withData($classesArr,$selClass);
 			
-			$this->addFieldset('','set_tipologia')->withData(array ($sel_tipologia, $sel_categoria, $sel_classe));
+			$fieldSet = array ($sel_tipologia, $sel_categoria, $sel_classe);
+			
+			if (!$forceAbrogated) {
+				$abrogatoArr = array ('-1'=>translateFN('Tutti'), '0'=>translateFN('No'), '1'=>translateFN('Sì'));
+				$sel_abrogato = FormControl::create(FormControl::SELECT, 'abrogato', translateFN('Abrogato'));
+				if (isset($data['abrogato']) && intval($data['abrogato'])>-1) {
+					$selAbrogato = $data['abrogato'];
+				} else {
+					$selAbrogato = -1;
+				}
+				$sel_abrogato->withData($abrogatoArr, $selAbrogato);
+				array_push($fieldSet, $sel_abrogato);		
+			}
+			
+			
+			$this->addFieldset('','set_tipologia')->withData($fieldSet);
 		}
 	}
 }

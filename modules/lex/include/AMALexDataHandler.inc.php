@@ -871,12 +871,13 @@ class AMALexDataHandler extends AMA_DataHandler {
 	 * @param array $searchTerm the array of terms to be matched
 	 * @param bool $verifiedOnly true if verified assets only are to be returned. defaults to false
 	 * @param number $typologyID typology ID to filter results, 0 means no filter. Defaults to 0.
+	 * @param number $abrogatedStatus filter abrogated assets: -1 is no filter, 0 is not abrogated, 1 is abrogated
 	 *
 	 * @retrun NULL|Array
 	 *
 	 * @access public
 	 */
-	public function get_asset_from_text($searchTerms, $verifiedOnly=false, $typologyID=0) {
+	public function get_asset_from_text($searchTerms, $verifiedOnly=false, $typologyID=0, $abrogatedStatus=-1) {
 		/**
 		 * weight selection with a subquery
 		 */
@@ -906,6 +907,12 @@ class AMALexDataHandler extends AMA_DataHandler {
 
 		$sql .= ' LEFT JOIN `'.self::$PREFIX.'assets_abrogati` AS ABROGATI ON ASSETS.`'.self::$PREFIX.'assets_id` = ABROGATI.`'.self::$PREFIX.'assets_id` ';
 		$sql .= ' GROUP BY ASSETS.`'.self::$PREFIX.'assets_id` ';
+		
+		if ($abrogatedStatus>-1) {
+			$sql .= ' HAVING isabrogated';
+			$sql .= ($abrogatedStatus>0) ? '>' : '=';
+			$sql .= '0';
+		}
 
 		$sql .= ' ORDER BY FONTI.`'.self::$PREFIX.'fonti_id` ASC , weight DESC';
 
@@ -947,12 +954,13 @@ class AMALexDataHandler extends AMA_DataHandler {
 	 * @param array $descripteurAr the array of descripteur_id
 	 * @param bool $verifiedOnly true if verified assets only are to be returned. defaults to false
 	 * @param number $typologyID typology ID to filter results, 0 means no filter. Defaults to 0.
+	 * @param number $abrogatedStatus filter abrogated assets: -1 is no filter, 0 is not abrogated, 1 is abrogated
 	 *
 	 * @retrun NULL|Array
 	 *
 	 * @access public
 	 */
-	public function get_asset_from_descripteurs ($descripteurAr, $verifiedOnly=false, $typologyID=0) {
+	public function get_asset_from_descripteurs ($descripteurAr, $verifiedOnly=false, $typologyID=0, $abrogatedStatus=-1) {
 		/**
          * max weight selection with a subquery
 		 */
@@ -986,6 +994,12 @@ class AMALexDataHandler extends AMA_DataHandler {
 		
 		$sql .=' LEFT JOIN `'.self::$PREFIX.'assets_abrogati` AS ABROGATI ON ASSETS.`'.self::$PREFIX.'assets_id` = ABROGATI.`'.self::$PREFIX.'assets_id` ';		
 		$sql .=' GROUP BY ASSETS.`'.self::$PREFIX.'assets_id` ';
+		
+		if ($abrogatedStatus>-1) {
+			$sql .= ' HAVING isabrogated';
+			$sql .= ($abrogatedStatus>0) ? '>' : '=';
+			$sql .= '0 ';
+		}
 
 		$sql .=' ORDER BY FONTI.`'.self::$PREFIX.'fonti_id` ASC , weight DESC ';
 

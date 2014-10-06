@@ -93,6 +93,7 @@ function updateSelect(what) {
 	
 	var data = {
 			what: what,
+			searchMode: 1,
 			typology: $j('#tipologia option:selected').val()
 	};
 	
@@ -207,14 +208,20 @@ var HolisSearchManagement = (function() {
 	 */
 	var _runModuleLexSearch = function() {
 		
+		/**
+		 * If #abrogato is not there, then it's a forceAbrogated search
+		 */
+		var abrogatedStatus = ($j('#abrogato').length > 0) ? $j('#abrogato').val() : 1; 
+		
     	$j.ajax({
 			type	:	'POST',
 			url		:	'ajax/getSearchModuleLex.php',
 			data	:	{ searchTerms: this.searchTermsArray,
 						  descripteurAr: this.descripteurIds,
-						  searchtext: $j('#searchtext').text(),
+						  searchtext:  $j('#searchtext').text(),
 						  querystring: $j('#querystring').text(),
-						  typologyID : $j('#tripleID').text()
+						  typologyID : $j('#tripleID').text(),
+						  abrogatedStatus:  abrogatedStatus
 						  },
 			dataType:	'json'
 		})

@@ -48,6 +48,8 @@ require_once MODULES_LEX_PATH . '/include/functions.inc.php';
 
 $retArray = null;
 $getOnlyVerifiedAssets = false;
+if (isset($abrogatedStatus) && is_numeric($abrogatedStatus)) $abrogatedStatus=intval($abrogatedStatus);
+else $abrogatedStatus = -1;
 
 if (isset($_SERVER['REQUEST_METHOD']) && $_SERVER['REQUEST_METHOD'] == 'POST' &&
     (isset($searchTerms) && is_array($searchTerms) && count($searchTerms)>0) ||
@@ -85,7 +87,7 @@ if (isset($_SERVER['REQUEST_METHOD']) && $_SERVER['REQUEST_METHOD'] == 'POST' &&
 		 *    the weight and the source they belong to
 		 */
 		if (is_array($descripteur_ids) && count($descripteur_ids)>0) {			
-			$searchResults = $dh->get_asset_from_descripteurs($descripteur_ids, $getOnlyVerifiedAssets, $typologyID);			
+			$searchResults = $dh->get_asset_from_descripteurs($descripteur_ids, $getOnlyVerifiedAssets, $typologyID, $abrogatedStatus);			
 		} else $searchResults = array();
 		
 		if (count($searchResults)>0) {
@@ -100,7 +102,7 @@ if (isset($_SERVER['REQUEST_METHOD']) && $_SERVER['REQUEST_METHOD'] == 'POST' &&
 		 * 3. now do a fulltext search on asset associated text and merge the results
 		 *    with point 2
 		 */
-		$fulltextResults = $dh->get_asset_from_text($searchTerms, $getOnlyVerifiedAssets,$typologyID);
+		$fulltextResults = $dh->get_asset_from_text($searchTerms, $getOnlyVerifiedAssets,$typologyID,$abrogatedStatus);
 		if (!is_null($fulltextResults)) {
 			// merge the results
 			foreach ($fulltextResults as $j=>$fulltextEl) {

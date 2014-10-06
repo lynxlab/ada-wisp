@@ -21,8 +21,9 @@ require_once MODULES_HOLISSEARCH_PATH . '/include/form/formIndexSearch.php';
 class holisSearchManagement
 {
 	private $_typologiesArr = null;
+	private $_forceAbrogated = false;
 	
-	public function __construct() {
+	public function __construct($forceAbrogated) {
 		if (MODULES_LEX) {
 			// load typologies from the AMALexDataHandler
 			require_once MODULES_LEX_PATH.'/include/AMALexDataHandler.inc.php';
@@ -31,11 +32,13 @@ class holisSearchManagement
 			$this->_typologiesArr = AMALexDataHandler::instance(MultiPort::getDSN($pointer))->getTypologies();
 			if (AMA_DB::isError($this->_typologiesArr)) $this->_typologiesArr = null;
 		}
+		
+		$this->_forceAbrogated = $forceAbrogated;
 	}
 	
 	public function index() {
 		/* @var $html string holds html code to be retuned */
-		$htmlObj = new FormIndexSearch( array('typologiesArr'=>$this->_typologiesArr ) );
+		$htmlObj = new FormIndexSearch( array('typologiesArr'=>$this->_typologiesArr ), $this->_forceAbrogated );
 		/* @var $path   string  path var to render in the help message */
 		$help = translateFN('Benvenuto nella Ricerca Holis/SESPIUS');
 		/* @var $status string status var to render in the breadcrumbs */
@@ -53,6 +56,7 @@ class holisSearchManagement
 		$htmlObj = CDOMElement::create('div','id:searchResults');
 		/* @var $path   string  path var to render in the help message */
 		$help = translateFN('Risultati della Ricerca Holis/SESPIUS');
+		if ($this->_forceAbrogated) $help .= ' - '.translateFN('Ricerca svolta sui soli asset abrogati');
 		/* @var $status string status var to render in the breadcrumbs */
 		$title= translateFN('Ricerca');
 		
@@ -80,6 +84,11 @@ class holisSearchManagement
 			// set class
 			if (isset($_GET['classe']) && strlen(trim($_GET['classe']))>0 && trim($_GET['classe'])!=='null')
 				$formdata['classe'] = trim($_GET['classe']);
+			// set abrogated
+			if (!$this->_forceAbrogated && isset($_GET['abrogato']) && is_numeric($_GET['abrogato']))
+				$formdata['abrogato'] = intval($_GET['abrogato']);
+			else
+				$formdata['abrogato'] = 1;
 			
 			/**
 			 * DO NOT REMOVE THIS span, it's needed
@@ -92,7 +101,7 @@ class holisSearchManagement
 			$tripleSpan->setAttribute('style', 'display:none');
 			$tripleSpan->addChild(new CText(intval($tripleID)));
 		}
-		$searchForm = new FormIndexSearch($formdata);
+		$searchForm = new FormIndexSearch($formdata, $this->_forceAbrogated);
 
 		/**
 		 * DO NOT REMOVE THIS span, it's needed
