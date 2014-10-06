@@ -68,7 +68,7 @@ class FormIndexSearch extends FForm {
 			// write 'all' intead of 'none'
 			if (array_key_exists('null', $classesArr)) $classesArr['null'] = translateFN('Tutte');
 			
-			$sel_classe = FormControl::create(FormControl::SELECT, 'classe', translateFN('classe'));
+			$sel_classe = FormControl::create(FormControl::SELECT, 'classe', translateFN('classe(fonte)'));
 			// $sel_classe->setAttribute('class', 'dontuniform');
 			if (isset($data['classe']) && strlen($data['classe'])>0) {
 				$selClass = $data['classe'];

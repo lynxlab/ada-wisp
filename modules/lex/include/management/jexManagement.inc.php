@@ -377,7 +377,7 @@ class jexManagement extends importManagement
          * generate an empty table that will be filled by the jQuery dataTable ajax calls
 		 */    	
     	$labels = array (translateFN('Numero'), translateFN('Titolo'), translateFN('Data Pubblicazione') ,
-    					 translateFN('Tipologia'), translateFN('Categoria'),translateFN('Classe'),translateFN('azioni'));
+    					 translateFN('Tipologia'), translateFN('Categoria'),translateFN('classe(fonte)'),translateFN('azioni'));
     	
     	foreach ($labels as $label) {
     		$sourcesData[0][$label] = '';

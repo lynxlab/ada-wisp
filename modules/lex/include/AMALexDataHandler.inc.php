@@ -927,7 +927,7 @@ class AMALexDataHandler extends AMA_DataHandler {
 											   ' '.translateFN('categoria').': ';
 				if (!is_null($element['categoria'])) $retArray[$key]['tipologia'] .= $element['categoria'];
 				else $retArray[$key]['tipologia'] .= translateFN('Nessuna');
-				$retArray[$key]['tipologia'] .= ' '.translateFN('classe').': ';
+				$retArray[$key]['tipologia'] .= ' '.translateFN('classe(fonte)').': ';
 				if (!is_null($element['classe'])) $retArray[$key]['tipologia'] .= $element['classe'];
 				else $retArray[$key]['tipologia'] .= translateFN('Nessuna');
 				unset($element[self::$PREFIX.'fonti_id']);
@@ -1015,7 +1015,7 @@ class AMALexDataHandler extends AMA_DataHandler {
 											   ', '.translateFN('categoria').': ';
 				if (!is_null($element['categoria'])) $retArray[$key]['tipologia'] .= $element['categoria'];
 				else $retArray[$key]['tipologia'] .= translateFN('Nessuna');
-				$retArray[$key]['tipologia'] .= ', '.translateFN('classe').': ';
+				$retArray[$key]['tipologia'] .= ', '.translateFN('classe(fonte)').': ';
 				if (!is_null($element['classe'])) $retArray[$key]['tipologia'] .= $element['classe'];
 				else $retArray[$key]['tipologia'] .= translateFN('Nessuna');
 				unset($element[self::$PREFIX.'fonti_id']);
