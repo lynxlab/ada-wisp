@@ -128,7 +128,7 @@ if (isset($_SERVER['REQUEST_METHOD']) && $_SERVER['REQUEST_METHOD'] == 'POST' &&
 		/**
          * 4. build the html tables to be returned
 		 */
-		$thead_data = array(translateFN('Label'), translateFN('Peso'), translateFN('Tipo'));
+		$thead_data = array(translateFN('Label'), translateFN('Peso'), translateFN('Abrogato'), translateFN('Tipo'));
 		$resAr = array();
 		$data = '';
 		
@@ -141,6 +141,9 @@ if (isset($_SERVER['REQUEST_METHOD']) && $_SERVER['REQUEST_METHOD'] == 'POST' &&
 				$title->setAttribute('title', translateFN('Clicca per espandere/ridurre'));				
 				$title->addChild (new CText( $resultEl['titolo'] ));
 				
+				$subtitle = CDOMElement::create('span','class:typology');
+				$subtitle->addChild (new CText( $resultEl['tipologia'] ));
+				
 				$viewFontLink = CDOMElement::create('a','class:gotofont tooltip,target:_blank,href:'.MODULES_LEX_HTTP.'/index.php?op=zoom&id='.$j);
 				$viewFontLink->setAttribute('title', translateFN('Clicca per andare alla fonte'));
 				$viewFontLink->addChild(new CText(translateFN('Vai alla Fonte')));
@@ -148,6 +151,7 @@ if (isset($_SERVER['REQUEST_METHOD']) && $_SERVER['REQUEST_METHOD'] == 'POST' &&
 				$resultDIV->addChild($viewFontLink);
 				
 				$resultDIV->addChild($title);
+				$title->addChild($subtitle);
 				
 				$baseLink = MODULES_LEX_HTTP . '/view.php?assetID=';
 									
@@ -160,8 +164,15 @@ if (isset($_SERVER['REQUEST_METHOD']) && $_SERVER['REQUEST_METHOD'] == 'POST' &&
 					
 					$res_name = $labelHref->getHtml();
 					$res_score =  number_format($dataEl['weight'],2);
+					
+					if (isset($dataEl['isabrogated']) && intval($dataEl['isabrogated'])>0) {
+						$res_isabrogated = translateFN('Sì');
+					} else {
+						$res_isabrogated = translateFN('No');
+					}
 			
-					$temp_results = array($thead_data[0] => $res_name, $thead_data[1] => $res_score, $thead_data[2]=>$dataEl['type'] );
+					$temp_results = array($thead_data[0] => $res_name, $thead_data[1] => $res_score, 
+										  $thead_data[2] => $res_isabrogated, $thead_data[3]=>$dataEl['type'] );
 			
 					array_push ($resAr,$temp_results);
 				}

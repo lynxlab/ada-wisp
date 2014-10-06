@@ -225,13 +225,14 @@ var HolisSearchManagement = (function() {
 					$j('.moduleLexResult').fadeIn();
 					
 					$j('table.moduleLexResultsTable').dataTable({
-						"aaSorting": [[ 2, "desc" ]],
+						"aaSorting": [[ 1, "desc" ]],
 						"oLanguage": {
 				            "sUrl": HTTP_ROOT_DIR + "/js/include/jquery/dataTables/dataTablesLang.php"
 				        },
 				        "bAutoWidth": false,
 				        "aoColumns" : [
 				                       { "sWidth": "60%" },				                       
+				                       { "sWidth": "10%" },
 				                       { "sWidth": "10%" },
 				                       { "sWidth": "10%" },
 				                       ],
