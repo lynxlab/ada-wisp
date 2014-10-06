@@ -887,7 +887,7 @@ class AMALexDataHandler extends AMA_DataHandler {
 
 		$sql = 'SELECT FONTI.`'.self::$PREFIX.'fonti_id`, ASSETS.`'.self::$PREFIX.'assets_id`, ASSETS.`label`, '.
 			   'weight, FONTI.`titolo`, TIPOLOGIE.`descrizione`, TIPOLOGIE.`categoria`, TIPOLOGIE.`classe`, '.
-			   'COUNT(ABROGATI.`'.self::$PREFIX.'assets_abrogati_id`) AS isabrogated '.
+			   'COUNT(ABROGATI.`abrogato_da`) AS isabrogated '.
 		       'FROM `'.self::$PREFIX.'assets` AS ASSETS INNER JOIN'.$subquery.' ON TTESTI.`'.self::$PREFIX.'testi_id` = ASSETS.`'.self::$PREFIX.'testi_id` '.
 		       'JOIN `'.self::$PREFIX.'fonti` AS FONTI ON FONTI.`'.self::$PREFIX.'fonti_id` = ASSETS.`'.self::$PREFIX.'fonti_id` '.
 		       'JOIN `'.self::$PREFIX.'tipologie_fonti` AS `TIPOLOGIE` ON `FONTI`.`'.self::$PREFIX.'tipologie_fonti_id` = `TIPOLOGIE`.`'.self::$PREFIX.'tipologie_fonti_id` ';		       
@@ -975,7 +975,7 @@ class AMALexDataHandler extends AMA_DataHandler {
 
 		$sql  = 'SELECT FONTI.`'.self::$PREFIX.'fonti_id`, ASSETS.`'.self::$PREFIX.'assets_id`, ASSETS.`label`, ';
 		$sql .=	'weight, FONTI.`titolo`, TIPOLOGIE.`descrizione`, TIPOLOGIE.`categoria`, TIPOLOGIE.`classe`, ';
-		$sql .= 'COUNT(ABROGATI.`'.self::$PREFIX.'assets_abrogati_id`) AS isabrogated ';
+		$sql .= 'COUNT(ABROGATI.`abrogato_da`) AS isabrogated ';
 		$sql .= 'FROM `'.self::$PREFIX.'assets` ASSETS INNER JOIN '.$subquery.' ON `GROUPEDREL`.`'.self::$PREFIX.'assets_id` = `ASSETS`.`'.self::$PREFIX.'assets_id` ';
 		$sql .= 'JOIN `'.self::$PREFIX.'fonti` AS `FONTI` ON  `FONTI`.`'.self::$PREFIX.'fonti_id`=`ASSETS`.`'.self::$PREFIX.'fonti_id` ';
 		$sql .= 'JOIN `'.self::$PREFIX.'tipologie_fonti` AS `TIPOLOGIE` ON `FONTI`.`'.self::$PREFIX.'tipologie_fonti_id` = `TIPOLOGIE`.`'.self::$PREFIX.'tipologie_fonti_id` ';		
