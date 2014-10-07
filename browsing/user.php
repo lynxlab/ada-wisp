@@ -516,8 +516,10 @@ if($last_access=='' || is_null($last_access))
                $UserProfile = translateFN('Utente generico');
                break;
         }
-            
-        $welcome_msg = translateFN('<strong> Benvenuto/a ').$userObj->getFullName().'! </strong> ('.$UserProfile.')'.translateFN('. Questa è la tua Home Page');
+        if($UserProfile!=""){
+            $UserProfile = ' ('.$UserProfile.')';
+        }
+        $welcome_msg = translateFN('<strong> Benvenuto/a ').$userObj->getFullName().'!'.$UserProfile.translateFN(' Questa è la tua Home Page </strong>');
 
 	$gochat_link = "";
 	$content_dataAr['gostart'] = $gostart_link;
