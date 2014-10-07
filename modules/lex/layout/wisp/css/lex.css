@@ -338,6 +338,24 @@ z-index: 1200 !important;
  */
  
 /*
+ * edit abrogated form
+ */
+.ui-dialog div.fform.form { padding:0; margin:0; width:100%; }
+#editAbrogatedForm fieldset.form { padding:0; margin:0; }
+#editAbrogatedForm li.form { border: none; padding:0;  }
+#formAbrogatedTable thead th { padding: 5px; text-align:center; }
+#formAbrogatedTable tfoot { background: none; margin-top: 10px; }
+#formAbrogatedTable tfoot th { padding: 5px; text-align:left; }
+#formAbrogatedTable tfoot th a { font-size: 0.8em; font-weight: normal; margin-top: 10px; display: inline-block; }
+#formAbrogatedTable tfoot th a:hover { background: none; text-decoration: underline; color:#555; cursor: pointer; }
+#formAbrogatedTable td { padding: 5px 30px 5px 30px; vertical-align: middle; }
+#formAbrogatedTable td > button { display: block; margin:0 auto; }
+
+/*
+ * end edit abrogated form
+ */ 
+ 
+/*
  * sourcesTable actions
  */ 
 .ulactions { list-style-type: none; display: block; padding:0; margin:0; }

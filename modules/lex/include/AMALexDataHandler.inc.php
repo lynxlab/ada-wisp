@@ -23,7 +23,7 @@ class AMALexDataHandler extends AMA_DataHandler {
 	/**
 	 * does a multi-row insert when importing the xml files
 	 *
-	 * @param array $valuesArray the array of values to be inserted
+	 * @param array $valuesArray the array of values to be inserted, keys are field names
 	 * @param string $tableName the table to insert into
 	 * @param string $subPrefix if any, subprefix to use when building table name string
 	 *
@@ -410,7 +410,7 @@ class AMALexDataHandler extends AMA_DataHandler {
 	/**
 	 * gets abrogated infos about an asset
 	 * 
-	 * @param number $assetID he id of the asset
+	 * @param number $assetID the id of the asset
 	 * 
 	 * @return AMA_Error|array
 	 * 
@@ -427,6 +427,50 @@ class AMALexDataHandler extends AMA_DataHandler {
 			array_walk($result, function (&$value) { $value['data_abrogazione'] = $this->ts_to_date($value['data_abrogazione']); });
 		}
 		return $result;
+	}
+
+	/**
+	 * sets abrogated info about an asset
+	 * 
+	 * @param number $assetID the id of the asset
+	 * @param array $dataArr asscoiative array of data to be saved.
+	 * 						 Keys are 'abrogato_da' and 'data_abrogazione'
+	 * 
+	 * @return Ambigous|unknown_type
+	 * 
+	 * @access public
+	 */
+	public function asset_set_abrogated ($assetID, $dataArr) {
+		
+		$sql = 'DELETE FROM `'.self::$PREFIX.'assets_abrogati` WHERE `'.self::$PREFIX.'assets_id`=?';		
+		$this->executeCriticalPrepared($sql, $assetID);
+			
+		$insertArray = array();
+		foreach ($dataArr as $dataToSave) {
+			array_push($insertArray, array(
+				self::$PREFIX.'assets_id' => $assetID,
+				'abrogato_da' => $dataToSave['abrogato_da'],
+				'data_abrogazione' => $this->date_to_ts($dataToSave['data_abrogazione'])					
+			));
+		}
+		return $this->insertMultiRow($insertArray,'assets_abrogati');			
+	}
+	
+	/**
+	 * deletes abrogation info about an asset
+	 * 
+	 * @param number  $assetID
+	 * @param number  $abrogatedBy
+	 * 
+	 * @return unknown_type
+	 * 
+	 * @access public
+	 */
+	public function asset_delete_abrogated($assetID, $abrogatedBy) {
+		
+		$sql = 'DELETE FROM `'.self::$PREFIX.'assets_abrogati` WHERE `'.self::$PREFIX.'assets_id`=?'.
+			   ' AND `abrogato_da`=?';
+		return $this->queryPrepared($sql,array($assetID, $abrogatedBy));		
 	}
 
 	/**
