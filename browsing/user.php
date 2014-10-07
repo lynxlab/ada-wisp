@@ -264,7 +264,13 @@ if(!AMA_DataHandler::isError($courseInstances)) {
                                     $access_link->addChild(new CText($tutorText . ' '));
                                     $access_link->addChild(new CText('<br /> '));
                                     $link = CDOMElement::create('a');
-                                    $link->setAttribute('href', 'view.php?id_node='.$nodeId.'&id_course='.$courseId.'&id_course_instance='.$courseInstanceId.'#'.$nodeId);
+                                    if($serviceLevel == ADA_SERVICE_LEG){
+                                        $link->setAttribute('href', 'sview.php?id_node='.$nodeId.'&id_course='.$courseId.'&id_course_instance='.$courseInstanceId.'#'.$nodeId);
+                                    }
+                                    else
+                                        {
+                                        $link->setAttribute('href', 'view.php?id_node='.$nodeId.'&id_course='.$courseId.'&id_course_instance='.$courseInstanceId.'#'.$nodeId);
+                                    }
                                     $link->addChild(new CText(translateFN('Accedi')));
                                     $access_link->addChild($link);
 
@@ -284,7 +290,12 @@ if(!AMA_DataHandler::isError($courseInstances)) {
                                                 if (!is_object($ulNews)) $ulNews = CDOMElement::create('ul','class:ulNews');
                                                 $liNews = CDOMElement::create('li');
             //                                        $access_news->addChild(new CText(translateFN('Hai chiesto di essere aiutato per '). $courseName . ', '. $tutorText . ' '));
-                                                $link_news = CDOMElement::create('a','href:view.php?id_node='.$new_node['id_nodo'].'&id_course='.$courseId.'&id_course_instance='.$courseInstanceId.'#'.$nodeId);
+                                                if($serviceLevel == ADA_SERVICE_LEG){
+                                                    $link_news = CDOMElement::create('a','href:sview.php?id_node='.$new_node['id_nodo'].'&id_course='.$courseId.'&id_course_instance='.$courseInstanceId.'#'.$nodeId);
+                                                }
+                                                else{
+                                                    $link_news = CDOMElement::create('a','href:view.php?id_node='.$new_node['id_nodo'].'&id_course='.$courseId.'&id_course_instance='.$courseInstanceId.'#'.$nodeId);
+                                                }
                                                 $link_news->addChild(new CText($new_node['nome']));
                                                 $liNews->addChild($link_news);
                                                 $ulNews->addChild($liNews);
