@@ -19,5 +19,6 @@
  */
 
 $forceAbrogated = true;
+$noTypology = true;
 
 include_once 'index.php';
