@@ -239,7 +239,7 @@ var HolisSearchManagement = (function() {
 				        "bAutoWidth": false,
 				        "aoColumns" : [
 				                       { "sWidth": "60%" },				                       
-				                       { "sWidth": "10%" },
+				                       { "sWidth": "10%" , "bVisible" : false },
 				                       { "sWidth": "10%" },
 				                       { "sWidth": "10%" },
 				                       ],
@@ -326,7 +326,12 @@ var HolisSearchManagement = (function() {
 								// fade in results
 								$j(animateTarget+' table.nodesResultsTable, '+
 								   animateTarget+' table.notesResultsTable').dataTable({
-									"aaSorting": [[ 2, "desc" ]],
+									// "aaSorting": [[ 2, "desc" ]],
+							        "aoColumns" : [
+							                       { "sWidth": "60%" },
+							                       { "sWidth": "30%" },
+							                       { "sWidth": "10%" , "bVisible" : false},
+							                       ],
 									"oLanguage": {
 							            "sUrl": HTTP_ROOT_DIR + "/js/include/jquery/dataTables/dataTablesLang.php"
 							        },
