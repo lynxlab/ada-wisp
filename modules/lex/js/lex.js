@@ -1082,20 +1082,32 @@ function deleteSelectedTreeNode(node, op) {
 	.done (function(JSONObj){
 		if (JSONObj) {
 			// handle response status sent from server
-			if (JSONObj.status=='IMPOSSIBLE') {
-				// display impossible delete dialog
+			if (JSONObj.status=='FORCED') {
+				// display force delete dialog
 				$j('#cannot-delete-details').html(JSONObj.msg);
+				
+				var dialogButtons = {};
+				var delButtonText = (JSONObj.delButtonText) ? JSONObj.delButtonText : i18n['confirm'];  
+
+				dialogButtons[delButtonText] = function() {
+					$j(this).dialog('close');
+					// if user confirms, do the actual delete
+					node.data.isSaving = true;
+					node.render(true);
+					deleteSelectedTreeNode (node, 'delete');
+				};
+
+				dialogButtons[i18n['cancel']] = function() {
+					$j(this).dialog('close');
+				};
+				
 				$j("#cannot-delete" ).dialog({
 					resizable: false,
 					dialogClass: 'no-close',
 					width: '60%',
 				    height:'auto',
 				    modal: true,
-				    buttons: {
-				    	"OK": function() {
-				    		$j(this).dialog('close');
-				    		}
-				    }
+				    buttons: dialogButtons
 				});
 			} else if (JSONObj.status=='CONFIRM') {
 				// display ask confirm dialog
@@ -1508,5 +1520,173 @@ function updateSelect(what) {
 }
 
 function editAbrogated(assetID) {
-	showHideDiv ('Asset '+assetID,'Funzione non ancora implementata',true);
+	// ask the server for the edit abrogated form
+	$j.ajax({
+		type	:	'GET',
+		url		:	'ajax/edit_abrogated.php',
+		data	:	{ assetID : assetID },
+		dataType:	'json'
+	})
+	.done(function (JSONObj){
+		if (JSONObj.status=='OK') {
+			if (JSONObj.html && JSONObj.html.length>0) {
+				// build the dialog
+				var theDialog = $j('<div />').html(JSONObj.html).dialog( {
+					title: JSONObj.dialogTitle,
+					autoOpen: false,
+					modal:true,
+					resizable: false,
+					width: '80%',
+					show: {
+						effect: "fade",
+						easing: "easeInSine", 
+						duration: 250
+			        },
+			        hide: {
+						effect: "fade",
+						easing: "easeOutSine", 
+						duration: 250
+			        },
+			        open: function() {
+			        	initButtons();
+			        	initToolTips();
+			        	// make the datepickers
+			        	$j('#formAbrogatedTable td input.datepicker').datepicker({
+			    			showOtherMonths: true
+			    		});
+			        }
+				});
+				
+				// get and hide the submit button				
+				var submitButton = theDialog.find('input[type="submit"]');
+				submitButton.parents('p').hide();
+				
+				// dialog buttons array
+				var dialogButtons = {};
+
+				// confirm dialog button
+				dialogButtons[i18n['confirm']] = function() {
+					// get form (previously hidden) submit button onclick code
+					var onClickDefaultAction = submitButton.attr('onclick');
+					// execute it, to hava ADA's own form validator
+					var okToSubmit = (onClickDefaultAction.length > 0) ? new Function(onClickDefaultAction)() : false;						
+					// and if ok ajax-submit the form
+					if (okToSubmit) {
+						ajaxSubmitAbrogatedForm(theDialog.find('form').serialize());
+						theDialog.dialog('close');
+					}
+				};
+				
+				// cancel dialog button
+				dialogButtons[i18n['cancel']] = function() {
+					theDialog.dialog('close');
+				};
+				
+				// set the defined buttons
+				theDialog.dialog( "option", "buttons", dialogButtons );
+				
+				// on dialog close, redraw the datatable and destroy dialog
+				theDialog.on('dialogclose', function( event, ui){
+					if (dataTableObj!=null) dataTableObj.fnDraw();
+					$j(this).dialog('destroy').remove();
+				});
+				
+				// on dialog enter keypress, call the confirm click
+				theDialog.keypress(function(e) {
+					if(e.which == 13) {
+						e.preventDefault();
+						theDialog.dialog("option","buttons")[i18n['confirm']]();
+					}
+				});
+				
+				// eventually open the dialog
+				theDialog.dialog('open');
+			}
+		} else {
+			if (JSONObj.msg) showHideDiv('', JSONObj.msg, false);
+		}
+	})
+	.fail(function () { showHideDiv('', 'Server Error', false) } );
+}
+
+function ajaxSubmitAbrogatedForm(data) {
+	// ask the server to save the abrogated array
+	$j.ajax({
+		type	:	'POST',
+		url		:	'ajax/edit_abrogated.php',
+		data	:	data,
+		dataType:	'json'
+	})
+	.done(function (JSONObj){
+		if (JSONObj && JSONObj.status.length>0) {
+			showHideDiv('', JSONObj.msg, JSONObj.status=='OK');
+		}
+	});
+}
+
+/**
+ * function to delete an abrogation with an ajax call
+ *
+ * @param jqueryObj
+ * @param abrogated_by
+ * @param message
+ */
+function deleteAbrogation (jqueryObj, abrogated_by, message) {
+	
+	if ($j('#assetID').length<=0) return;
+	
+	// the trick below should emulate php's urldecode behaviour
+	if (confirm ( decodeURIComponent((message + '').replace(/\+/g, '%20')) ))
+	{		
+		$j.ajax({
+			type	:	'POST',
+			url		:	'ajax/delete_abrogated.php',
+			data	:	{ abrogatedBy: abrogated_by,
+						  assetID: $j('#assetID').val() },
+			dataType:	'json'
+		})
+		.done  (function (JSONObj) {
+			if (JSONObj) {
+					if (JSONObj.status=='OK') {
+						console.log(jqueryObj.parents('tr'));
+						// deletes the corresponding row from the DOM with a fadeout effect
+						jqueryObj.parents("tr").fadeOut("slow", function () {
+							jqueryObj.parents("tr").remove();
+						});
+					}
+					showHideDiv('', JSONObj.msg, JSONObj.status=='OK');
+				}
+		});
+	}
+}
+
+/**
+ * adds a row to the edit abrogation form, in the dialog
+ */
+function addAbrogatedRow() {
+	// "clone" the last table row
+	var outerRow = $j('#formAbrogatedTable tbody tr').last();
+	var newRow = $j(outerRow).clone();
+	
+	// extract its number using a regexp match
+	var regExp = /abrogato_da_(\d+)/;
+	var match = regExp.exec(newRow.html());
+	// add the row only if the regexp matched
+	if (match!=null && match.length>1) {
+		// get the number
+		var number = parseInt(match[1]);
+		// replace 'abrogato_da_'
+		var abrogatoRegExp = new RegExp ('abrogato_da_'+number,'g');
+		newRow.html( newRow.html().replace(abrogatoRegExp, 'abrogato_da_'+(number+1)));
+		// replace 'data_abrogazione_'
+		var abrogatoDataRegExp = new RegExp ('data_abrogazione_'+number,'g');
+		newRow.html( newRow.html().replace(abrogatoDataRegExp, 'data_abrogazione_'+(number+1)));
+		
+		// add the newRow to the table
+		$j('#formAbrogatedTable tbody:last').append(newRow);
+    	// make the datepickers
+    	$j('#formAbrogatedTable td input.datepicker').removeClass('hasDatepicker').datepicker({
+			showOtherMonths: true
+		});
+	}
 }

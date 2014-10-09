@@ -123,6 +123,17 @@ if (isset($_SERVER['REQUEST_METHOD']) && $_SERVER['REQUEST_METHOD'] == 'GET') {
 		$linkAssetButton->setAttribute('title',translateFN('Clicca per andare alla pagina dell\'asset'));
 		// add link button to output array
 		array_push($output['aaData'][$i], $linkAssetButton->getHtml());
+		
+		/**
+		 * if user is an author, show asset id as a tooltip
+		 * 2 is the index of the label field
+		 */
+		if ($userObj->getType() == AMA_TYPE_AUTHOR) {
+			$spanLabel = CDOMElement::create('span','class: assetlabel tooltip');
+			$spanLabel->setAttribute('title', 'assetID='.$id);
+			$spanLabel->addChild (new CText($output['aaData'][$i][2]));
+			$output['aaData'][$i][2] = $spanLabel->getHtml();
+		}
 	}
 	
 	// fix the sColumns used by dataTable by adding the

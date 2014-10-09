@@ -23,8 +23,8 @@ class holisSearchManagement
 	private $_typologiesArr = null;
 	private $_forceAbrogated = false;
 	
-	public function __construct($forceAbrogated) {
-		if (MODULES_LEX) {
+	public function __construct($forceAbrogated, $noTypology) {
+		if (MODULES_LEX && !$noTypology) {
 			// load typologies from the AMALexDataHandler
 			require_once MODULES_LEX_PATH.'/include/AMALexDataHandler.inc.php';
 			$pointer = (!is_null($_SESSION['sess_selected_tester'])) ? $_SESSION['sess_selected_tester'] : MODULES_LEX_PROVIDER_POINTER;

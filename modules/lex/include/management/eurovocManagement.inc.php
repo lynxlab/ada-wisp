@@ -1256,6 +1256,11 @@ class eurovocManagement extends importManagement
      	$divCannotDelete->addChild($cannotDeleteMsg);
      	$divCannotDelete->addChild(CDOMElement::create('div','id:cannot-delete-details'));
      	
+     	$cannotDeleteQuestion = CDOMElement::create('span','class:cannot-delete-question');
+     	$cannotDeleteQuestion->addChild (new CText(translateFN('Cliccando "Cancella" si cancellerà comunque il termine e tutte le sue associazioni con gli asset.')));
+     	
+     	$divCannotDelete->addChild($cannotDeleteQuestion);
+     	     	
      	$treeDIV->addChild($divCannotDelete);
      	
      	/**

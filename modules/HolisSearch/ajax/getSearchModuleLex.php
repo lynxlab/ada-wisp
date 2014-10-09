@@ -161,7 +161,13 @@ if (isset($_SERVER['REQUEST_METHOD']) && $_SERVER['REQUEST_METHOD'] == 'POST' &&
 					
 					$labelHref = CDOMElement::create('a','target:_blank,class:tooltip,href:'.$baseLink.$dataEl[AMALexDataHandler::$PREFIX.'assets_id']);
 					// $labelHref->setAttribute('title', translateFN('Clicca per andare al testo'));
-					$labelHref->setAttribute('title', $dataEl['label']);
+					/**
+					 * if user is an author, show asset id as a tooltip
+					 */
+					if ($userObj->getType() == AMA_TYPE_AUTHOR) {						
+						$labelHref->setAttribute('title', 'assetID='.$dataEl[AMALexDataHandler::$PREFIX.'assets_id']);
+					}
+					
 					$labelHref->addChild(new CText($dataEl['label']));
 					
 					$res_name = $labelHref->getHtml();

@@ -53,7 +53,12 @@ require_once MODULES_HOLISSEARCH_PATH . '/include/management/holisSearchManageme
  */
 if (!isset($forceAbrogated) || $forceAbrogated!==true) $forceAbrogated = false;
 
-$holisSearch = new HolisSearchManagement($forceAbrogated);
+/**
+ * $noTypology is set by legSearch.php that is including index.php
+ */
+if (!isset($noTypology) || $noTypology!==true) $noTypology = false;
+
+$holisSearch = new HolisSearchManagement($forceAbrogated, $noTypology);
 
 // $s is coming from $_GET
 if (!isset($s) || strlen (trim($s)) <=0) {

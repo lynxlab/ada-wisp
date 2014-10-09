@@ -79,7 +79,7 @@ if (isset($_SERVER['REQUEST_METHOD']) && $_SERVER['REQUEST_METHOD'] == 'POST' &&
 					$olElement->addChild($liElement);
 				}
 
-				$retArray = array ("status"=>'IMPOSSIBLE', "msg"=>$olElement->getHtml());
+				$retArray = array ("status"=>'FORCED', "msg"=>$olElement->getHtml(), "delButtonText"=>translateFN('Cancella'));				
 			} else if (is_null($assetsAr) || (count($assetsAr)==0)) {
 				/**
 				 * the node you wish to delete has no associated
