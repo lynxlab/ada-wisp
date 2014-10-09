@@ -1082,20 +1082,32 @@ function deleteSelectedTreeNode(node, op) {
 	.done (function(JSONObj){
 		if (JSONObj) {
 			// handle response status sent from server
-			if (JSONObj.status=='IMPOSSIBLE') {
-				// display impossible delete dialog
+			if (JSONObj.status=='FORCED') {
+				// display force delete dialog
 				$j('#cannot-delete-details').html(JSONObj.msg);
+				
+				var dialogButtons = {};
+				var delButtonText = (JSONObj.delButtonText) ? JSONObj.delButtonText : i18n['confirm'];  
+
+				dialogButtons[delButtonText] = function() {
+					$j(this).dialog('close');
+					// if user confirms, do the actual delete
+					node.data.isSaving = true;
+					node.render(true);
+					deleteSelectedTreeNode (node, 'delete');
+				};
+
+				dialogButtons[i18n['cancel']] = function() {
+					$j(this).dialog('close');
+				};
+				
 				$j("#cannot-delete" ).dialog({
 					resizable: false,
 					dialogClass: 'no-close',
 					width: '60%',
 				    height:'auto',
 				    modal: true,
-				    buttons: {
-				    	"OK": function() {
-				    		$j(this).dialog('close');
-				    		}
-				    }
+				    buttons: dialogButtons
 				});
 			} else if (JSONObj.status=='CONFIRM') {
 				// display ask confirm dialog
