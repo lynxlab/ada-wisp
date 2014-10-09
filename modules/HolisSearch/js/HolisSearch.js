@@ -250,7 +250,7 @@ var HolisSearchManagement = (function() {
 					});
 					
 					doAccordion('.moduleLexResult');
-					// initToolTips('.moduleLexResult');
+					initToolTips('.moduleLexResult');
 				} else {
 					/**
 					 * log the error message to the conosle
