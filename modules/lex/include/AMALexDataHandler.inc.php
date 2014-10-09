@@ -731,6 +731,14 @@ class AMALexDataHandler extends AMA_DataHandler {
 		if (!is_array($nodeID)) $nodeID = array($nodeID);
 
 		$updateCache = false;
+		
+		/**
+		 * first delete term association with assets, if any
+		 * it is safe to ingore errors here: nothing bad shall happen (!)
+		 */
+		$sql = 'DELETE FROM `'.self::$PREFIX.'eurovoc_rel` WHERE descripteur_id IN ('.
+				implode(',', $nodeID).')';
+		$this->queryPrepared($sql);
 
 		$sql = 'DELETE FROM `'.self::$PREFIX.'EUROVOC_RELATIONS_BT` '.
 			   'WHERE `source_id` IN ('.implode(',', $nodeID).') AND `version`=?';
