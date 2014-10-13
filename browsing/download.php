@@ -256,6 +256,7 @@ if (isset($_GET['file'])){
         } 
 }
 
+
 $divUpload = CDOMElement::create('div','class:uploadDiv');  
 $uploadLink = CDOMElement::create('a','href:../services/upload.php');
 $uploadLink->addChild(new CText(translateFn('Invia un documento')));
@@ -269,6 +270,7 @@ $imgAvatar = $userObj->getAvatar();
 $avatar = CDOMElement::create('img','src:'.$imgAvatar);
 $avatar->setAttribute('class', 'img_user_avatar');
 
+
 /*
  * Last access link
  */
@@ -280,15 +282,17 @@ $avatar->setAttribute('class', 'img_user_avatar');
         $last_access=$userObj->get_last_accessFN(null,"UT",null);
         $last_access=AMA_DataHandler::ts_to_date($last_access);
   }
+
 $node_data = array(
+               //               'data'=>$lista,
                'banner'=>$banner,
-//               'data'=>$lista,
                'data'=>$html,
                'status'=>$status,
                'user_name'=>$user_name_name,
                'user_type'=>$user_type,
                'messages'=>$user_messages->getHtml(),
                'agenda'=>$user_agenda->getHtml(),
+			   'edit_profile'=> $userObj->getEditProfilePage(),
                'title'=>$node_title,
                'course_title'=>$course_title,
                'path'=>$nodeObj->findPathFN(),
@@ -298,6 +302,7 @@ $node_data = array(
 			   'user_modprofilelink' => $userObj->getEditProfilePage(),
                'last_visit' => $last_access
 );
+
 
 
 /* 5.

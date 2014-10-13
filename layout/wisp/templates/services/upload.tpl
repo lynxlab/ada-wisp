@@ -10,10 +10,11 @@
         <!-- testata -->
         <div id="header">
             <template_field class="microtemplate_field" name="header">header</template_field>
-        </div> <!-- / testata -->
-
-
-
+        </div> 
+        <!-- / testata -->
+        <!-- menu -->
+            <template_field class="microtemplate_field" name="adamenu">adamenu</template_field>  
+        <!-- / menu --> 
       <!-- contenitore -->
         <div id="container">
             <!-- PERCORSO -->
@@ -119,22 +120,6 @@
 
         </div> <!-- / contenitore -->
 		
-		
-		   <!-- MENU A TENDINA -->
-        <div id="mainmenu">
-            <!-- menu -->
-            <ul id="menu">
-                <li id="back">
-                    <a href="<template_field class="template_field" name="back">back</template_field>">
-                        <i18n>Torna</i18n>
-                    </a>
-                </li>
-            </ul>
-            <!-- / menu -->
-
-           
-        </div>
-        <!-- / MENU A TENDINA -->
 		
         <!-- PIEDE -->
         <div id="footer">

@@ -92,13 +92,9 @@ $mittente = $msg_ha['mittente'];
 $Data_messaggio = AMA_DataHandler::ts_to_date($msg_ha['data_ora'], "%d/%m/%Y - %H:%M:%S");
 $oggetto        = $msg_ha['titolo'];
 $destinatario   = str_replace (",", ", ", $msg_ha['destinatari']);
-$message_text   = nl2br($msg_ha['testo']);
-
-$go_map = "<A HREF = \" map.php?id_node=$sess_id_node\">" . translateFN("Vai alla mappa") . "</A>";
-$go_print = "<a href=\" view.php?id_node=" . $sess_id_node . "&op=print\">"  . translateFN("Stampa") . "</A>";
-
+//$message_text   = nl2br($msg_ha['testo']);
+$message_text   = $msg_ha['testo'];
 $node_title = ""; // empty
-$menu_01 = "<a href=\"send_message.php\">" . translateFN("Scrivi") . "</a>";
 
 $dest_encode = urlencode($mittente);
 $testo       = urlencode(trim($message_text));
@@ -118,10 +114,6 @@ $destinatari_replay_all = $mittente . "," . $destinatario; //
 $_SESSION['destinatari_replay_all'] = $destinatari_replay_all;
 
 
-
-$menu_02 = "<a href=\"send_message.php?op=replay\">" . translateFN("Rispondi") . "</a>";
-$menu_03 = "<a href=\"send_message.php?op=replay_all\">" . translateFN("Rispondi a tutti") . "</a>";
-$menu_04 = "<a href=\"read_message.php?del_msg_id=" . $msg_id . "\">" . translateFN("Cancella") . "</a>";
 /*
 $testo_ar = explode(chr(13),  chop($message_text));
 $testo = "";
@@ -142,18 +134,13 @@ $content_dataAr = array(
   'user_type'      => $user_type,
   'user_avatar'    => $avatar->getHtml(),
   'level'          => $user_level,
-  'go_print'       => $go_print,  // OR ELSE AN ARRAY OF PLACEHOLDERS?
   'mittente'       => $mittente,
   'Data_messaggio' => $Data_messaggio,
   'oggetto'        => $oggetto,
   'destinatario'   => $destinatario,
   'message_text'   => $testo,
-  'menu_01'        => $menu_01,
-  'menu_02'        => $menu_02,
-  'menu_03'        => $menu_03,
-  'menu_04'        => $menu_04,
-  'status'		   => $status
+  'status'         => $status
 );
-
-ARE::render($layout_dataAr, $content_dataAr);
+$menuOptions['del_msg_id'] = $msg_id;
+ARE::render($layout_dataAr, $content_dataAr,NULL,NULL,$menuOptions);
 ?>

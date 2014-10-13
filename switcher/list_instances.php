@@ -147,6 +147,7 @@ $content_dataAr = array(
     'status' => $status,
     'label' => $label,
     'help' => $help,
+    'edit_profile'=>$userObj->getEditProfilePage(),
     'data' => $data->getHtml(),
     'module' => $module,
     'messages' => $user_messages->getHtml(),
