@@ -1,6 +1,12 @@
 <div id="site-info">
-<a href="/" title="stay-in" rel="home">stay-in</a>
-</div><!-- #site-info -->
+	<ul class="menu-site-info">
+		<li class="leaf first">Copyright &copy; 2014</li>
+		<li class="leaf">Crediti</li>
+		<li class="leaf last">Contatti</li>
+	</ul>
+</div>
+
+<!-- #site-info -->
 <!-- div style="float:left">
 	<a href="#top"><img src="img/up.png" border="0" alt="top"></a>
 </div>

@@ -115,11 +115,11 @@ font-weight:bold;}
  */
 #intestazione {
     background-color: #fff;
-    height: 60px;
+    height: 75px;
     padding-left:15px;
     margin-left: -10px;
 	margin-right: -10px;
-	border-top: 15px solid #980404;
+	/* border-top: 15px solid #980404; */
 	margin-top: -10px;
 }
 
@@ -473,7 +473,7 @@ width: 700px;
 
 #logo_title {
     position: relative;
-    top: 3px;
+    top: 11px;
 	float:left;
     background: url("../img/header-logo.png") no-repeat scroll left 0;
     float: none;
@@ -558,26 +558,27 @@ width: 100%;
 	background-position: 7px 7px; 
    background-color:#4a4a4a;
    padding:20px 7px 5px 165px;
-   color:#ffffff;
    min-height: 33px;  */
+   color:#4a4a4a;
+   font-size: 11px;
 }
 
 #site-info a {
-color: transparent !important;
-padding-top: 30px;
-font-size: 6pt;
-display: block;
+/* color: transparent !important; 
+	padding-top: 30px;
+	font-size: 11px;
+	display: block;  */
 }
 
 #footer,
 #footer_login {
 	background-image: url(../img/logo-holis-footer.png);
 	background-repeat: no-repeat;
-	background-position: 7px 7px;
-   background-color:#4a4a4a;
-   padding:20px 7px 5px 165px;
+	background-position: right center;
+   background-color:#e6e7e9;
+   padding:5px 220px 5px 5px;
    color:#ffffff;
-   min-height: 33px;
+   min-height: 55px;
  }   
     
 #footer a:link,    
