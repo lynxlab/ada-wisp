@@ -123,27 +123,7 @@
         </div>
                     </div>
                     </div>
-							
-                   <div class="active title">
-                     <i class="icon dropdown"></i>
-                     <i18n>azioni</i18n> <i class="edit sign icon"></i> 
-                    </div>
-                   <div class="active content field">
-                     <template_field class="template_field" name="edit_node">edit_node</template_field>
-                     <template_field class="template_field" name="delete_node">delete_node</template_field>
-                            <!--
-                       <template_field class="template_field_disabled" name="add_exercise">add_exercise</template_field>
-                            -->
-                            <template_field class="template_field" name="add_note">add_note</template_field>
-                            <template_field class="template_field" name="add_private_note">add_private_note</template_field>
-                            <template_field class="template_field" name="edit_note">edit_note</template_field>
-                            <template_field class="template_field" name="delete_note">delete_note</template_field>
-                            <template_field class="template_field" name="publish_note">publish_note</template_field>
-                     <!--
-                       <template_field class="template_field_disabled" name="go_XML">go_XML</template_field> 
-                     -->
-                      <template_field class="template_field" name="go_map">go_map</template_field>
-                    </div>
+		
                       
                    <div class="title">
                      <i class="icon dropdown"></i>
@@ -160,16 +140,7 @@
                    <div class="content field">
                        <template_field class="template_field" name="link">link</template_field>
                     </div>
-                   
-                   <div class="title">
-                     <i class="icon dropdown"></i>
-                     <i18n>esercizi</i18n><i class="text file outline icon"></i>
-                </div>
-                   <div class="content field">
-                     <template_field class="template_field" name="exercises">exercises</template_field>
-            </div>
-
-                   <div class="title">
+                  <div class="title">
                      <i class="icon dropdown"></i>
                      <i18n>risorse</i18n><i class="browser icon"></i>
         </div>

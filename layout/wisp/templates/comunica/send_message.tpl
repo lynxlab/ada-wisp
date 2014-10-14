@@ -41,7 +41,7 @@
 			</div>		
 </div>
 <!-- /label -->
-
+ <div id="status_bar">
 <div id="user_data" class="user_data_default">
   <template_field class="microtemplate_field" name="user_data_mini_micro">user_data_mini_micro</template_field>
 </div>

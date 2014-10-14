@@ -150,7 +150,7 @@ function initButton()
             $j('.translationResults').animate({'marginLeft':'1%'});
             $j('.translationResults').animate({'width':'40%'},"slow");
             $j('.EditTranslation').effect('slide');
-            $j('.EditTranslation').animate({'marginRight':'1%'},"slow");
+            $j('.EditTranslation').animate({'marginRight':'27%'},"slow");
             $j('#TranslationTextArea').val(aData[3]);
             $j('form[name="EditranslatorForm"]').append('<input type="hidden" id="id_record" name="id_record" value="'+aData[5]+'" />');  
             $j('form[name="EditranslatorForm"]').append('<input type="hidden" id="cod_lang" name="cod_lang" value="'+aData[4]+'"/>'); 
