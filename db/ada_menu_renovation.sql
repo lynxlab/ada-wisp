@@ -1,11 +1,11 @@
 -- phpMyAdmin SQL Dump
--- version 4.2.5
+-- version 4.0.6deb1
 -- http://www.phpmyadmin.net
 --
 -- Host: localhost
--- Generation Time: Set 16, 2014 alle 11:52
--- Versione del server: 5.5.38-cll-lve
--- PHP Version: 5.4.29
+-- Generato il: Ott 14, 2014 alle 16:09
+-- Versione del server: 5.5.37-0ubuntu0.13.10.1
+-- Versione PHP: 5.5.3-1ubuntu2.6
 
 SET SQL_MODE = "NO_AUTO_VALUE_ON_ZERO";
 SET time_zone = "+00:00";
@@ -16,7 +16,6 @@ SET time_zone = "+00:00";
 /*!40101 SET @OLD_COLLATION_CONNECTION=@@COLLATION_CONNECTION */;
 /*!40101 SET NAMES utf8 */;
 
-
 -- --------------------------------------------------------
 
 --
@@ -24,21 +23,23 @@ SET time_zone = "+00:00";
 --
 
 CREATE TABLE IF NOT EXISTS `menu_page` (
-`tree_id` int(11) NOT NULL COMMENT 'id of the menu tree for the given module, script, user_type and self instruction',
+  `tree_id` int(11) NOT NULL AUTO_INCREMENT COMMENT 'id of the menu tree for the given module, script, user_type and self instruction',
   `module` varchar(100) COLLATE utf8_unicode_ci NOT NULL,
   `script` varchar(50) COLLATE utf8_unicode_ci NOT NULL,
   `user_type` int(2) NOT NULL,
   `self_instruction` int(1) NOT NULL DEFAULT '0' COMMENT 'nonzero if course is in self instruction mode',
   `isVertical` int(1) NOT NULL DEFAULT '0' COMMENT 'nonzero if it''s a vertical menu',
-  `linked_tree_id` int(11) DEFAULT NULL
-) ENGINE=MyISAM  DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci AUTO_INCREMENT=152 ;
+  `linked_tree_id` int(11) DEFAULT NULL,
+  PRIMARY KEY (`tree_id`),
+  UNIQUE KEY `module` (`module`,`script`,`user_type`,`self_instruction`)
+) ENGINE=MyISAM  DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci AUTO_INCREMENT=154 ;
 
 --
 -- Dump dei dati per la tabella `menu_page`
 --
 
 INSERT INTO `menu_page` (`tree_id`, `module`, `script`, `user_type`, `self_instruction`, `isVertical`, `linked_tree_id`) VALUES
-(1, 'browsing', 'view.php', 3, 0, 0, NULL),
+(1, 'browsing', 'view.php', 3, 0, 0, 152),
 (2, 'main', 'default', 5, 0, 0, 105),
 (3, 'browsing', 'default', 5, 0, 0, NULL),
 (4, 'main', 'info.php', 5, 0, 0, NULL),
@@ -177,30 +178,16 @@ INSERT INTO `menu_page` (`tree_id`, `module`, `script`, `user_type`, `self_instr
 (148, 'switcher', 'edit_content.php', 6, 0, 0, NULL),
 (149, 'browsing', 'view.php', 4, 1, 0, 45),
 (150, 'browsing', 'default', 4, 1, 0, 10),
-(151, 'browsing', 'search.php', 4, 1, 0, 28);
+(151, 'browsing', 'search.php', 4, 1, 0, 28),
+(152, 'browsing', 'sview.php', 3, 0, 0, NULL),
+(153, 'browsing', 'external_link.php?file=gpl.txt', 3, 0, 0, 29);
 
---
--- Indexes for dumped tables
---
-
---
--- Indexes for table `menu_page`
---
-ALTER TABLE `menu_page`
- ADD PRIMARY KEY (`tree_id`), ADD UNIQUE KEY `module` (`module`,`script`,`user_type`,`self_instruction`);
-
---
--- AUTO_INCREMENT for dumped tables
---
-
---
--- AUTO_INCREMENT for table `menu_page`
---
-ALTER TABLE `menu_page`
-MODIFY `tree_id` int(11) NOT NULL AUTO_INCREMENT COMMENT 'id of the menu tree for the given module, script, user_type and self instruction',AUTO_INCREMENT=152;
 /*!40101 SET CHARACTER_SET_CLIENT=@OLD_CHARACTER_SET_CLIENT */;
 /*!40101 SET CHARACTER_SET_RESULTS=@OLD_CHARACTER_SET_RESULTS */;
 /*!40101 SET COLLATION_CONNECTION=@OLD_COLLATION_CONNECTION */;
+
+
+--
 
 -- --------------------------------------------------------
 
@@ -209,7 +196,7 @@ MODIFY `tree_id` int(11) NOT NULL AUTO_INCREMENT COMMENT 'id of the menu tree fo
 --
 
 CREATE TABLE IF NOT EXISTS `menu_items` (
-`item_id` int(11) NOT NULL,
+  `item_id` int(11) NOT NULL AUTO_INCREMENT,
   `label` varchar(255) COLLATE utf8_unicode_ci NOT NULL,
   `extraHTML` text COLLATE utf8_unicode_ci,
   `icon` text COLLATE utf8_unicode_ci,
@@ -222,8 +209,9 @@ CREATE TABLE IF NOT EXISTS `menu_items` (
   `groupRight` int(1) NOT NULL DEFAULT '0',
   `specialItem` int(1) NOT NULL DEFAULT '0',
   `order` int(3) unsigned NOT NULL DEFAULT '0',
-  `enabledON` varchar(128) COLLATE utf8_unicode_ci NOT NULL DEFAULT '%ALWAYS%'
-) ENGINE=MyISAM  DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci AUTO_INCREMENT=138 ;
+  `enabledON` varchar(128) COLLATE utf8_unicode_ci NOT NULL DEFAULT '%ALWAYS%',
+  PRIMARY KEY (`item_id`)
+) ENGINE=MyISAM  DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci AUTO_INCREMENT=140 ;
 
 --
 -- Dump dei dati per la tabella `menu_items`
@@ -323,7 +311,7 @@ INSERT INTO `menu_items` (`item_id`, `label`, `extraHTML`, `icon`, `icon_size`, 
 (109, 'importa corso', NULL, 'download disk', NULL, NULL, '%MODULES_IMPEXPORT_HTTP%', 'import.php', NULL, NULL, 0, 0, 45, '%MODULES_IMPEXPORT%'),
 (110, 'esporta corso', NULL, 'upload disk', NULL, NULL, '%MODULES_IMPEXPORT_HTTP%', 'export.php', NULL, NULL, 0, 0, 45, '%MODULES_IMPEXPORT%'),
 (111, 'condizioni di completamento', NULL, 'basic pin', NULL, NULL, '%MODULES_SERVICECOMPLETE_HTTP%', 'index.php', NULL, NULL, 0, 0, 45, '%MODULES_SERVICECOMPLETE%'),
-(112, 'newsletter', NULL, 'mail outline', '', NULL, '%MODULES_NEWSLETTER_HTTP%', NULL, NULL, NULL, 0, 0, 15, '%MODULES_NEWSLETTER%'),
+(112, 'newsletter', NULL, 'mail outline', '', NULL, '%MODULES_NEWSLETTER_HTTP%', NULL, NULL, NULL, 0, 0, 15, '%NEVER%'),
 (114, 'aggiungi provider', NULL, 'archive', NULL, NULL, '%HTTP_ROOT_DIR%/admin', 'add_tester.php', NULL, NULL, 0, 0, 0, '%ALWAYS%'),
 (115, 'aggiungi servizio', NULL, 'tags', NULL, NULL, '%HTTP_ROOT_DIR%/admin', 'add_service.php', NULL, NULL, 0, 0, 0, '%ALWAYS%'),
 (116, 'aggiungi utente', NULL, 'basic add user', NULL, NULL, '%HTTP_ROOT_DIR%/admin', 'add_user.php', NULL, NULL, 0, 0, 10, '%ALWAYS%'),
@@ -347,32 +335,33 @@ INSERT INTO `menu_items` (`item_id`, `label`, `extraHTML`, `icon`, `icon_size`, 
 (134, 'cancella domanda', NULL, 'trash', NULL, NULL, '%MODULES_TEST_HTTP%', 'edit_question.php', '<template_field class="template_field" name="delete_question">delete_question</template_field>', NULL, 0, 0, 0, '%MODULES_TEST%'),
 (135, 'elimina esercizio', NULL, 'trash', NULL, '{"onclick":"<template_field class=\\"template_field\\" name=\\"onclick\\">onclick</template_field>"}', '%HTTP_ROOT_DIR%/browsing', 'exercise.php', 'id_node', NULL, 0, 0, 10, '%ALWAYS%'),
 (136, 'Modifica esercizio', NULL, 'edit', NULL, NULL, '%HTTP_ROOT_DIR%/services', 'edit_exercise.php?op=edit', NULL, NULL, 0, 0, 5, '%ALWAYS%'),
-(137, 'Edit home page contents', NULL, 'edit', NULL, NULL, '%HTTP_ROOT_DIR%/admin', 'edit_content.php', NULL, NULL, 0, 0, 40, '%NON_MULTIPROVIDER_MENU%');
+(137, 'Modifica home page ', NULL, 'edit', NULL, NULL, '%HTTP_ROOT_DIR%/admin', 'edit_content.php', NULL, NULL, 0, 0, 40, '%ALWAYS%'),
+(138, 'documenti', NULL, 'file', 'large', NULL, '%HTTP_ROOT_DIR%/browsing', 'download.php', NULL, NULL, 0, 0, 15, '%ALWAYS%'),
+(139, 'contenuti', NULL, 'globe', 'large', '{"onclick":"javascript: $j(''#menuright'').sidebar({overlay:true}).sidebar(''toggle'');"}', NULL, NULL, NULL, NULL, 0, 0, 25, '%ALWAYS%');
 
---
--- Indexes for dumped tables
---
-
---
--- Indexes for table `menu_items`
---
-ALTER TABLE `menu_items`
- ADD PRIMARY KEY (`item_id`);
-
---
--- AUTO_INCREMENT for dumped tables
---
-
---
--- AUTO_INCREMENT for table `menu_items`
---
-ALTER TABLE `menu_items`
-MODIFY `item_id` int(11) NOT NULL AUTO_INCREMENT,AUTO_INCREMENT=138;
 /*!40101 SET CHARACTER_SET_CLIENT=@OLD_CHARACTER_SET_CLIENT */;
 /*!40101 SET CHARACTER_SET_RESULTS=@OLD_CHARACTER_SET_RESULTS */;
 /*!40101 SET COLLATION_CONNECTION=@OLD_COLLATION_CONNECTION */;
 
--- --------------------------------------------------------
+
+-- phpMyAdmin SQL Dump
+-- version 4.0.6deb1
+-- http://www.phpmyadmin.net
+--
+-- Host: localhost
+-- Generato il: Ott 14, 2014 alle 16:13
+-- Versione del server: 5.5.37-0ubuntu0.13.10.1
+-- Versione PHP: 5.5.3-1ubuntu2.6
+
+SET SQL_MODE = "NO_AUTO_VALUE_ON_ZERO";
+SET time_zone = "+00:00";
+
+
+/*!40101 SET @OLD_CHARACTER_SET_CLIENT=@@CHARACTER_SET_CLIENT */;
+/*!40101 SET @OLD_CHARACTER_SET_RESULTS=@@CHARACTER_SET_RESULTS */;
+/*!40101 SET @OLD_COLLATION_CONNECTION=@@COLLATION_CONNECTION */;
+/*!40101 SET NAMES utf8 */;
+
 
 --
 -- Struttura della tabella `menu_tree`
@@ -382,7 +371,8 @@ CREATE TABLE IF NOT EXISTS `menu_tree` (
   `tree_id` int(10) unsigned NOT NULL,
   `parent_id` int(10) unsigned NOT NULL DEFAULT '0',
   `item_id` int(10) unsigned NOT NULL DEFAULT '0',
-  `extraClass` varchar(255) COLLATE utf8_unicode_ci NOT NULL
+  `extraClass` varchar(255) COLLATE utf8_unicode_ci NOT NULL,
+  PRIMARY KEY (`tree_id`,`parent_id`,`item_id`)
 ) ENGINE=MyISAM DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
 
 --
@@ -390,13 +380,6 @@ CREATE TABLE IF NOT EXISTS `menu_tree` (
 --
 
 INSERT INTO `menu_tree` (`tree_id`, `parent_id`, `item_id`, `extraClass`) VALUES
-(1, 0, 1, 'homeExtraClass'),
-(1, 0, 2, 'comunicaExtraClass'),
-(1, 2, 3, ''),
-(1, 2, 4, ''),
-(1, 0, 9, ''),
-(1, 0, 10, ''),
-(1, 0, 11, ''),
 (2, 0, 14, ''),
 (2, 0, 15, ''),
 (2, 0, 16, ''),
@@ -421,30 +404,12 @@ INSERT INTO `menu_tree` (`tree_id`, `parent_id`, `item_id`, `extraClass`) VALUES
 (5, 0, 9, ''),
 (5, 0, 20, ''),
 (5, 20, 21, ''),
-(5, 0, 22, ''),
-(5, 22, 23, ''),
-(5, 0, 15, ''),
+(152, 0, 20, ''),
+(152, 0, 2, ''),
+(152, 0, 1, ''),
 (5, 0, 24, ''),
-(1, 0, 24, ''),
-(1, 2, 25, ''),
-(1, 2, 26, ''),
-(1, 2, 27, ''),
-(1, 20, 28, ''),
-(1, 20, 29, ''),
-(1, 20, 30, ''),
-(1, 20, 31, ''),
-(1, 20, 32, ''),
-(1, 20, 33, ''),
-(1, 0, 20, ''),
-(1, 20, 21, ''),
-(1, 0, 22, ''),
-(1, 22, 23, ''),
-(1, 22, 34, ''),
-(79, 20, 21, ''),
+(139, 0, 24, ''),
 (79, 2, 3, ''),
-(1, 0, 16, ''),
-(1, 16, 17, ''),
-(1, 16, 18, ''),
 (6, 0, 1, ''),
 (6, 0, 20, ''),
 (6, 20, 28, ''),
@@ -473,18 +438,14 @@ INSERT INTO `menu_tree` (`tree_id`, `parent_id`, `item_id`, `extraClass`) VALUES
 (10, 2, 3, ''),
 (10, 0, 20, ''),
 (10, 20, 21, ''),
-(10, 0, 15, ''),
 (10, 0, 16, ''),
 (10, 16, 17, ''),
 (10, 16, 18, ''),
 (10, 0, 9, ''),
 (10, 0, 24, ''),
-(10, 0, 22, ''),
-(10, 22, 23, ''),
 (11, 0, 1, ''),
 (11, 0, 2, ''),
 (11, 0, 9, ''),
-(11, 0, 15, ''),
 (11, 0, 16, ''),
 (11, 0, 20, ''),
 (11, 0, 24, ''),
@@ -617,7 +578,7 @@ INSERT INTO `menu_tree` (`tree_id`, `parent_id`, `item_id`, `extraClass`) VALUES
 (45, 20, 33, ''),
 (45, 22, 23, ''),
 (45, 22, 34, ''),
-(79, 2, 63, ''),
+(139, 0, 0, ''),
 (84, 0, 24, ''),
 (53, 2, 50, ''),
 (53, 0, 20, ''),
@@ -784,8 +745,6 @@ INSERT INTO `menu_tree` (`tree_id`, `parent_id`, `item_id`, `extraClass`) VALUES
 (79, 22, 103, ''),
 (79, 22, 102, ''),
 (79, 22, 101, ''),
-(79, 22, 23, ''),
-(79, 0, 20, ''),
 (79, 16, 18, ''),
 (79, 16, 17, ''),
 (79, 0, 16, ''),
@@ -838,8 +797,6 @@ INSERT INTO `menu_tree` (`tree_id`, `parent_id`, `item_id`, `extraClass`) VALUES
 (68, 2, 49, ''),
 (68, 0, 2, ''),
 (68, 0, 1, ''),
-(79, 22, 109, ''),
-(79, 22, 110, ''),
 (79, 22, 111, ''),
 (79, 2, 112, ''),
 (105, 0, 1, ''),
@@ -960,17 +917,22 @@ INSERT INTO `menu_tree` (`tree_id`, `parent_id`, `item_id`, `extraClass`) VALUES
 (148, 22, 118, ''),
 (148, 22, 119, ''),
 (148, 22, 120, ''),
-(146, 0, 24, '');
-
---
--- Indexes for dumped tables
---
-
---
--- Indexes for table `menu_tree`
---
-ALTER TABLE `menu_tree`
- ADD PRIMARY KEY (`tree_id`,`parent_id`,`item_id`);
+(146, 0, 24, ''),
+(152, 0, 138, ''),
+(152, 0, 139, ''),
+(152, 0, 16, ''),
+(152, 0, 9, ''),
+(152, 0, 24, ''),
+(152, 16, 17, ''),
+(152, 16, 18, ''),
+(152, 2, 3, ''),
+(152, 2, 25, ''),
+(152, 2, 26, ''),
+(152, 20, 21, ''),
+(152, 20, 28, ''),
+(152, 20, 29, ''),
+(152, 0, 10, ''),
+(152, 20, 33, '');
 
 /*!40101 SET CHARACTER_SET_CLIENT=@OLD_CHARACTER_SET_CLIENT */;
 /*!40101 SET CHARACTER_SET_RESULTS=@OLD_CHARACTER_SET_RESULTS */;
