@@ -2,8 +2,8 @@
 .ui.menu.ada { 
 	font-family: "Helvetica Neue", "Helvetica", Arial;
 	border-radius:0;
-	border-bottom: 2px solid #009F98;
-	/* background-color: #1C68AD; */
+	border-bottom: 2px solid #7da238;
+       /* background-color: #1C68AD; */
 	
 }
 .ui.menu.ada i.icon {
@@ -32,7 +32,9 @@
 .ui.menu.ada div.item.searchItem > div.search.input {
 	width: 100%;
 }
-
+.ui.computer.inverted.teal.menu {
+    background-color: #7da238;
+}
 @media only screen and (max-width : 1220px) {
     .ui.menu.ada .searchItem { width: 9em; }
     .ui.menu.ada .searchItem input[type="text"] { width: 9em; float:right; }
@@ -55,10 +57,16 @@
 .ui.vertical.ada.mobile.menu .searchItem { width: 95%; }
 .ui.vertical.ada.mobile.menu .searchItem input[type="text"] { width: 100%; float:none; }
 .ui.vertical.ada.mobile.menu i.search.link.icon { margin-right: 1em; margin-top: 0.8em; }
-.ada.mobile.row.menubutton { padding-top: 0; }
-.ada.mobile.row.menubutton .menubutton-container { padding: 0 10px 0 10px; }
+.ada.mobile.row.menubutton { padding-top: 0;}
+.ada.mobile.row.menubutton .menubutton-container { padding: 0 10px 0 10px;}
 
-
+.ui.labeled.teal.button, .ui.teal.buttons .button {
+    background-color: #7da238;
+    color: #fff;
+}
+.ui.mobile.inverted.teal.menu {
+    background-color: #7da238;
+}
 /**
  * menuright styles
  */
