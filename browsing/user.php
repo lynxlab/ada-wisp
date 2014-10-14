@@ -511,25 +511,13 @@ if($last_access=='' || is_null($last_access))
         $avatar->setAttribute('class', 'img_user_avatar');
         
         $content_dataAr['user_modprofilelink'] = $userObj->getEditProfilePage();
+        
+        if (array_key_exists($userObj->getSerialNumber(), $GLOBALS['user_type_labels'])) {
+        	$UserProfile = ' ('.translateFN($GLOBALS['user_type_labels'][$userObj->getSerialNumber()]).')';
+        } else {
+        	$UserProfile = '';
+        }
           
-        switch ($userObj->getSerialNumber()){
-
-           case AMA_TYPE_USER_MAGISTRATE:
-               $UserProfile = translateFN('Magistrato');
-               break;
-           case AMA_TYPE_USER_LAWYER:
-               $UserProfile = translateFN('Avvocato');
-               break;
-           case AMA_TYPE_USER_AUX:
-               $UserProfile = translateFN('Utente ausiliario');
-               break;
-           case AMA_TYPE_USER_GENERIC:
-               $UserProfile = translateFN('Utente generico');
-               break;
-        }
-        if($UserProfile!=""){
-            $UserProfile = ' ('.$UserProfile.')';
-        }
         $welcome_msg = translateFN('<strong> Benvenuto/a ').$userObj->getFullName().'!'.$UserProfile.translateFN(' Questa è la tua Home Page </strong>');
 
 	$gochat_link = "";
