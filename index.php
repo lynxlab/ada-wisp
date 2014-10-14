@@ -45,7 +45,9 @@ if (isset($_SESSION['ada_access_from'])) {
 
 session_unset();
 session_destroy();
-header('Location: hp/index.html');
+// redirect to the home page section
+header('Location: hp/portal.php');
+
 /**
  * Base config file
  */
