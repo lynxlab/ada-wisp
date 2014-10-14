@@ -81,6 +81,9 @@ if (isset($_SERVER['REQUEST_METHOD']) && $_SERVER['REQUEST_METHOD'] == 'POST' &&
    	
 	// first use the search service
 	$url = EUROVOC_SEARCH_SERVICE_URL . urlencode($querystring);
+	if (defined('EUROVOC_SEARCH_PARAMS')) {
+		$url .= '?'.EUROVOC_SEARCH_PARAMS;
+	}
 	$retArray['searchedURI'][] = $url;
 	// set url
 	curl_setopt($ch, CURLOPT_URL, $url);
