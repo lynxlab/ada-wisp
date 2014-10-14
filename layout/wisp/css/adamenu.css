@@ -113,7 +113,13 @@ div.right.sidebar .accordion .content.field table tbody td a {
 
 div.right.sidebar .accordion .content.field table.table_link_table { width:100%; } 
 div.right.sidebar .accordion .content.field table.table_link_table tbody td img { display: inline; vertical-align: middle; } 
- 
+
+.ui.teal.block.dividing.header {
+    border-bottom: 3px solid #7da238;
+}
+.ui.teal.block.header {
+    color: #7da238 !important;
+}
  /**
   * end accordion
   */ 
