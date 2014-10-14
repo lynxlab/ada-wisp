@@ -11,3 +11,8 @@ div.fform { width: 50%; }
   height: 20px;
   margin-top:0;
 }
+
+.suggestedUserType {
+	display: block;
+	margin-top: 5px;
+}
