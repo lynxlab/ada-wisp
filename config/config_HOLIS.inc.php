@@ -8,7 +8,7 @@
  * @author		Stefano Penge <steve@lynxlab.com>
  * @author		Maurizio "Graffio" Mazzoneschi <graffio@lynxlab.com>
  * @author		Giorgio Consorti <g.consorti@lynxlab.com>
- * @copyright           Copyright (c) 2014, Lynx s.r.l.
+ * @copyright	Copyright (c) 2014, Lynx s.r.l.
  * @license		http://www.gnu.org/licenses/gpl-2.0.html GNU Public License v.2
  * @version		0.1
  */
@@ -32,6 +32,28 @@ define('AMA_TYPE_USER_LAWYER','32');
 define('AMA_TYPE_USER_AUX','33');
 define('AMA_TYPE_USER_GENERIC','34');
 
+/**
+ * translateFN is not available here, these strings
+ * must be translateFN'ed by the scripts that shall
+ * actually be using them
+ */
+$GLOBALS['user_type_labels'] = array(
+		AMA_TYPE_USER_MAGISTRATE => 'Magistrato',
+		AMA_TYPE_USER_LAWYER => 'Avvocato',
+		AMA_TYPE_USER_AUX => 'Utente ausiliario',
+		AMA_TYPE_USER_GENERIC => 'Utente generico'
+);
+
+/**
+ * array containing file names where to look for
+ * fiscalCode=>userType associations
+ */
+$GLOBALS['user_type_file'] = array(
+		AMA_TYPE_USER_MAGISTRATE =>'magistrati.txt',
+		AMA_TYPE_USER_LAWYER => 'avvocati.txt',
+		AMA_TYPE_USER_AUX => 'ausiliari.txt',
+		AMA_TYPE_USER_GENERIC => null
+);
 
 $GLOBALS['user_service_access']= array(
     ADA_SERVICE_HELP => array(AMA_TYPE_USER_MAGISTRATE,AMA_TYPE_USER_LAWYER,AMA_TYPE_USER_AUX),
