@@ -3,7 +3,7 @@
 -- http://www.phpmyadmin.net
 --
 -- Host: localhost
--- Generato il: Ott 14, 2014 alle 16:09
+-- Generato il: Ott 15, 2014 alle 15:01
 -- Versione del server: 5.5.37-0ubuntu0.13.10.1
 -- Versione PHP: 5.5.3-1ubuntu2.6
 
@@ -32,7 +32,7 @@ CREATE TABLE IF NOT EXISTS `menu_page` (
   `linked_tree_id` int(11) DEFAULT NULL,
   PRIMARY KEY (`tree_id`),
   UNIQUE KEY `module` (`module`,`script`,`user_type`,`self_instruction`)
-) ENGINE=MyISAM  DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci AUTO_INCREMENT=154 ;
+) ENGINE=MyISAM  DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci AUTO_INCREMENT=167 ;
 
 --
 -- Dump dei dati per la tabella `menu_page`
@@ -44,7 +44,6 @@ INSERT INTO `menu_page` (`tree_id`, `module`, `script`, `user_type`, `self_instr
 (3, 'browsing', 'default', 5, 0, 0, NULL),
 (4, 'main', 'info.php', 5, 0, 0, NULL),
 (5, 'browsing', 'user.php', 3, 0, 0, NULL),
-(6, 'browsing', 'view.php', 3, 1, 0, NULL),
 (7, 'modules/test', 'index.php', 1, 0, 0, NULL),
 (8, 'modules/test', 'index.php', 3, 0, 0, 77),
 (9, 'browsing', 'view.php', 1, 0, 0, NULL),
@@ -66,10 +65,6 @@ INSERT INTO `menu_page` (`tree_id`, `module`, `script`, `user_type`, `self_instr
 (27, 'services', 'addnode.php?op=preview', 3, 0, 0, 84),
 (28, 'browsing', 'search.php', 3, 0, 0, NULL),
 (29, 'browsing', 'external_link.php?file=user_it.html', 3, 0, 0, NULL),
-(30, 'browsing', 'default', 3, 1, 0, NULL),
-(31, 'browsing', 'edit_user.php', 3, 1, 0, 28),
-(32, 'modules/test', 'default', 3, 1, 0, 30),
-(33, 'browsing', 'search.php', 3, 1, 0, 28),
 (34, 'tutor', 'default', 4, 0, 0, NULL),
 (36, 'comunica', 'list_events.php', 4, 0, 0, 16),
 (37, 'comunica', 'list_messages.php?messages=sent', 4, 0, 0, 21),
@@ -81,7 +76,7 @@ INSERT INTO `menu_page` (`tree_id`, `module`, `script`, `user_type`, `self_instr
 (42, 'browsing', 'external_link.php?file=practitioner_it.html', 4, 0, 0, 29),
 (43, 'tutor', 'edit_tutor.php', 4, 0, 0, 11),
 (44, 'main', 'default', 4, 0, 0, 105),
-(45, 'browsing', 'view.php', 4, 0, 0, NULL),
+(45, 'browsing', 'view.php', 4, 0, 0, 152),
 (46, 'browsing', 'main_index.php?op=forum', 4, 0, 0, 22),
 (47, 'browsing', 'search.php', 4, 0, 0, 28),
 (48, 'comunica', 'chat.php', 4, 0, 0, 24),
@@ -176,20 +171,25 @@ INSERT INTO `menu_page` (`tree_id`, `module`, `script`, `user_type`, `self_instr
 (146, 'browsing', 'exercise.php', 1, 0, 0, NULL),
 (147, 'services', 'edit_exercise.php?op=edit', 1, 0, 0, 77),
 (148, 'switcher', 'edit_content.php', 6, 0, 0, NULL),
-(149, 'browsing', 'view.php', 4, 1, 0, 45),
-(150, 'browsing', 'default', 4, 1, 0, 10),
-(151, 'browsing', 'search.php', 4, 1, 0, 28),
 (152, 'browsing', 'sview.php', 3, 0, 0, NULL),
-(153, 'browsing', 'external_link.php?file=gpl.txt', 3, 0, 0, 29);
+(153, 'browsing', 'external_link.php?file=gpl.txt', 3, 0, 0, 29),
+(154, 'switcher', 'zoom_user.php', 6, 0, 0, 105),
+(155, 'switcher', 'assign_practitioner.php', 6, 0, 0, 105),
+(156, 'tutor', 'eguidance_tutor_form.php', 6, 0, 0, 105),
+(157, 'switcher', 'edit_lservice.php', 6, 0, 0, 105),
+(158, 'browsing', 'external_link.php?file=gpl.txt', 6, 0, 0, 29),
+(159, 'switcher', 'delete_lservice.php', 6, 0, 0, 105),
+(160, 'browsing', 'external_link.php?file=gpl.txt', 4, 0, 0, 29),
+(161, 'browsing', 'sview.php', 4, 0, 0, 152),
+(162, 'tutor', 'eguidance_tutor_form.php', 4, 0, 0, NULL),
+(163, 'tutor', 'service_info.php', 4, 0, 0, 105),
+(164, 'tutor', 'user_service_detail.php', 4, 0, 0, 105),
+(165, 'tutor', 'zoom_user.php', 4, 0, 0, 105),
+(166, 'browsing', 'external_link.php?file=gpl.txt', 1, 0, 0, 29);
 
 /*!40101 SET CHARACTER_SET_CLIENT=@OLD_CHARACTER_SET_CLIENT */;
 /*!40101 SET CHARACTER_SET_RESULTS=@OLD_CHARACTER_SET_RESULTS */;
 /*!40101 SET COLLATION_CONNECTION=@OLD_COLLATION_CONNECTION */;
-
-
---
-
--- --------------------------------------------------------
 
 --
 -- Struttura della tabella `menu_items`
@@ -211,7 +211,7 @@ CREATE TABLE IF NOT EXISTS `menu_items` (
   `order` int(3) unsigned NOT NULL DEFAULT '0',
   `enabledON` varchar(128) COLLATE utf8_unicode_ci NOT NULL DEFAULT '%ALWAYS%',
   PRIMARY KEY (`item_id`)
-) ENGINE=MyISAM  DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci AUTO_INCREMENT=140 ;
+) ENGINE=MyISAM  DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci AUTO_INCREMENT=146 ;
 
 --
 -- Dump dei dati per la tabella `menu_items`
@@ -337,31 +337,19 @@ INSERT INTO `menu_items` (`item_id`, `label`, `extraHTML`, `icon`, `icon_size`, 
 (136, 'Modifica esercizio', NULL, 'edit', NULL, NULL, '%HTTP_ROOT_DIR%/services', 'edit_exercise.php?op=edit', NULL, NULL, 0, 0, 5, '%ALWAYS%'),
 (137, 'Modifica home page ', NULL, 'edit', NULL, NULL, '%HTTP_ROOT_DIR%/admin', 'edit_content.php', NULL, NULL, 0, 0, 40, '%ALWAYS%'),
 (138, 'documenti', NULL, 'file', 'large', NULL, '%HTTP_ROOT_DIR%/browsing', 'download.php', NULL, NULL, 0, 0, 15, '%ALWAYS%'),
-(139, 'contenuti', NULL, 'globe', 'large', '{"onclick":"javascript: $j(''#menuright'').sidebar({overlay:true}).sidebar(''toggle'');"}', NULL, NULL, NULL, NULL, 0, 0, 25, '%ALWAYS%');
+(139, 'contenuti', NULL, 'globe', 'large', '{"onclick":"javascript: $j(''#menuright'').sidebar({overlay:true}).sidebar(''toggle'');"}', NULL, NULL, NULL, NULL, 0, 0, 25, '%ALWAYS%'),
+(140, 'chiudi', NULL, 'off', 'large', '{"onclick":"javascript:self.close();"}', NULL, NULL, NULL, NULL, 0, 0, 500, '%ALWAYS%'),
+(141, 'Riepilogo attività', NULL, 'browser', NULL, NULL, '%HTTP_ROOT_DIR%/admin', 'log_report.php', NULL, NULL, 0, 0, 0, '%ALWAYS%'),
+(142, 'Edit switcher_hu_images content', NULL, 'photo', NULL, NULL, '%HTTP_ROOT_DIR%/admin', 'edit_content.php?type=switcher_hu_images', NULL, NULL, 0, 0, 0, '%ALWAYS%'),
+(143, 'Edit user_hu_images content', NULL, 'photo', NULL, NULL, '%HTTP_ROOT_DIR%/admin', 'edit_content.php?type=user_hu_images', NULL, NULL, 0, 0, 0, '%ALWAYS%'),
+(144, 'Edit author_hu_images content', NULL, 'photo', NULL, NULL, '%HTTP_ROOT_DIR%/admin', 'edit_content.php?type=author_hu_images', NULL, NULL, 0, 0, 0, '%ALWAYS%'),
+(145, 'Edit tutor_hu_images content', NULL, 'photo', NULL, NULL, '%HTTP_ROOT_DIR%/admin', 'edit_content.php?type=tutor_hu_images', NULL, NULL, 0, 0, 0, '%ALWAYS%');
 
 /*!40101 SET CHARACTER_SET_CLIENT=@OLD_CHARACTER_SET_CLIENT */;
 /*!40101 SET CHARACTER_SET_RESULTS=@OLD_CHARACTER_SET_RESULTS */;
 /*!40101 SET COLLATION_CONNECTION=@OLD_COLLATION_CONNECTION */;
 
-
--- phpMyAdmin SQL Dump
--- version 4.0.6deb1
--- http://www.phpmyadmin.net
---
--- Host: localhost
--- Generato il: Ott 14, 2014 alle 16:13
--- Versione del server: 5.5.37-0ubuntu0.13.10.1
--- Versione PHP: 5.5.3-1ubuntu2.6
-
-SET SQL_MODE = "NO_AUTO_VALUE_ON_ZERO";
-SET time_zone = "+00:00";
-
-
-/*!40101 SET @OLD_CHARACTER_SET_CLIENT=@@CHARACTER_SET_CLIENT */;
-/*!40101 SET @OLD_CHARACTER_SET_RESULTS=@@CHARACTER_SET_RESULTS */;
-/*!40101 SET @OLD_COLLATION_CONNECTION=@@COLLATION_CONNECTION */;
-/*!40101 SET NAMES utf8 */;
-
+-- --------------------------------------------------------
 
 --
 -- Struttura della tabella `menu_tree`
@@ -380,11 +368,6 @@ CREATE TABLE IF NOT EXISTS `menu_tree` (
 --
 
 INSERT INTO `menu_tree` (`tree_id`, `parent_id`, `item_id`, `extraClass`) VALUES
-(2, 0, 14, ''),
-(2, 0, 15, ''),
-(2, 0, 16, ''),
-(2, 16, 17, ''),
-(2, 16, 18, ''),
 (3, 0, 1, ''),
 (3, 0, 15, ''),
 (3, 0, 16, ''),
@@ -408,7 +391,10 @@ INSERT INTO `menu_tree` (`tree_id`, `parent_id`, `item_id`, `extraClass`) VALUES
 (152, 0, 2, ''),
 (152, 0, 1, ''),
 (5, 0, 24, ''),
+(3, 0, 24, ''),
+(130, 22, 145, ''),
 (139, 0, 24, ''),
+(130, 22, 144, ''),
 (79, 2, 3, ''),
 (6, 0, 1, ''),
 (6, 0, 20, ''),
@@ -431,8 +417,7 @@ INSERT INTO `menu_tree` (`tree_id`, `parent_id`, `item_id`, `extraClass`) VALUES
 (7, 22, 39, ''),
 (7, 0, 24, ''),
 (7, 0, 9, ''),
-(9, 22, 100, ''),
-(9, 0, 11, ''),
+(9, 0, 139, ''),
 (10, 0, 1, ''),
 (10, 0, 2, ''),
 (10, 2, 3, ''),
@@ -502,7 +487,7 @@ INSERT INTO `menu_tree` (`tree_id`, `parent_id`, `item_id`, `extraClass`) VALUES
 (23, 0, 48, ''),
 (24, 0, 54, ''),
 (24, 0, 24, ''),
-(9, 22, 99, ''),
+(130, 22, 142, ''),
 (82, 0, 24, ''),
 (82, 0, 55, ''),
 (84, 0, 56, ''),
@@ -545,39 +530,16 @@ INSERT INTO `menu_tree` (`tree_id`, `parent_id`, `item_id`, `extraClass`) VALUES
 (40, 16, 18, ''),
 (40, 0, 9, ''),
 (34, 20, 21, ''),
-(34, 0, 22, ''),
-(34, 22, 23, ''),
-(34, 0, 15, ''),
+(162, 0, 24, ''),
+(162, 0, 140, ''),
 (34, 0, 24, ''),
 (34, 0, 16, ''),
 (34, 16, 17, ''),
 (34, 16, 18, ''),
 (34, 0, 9, ''),
-(45, 0, 2, ''),
-(45, 2, 3, ''),
-(45, 2, 4, ''),
-(45, 2, 25, ''),
-(45, 2, 26, ''),
-(45, 2, 27, ''),
-(45, 0, 16, ''),
-(45, 16, 17, ''),
-(45, 16, 18, ''),
-(45, 0, 1, ''),
-(45, 0, 9, ''),
-(45, 0, 10, ''),
-(45, 0, 11, ''),
-(45, 0, 20, ''),
-(45, 0, 22, ''),
-(45, 0, 24, ''),
-(45, 20, 21, ''),
-(45, 20, 28, ''),
-(45, 20, 29, ''),
 (53, 2, 3, ''),
 (53, 0, 2, ''),
 (53, 0, 1, ''),
-(45, 20, 33, ''),
-(45, 22, 23, ''),
-(45, 22, 34, ''),
 (139, 0, 0, ''),
 (84, 0, 24, ''),
 (53, 2, 50, ''),
@@ -745,6 +707,7 @@ INSERT INTO `menu_tree` (`tree_id`, `parent_id`, `item_id`, `extraClass`) VALUES
 (79, 22, 103, ''),
 (79, 22, 102, ''),
 (79, 22, 101, ''),
+(130, 22, 143, ''),
 (79, 16, 18, ''),
 (79, 16, 17, ''),
 (79, 0, 16, ''),
@@ -759,16 +722,14 @@ INSERT INTO `menu_tree` (`tree_id`, `parent_id`, `item_id`, `extraClass`) VALUES
 (77, 0, 24, ''),
 (77, 0, 56, ''),
 (77, 0, 9, ''),
-(9, 22, 98, ''),
-(9, 22, 97, ''),
-(9, 22, 96, ''),
-(9, 22, 23, ''),
-(9, 0, 22, ''),
+(130, 22, 141, ''),
+(9, 20, 21, ''),
+(9, 0, 138, ''),
 (9, 20, 33, ''),
 (9, 20, 28, ''),
 (9, 0, 20, ''),
 (9, 0, 10, ''),
-(9, 2, 4, ''),
+(9, 2, 3, ''),
 (9, 0, 2, ''),
 (9, 0, 1, ''),
 (106, 0, 1, ''),
@@ -782,7 +743,7 @@ INSERT INTO `menu_tree` (`tree_id`, `parent_id`, `item_id`, `extraClass`) VALUES
 (69, 0, 9, ''),
 (69, 0, 24, ''),
 (79, 0, 2, ''),
-(69, 22, 23, ''),
+(9, 20, 29, ''),
 (69, 22, 95, ''),
 (69, 0, 22, ''),
 (69, 0, 1, ''),
@@ -797,6 +758,8 @@ INSERT INTO `menu_tree` (`tree_id`, `parent_id`, `item_id`, `extraClass`) VALUES
 (68, 2, 49, ''),
 (68, 0, 2, ''),
 (68, 0, 1, ''),
+(4, 0, 9, ''),
+(4, 0, 24, ''),
 (79, 22, 111, ''),
 (79, 2, 112, ''),
 (105, 0, 1, ''),
