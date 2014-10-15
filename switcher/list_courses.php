@@ -93,12 +93,15 @@ if(is_array($coursesAr) && count($coursesAr) > 0) {
 
 $label = translateFN('Lista corsi');
 $help = translateFN('Da qui il provider admin può vedere la lista dei corsi presenti sul provider');
+
 $chatrooms_link = '<a href="'.HTTP_ROOT_DIR . '/comunica/list_chatrooms.php">'. translateFN('Lista chatrooms');
 
 $imgAvatar = $userObj->getAvatar();
 $avatar = CDOMElement::create('img','src:'.$imgAvatar);
 $avatar->setAttribute('class', 'img_user_avatar');
 
+$Li_edit_home_page="";
+   
 $content_dataAr = array(
     'user_name' => $user_name,
     'user_type' => $user_type,
@@ -110,7 +113,9 @@ $content_dataAr = array(
     'ajax_chat_link' => $chatrooms_link,
     'messages' => $user_messages->getHtml(),
     'user_avatar'=>$avatar->getHtml(),
-	'user_modprofilelink' => $userObj->getEditProfilePage()
+	'user_modprofilelink' => $userObj->getEditProfilePage(),
+    'edit_profile'=>$userObj->getEditProfilePage(),
+    'messages' => $user_messages->getHtml()
 );
 
 ARE::render($layout_dataAr, $content_dataAr);

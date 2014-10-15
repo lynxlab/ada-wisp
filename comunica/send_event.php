@@ -217,8 +217,6 @@ if (!isset($destinatari)) {
 if (!isset($course_title)) {
   $course_title = "";
 }
-// if javascript enabled !!!!
-$go_back = "<a href=\"javascript:self.close()\">".translateFN("chiudi")."<a>";
 //
 if ((empty($err_msg)) or (!isset($err_msg))){
   $err_msg = translateFN('Inserimento appuntamento');
@@ -247,6 +245,22 @@ $time = time() + get_timezone_offset($tester_TimeZone, SERVER_TIMEZONE);
 $imgAvatar = $userObj->getAvatar();
 $avatar = CDOMElement::create('img','src:'.$imgAvatar);
 $avatar->setAttribute('class', 'img_user_avatar');
+/*
+* Last access link
+*/
+
+if(isset($_SESSION['sess_id_course_instance'])){
+        $last_access=$userObj->get_last_accessFN(($_SESSION['sess_id_course_instance']),"UT",null);
+        $last_access=AMA_DataHandler::ts_to_date($last_access);
+  }
+  else {
+        $last_access=$userObj->get_last_accessFN(null,"UT",null);
+        $last_access=AMA_DataHandler::ts_to_date($last_access);
+  }
+  
+ if($last_access=='' || is_null($last_access)){
+    $last_access='-';
+}
 
 $content_dataAr = array(
   'user_name'      => $user_name,
@@ -255,7 +269,6 @@ $content_dataAr = array(
   'level'          => $user_level,
   'titolo'         => $titolo,
   'testo'          => trim($testo),
-  'go_back'        => $go_back,
   'destinatari'    => trim($destinatari),
   //'student_button' => $student_button,
   //'tutor_button'   => $tutor_button,
@@ -267,6 +280,7 @@ $content_dataAr = array(
   'timezone'       => $tester_TimeZone,
   'event_time'     => $event_time,
   'event_date'     => $event_date,
+  'last_visit' => $last_access,
   'rubrica'        => $ada_address_book->getHtml(), //$rubrica,
   'status'         => $err_msg
 );

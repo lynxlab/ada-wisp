@@ -344,14 +344,33 @@ $imgAvatar = $userObj->getAvatar();
 $avatar = CDOMElement::create('img','src:'.$imgAvatar);
 $avatar->setAttribute('class', 'img_user_avatar');
 
+/*
+* Last access link
+*/
+
+if(isset($_SESSION['sess_id_course_instance'])){
+        $last_access=$userObj->get_last_accessFN(($_SESSION['sess_id_course_instance']),"UT",null);
+        $last_access=AMA_DataHandler::ts_to_date($last_access);
+  }
+  else {
+        $last_access=$userObj->get_last_accessFN(null,"UT",null);
+        $last_access=AMA_DataHandler::ts_to_date($last_access);
+  }
+  
+ if($last_access=='' || is_null($last_access)){
+    $last_access='-';
+}
+
+
 $content_dataAr = array(
   'user_name'      => $user_name,
-  'level'          => $user_level,
   'titolo'         => $titolo,
   'user_type'      => $user_type,
   'user_avatar'    => $avatar->getHtml(),
+  'user_level'   => $user_level,
   'testo'          => trim($testo),
   'destinatari'    => $destinatari,
+  'last_visit' => $last_access,
   //'student_button' => $student_button,
   //'tutor_button'   => $tutor_button,
   //'author_button'  => $author_button,

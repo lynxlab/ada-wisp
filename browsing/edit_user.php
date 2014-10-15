@@ -342,9 +342,9 @@ if(isset($_SESSION['sess_id_course_instance']))
     $last_access=AMA_DataHandler::ts_to_date($last_access);
 }
  else {
-     $last_access=$userObj->get_last_accessFN(null,"UT",null);
-     $last_access=AMA_DataHandler::ts_to_date($last_access);
-     $user_level=translateFN('Nd');
+    $last_access=$userObj->get_last_accessFN(null,"UT",null);
+    $last_access=AMA_DataHandler::ts_to_date($last_access);
+    $user_level=translateFN('Nd');
  }
  if($last_access=='' || is_null($last_access)){
     $last_access='-';
@@ -358,12 +358,14 @@ $content_dataAr = array(
     'status' => $status,
     'course_title' => translateFN('Modifica profilo'),
     'data' => $data,
-    //'last_visit' => $userObj->get_last_accessFN(),
     'last_visit' => $last_access,
     'help' => $help,
 	'user_avatar'=>$avatar->getHtml(),		
-	'user_modprofilelink' => $userObj->getEditProfilePage()
+	'user_modprofilelink' => $userObj->getEditProfilePage(),
+	
 );
+
+
 
 /**
  * If it's a switcher the renderer is called by switcher/edit_user.php

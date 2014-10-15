@@ -541,27 +541,6 @@ $search_form = $fObj->getForm();
 
 $banner = include ROOT_DIR.'/include/banner.inc.php';
 
-
-$go_map = '<a href="map.php?map_type=lemma">'
-			. translateFN('mappa') . '</a>';
-/*
- * Chat link
- */
-$chat_link = "<a href='../comunica/ada_chat.php' target='_blank'>".translateFN("chat")."</a>";
-
-/*
- * Forum link
- */
-if ($id_profile == AMA_TYPE_AUTHOR) {
-  // authors cannot enter forums without an instance
-  $forum_link = translateFN("forum");
-}
-else {
-  $forum_link = "<a href=main_index.php?op=forum>".translateFN("forum")."</a>";
-}
-// $dh->add_node_history($sess_id_user, $sess_id_course, $sess_id_node);
-
-$back_link = "<a href='".$_SERVER['HTTP_REFERER']."' class='backLink' title='Go back'>".translateFN("Torna")."</a>";
 //show course istance name if isn't empty - valerio
 if (!empty($courseInstanceObj->title)) {
 	$course_title .= ' - '.$courseInstanceObj->title;
@@ -583,8 +562,6 @@ if(isset($_SESSION['sess_id_course_instance'])){
     $last_access='-';
 }
 $content_dataAr = array(
-  'chat_link'    => $chat_link,
-  'forum_link'   => $forum_link,
   'banner'       => $banner,
   'course_title' => "<a href='main_index.php'>".$course_title."</a>",
   'user_name'    => $user_name,

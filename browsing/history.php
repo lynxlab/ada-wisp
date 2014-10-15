@@ -53,23 +53,13 @@ if ($userObj instanceof ADALoggableUser) {
      */
     $user_historyObj = $userObj->getHistoryInCourseInstance($sess_id_course_instance);
     $visited_nodes_table = $user_historyObj->history_nodes_visited_FN();
-// Menu nodi visitati per periodo
-    $menu = translateFN('nodi visitati recentemente:') . "<br />\n";
-    $menu .= '<a href="history_details.php?period=1">' . translateFN('1 giorno') . "</a><br />\n";
-    $menu .= '<a href="history_details.php?period=5">' . translateFN('5 giorni') . "</a><br />\n";
-    $menu .= '<a href="history_details.php?period=15">' . translateFN('15 giorni') . "</a><br />\n";
-    $menu .= '<a href="history_details.php?period=30">' . translateFN('30 giorni') . "</a><br />\n";
-    $menu .= '<a href="history_details.php?period=all">' . translateFN('tutti') . "</a><br />\n";
-    $menu .= '<br />';
-
-    if ($op == 'list') {
+if ($op == 'list') {
 // Nodi visitati e numero di visite per ciascun nodo
         $history .= '<p>';
         $history .= $visited_nodes_table;
         $history .= '</p>';
-        $menu .= '<a href="history.php">' . translateFN('cronologia') . "</a><br>\n";
-    } else {
-        $menu .= '<a href="history.php?op=list">' . translateFN('nodi ordinati per visite') . "</a><br>\n";
+} else {
+        
 // Sommario
         $history .= '<p align="center">';
         $history .= $user_historyObj->history_summary_FN($sess_id_course);
@@ -146,7 +136,6 @@ if ($userObj instanceof ADALoggableUser) {
         $history .= $user_historyObj->history_last_nodes_FN('10');
         $history .= '</p>';
     }
-    $menu.= $last_node_visited . '<br>';
 } else {
     $history = translateFN('Cronologia non disponibile.');
 }
@@ -172,7 +161,6 @@ $imgAvatar = $userObj->getAvatar();
 $avatar = CDOMElement::create('img','src:'.$imgAvatar);
 $avatar->setAttribute('class', 'img_user_avatar');
 $content_dataAr = array(
-    'chat_link' => $chat_link,
     'banner' => $banner,
     'course_title' => '<a href="main_index.php">' . $course_title . '</a>',
     'user_name' => $user_name,
@@ -181,12 +169,12 @@ $content_dataAr = array(
     'last_visit' => $last_access,
     'status'=>$status,
     'path' => $node_path,
-    'menu' => $menu,
     'data' => $history,
     'messages' => $user_messages->getHtml(),
     'agenda' => $user_agenda->getHtml(),
     'chat_users' => $online_users,
 	'user_avatar'=>$avatar->getHtml(),
+	'edit_profile'=> $userObj->getEditProfilePage(),
 	'user_modprofilelink' => $userObj->getEditProfilePage()
 );
 /**

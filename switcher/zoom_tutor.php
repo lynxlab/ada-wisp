@@ -92,6 +92,7 @@ $content_dataAr = array(
   'help'      => $help,
   'status'    => $status,
   'user_name' => $user_name,
+  'edit_profile'=>$userObj->getEditProfilePage(),
   'user_type' => $user_type,
   'messages'  => $user_messages->getHtml(),
   'agenda'    => $user_agenda->getHtml(),

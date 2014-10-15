@@ -187,14 +187,13 @@ $home_link = CDOMElement::create('a','href:tutor.php');
 $home_link->addChild(new CText(translateFN("Practitioner's home")));
 $module = $home_link->getHtml() . ' > ' . $label;
 
-
-
 $content_dataAr = array(
   'user_name' => $user_name,
   'user_type' => $user_type,
   'status'    => $status,
   'path'      => $module,
   'label'     => $label,
+  'edit_profile'=> $userObj->getEditProfilePage(),
   'dati'      => $data
 );
 

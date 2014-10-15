@@ -10,7 +10,9 @@
         <div id="header">
             <template_field class="microtemplate_field" name="header">header</template_field>
         </div> <!-- / testata -->
-
+        <!-- menu -->
+            <template_field class="microtemplate_field" name="adamenu">adamenu</template_field>  
+        <!-- / menu -->
         <!-- contenitore -->
         <div id="container">
 		
@@ -107,17 +109,6 @@
                 </div>
             </div> <!-- /com_tools -->
         </div> <!-- / contenitore -->
-        <!-- MENU A TENDINA -->
-        <div id="mainmenu">
-            <ul id="menu">
-                <li id="selfclose">
-                    <a href="#" onClick="<template_field class="template_field" name="cancel">cancel</template_field>">
-                        <i18n>Annulla</i18n>
-                    </a>
-                </li>
-            </ul> <!-- / menu -->
-
-        </div> <!-- / MENU A TENDINA -->
 
         <!-- PIEDE -->
         <div id="footer">
