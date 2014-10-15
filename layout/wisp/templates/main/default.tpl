@@ -39,6 +39,7 @@
                                 <template_field class="template_field" name="status">status</template_field>
                             </span> </div>
                     </div>
+                    </div>
                     <!-- / dati utente -->
                     <!-- label -->
                     <div id="label">
@@ -57,7 +58,7 @@
                         </div>
                     </div>
                     <!-- /label -->
-                </div>
+               
             </div>
 
             <!-- contenuto -->

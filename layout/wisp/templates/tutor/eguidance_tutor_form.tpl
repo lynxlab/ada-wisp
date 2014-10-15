@@ -10,7 +10,9 @@
 <div id="header">
 <template_field class="microtemplate_field" name="header">header</template_field>
 </div> 
-
+<!-- menu -->
+    <template_field class="microtemplate_field" name="adamenu">adamenu</template_field>  
+<!-- / menu --> 
 <!-- contenitore -->
 <div id="container">
 <!-- PERCORSO -->
@@ -22,6 +24,7 @@
 </div> <!-- / percorso -->
 
 <!--dati utente-->
+<div id="status_bar">
 <div id="user_data" class="user_data_default">
                 		 <i18n>utente: </i18n>
                 		 					 <span>
@@ -37,7 +40,9 @@
                     		 			 <template_field class="template_field" name="status">status</template_field>
                     		 </span>
 										 </div>
-</div> <!-- / dati utente -->
+</div> 
+</div>
+<!-- / dati utente -->
 <!-- label -->
 <div id="label">
 		 <div class="topleft">
@@ -67,15 +72,6 @@
 </div>
 </div> <!--  / contenuto --> 
 </div> <!-- / contenitore -->
-<!-- MENU -->
-<div id="mainmenu">
-<ul id="menu">
-		<li id="selfclose">
-				<a href="#" onclick="javascript:self.close();"><i18n>chiudi</i18n></a> 
-		</li>
-
-</ul> <!-- / menu -->
-</div> <!-- / MAINMENU -->
 <!-- PIEDE -->
 <div id="footer">
 		 <template_field class="microtemplate_field" name="footer">footer</template_field>

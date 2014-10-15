@@ -270,6 +270,9 @@ if ($id_profile == AMA_TYPE_AUTHOR) {
 
 	$add_exercise = "<a href=\"$http_root_dir/services/add_exercise.php?id_node=$sess_id_node\">" .
 			translateFN('aggiungi esercizio') . "</a>";
+        
+        $add_node = "<a href=\"$http_root_dir/services/addnode.php?id_parent=$sess_id_node&id_course=$sess_id_course&type=LEAF\">" .
+			translateFN('aggiungi nodo') . "</a>";
 
 	$mod_enabled = TRUE;
 }
@@ -408,7 +411,7 @@ $content_dataAr['go_bookmarks_1'] = $go_bookmarks;
 $content_dataAr['go_bookmarks_2'] = $go_bookmarks;
 
 if ($mod_enabled) {
-	
+	$content_dataAr['add_node'] = $add_node;
 	$content_dataAr['edit_node'] = $edit_node;
 	$content_dataAr['delete_node'] = $delete_node;
 	$content_dataAr['add_exercise'] = $add_exercise;

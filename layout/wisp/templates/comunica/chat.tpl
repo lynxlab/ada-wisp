@@ -32,9 +32,11 @@
 	</div>		
 </div>
 <div id="status_bar">  
-<div id="user_data" class="user_data_default">
-  <template_field class="microtemplate_field" name="user_data_mini_micro">user_data_mini_micro</template_field>
-</div><!-- / dati utente -->
+    <div id="user_data" class="user_data_default">
+      <template_field class="microtemplate_field" name="user_data_mini_micro">user_data_mini_micro</template_field>
+    </div>
+</div>
+<!-- / dati utente -->
           
           <!-- label -->
           <!-- /label -->
@@ -50,7 +52,7 @@
             <div id="bottomcont">
             </div>
           </div> <!--  / contenuto -->
-</div> <!-- / contenitore -->
+          <!-- / contenitore -->
 </div>
 <!-- MENU A TENDINA -->
 
