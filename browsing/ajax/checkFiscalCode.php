@@ -47,29 +47,34 @@ if (isset($_SERVER['REQUEST_METHOD']) && $_SERVER['REQUEST_METHOD'] == 'GET' &&
     	$msg = translateFN('Utenza di tipo').': ';
     	$userType = null;
     	
-    	foreach ($GLOBALS['user_type_file'] as $aUserType=>$filename) {
-    		if (!is_null($filename) && is_file($userTypeFilesDir.$filename)) {
-    			$handle = fopen($userTypeFilesDir.$filename, 'r');
-    			$foundUser = false;
-    			while (($buffer = fgets($handle)) !== false) {
-    				if (trim($buffer)===trim($fiscalcode)) {
-    					$foundUser = true;
-    					break; // Once you find the fiscalcode, break out the loop.    					
+    	if (DataValidator::validate_italian_fiscalcode($fiscalcode)!==false) {
+    		foreach ($GLOBALS['user_type_file'] as $aUserType=>$filename) {
+    			if (!is_null($filename) && is_file($userTypeFilesDir.$filename)) {
+    				$handle = fopen($userTypeFilesDir.$filename, 'r');
+    				$foundUser = false;
+    				while (($buffer = fgets($handle)) !== false) {
+    					if (strtoupper(trim($buffer))===strtoupper(trim($fiscalcode))) {
+    						$foundUser = true;
+    						break; // Once you find the fiscalcode, break out the loop.
+    					}
+    				}
+    				fclose($handle);
+    				if ($foundUser) {
+    					$userType = $aUserType;
+    					break;
     				}
     			}
-    			fclose($handle);
-    			if ($foundUser) {
-    				$userType = $aUserType;
-    				break;
-    			}
     		}
+    	
+    		if (is_null($userType)) {
+    			$userType = AMA_TYPE_USER_GENERIC;
+    		}
+    	
+    		$retArray = array ("status"=>"OK", "msg"=>$msg.translateFN($GLOBALS['user_type_labels'][$userType]), "userType"=>$userType);    		    		
+    	} else {
+    		$retArray = array ("status"=>"OK", "msg"=>translateFN('Codice fiscale non valido'));
     	}
     	
-    	if (is_null($userType)) {
-    		$userType = AMA_TYPE_USER_GENERIC;
-    	}
-    	
-    	$retArray = array ("status"=>"OK", "msg"=>$msg.translateFN($GLOBALS['user_type_labels'][$userType]), "userType"=>$userType);
     	
 }
 

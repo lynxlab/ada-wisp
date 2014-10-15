@@ -66,8 +66,8 @@ class UserRegistrationForm extends FForm
         	->withData(AMA_TYPE_USER_GENERIC)->setHidden();
         
         $this->addTextInput('codice_fiscale', translateFN('Codice Fiscale'))
-        	->setRequired()->setValidator(FormValidator::NOT_EMPTY_STRING_VALIDATOR);
-        
+        	->setRequired()->setValidator(FormValidator::ITALIAN_FISCALCODE_VALIDATOR);
+                
         $accetto = translateFN ('accetto i');
         $termini = translateFN('termini di servizio e le norme sulla privacy');
         
