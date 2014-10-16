@@ -48,12 +48,13 @@ a:visited { text-decoration: none; }
     margin: 0;
     padding: 0 0 0 10px;
     */
-    background: none repeat scroll 0 0 #BF236C;
-    color: #FFFFFF;
-    height: 28px;
-    line-height: 35px;
-    margin-top: 12px;
-    padding: 0 0 0 10px;
+    background: #980404;
+    color: #ffffff;
+    padding-top: 2px;
+    padding-right: 0px;
+    padding-bottom: 2px;
+    padding-left: 10px;
+    margin: 10px 0 15px;
 }
 
 #user_wrap 	{background:#4a4a4a no-repeat 99% 50%; width:100%}

@@ -3,7 +3,7 @@
 -- http://www.phpmyadmin.net
 --
 -- Host: localhost
--- Generato il: Ott 16, 2014 alle 11:51
+-- Generato il: Ott 16, 2014 alle 13:39
 -- Versione del server: 5.5.37-0ubuntu0.13.10.1
 -- Versione PHP: 5.5.3-1ubuntu2.6
 
@@ -201,10 +201,6 @@ INSERT INTO `menu_page` (`tree_id`, `module`, `script`, `user_type`, `self_instr
 /*!40101 SET COLLATION_CONNECTION=@OLD_COLLATION_CONNECTION */;
 
 --
-
--- --------------------------------------------------------
-
---
 -- Struttura della tabella `menu_items`
 --
 
@@ -364,9 +360,6 @@ INSERT INTO `menu_items` (`item_id`, `label`, `extraHTML`, `icon`, `icon_size`, 
 /*!40101 SET CHARACTER_SET_RESULTS=@OLD_CHARACTER_SET_RESULTS */;
 /*!40101 SET COLLATION_CONNECTION=@OLD_COLLATION_CONNECTION */;
 
-
-
---
 -- Struttura della tabella `menu_tree`
 --
 
@@ -555,6 +548,7 @@ INSERT INTO `menu_tree` (`tree_id`, `parent_id`, `item_id`, `extraClass`) VALUES
 (53, 2, 3, ''),
 (53, 0, 2, ''),
 (53, 0, 1, ''),
+(34, 20, 146, ''),
 (152, 2, 26, ''),
 (5, 20, 146, ''),
 (139, 0, 0, ''),
