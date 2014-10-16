@@ -229,11 +229,8 @@ if(!AMA_DataHandler::isError($courseInstances)) {
 
                             $courseInstanceId = $Instance['id_istanza_corso'];
                             $nodeId = $courseId . '_0';
-
-                            $link_Manuale = CDOMElement::create('a');
-                            $link_Manuale->setAttribute('href', 'view.php?id_node='.$nodeId.'&id_course='.$courseId.'&id_course_instance='.$courseInstanceId.'#'.$nodeId);
-                            $link_Manuale->addChild(new CText(translateFN('Manuale')));
-
+                            $link_Manuale = 'browsing/view.php?id_node='.$nodeId.'&id_course='.$courseId.'&id_course_instance='.$courseInstanceId.'#'.$nodeId;
+                            
                         }
                         else{
 
@@ -552,15 +549,15 @@ if($last_access=='' || is_null($last_access))
             $content_dataAr['bloccoUnoTitolo'] =  '<h2>'.translateFN('Le ultime notizie').'</h2>';
             $content_dataAr['bloccoUnoH3Widget'] =  '<h3>'.translateFN('Twitter').'</h3>';
         }
-        if(is_object($link_Manuale)){
-            $content_dataAr['manuale'] = $link_Manuale->getHtml();
+        if(!is_null($link_Manuale)){
+            $content_dataAr['manuale'] = $link_Manuale;
+            $content_dataAr['info'] = translateFN('Manuale');
         }
         else
         {
-            $link_info = CDOMElement::create('a');
-            $link_info->setAttribute('href', HTTP_ROOT_DIR.'/info.php');
-            $link_info->addChild(new CText(translateFN('Informazioni')));
-            $content_dataAr['manuale'] = $link_info->getHtml();
+            $link_info='info.php';
+            $content_dataAr['manuale'] = $link_info;
+            $content_dataAr['info'] = translateFN('Informazioni');
         }
 	$content_dataAr['status'] = $status;
 //        $content_dataAr['events'] = $user_events_2->getHtml().$user_events->getHtml();

@@ -9,7 +9,9 @@
         <div id="header">
             <template_field class="microtemplate_field" name="header">header</template_field>
         </div> <!-- / testata -->
-
+        <!-- menu -->
+            <template_field class="microtemplate_field" name="adamenu">adamenu</template_field>  
+        <!-- / menu --> 
         <!-- contenitore -->
         <div id="container">
             <!-- PERCORSO -->
@@ -60,35 +62,6 @@
         </div>
         <!-- / contenitore -->
 
-        <!-- menu a tendina -->
-        <div id="mainmenu">
-            <ul id="menu">
-                <li id="home">
-                    <a href="../../browsing/user.php">
-                        <i18n>home</i18n>
-                    </a>
-                </li>
-                <li id="back">
-                    <a href="javascript:history.go(-1)"><i18n>Indietro</i18n></a>
-				</li> 
-                <li id="question_mark" class="unselectedquestion_mark">
-                    <a href="../../help.php" target="_blank">
-                        <i18n>aiuto</i18n>
-                    </a>
-                </li>
-                <li id="esc">
-                    <a href="../../index.php">
-                        <i18n>esci</i18n>
-                    </a>
-                </li>
-            </ul>
-            <!-- tendina -->
-            <div id="dropdownmenu">
-            </div>
-            <!--/tendina -->
-
-        </div>
-        <!-- / menu a tendina -->
 
         <!-- piede -->
         <div id="footer">

@@ -3,7 +3,7 @@
 -- http://www.phpmyadmin.net
 --
 -- Host: localhost
--- Generato il: Ott 15, 2014 alle 15:01
+-- Generato il: Ott 16, 2014 alle 11:51
 -- Versione del server: 5.5.37-0ubuntu0.13.10.1
 -- Versione PHP: 5.5.3-1ubuntu2.6
 
@@ -15,6 +15,10 @@ SET time_zone = "+00:00";
 /*!40101 SET @OLD_CHARACTER_SET_RESULTS=@@CHARACTER_SET_RESULTS */;
 /*!40101 SET @OLD_COLLATION_CONNECTION=@@COLLATION_CONNECTION */;
 /*!40101 SET NAMES utf8 */;
+
+--
+-- Database: `holis-sespius_common`
+--
 
 -- --------------------------------------------------------
 
@@ -32,7 +36,7 @@ CREATE TABLE IF NOT EXISTS `menu_page` (
   `linked_tree_id` int(11) DEFAULT NULL,
   PRIMARY KEY (`tree_id`),
   UNIQUE KEY `module` (`module`,`script`,`user_type`,`self_instruction`)
-) ENGINE=MyISAM  DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci AUTO_INCREMENT=167 ;
+) ENGINE=MyISAM  DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci AUTO_INCREMENT=172 ;
 
 --
 -- Dump dei dati per la tabella `menu_page`
@@ -65,6 +69,9 @@ INSERT INTO `menu_page` (`tree_id`, `module`, `script`, `user_type`, `self_instr
 (27, 'services', 'addnode.php?op=preview', 3, 0, 0, 84),
 (28, 'browsing', 'search.php', 3, 0, 0, NULL),
 (29, 'browsing', 'external_link.php?file=user_it.html', 3, 0, 0, NULL),
+(171, 'switcher', 'add_lservice.php', 6, 0, 0, 105),
+(170, 'modules/lex', 'default', 6, 0, 0, 124),
+(169, 'modules/HolisSearch', 'default', 6, 0, 0, 124),
 (34, 'tutor', 'default', 4, 0, 0, NULL),
 (36, 'comunica', 'list_events.php', 4, 0, 0, 16),
 (37, 'comunica', 'list_messages.php?messages=sent', 4, 0, 0, 21),
@@ -171,6 +178,8 @@ INSERT INTO `menu_page` (`tree_id`, `module`, `script`, `user_type`, `self_instr
 (146, 'browsing', 'exercise.php', 1, 0, 0, NULL),
 (147, 'services', 'edit_exercise.php?op=edit', 1, 0, 0, 77),
 (148, 'switcher', 'edit_content.php', 6, 0, 0, NULL),
+(168, 'modules/HolisSearch', 'default', 3, 0, 0, 124),
+(167, 'modules/lex', 'default', 3, 0, 0, 124),
 (152, 'browsing', 'sview.php', 3, 0, 0, NULL),
 (153, 'browsing', 'external_link.php?file=gpl.txt', 3, 0, 0, 29),
 (154, 'switcher', 'zoom_user.php', 6, 0, 0, 105),
@@ -192,6 +201,10 @@ INSERT INTO `menu_page` (`tree_id`, `module`, `script`, `user_type`, `self_instr
 /*!40101 SET COLLATION_CONNECTION=@OLD_COLLATION_CONNECTION */;
 
 --
+
+-- --------------------------------------------------------
+
+--
 -- Struttura della tabella `menu_items`
 --
 
@@ -211,7 +224,7 @@ CREATE TABLE IF NOT EXISTS `menu_items` (
   `order` int(3) unsigned NOT NULL DEFAULT '0',
   `enabledON` varchar(128) COLLATE utf8_unicode_ci NOT NULL DEFAULT '%ALWAYS%',
   PRIMARY KEY (`item_id`)
-) ENGINE=MyISAM  DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci AUTO_INCREMENT=146 ;
+) ENGINE=MyISAM  DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci AUTO_INCREMENT=148 ;
 
 --
 -- Dump dei dati per la tabella `menu_items`
@@ -305,7 +318,7 @@ INSERT INTO `menu_items` (`item_id`, `label`, `extraHTML`, `icon`, `icon_size`, 
 (103, 'lista studenti', NULL, 'basic users', NULL, NULL, '%HTTP_ROOT_DIR%/switcher', 'list_users.php?list=students', NULL, NULL, 0, 0, 15, '%ALWAYS%'),
 (104, 'aggiungi utente', NULL, 'basic add user', NULL, NULL, '%HTTP_ROOT_DIR%/switcher', 'add_user.php', NULL, NULL, 0, 0, 20, '%ALWAYS%'),
 (105, 'lista corsi', NULL, 'browser', NULL, NULL, '%HTTP_ROOT_DIR%/switcher', 'list_courses.php', NULL, NULL, 0, 0, 25, '%ALWAYS%'),
-(106, 'aggiungi corso', NULL, 'book', NULL, NULL, '%HTTP_ROOT_DIR%/switcher', 'add_course.php', NULL, NULL, 0, 0, 30, '%ALWAYS%'),
+(106, 'aggiungi corso', NULL, 'book', NULL, NULL, '%HTTP_ROOT_DIR%/switcher', 'add_lservice.php', NULL, NULL, 0, 0, 30, '%ALWAYS%'),
 (107, 'traduci messaggi', NULL, 'edit', NULL, NULL, '%HTTP_ROOT_DIR%/switcher', 'translation.php', NULL, NULL, 0, 0, 30, '%ALWAYS%'),
 (108, 'applicazioni', NULL, 'settings', NULL, NULL, '%MODULES_APPS_HTTP%', '', NULL, NULL, 0, 0, 40, '%MODULES_APPS%'),
 (109, 'importa corso', NULL, 'download disk', NULL, NULL, '%MODULES_IMPEXPORT_HTTP%', 'import.php', NULL, NULL, 0, 0, 45, '%MODULES_IMPEXPORT%'),
@@ -343,13 +356,15 @@ INSERT INTO `menu_items` (`item_id`, `label`, `extraHTML`, `icon`, `icon_size`, 
 (142, 'Edit switcher_hu_images content', NULL, 'photo', NULL, NULL, '%HTTP_ROOT_DIR%/admin', 'edit_content.php?type=switcher_hu_images', NULL, NULL, 0, 0, 0, '%ALWAYS%'),
 (143, 'Edit user_hu_images content', NULL, 'photo', NULL, NULL, '%HTTP_ROOT_DIR%/admin', 'edit_content.php?type=user_hu_images', NULL, NULL, 0, 0, 0, '%ALWAYS%'),
 (144, 'Edit author_hu_images content', NULL, 'photo', NULL, NULL, '%HTTP_ROOT_DIR%/admin', 'edit_content.php?type=author_hu_images', NULL, NULL, 0, 0, 0, '%ALWAYS%'),
-(145, 'Edit tutor_hu_images content', NULL, 'photo', NULL, NULL, '%HTTP_ROOT_DIR%/admin', 'edit_content.php?type=tutor_hu_images', NULL, NULL, 0, 0, 0, '%ALWAYS%');
+(145, 'Edit tutor_hu_images content', NULL, 'photo', NULL, NULL, '%HTTP_ROOT_DIR%/admin', 'edit_content.php?type=tutor_hu_images', NULL, NULL, 0, 0, 0, '%ALWAYS%'),
+(146, 'fonti', NULL, 'book', NULL, NULL, '%HTTP_ROOT_DIR%/modules/lex/', NULL, NULL, NULL, 0, 0, 0, '%MODULES_LEX%'),
+(147, '<template_field class="template_field" name="info">info</template_field>', '', 'info', NULL, NULL, '%HTTP_ROOT_DIR%', '<template_field class="template_field" name="manuale">manuale</template_field>', NULL, NULL, 0, 0, 0, '%ALWAYS%');
 
 /*!40101 SET CHARACTER_SET_CLIENT=@OLD_CHARACTER_SET_CLIENT */;
 /*!40101 SET CHARACTER_SET_RESULTS=@OLD_CHARACTER_SET_RESULTS */;
 /*!40101 SET COLLATION_CONNECTION=@OLD_COLLATION_CONNECTION */;
 
--- --------------------------------------------------------
+
 
 --
 -- Struttura della tabella `menu_tree`
@@ -382,7 +397,7 @@ INSERT INTO `menu_tree` (`tree_id`, `parent_id`, `item_id`, `extraClass`) VALUES
 (5, 0, 2, ''),
 (5, 2, 3, ''),
 (5, 0, 16, ''),
-(5, 16, 17, ''),
+(5, 16, 147, ''),
 (5, 16, 18, ''),
 (5, 0, 9, ''),
 (5, 0, 20, ''),
@@ -540,6 +555,8 @@ INSERT INTO `menu_tree` (`tree_id`, `parent_id`, `item_id`, `extraClass`) VALUES
 (53, 2, 3, ''),
 (53, 0, 2, ''),
 (53, 0, 1, ''),
+(152, 2, 26, ''),
+(5, 20, 146, ''),
 (139, 0, 0, ''),
 (84, 0, 24, ''),
 (53, 2, 50, ''),
@@ -890,7 +907,7 @@ INSERT INTO `menu_tree` (`tree_id`, `parent_id`, `item_id`, `extraClass`) VALUES
 (152, 16, 18, ''),
 (152, 2, 3, ''),
 (152, 2, 25, ''),
-(152, 2, 26, ''),
+(79, 22, 146, ''),
 (152, 20, 21, ''),
 (152, 20, 28, ''),
 (152, 20, 29, ''),

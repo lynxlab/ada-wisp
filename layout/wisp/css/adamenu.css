@@ -2,7 +2,7 @@
 .ui.menu.ada { 
 	font-family: "Helvetica Neue", "Helvetica", Arial;
 	border-radius:0;
-	border-bottom: 2px solid #7da238;
+	border-bottom: 2px solid #4a4a4a; 
        /* background-color: #1C68AD; */
 	
 }
@@ -33,7 +33,7 @@
 	width: 100%;
 }
 .ui.computer.inverted.teal.menu {
-    background-color: #7da238;
+    background-color: #4a4a4a;
 }
 @media only screen and (max-width : 1220px) {
     .ui.menu.ada .searchItem { width: 9em; }
@@ -61,11 +61,11 @@
 .ada.mobile.row.menubutton .menubutton-container { padding: 0 10px 0 10px;}
 
 .ui.labeled.teal.button, .ui.teal.buttons .button {
-    background-color: #7da238;
+    background-color: #4a4a4a;
     color: #fff;
 }
 .ui.mobile.inverted.teal.menu {
-    background-color: #7da238;
+    background-color: #4a4a4a;
 }
 /**
  * menuright styles
@@ -115,10 +115,10 @@ div.right.sidebar .accordion .content.field table.table_link_table { width:100%;
 div.right.sidebar .accordion .content.field table.table_link_table tbody td img { display: inline; vertical-align: middle; } 
 
 .ui.teal.block.dividing.header {
-    border-bottom: 3px solid #7da238;
+    border-bottom: 3px solid #4a4a4a;
 }
 .ui.teal.block.header {
-    color: #7da238 !important;
+    color: #4a4a4a !important;
 }
  /**
   * end accordion

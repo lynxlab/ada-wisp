@@ -105,3 +105,14 @@ button.buttonTranslate:hover {
     color: #585857;
     font-weight: bold;
 }
+#journey {
+    background: #980404;
+    color: #ffffff;
+    padding-top: 2px;
+    padding-right: 0px;
+    padding-bottom: 2px;
+    padding-left: 10px;
+    height: 15px;
+    margin-top:2px;
+    margin-bottom:50px;
+}
