@@ -35,13 +35,6 @@ define('ADA_DEFAULT_TESTER_DB_USER',  'root');
 define('ADA_DEFAULT_TESTER_DB_PASS',  '');
 define('ADA_DEFAULT_TESTER_DB_HOST',  'localhost');
 
-/**
- * sets multiprovider flag, true is the default
- * multiprovider behaviour, false is single provider
- * each with its own home page and anonymous pages
- */
-define ('MULTIPROVIDER',false);
-
 if (MULTIPROVIDER) {
 	/**
 	 * In a single provider environment, each one
@@ -52,10 +45,21 @@ if (MULTIPROVIDER) {
 	 * ID of the public course to get the latest news
 	 */
 	define ('PUBLIC_COURSE_ID_FOR_NEWS', 1);
+        
 	/**
 	 * How many news to get from the above mentioned course
 	 */
 	define ('NEWS_COUNT', 3);
+        
+        /**
+         * Provider holidays feed, to be show on fullcalendar. Sample is italian holidays feed
+         */
+        define ('GCAL_HOLIDAYS_FEED','http://www.google.com/calendar/feeds/e327d6lm6r2kb555ce82ll4sbs@group.calendar.google.com/public/basic');	
+
+        /*
+         * Maximum number of appointment proposal the tutor can make
+         */
+        define ('MAX_PROPOSAL_COUNT',2);
 }
 
 define('ADA_DEFAULT_AVATAR','default_avatar.png');
