@@ -248,6 +248,16 @@ if (isset($_GET['file'])){
                                 $td->addChild(new CText('<a href=../browsing/view.php?id_node='.$id_node.'>'.$node_name.'</a>'));
                                 $tr->addChild($td);
                                 
+                                if ($userObj->getType()==AMA_TYPE_TUTOR) {
+                                	$td = CDOMElement::create('td');
+                                	$buttonDel = CDOMElement::create('button','class:deleteButton');
+                                	$buttonDel->setAttribute('style', 'height: 1.5em');
+                                	$buttonDel->setAttribute('onclick','javascript:deleteFile(\''.rawurlencode(translateFN('Confermi la cancellazione del file').' '.$filename.' ?').'\',\''.rawurlencode($complete_file_name).'\',\'row'.$i.'\');');
+                                	$buttonDel->setAttribute('title',translateFN('Clicca per cancellare il file'));
+                                	$td->addChild($buttonDel);
+                                	$tr->addChild($td);
+                                }
+                                
                             }   
                         }
 		}
