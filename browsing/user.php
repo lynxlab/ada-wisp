@@ -41,12 +41,13 @@ $serviceProviders = $userObj->getTesters();
 $courseInstances = array();
 if (count($serviceProviders) == 1) {
     $provider_dh = AMA_DataHandler::instance(MultiPort::getDSN($serviceProviders[0]));
-    $courseInstances = $provider_dh->get_course_instances_active_for_this_student($userObj->getId());
-//    $courseInstances = $provider_dh->get_course_instances_for_this_student($userObj->getId());
+    //$courseInstances = $provider_dh->get_course_instances_active_for_this_student($userObj->getId());
+    $courseInstances = $provider_dh->get_course_instances_for_this_student($userObj->getId());
 } else {
     foreach ($serviceProviders as $Provider) {
         $provider_dh = AMA_DataHandler::instance(MultiPort::getDSN($Provider));
-        $courseInstances_provider = $provider_dh->get_course_instances_active_for_this_student($userObj->getId());
+        //$courseInstances_provider = $provider_dh->get_course_instances_active_for_this_student($userObj->getId());
+        $courseInstances_provider = $provider_dh->get_course_instances_for_this_student($userObj->getId());
         $courseInstances = array_merge($courseInstances, $courseInstances_provider);
     }
 }
@@ -115,11 +116,11 @@ if(!AMA_DataHandler::isError($courseInstances)) {
 
                         $access_link = BaseHtmlLib::link("#", translateFN('Attendi che ti contatti un consulente...'));
 
-                        if ($subscription_status != ADA_STATUS_SUBSCRIBED && $subscription_status != ADA_STATUS_VISITOR) {
+                        if ($subscription_status != ADA_STATUS_SUBSCRIBED && $subscription_status != ADA_STATUS_VISITOR && $subscription_status!= ADA_SERVICE_SUBSCRIPTION_STATUS_COMPLETED) {
                                 $access_link = BaseHtmlLib::link("#",translateFN('Attendi che ti contatti un consulente...'));
                         } elseif ($isStarted && !$isEnded) {
                                 $tutorAssignedAR = $dh->course_instance_tutor_info_get($courseInstanceId,1);
-                                if (!AMA_DataHandler::isError($tutorAssignedAR) && count($tutorAssignedAR) > 0) {
+                                if (!AMA_DataHandler::isError($tutorAssignedAR) && sizeof($tutorAssignedAR) > 0 && $tutorAssignedAR[0] != '') {
                                     $tutorText = sprintf(translateFN('ti sta aiutando %s'), ucfirst($tutorAssignedAR[1]) . ' ' . ucfirst($tutorAssignedAR[2]));
                                 } else {
                                     $tutorText = '';
@@ -241,7 +242,7 @@ if(!AMA_DataHandler::isError($courseInstances)) {
 
                         $access_link = BaseHtmlLib::link("#", translateFN('Non sei ancora abilitato a partecipare...'));
 
-                        if ($subscription_status != ADA_STATUS_SUBSCRIBED && $subscription_status != ADA_STATUS_VISITOR) {
+                        if ($subscription_status != ADA_STATUS_SUBSCRIBED && $subscription_status != ADA_STATUS_VISITOR && $subscription_status!= ADA_SERVICE_SUBSCRIPTION_STATUS_COMPLETED) {
                                 $access_link = BaseHtmlLib::link("#",translateFN('Non sei ancora abilitato a partecipare...'));
                         } elseif ($isStarted && !$isEnded) {
                                 $tutorAssignedAR = $dh->course_instance_tutor_info_get($courseInstanceId,1);
