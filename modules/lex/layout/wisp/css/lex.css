@@ -251,13 +251,6 @@ form#exporteurovocForm #l_exportLang {
 #resetEurovocBtnContainer {
 	text-align: center;
 }
-/*
- * this is needed to have the dialog
- * and the overlay on top of the menu bar
- */
-.ui-front {
-z-index: 1200 !important;
-}
 
 /*
  * sourcesTable jQuery dataTable
