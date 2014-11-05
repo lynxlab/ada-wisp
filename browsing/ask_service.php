@@ -434,7 +434,7 @@ if(!AMA_DataHandler::isError($courseInstances) && (!empty($courseInstances))){
             $service = CDOMElement::create('div');
             $service->setAttribute('class', 'single_service');
             $access_link = BaseHtmlLib::link("#", translateFN('Attendi che ti contatti un consulente...'));
-            if ($subscription_status != ADA_STATUS_SUBSCRIBED && $subscription_status != ADA_STATUS_VISITOR) {
+            if ($subscription_status != ADA_STATUS_SUBSCRIBED && $subscription_status != ADA_STATUS_VISITOR && $subscription_status!= ADA_SERVICE_SUBSCRIPTION_STATUS_COMPLETED) {
                     $access_link = BaseHtmlLib::link("#",translateFN('Attendi che ti contatti un consulente...'));
             } elseif ($isStarted && !$isEnded){
                 $tutorAssignedAR = $dh->course_instance_tutor_info_get($courseInstanceId,1);
