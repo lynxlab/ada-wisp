@@ -64,6 +64,13 @@ padding: 10px;
     font-size: 12px;
 }
 
+#footer_ask {
+    background: none repeat scroll 0 0 #efeded;
+    padding: 4px 7px 5px 0;
+    position:relative;
+    margin-top: 23%;
+}
+
 
 /* blocco accordion */
 
