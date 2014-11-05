@@ -1,13 +1,13 @@
 <?php
+
 /**
- * mylog - this module provides management of a personal diary
+ * mylog - this module provides print of a personal log
  *
  *
  * @package
  * @author		Stefano Penge <steve@lynxlab.com>
  * @author		Maurizio "Graffio" Mazzoneschi <graffio@lynxlab.com>
- * @author		Vito Modena <vito@lynxlab.com>
- * @copyright		Copyright (c) 2009-2011, Lynx s.r.l.
+ * @copyright		Copyright (c) 2009-2014, Lynx s.r.l.
  * @license		http://www.gnu.org/licenses/gpl-2.0.html GNU Public License v.2
  * @link
  * @version		0.2
@@ -42,7 +42,6 @@ require_once ROOT_DIR . '/include/module_init.inc.php';
 $self = whoami();
 include_once 'include/browsing_functions.inc.php';
 
-require_once ROOT_DIR . '/include/Forms/LogForm.inc.php';
 
 $debug = 0; 
 $mylog_mode = 0; // default: only one file for user
@@ -50,20 +49,14 @@ $mylog_mode = 0; // default: only one file for user
 $log_extension = ".htm";	
 
 
-$self =  whoami();  // = mylog
+$self =  whoami();  // = mylog_print
 
 //$classi_dichiarate = get_declared_classes();
 //mydebug(__LINE__,__FILE__,$classi_dichiarate);
 
 $ymdhms = today_dateFN();
 
-//import_request_variables("gP","");
-
 // ******************************************************
-$reg_enabled = TRUE; // link to edit bookmarks
-$log_enabled = TRUE; // link to history 
-$mod_enabled = TRUE; // link to modify nod/tes
-$com_enabled = TRUE;  // link to comunicate among users
 // Get user object
 $userObj = read_user_from_DB($sess_id_user);
 //print_r($userObj);
@@ -85,7 +78,7 @@ if ((is_object($userObj)) && (!AMA_dataHandler::isError($userObj))) {
         $user_name =  $userObj->username;
         $user_family = $userObj->template_family; 
 } else {
-$errObj = new ADA_error(translateFN("Utente non trovato"),translateFN("Impossibile proseguire."));
+    $errObj = new ADA_error(translateFN("Utente non trovato"),translateFN("Impossibile proseguire."));
 }
 
 // set the  title:	 
@@ -126,27 +119,6 @@ if (isset($sess_id_course) &&  (!($sess_id_course=="")) && $each_course) {
 if (!file_exists($logfile))
 	$fp = fopen($logfile,'w');
 
-//set the  body:
-
-if (isset($_SERVER['REQUEST_METHOD']) && $_SERVER['REQUEST_METHOD'] == 'POST')
-{
-    $form = new LogForm();
-    $form->fillWithPostData();
-    
-    if (isset($_POST['log_today']))
-    {
-       $log = $_POST['log_today']; //."<br/>".$_POST['log_today'];
-       $i = fopen($logfile,'w');
-       if (get_magic_quotes_gpc()) {
-	       $res = fwrite($i,stripslashes($log));
-	}else{
-	       $res = fwrite($i,$log);
-	}
-       $res = fclose($i);
-   }
-    $msg = translateFN("Le informazioni sono state registrate.");
-}
-// } else {
 if ($fp = fopen($logfile,'r'))
 	$log_text = fread ($fp,16000);
 else
@@ -168,89 +140,41 @@ if (isset($op) && ($op=="export")){
     exit;
 } else {
     
-    $date = today_dateFN()." ".today_timeFN()."\n";
-    $arrayLogAr = array(
-        'log_text' => $log_text,
-        'log_today' => $date.'<br />'.$log_text
-    );
-    $form = new LogForm();
-    $form->fillWithArrayData($arrayLogAr);   
-    $log_form = $form->render();
+   $date = today_dateFN()." ".today_timeFN()."\n";
 
-   $log_data.= $log_text;
+   $log_data = $log_text;
 }
 
-
-// Who's online
-// $online_users_listing_mode = 0 (default) : only total numer of users online
-// $online_users_listing_mode = 1  : username of users
-// $online_users_listing_mode = 2  : username and email of users
-
-$online_users_listing_mode = 2;
-$online_users = ADALoggableUser::get_online_usersFN($id_course_instance,$online_users_listing_mode);
-
-
-/*
- $online_users_listing_mode = 0;
-
-// vito 19 gennaio 2009
-//$online_users = User::get_online_usersFN($id_course_instance,$online_users_listing_mode);
-if(isset($sess_id_course_instance) && !empty($sess_id_course_instance)) {
-  $online_users = User::get_online_usersFN($sess_id_course_instance,$online_users_listing_mode);
-}
-else {
-  $online_users = '';
-}
-*/
-
-$export_log_link = "<a href=$http_root_dir/browsing/mylog.php?op=export>".translateFN("Esporta")."</a><br/>";
-$menu = $export_log_link;
-$print_link = '<a href='.$http_root_dir.'/browsing/mylog_print.php target="_blank">'.translateFN("Stampa")."</a>";
-$help = translateFN('Nel Diario si possono inserire i propri commenti privati. Esportarli per conservarli').'. '. $print_link;
 
 $banner = include ("$root_dir/include/banner.inc.php");
 
 
-
+/*
  $body_onload = "includeFCKeditor('log_today'); \$j('input, a.button, button').uniform();";
  $options = array('onload_func' => $body_onload);
+ * 
+ */
 
  $imgAvatar = $userObj->getAvatar();
  $avatar = CDOMElement::create('img','src:'.$imgAvatar);
  $avatar->setAttribute('class', 'img_user_avatar');
-         
+ $course_title = translateFN('Diario personale');
+
+ $layout_family = $_SESSION['sess_userObj']->template_family;
+ 
 $node_data = array(
        'banner'=>$banner,
-       'course_title'=>'<a href="main_index.php">'.$course_title.'</a>',
-       'today'=>$ymdhms,
-       'path'=>$node_path,
+       'course_title'=>$course_title,
+       'date'=>$ymdhms,
        'user_name'=>$userObj->nome,
-       'user_type'=>$user_type,
-       'user_level'=>$user_level,
-       'last_visit'=>$last_access,
-//                   'data'=>$log_data,
-       'data'=>$log_form,
-       'menu'=>$menu,
+       'user_type'=>$userObj->convertUserTypeFN($id_profile),
+       'data'=>$log_data,
        'help'=>$help,
-       'bookmarks'=>$user_bookmarks,
        'status'=>$status,
-       'profilo'=>$profilo,
-       'myforum'=>$my_forum,
-       'title'=>$node_title,
-       'user_avatar'=>$avatar->getHtml(),
-       'user_modprofilelink' => $userObj->getEditProfilePage()		
+       'logo'=>'<img src="'.HTTP_ROOT_DIR.'/layout/'.$layout_family.'/img/header-logo.png" alt="logo">',
+      'user_avatar'=>$avatar->getHtml()
     );
 
-if ($com_enabled){
-   $node_data['messages']=$user_messages->getHtml();
-   $node_data['agenda']=$user_agenda->getHtml();
-   $node_data['events']=$user_events->getHtml();
-   $node_data['chat_users']=$online_users;
-} else {
-   $node_data['messages'] = translateFN("messaggeria non abilitata");
-   $node_data['agenda']=translateFN("agenda non abilitata");
-   $node_data['chat_users']="";
-}
  if(isset($msg))
 {
     $help=CDOMElement::create('label');
@@ -258,19 +182,27 @@ if ($com_enabled){
     $node_data['help']=$help->getHtml();
 }
 
-	$layout_dataAr['JS_filename'] = array(
-		JQUERY,
-		JQUERY_UI,
-		JQUERY_UNIFORM,
-		JQUERY_NO_CONFLICT
-     );
-	
-	$layout_dataAr['CSS_filename'] = array (
-			JQUERY_UI_CSS,
-			JQUERY_UNIFORM_CSS
-	);	
 
-ARE::render($layout_dataAr,$node_data, NULL, $options);
+$layout_dataAr['JS_filename'] = array(
+        JQUERY,
+        JQUERY_UI,
+        JQUERY_NO_CONFLICT
+);
+	
+$layout_dataAr['CSS_filename'] = array (
+                JQUERY_UI_CSS,
+);	
+
+//ARE::render($layout_dataAr,$node_data, NULL, $options);
+
+$PRINT_optionsAr = array(
+		'id'=>$id_node,
+		'url'=>$_SERVER['URI'],
+		'course_title' => strip_tags($content_dataAr['course_title']),
+		'portal' => $eportal,
+		'onload_func' => 'window.print();window.close()'
+);
+ARE::render($layout_dataAR,$node_data, ARE_PRINT_RENDER, $PRINT_optionsAr);
 
 /* Versione XML:
 
