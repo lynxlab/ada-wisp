@@ -117,6 +117,45 @@ include_once ROOT_DIR.'/comunica/include/ADAEventProposal.inc.php';
           }
       }
       $updateInstance = $dh->course_instance_set($id_course_instance,$instanceInfoAr);
+      
+      if($updateInstance && ($eguidance_dataAr['status_service'] == $status_closed)){
+       /*
+        *  change user status 
+        */
+        $result = $dh->course_instance_students_presubscribe_get_list($id_course_instance);
+        if(AMA_DataHandler::isError($result)) {
+            $errObj = new ADA_Error($result, translateFN('Errore in ottenimento stato iscrizione utente'));
+        }
+        // In WISP we have only one user subscribed to a course instance
+        $id_student = $result[0]['id_utente_studente'];
+        $result = $dh->course_instance_student_subscribe($id_course_instance, $id_student, ADA_SERVICE_SUBSCRIPTION_STATUS_COMPLETED);
+        if(AMA_DataHandler::isError($result)) {
+            $errObj = new ADA_Error($result, translateFN('Errore in aggiornamento stato iscrizione utente'));
+        }
+      }
+      elseif($updateInstance && ($eguidance_dataAr['status_service'] == $status_opened)){
+       /*
+        *  change user status 
+        */
+        $result = $dh->course_instance_students_presubscribe_get_list($id_course_instance);
+        if(AMA_DataHandler::isError($result)) {
+            $errObj = new ADA_Error($result, translateFN('Errore in ottenimento stato iscrizione utente'));
+        }
+        // In WISP we have only one user subscribed to a course instance
+        $id_student = $result[0]['id_utente_studente'];
+        $tutorAssigned= $dh->course_instance_tutor_get($id_course_instance,1); 
+        if($tutorAssigned){
+            $result = $dh->course_instance_student_subscribe($id_course_instance, $id_student, ADA_STATUS_SUBSCRIBED);
+            if(AMA_DataHandler::isError($result)) {
+                $errObj = new ADA_Error($result, translateFN('Errore in aggiornamento stato iscrizione utente'));
+            }
+        }else{
+            $result = $dh->course_instance_student_subscribe($id_course_instance, $id_student, ADA_STATUS_PRESUBSCRIBED);
+            if(AMA_DataHandler::isError($result)) {
+                $errObj = new ADA_Error($result, translateFN('Errore in aggiornamento stato iscrizione utente'));
+            }
+          }
+      }
 }
  
   //createCSVFileToDownload($_POST);
