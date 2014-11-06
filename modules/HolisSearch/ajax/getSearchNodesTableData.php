@@ -157,11 +157,11 @@ if (isset($_SERVER['REQUEST_METHOD']) && $_SERVER['REQUEST_METHOD'] == 'POST' &&
 							$queryParams[] = 'id_node='.$res_id_node;
 							if (strlen($querystring)>0) $queryParams[] = $querystring;
 							
-							$viewNodeLink = CDOMElement::create('a','class:tooltip,target:_blank,href:'.HTTP_ROOT_DIR.'/browsing/view.php?'.implode('&', $queryParams));
+							$viewNodeLink = CDOMElement::create('a','class:tooltip,target:_lextarget,href:'.HTTP_ROOT_DIR.'/browsing/view.php?'.implode('&', $queryParams));
 							$viewNodeLink->setAttribute('title', translateFN('Clicca per andare al contenuto'));
 							$viewNodeLink->addChild(new CText($res_name));
 							
-// 							$html_for_result = "<a href=\"".HTTP_ROOT_DIR."/browsing/view.php?".implode('&', $queryParams)."\" target=\"_blank\">$res_name</a>";
+// 							$html_for_result = "<a href=\"".HTTP_ROOT_DIR."/browsing/view.php?".implode('&', $queryParams)."\" target=\"_lextarget\">$res_name</a>";
 							// clean queryParams for next iteration
 							unset($queryParams);
 						}

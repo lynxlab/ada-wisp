@@ -23,6 +23,8 @@ var dataTableObj = null;
 var selectedRowID = null;
 // array for the (one and only) html select object in the table
 var selectArray = null;
+// options passed to the initDoc function
+var opts = null;
 
 // common options for peke uploader
 var commonPekeOptions = {
@@ -33,9 +35,12 @@ var commonPekeOptions = {
 		onFileError: function(file,error) { fileError = true; }
 };
 
-function initDoc(maxSize, userId, canEdit) {
+function initDoc(maxSize, userId, canEdit, passedOpts) {
 	// conver canEdit to a boolean
 	canEdit = (canEdit > 0);
+
+	// default options to an empty object
+	opts = passedOpts || {};
 
 	$j(document).ready(function() {
 		// init the tabs
@@ -546,6 +551,9 @@ function initDataTables (element, canEdit) {
 				// send the sourceID to the server
 				"fnServerParams": function ( aoData ) {
 				      aoData.push( { "name": "sourceID", "value": sourceID });
+				      if (opts.assetID) {
+				    	  aoData.push( { "name": "assetID", "value": opts.assetID });  
+				      }
 				},
 			};
 		}
@@ -1201,6 +1209,18 @@ function initFancyTreeObj (element, canEdit, extraOptions) {
 			 *  mouse or keyboard generated events if the user cannot edit
 			 */
 			return (event.which) ? canEdit : true;
+		},
+		init : function() {
+			/**
+			 * if the options passed to initDoc contain one or more assetID,
+			 * simulate the click on the first row, so that the row shall open
+			 */
+			if ($j('#assetsTable').length>0) {
+				var firstRow = $j('#assetsTable').find('tbody tr').first()[0];
+				if (opts.assetID && !dataTableObj.fnIsOpen(firstRow)) { 
+					setTimeout (function(){ $j('.expandAssetButton').first().click(); }, 50); 
+				}
+			}
 		},
 		source: {
 			url: 'ajax/getEurovocTree.php'

@@ -34,6 +34,53 @@ class lexManagement
     	}
     }
     
+    public function runSourceAssetZoom ($sourceID, $assetID) {
+    	/* @var $html string holds html code to be retuned */
+    	$htmlObj = null;
+    	/* @var $path   string  path var to render in the help message */
+    	$help = translateFN('Benvenuto nel modulo LEX');
+    	/* @var $status string status var to render in the breadcrumbs */
+    	$title= translateFN('lex');
+    	
+    	$assetOK = true;
+    	
+    	if (is_array($assetID) && count($assetID)>0) {
+			/**
+			 * the datahandler is needed here
+			 */
+			$pointer = (!is_null($_SESSION['sess_selected_tester'])) ? $_SESSION['sess_selected_tester'] : MODULES_LEX_PROVIDER_POINTER;
+			if (isset($GLOBALS['dh'])) $GLOBALS['dh']->disconnect();					
+			$dh = AMALexDataHandler::instance(MultiPort::getDSN($pointer));
+			/**
+			 * get the source associated with the first asset and
+			 * assume all other assets are from the same source.
+			 * Should this assumption not be true, the asset that are
+			 * not from the same source as the first one will not be shown.
+			 */
+			$assetObj = $dh->asset_get(reset($assetID));
+			
+			if ($assetObj === false) {
+				$assetOK = false;
+			} else if (is_object($assetObj)) {
+				if(is_null($sourceID)) $sourceID = $assetObj->module_lex_fonti_id;
+			}
+		}
+		
+		if ($assetOK) {
+			$data = $this->runSourceZoom($sourceID);
+			$htmlObj = $data['htmlObj'];
+		} else {
+    		$htmlObj = CDOMElement::create('div','class:no-permissions');
+    		$htmlObj->addChild (new CText(translateFN('Asset inesistente o non valido')));		
+		}
+		
+		return array(
+				'htmlObj'   => $htmlObj,
+				'help'      => $help,
+				'title'     => $title,
+		);
+    }
+    
     /**
      * build, manage and display the index.php?op=zoom page
      * 
@@ -51,7 +98,10 @@ class lexManagement
     	/* @var $status string status var to render in the breadcrumbs */
     	$title= translateFN('lex');
     	
-    	if ($this->canDo(ZOOM_SOURCE)) {
+    	if (is_null($sourceID)) {
+    		$htmlObj = CDOMElement::create('div','class:no-permissions');
+    		$htmlObj->addChild (new CText(translateFN('Non hai specificato una fonte')));
+    	} else if ($this->canDo(ZOOM_SOURCE)) {
     		
     		$jexObj = new jexManagement($this->_userObj);
     		$sourceArr = $jexObj->getSource($sourceID);

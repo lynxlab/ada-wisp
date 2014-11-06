@@ -198,11 +198,10 @@ $layout_dataAr['JS_filename'] = array(
 );
 
 $maxFileSize = (int) (ADA_FILE_UPLOAD_MAX_FILESIZE / (1024*1024));
-// $optionsAr['onload_func'] = 'initDoc('.$maxFileSize.','. $userObj->getId().','.intval($userObj->getType()!=AMA_TYPE_STUDENT).');';
 
 $avatar = CDOMElement::create('img','class:img_user_avatar,src:'.$userObj->getAvatar());
 $content_dataAr['user_avatar'] = $avatar->getHtml();
 $content_dataAr['user_modprofilelink'] = $userObj->getEditProfilePage();
 
-ARE::render($layout_dataAr, $content_dataAr, NULL, $optionsAr);
+ARE::render($layout_dataAr, $content_dataAr);
 ?>

@@ -146,7 +146,7 @@ if (isset($_SERVER['REQUEST_METHOD']) && $_SERVER['REQUEST_METHOD'] == 'POST' &&
 				$subtitle = CDOMElement::create('span','class:typology');
 				$subtitle->addChild (new CText( $resultEl['tipologia'] ));
 				
-				$viewFontLink = CDOMElement::create('a','class:gotofont tooltip,target:_blank,href:'.MODULES_LEX_HTTP.'/index.php?op=zoom&id='.$j);
+				$viewFontLink = CDOMElement::create('a','class:gotofont tooltip,target:_lextarget,href:'.MODULES_LEX_HTTP.'/index.php?op=zoom&id='.$j);
 				$viewFontLink->setAttribute('title', translateFN('Clicca per andare alla fonte'));
 				$viewFontLink->addChild(new CText(translateFN('Vai alla Fonte')));
 				
@@ -154,12 +154,20 @@ if (isset($_SERVER['REQUEST_METHOD']) && $_SERVER['REQUEST_METHOD'] == 'POST' &&
 				
 				$resultDIV->addChild($title);
 				$title->addChild($subtitle);
-				
-				$baseLink = MODULES_LEX_HTTP . '/view.php?assetID=';
+
+				/**
+				 * if user is an author, link goes to zoom single asset
+				 */
+				$baseLink = MODULES_LEX_HTTP;
+				if ($userObj->getType() == AMA_TYPE_AUTHOR) {
+					$baseLink .= '/index.php?op=zoom&assetID=';
+				} else {
+					$baseLink .= '/view.php?assetID=';
+				}
 									
 				foreach ($resultEl['data'] as $dataEl) {
 					
-					$labelHref = CDOMElement::create('a','target:_blank,class:tooltip,href:'.$baseLink.$dataEl[AMALexDataHandler::$PREFIX.'assets_id']);
+					$labelHref = CDOMElement::create('a','target:_lextarget,class:tooltip,href:'.$baseLink.$dataEl[AMALexDataHandler::$PREFIX.'assets_id']);
 					// $labelHref->setAttribute('title', translateFN('Clicca per andare al testo'));
 					/**
 					 * if user is an author, show asset id as a tooltip

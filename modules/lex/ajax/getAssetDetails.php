@@ -116,7 +116,7 @@ if (isset($_SERVER['REQUEST_METHOD']) && $_SERVER['REQUEST_METHOD'] == 'GET' &&
 			foreach ($assetAbrogatedAr as $count=>$assetAbrogated) {
 				if (!isset($ulAbrogated)) $ulAbrogated = CDOMElement::create('ol','class:assetAbrogated');
 								
-				$link = CDOMElement::create('a','class:abrogatedLink,target:_blank,href:'.$baseHref.$assetAbrogated['abrogato_da']);
+				$link = CDOMElement::create('a','class:abrogatedLink,target:_lextarget,href:'.$baseHref.$assetAbrogated['abrogato_da']);
 				$link->addChild (new CText($assetAbrogated['label']));
 				
 				$spanDate = CDOMElement::create('span');
