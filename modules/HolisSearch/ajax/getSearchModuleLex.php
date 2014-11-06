@@ -186,9 +186,23 @@ if (isset($_SERVER['REQUEST_METHOD']) && $_SERVER['REQUEST_METHOD'] == 'POST' &&
 					} else {
 						$res_isabrogated = translateFN('No');
 					}
+					
+					$typeSpan = CDOMElement::create('span');
+					$typeSpan->addChild(new CText($dataEl['type']));
+					
+					if (in_array($dataEl['type'], array('ID','FT'))) {
+						$typeSpan->setAttribute('class', 'tooltip');
+						if ('ID'==$dataEl['type']) {
+							$typeSpan->setAttribute('title', translateFN('Risultato da termine Eurovoc'));
+						} else if ('FT'==$dataEl['type']) {
+							$typeSpan->setAttribute('title', translateFN('Risultato da ricerca testuale'));
+						}
+					}
+					
+					$res_type = $typeSpan->getHtml();
 			
 					$temp_results = array($thead_data[0] => $res_name, $thead_data[1] => $res_score, 
-										  $thead_data[2] => $res_isabrogated, $thead_data[3]=>$dataEl['type'] );
+										  $thead_data[2] => $res_isabrogated, $thead_data[3]=>$res_type );
 			
 					array_push ($resAr,$temp_results);
 				}
