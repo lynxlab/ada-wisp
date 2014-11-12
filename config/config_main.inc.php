@@ -352,4 +352,5 @@ define('JQUERY_UNIFORM_CSS',	ROOT_DIR.'/js/include/jquery/uniform/css/uniform.de
 
 define('SEMANTICUI_CSS',		ROOT_DIR.'/js/include/semantic/css/semantic.min.css');
 define('SEMANTICUI_JS',	 		ROOT_DIR.'/js/include/semantic/javascript/semantic.min.js');
-
+define('SMARTMENUS_CSS',		ROOT_DIR.'/js/include/smartmenus/css/sm-core-css.css');
+define('SMARTMENUS_JS',	 		ROOT_DIR.'/js/include/smartmenus/jquery.smartmenus.min.js');
