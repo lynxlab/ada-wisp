@@ -395,11 +395,11 @@ HolisSearchManagement.prototype.doSearch = function(searchCoursesIDs, hasModuleL
 			/**
 			 * REMOVE THESE 2 LINES IN PRODUCTION
 			 */
-			console.log (returnedObj.searchedURI);
-			console.log (thisReference.searchTermsArray.length + ' terms searched:');
-			console.log (thisReference.searchTermsArray);
-			console.log (thisReference.descripteurIds.length + ' descripteur ids searched:');
-			console.log (thisReference.descripteurIds);
+//			console.log (returnedObj.searchedURI);
+//			console.log (thisReference.searchTermsArray.length + ' terms searched:');
+//			console.log (thisReference.searchTermsArray);
+//			console.log (thisReference.descripteurIds.length + ' descripteur ids searched:');
+//			console.log (thisReference.descripteurIds);
 			
 			// start the module lex search if needed
 			if (thisReference.hasModuleLex) _runModuleLexSearch.call(thisReference);
