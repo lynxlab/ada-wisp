@@ -238,10 +238,10 @@ var HolisSearchManagement = (function() {
 				        },
 				        "bAutoWidth": false,
 				        "aoColumns" : [
-				                       { "sWidth": "60%" },				                       
+				                       { "sWidth": "60%" },
 				                       { "sWidth": "10%" , "bVisible" : false },
 				                       { "sWidth": "10%" },
-				                       { "sWidth": "10%" },
+				                       { "sWidth": "10%" }
 				                       ],
 				        "fnInitComplete": function(settings, json) {
 				        	// reset dataTables_wrapper classes that were removed by dataTable
@@ -330,7 +330,7 @@ var HolisSearchManagement = (function() {
 							        "aoColumns" : [
 							                       { "sWidth": "60%" },
 							                       { "sWidth": "30%" },
-							                       { "sWidth": "10%" , "bVisible" : false},
+							                       { "sWidth": "10%" , "bVisible" : false}
 							                       ],
 									"oLanguage": {
 							            "sUrl": HTTP_ROOT_DIR + "/js/include/jquery/dataTables/dataTablesLang.php"
