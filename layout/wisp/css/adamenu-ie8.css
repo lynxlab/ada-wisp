@@ -6,7 +6,7 @@
 ---------------------------------------------------------------*/
 
 
-.ui.ada.menu { float:left; width: 100%; background-color: teal; color: white; 
+.ui.ada.menu { float:left; width: 100%; background-color: #4a4a4a; color: white; 
     
     border-radius:0;
     border-bottom: 1px solid #009F98;
@@ -89,19 +89,20 @@
 	}
 	.sm-ada li.ui.item.dropdown a:hover, .sm-ada a:focus, .sm-ada a:active,
 	.sm-ada a.highlighted {
-		background:#009F98;
-		color:#555;
+		background:#6a6a6a;
+		color:#f0f0f0;
 	}
 	
 	.sm-ada li.ui.item.dropdown ul li.item:hover,
 	.sm-ada li.ui.item.dropdown ul li.item a:hover {
-	   background: #eee;
+	   background: #eaeaea;
+	   color: #6a6a6a;
 	}
 	
 	/* current items - add the class manually to some item or check the "markCurrentItem" script option */
 	.sm-ada a.current, .sm-ada a.current:hover, .sm-ada a.current:focus, .sm-ada a.current:active {
 		background:#555;
-		color:#fff;
+		color:#000;
 	}
 	.sm-ada a.has-submenu {
 		padding-right:32px;

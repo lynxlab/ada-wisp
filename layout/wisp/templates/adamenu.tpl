@@ -6,7 +6,7 @@
 	
 	<div class="ui mobile only row ada menubutton">
 		<div class="menubutton-container">
-			<a class="ui labeled icon teal down small fluid button">
+			<a class="ui labeled icon teal down small fluid button dontuniform">
 		        <i class="reorder icon"></i><i18n>Menu</i18n></a>
 		</div>
 	</div>

@@ -70,6 +70,7 @@
 .ui.vertical.ada.mobile.menu .searchItem input[type="text"] { width: 100%; float:none; }
 .ui.vertical.ada.mobile.menu i.search.link.icon { margin-right: 1em; margin-top: 0.8em; }
 .ada.mobile.row.menubutton { padding-top: 0;}
+.ada.mobile.row.menubutton .ui.button:hover { background: #6a6a6a; }
 .ada.mobile.row.menubutton .menubutton-container { padding: 0 10px 0 10px;}
 .ada.mobile.row.menubutton { padding-top: 0; }
 .ada.mobile.row.menubutton .menubutton-container { padding: 0 10px 0 10px; }
