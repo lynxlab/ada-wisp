@@ -1,7 +1,8 @@
 @CHARSET "UTF-8";
 
 .saveResults.popup {
-	background: rgba(22, 101, 173, 0.9);
+	background: #1665AD;
+	opacity: 0.9;
 	padding: 5px 0px 15px 0px;    
 	-webkit-border-radius: 2px;    
     border-radius: 2px;
@@ -11,7 +12,8 @@
 }
 
 .saveResults.popup.error  {
-	background: rgba(222, 10, 17, 0.9);
+	background: #DE0A11;
+	opacity: 0.9;
 }
 
 .saveResults.nonAjax {
