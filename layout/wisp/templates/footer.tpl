@@ -1,3 +1,4 @@
+<div class="clearfix"></div>
 <div id="site-info">
 	<ul class="menu-site-info">
 		<li class="leaf first">Copyright &copy; 2014</li>
