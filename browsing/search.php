@@ -357,6 +357,7 @@ $content_dataAr = array(
   'agenda'=>$user_agenda->getHtml(),
   'events'=>$user_events->getHtml(),
   'chat_users'=>$online_users,
+  'user_modprofilelink' => $userObj->getEditProfilePage(),
   'user_avatar'=>$avatar->getHtml(),
   );
 
@@ -382,7 +383,6 @@ if($userObj->tipo==AMA_TYPE_STUDENT && ($self_instruction))
     array_push ($layout_dataAr['JS_filename'],ROOT_DIR.'/js/browsing/search.js');
 }
 
-$options['onload_func'] = 'dataTablesExec()';
 $menuOptions['self_instruction'] = $self_instruction;
 //"\$j('input, a.button, button').uniform();"
 ARE::render($layout_dataAr,$content_dataAr, NULL, array('onload_func' => "initDoc();"),$menuOptions);

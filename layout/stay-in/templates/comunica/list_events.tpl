@@ -65,13 +65,6 @@
 </div> <!--  / contenuto --> 
 </div> <!-- / contenitore -->
 
-<!-- PERCORSO -->
-<div id="journey">
-		 <i18n>dove sei: </i18n>
-		 <span>
-		 			 <i18n>agenda</i18n>
-		 </span>
-	</div> <!-- / percorso -->
 </div> <!-- / MAINMENU -->
 </div> 
 <!-- PIEDE -->
