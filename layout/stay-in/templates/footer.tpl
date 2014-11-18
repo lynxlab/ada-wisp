@@ -1,3 +1,4 @@
+<div class="clearfix"></div>
 <div id="site-info">
 <a href="/" title="stay-in" rel="home">stay-in</a>
 </div><!-- #site-info -->

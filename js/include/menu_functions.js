@@ -12,6 +12,176 @@ var EFFECT_BLIND_DURATION_IN_SECONDS = 0.3;
  */
 setUnreadMessagesBadge();
 
+/**
+ * hides the sidebar (aka menuright) from an
+ * href onclick event generated inside the sidebar
+ */
+function hideSideBarFromSideBar() {
+	if (IE_version==false || IE_version>8) {
+		$j('#menuright').sidebar('hide');
+		$j('li.item.active').removeClass('active');
+	} else {
+		if ($j('#menuright').is(':visible')) $j('#menuright').hide();
+	}
+
+}
+
+document.observe('dom:loaded', function() {
+	
+	/**
+	 * add trim method to String object
+	 */
+	
+	if(typeof String.prototype.trim !== 'function') {
+		  String.prototype.trim = function() {
+		    return this.replace(/^\s+|\s+$/g, ''); 
+		  }
+		}
+	/**
+	 * sets the dropdown menu to appear on hover
+	 * and the menuitem onclick handler for proper css class switching
+	 * 
+	 * WARNING: I'm using $j inside a function called by prototype
+	 * document observer. One day all shall be handled by jQuery... 
+	 * This is not going to harm anybody, but you've been warned
+	 */	
+	
+	/**
+	 * If it's not internet explorer or is IE>8
+	 * use semantic-ui components
+	 */
+	if (IE_version==false || IE_version>8) {
+		/**
+		 * Copy the .computer.menu HTML code, make the
+		 * needed changes and use it as a .mobile.menu
+		 */
+		if ($j('.ui.mobile.ada.menu').length>0) {
+			var menuHTML = $j('.ui.computer.ada.menu').clone();
+			$j(menuHTML).find('ul.left.menu').toggleClass('left menu sm sm-ada');
+			var rightMenu = $j(menuHTML).find('.right.menu');
+			if (rightMenu.length >0) {
+				rightMenu.remove();
+				$j(menuHTML).find('ul').first().append(rightMenu.html());
+			}
+
+			$j(menuHTML).find('.ui.dropdown.item').toggleClass('item').toggleClass('fluid').
+			wrap('<li class="item"><ul></ul></li>');
+			// use the generated html as the mobile menu
+			$j('.ui.mobile.ada.menu').html(menuHTML.html());
+			// hook the menubutton onclick to mobile menu display
+		    $j('.ui.mobile.ada.menubutton .ui.button').on('click', function() {
+		    	$j('#mobilesidebar').sidebar('toggle');
+		    });
+		}
+
+	    
+		// mobile dropdown on click
+    	/**
+    	 * @author giorgio 16/set/2014
+    	 * commented line to have a non-js working
+    	 * dropdown as a workaround to some bug causing
+    	 * firefox crash on xp and vista.
+    	 * Should you wish to revert to a js dropdown,
+    	 * remove the simple class from menu_functions.inc.php
+    	 * and uncomment the following line
+    	 */
+		// $j('.mobile.menu .dropdown').dropdown({ on: 'click' });
+
+		// enable menu items (non dropdown) active class
+		var menuItem = $j('.menu li.item, .menu .link.item').not('.closepanel');
+		menuItem.on('click', function() {
+		    if(!$j(this).hasClass('dropdown')) {
+		          $j(this).toggleClass('active').closest('.ui.menu')
+		          .find('.item').not($j(this)).removeClass('active');
+		    }
+		});
+		
+		// enable userpopup, if found
+		if ($j('li.item.userpopup').length>0 && $j('#status_bar').length>0) {
+			$j('#status_bar').hide();
+			$j('li.item.userpopup').popup({
+			    position: 'bottom center',
+			    html: $j('#status_bar').html(),
+			    on: 'click',
+			    onHide: function() {
+		    		$j('a.item.active').removeClass('active');
+			    }
+			  });
+		}
+		
+	    // perform search on search icon click
+    	if ($j('.search.link.icon').length>0) {
+    		$j('.search.link.icon').on('click',function(){
+    			var text = $j(this).siblings('input[type="text"]').val().trim();
+    			if (text.length>0) {
+    				document.location.href='search.php?s_UnicNode_text='+text+'&l_search=l_search&submit=cerca';
+    			}
+    		});
+    	}
+		
+	    // init and set resize for mobile sidebar if needed
+	    if ($j('#mobilesidebar').length>0) {
+	        $j('#mobilesidebar').sidebar();
+	        $j(window).resize(function() {
+	        	var w = $j(window).width();
+	        	if (w>768 && $j('#mobilesidebar').sidebar('is open')) {
+	        		$j('#mobilesidebar').sidebar('toggle');
+	        	}
+	        });
+	    }
+	    
+	    $j('.ui.accordion').accordion();
+	    
+	} else {
+		/**
+		 * it's internet explorer v.8 or less, use smartmenus
+		 */
+		$j('.ui.mobile.ada.menubutton ,#mobilesidebar').remove();
+		
+		$j('ul.left.menu, ul.right.menu').smartmenus({
+			subMenusSubOffsetX: 1,
+			subMenusSubOffsetY: -8,
+			subIndicators: false
+		});
+		
+		// enable show/hide userpopup, if found
+		if ($j('li.item.userpopup').length>0 && $j('#status_bar').length>0) {
+			$j('#status_bar').hide();
+			$j('li.item.userpopup').on('click',function() {
+				if($j('#status_bar').is(':visible')) {
+					$j('#status_bar').fadeOut();
+				} else {
+					$j('#status_bar').fadeIn();
+				}
+			});
+		}
+	}
+
+    // if there's the searchbox, make it work
+    if($j('.item.searchItem input[type="text"]').length>0) {
+		// perform search on searchmenutext enter key press
+		$j('.item.searchItem input[type="text"]').on('keyup', function(event){
+			if(event.which == 13) {
+				var text = $j(this).val().trim();
+    			if (text.length>0) {
+    				document.location.href='search.php?s_UnicNode_text='+text+'&l_search=l_search&submit=cerca';
+    			}
+			}
+		});
+    }
+    
+
+});
+
+function navigationPanelToggle() {
+	if (IE_version==false || IE_version>8) {
+		$j('#menuright').sidebar({overlay:true}).sidebar('toggle');
+	} else {
+		$j('#menuright').toggle('fade');
+		if (!index_loaded) showIndex();
+	}
+}
+
 /*
  * Per mostrare e nascondere elementi
  */
@@ -228,21 +398,32 @@ function dropDownMenuHide(element, direction) {
 function setUnreadMessagesBadge () {
 	document.observe('dom:loaded', function() {
 		// do something only if there is the 'comunica' menu item
-		if ($('com')!=undefined) {
+		/**
+		 * @author giorgio 21/ago/2014
+		 * FIXME:
+		 * when all templates menu are turned into semantic-ui
+		 * it is safe to remove all the $('com') related stuff
+		 */
+		if ($('com')!=undefined || $('unreadmsgbadge')!=undefined) {
 			new Ajax.Request( HTTP_ROOT_DIR+ '/comunica/ajax/getUnreadMessagesCount.php', {
 				method: 'get',
 				onComplete: function(transport) {
 					var json = transport.responseText.evalJSON(true);
 					var value = parseInt (json.value);
 					if (!isNaN(value) && value>0) {
-						var msgCounter = new Element('span',{
-							id:'newMsgCount'
-						});
-						msgCounter.style.display = 'none';
-						msgCounter.update("<span class='arrow'></span>"+value);
-						$('com').insert(msgCounter);
-						$('com').style.paddingRight = '10px';
-						Effect.Appear('newMsgCount',{ duration: 0.4 });						
+						if ($('com')!=undefined) {
+							var msgCounter = new Element('span',{
+								id:'newMsgCount'
+							});
+							msgCounter.style.display = 'none';
+							msgCounter.update("<span class='arrow'></span>"+value);
+							$('com').insert(msgCounter);
+							$('com').style.paddingRight = '0';
+							Effect.Appear('newMsgCount',{ duration: 0.4 });
+						} else if($('unreadmsgbadge')!=undefined) { // update span id
+							$('msglabel').show();
+							$('unreadmsgbadge').update(value);
+						}
 					}
 				}
 			});
@@ -267,4 +448,22 @@ function setUnreadMessagesBadge () {
 //			msgCounter.fadeIn();
 		}		
 	});
+}
+
+var index_loaded=false;
+function showIndex() {
+    if(!index_loaded) {
+	    $j.ajax({
+		type	: 'GET',
+		url     : HTTP_ROOT_DIR + '/browsing/ajax/index_menu.php',
+        dataType:'html',
+		async	: true,
+        success: function(data) {
+        		$j('#show_index').slideUp(function(){
+        			$j('#show_index').html(data).slideDown();
+        		});
+            	index_loaded=true;
+        	}
+	    });
+    }
 }

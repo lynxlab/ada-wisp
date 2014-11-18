@@ -10,6 +10,9 @@
 <div id="header">
 	<template_field class="microtemplate_field" name="header">header</template_field>
 </div> 
+<!-- menu -->
+    <template_field class="microtemplate_field" name="adamenu">adamenu</template_field>  
+<!-- / menu --> 
 <!-- contenitore -->
 <div id="container">
 <div id="user_wrap">
@@ -28,9 +31,12 @@
 			</div>
 	</div>		
 </div>
-<div id="user_data" class="user_data_default">
-  <template_field class="microtemplate_field" name="user_data_mini_micro">user_data_mini_micro</template_field>
-</div><!-- / dati utente -->
+<div id="status_bar">  
+    <div id="user_data" class="user_data_default">
+      <template_field class="microtemplate_field" name="user_data_mini_micro">user_data_mini_micro</template_field>
+    </div>
+</div>
+<!-- / dati utente -->
           
           <!-- label -->
           <!-- /label -->
@@ -46,16 +52,10 @@
             <div id="bottomcont">
             </div>
           </div> <!--  / contenuto -->
-</div> <!-- / contenitore -->
+          <!-- / contenitore -->
 </div>
 <!-- MENU A TENDINA -->
-<div id="mainmenucom">
-            <ul id="menu">
-            			<li id="selfclose">
-											<!--<a onclick="exitChat();"><i18n>chiudi</i18n></a>-->
-											<template_field class="template_field" name="exit_chat">exit_chat</template_field> 
-									</li>
-            </ul> <!-- / menu -->
+
                      <! -- PERCORSO -->
             <div id="journey">
             		 <i18n>dove sei: </i18n>

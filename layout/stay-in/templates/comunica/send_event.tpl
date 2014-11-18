@@ -10,6 +10,17 @@
 <div id="header">
 		 <template_field class="microtemplate_field" name="header_com">header_com</template_field>
 </div> 
+<!-- menu -->
+    <template_field class="microtemplate_field" name="adamenu">adamenu</template_field>  
+<!-- / menu -->
+<!-- PERCORSO -->
+<div id="journey">
+<i18n>dove sei: </i18n>
+    <span>
+        <i18n>agenda</i18n>
+    </span>
+</div> 
+<!-- / percorso -->
 <!-- contenitore -->
 <div id="container">
 <!--dati utente-->
@@ -29,7 +40,7 @@
 			</div>		
 </div>
 <!-- /label -->
-
+<div id="status_bar">
 <div id="user_data" class="user_data_default">
   <template_field class="microtemplate_field" name="user_data_mini_micro">user_data_mini_micro</template_field>
         <span class="timezone"><i18n>Ora: </i18n>
@@ -113,26 +124,7 @@
 </div> <!--  / contenuto -->
 </div> <!-- / contenitore -->
 
-<!-- MENU -->
-<div id="mainmenucom">
-<ul id="menu">
-		<li id="selfclose">
-				<a href="#" onClick="closeMeAndReloadParent();"><i18n>chiudi</i18n></a>
-		</li>
-		<li id="list">
-				<a href="list_events.php">
-    		 <i18n>appuntamenti</i18n>
-    	  </a>
-		</li>
-</ul> <!-- / menu -->
-<!-- PERCORSO -->
-<div id="journey">
-	<i18n>dove sei: </i18n>
-		<span>
-			<i18n>agenda</i18n>
-		</span>
-		</div> <!-- / percorso -->
-</div> <!-- / MENU -->
+</div> 
 <!-- PIEDE -->
 <div id="footer">
 	<template_field class="microtemplate_field" name="footer">footer</template_field>

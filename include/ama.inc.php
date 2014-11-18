@@ -859,7 +859,7 @@ abstract class Abstract_AMA_DataHandler {
         //ADALogger::log_db('Call to Abstract_AMA_DataHandler destructor');
         if(is_object($this->db) && method_exists($this->db,'disconnect')) {
             //ADALogger::log_db('Closing open connection to database');
-            $this->db->disconnect();
+            $this->disconnect();
         }
     }
 
@@ -868,6 +868,7 @@ abstract class Abstract_AMA_DataHandler {
         if(is_object($this->db) && method_exists($this->db,'disconnect')) {
             //ADALogger::log_db('Closing open connection to database');
             $this->db->disconnect();
+            $this->db = AMA_DB_NOT_CONNECTED;
         }
     }
 }
@@ -5967,35 +5968,60 @@ abstract class AMA_Tester_DataHandler extends Abstract_AMA_DataHandler {
         $score = $this->or_zero($student_data['score']);
         $msg_out= $this->or_zero($student_data['msg_out']);
         $msg_in = $this->or_zero($student_data['msg_in']);
-        $notes_out = $this->or_zero($student_data['notes_out']);
-        $notes_in = $this->or_zero($student_data['notes_in']);
+        $added_notes = $this->or_zero($student_data['added_notes']);
+        $read_notes = $this->or_zero($student_data['read_notes']);
         $chat = $this->or_zero($student_data['chat']);
         $bookmarks = $this->or_zero($student_data['bookmarks']);
         $index_att= $student_data['index'];
         $level= $student_data['level'];
+        $last_access = $this->or_zero($student_data['last_access']);
+        
+        if (MODULES_TEST) {
+        	$exercises_test = $this->or_zero($student_data['exercises_test']);
+        	$score_test = $this->or_zero($student_data['score_test']);
+        	$exercises_survey = $this->or_zero($student_data['exercises_survey']);
+        	$score_survey = $this->or_zero($student_data['score_survey']);
+        }
+        
         //		print_r($student_data);
 
-        $sql = "SELECT 'id_user','id_istanza_corso','data' from log_classi
+        $sql = "SELECT `id_user`,`id_istanza_corso`,`data`,`id_log` from log_classi
    			WHERE `id_istanza_corso`  =  $course_instance_id AND data = $date AND `id_user` = $user_id";
-
-        $res = $db->getOne($sql);
-        if (!empty($res)) {
-            return $res;  //data  already written
+        
+        $res = $this->getRowPrepared($sql, null, AMA_FETCH_ASSOC);
+        if (!AMA_DB::isError($res) && !empty($res)) {
+        	$id_log = $res['id_log'];
+            //data  already written, make an update
+            $sql = "update log_classi set visite=".$visits.", punti=".$score.",esercizi=".$exercises.
+            	   ", msg_out=".$msg_out.",msg_in=".$msg_in.",notes_out=".$added_notes.
+            	   ",notes_in=".$read_notes.",chat=".$chat.",bookmarks=".$bookmarks.
+            	   ",indice_att=".$index_att.",level=".$level.", last_access=".$last_access." where id_log=".$id_log;
         }
         else {
             // add a row into table log_classi
-            $sql =  "insert into log_classi (id_user,id_corso, id_istanza_corso, data, visite, punti,esercizi, msg_out,msg_in,notes_out,notes_in,chat,bookmarks,indice_att,level)";
+            $sql =  "insert into log_classi (id_user,id_corso, id_istanza_corso, data, visite, punti,esercizi, msg_out,msg_in,notes_out,notes_in,chat,bookmarks,indice_att,level,last_access)";
             $sql .= " values ($user_id,$course_id, $course_instance_id, $date, $visits, ";
-            $sql .= "$score,$exercises, $msg_out, $msg_in, $notes_out,$notes_in, $chat,$bookmarks, $index_att,$level);";
+            $sql .= "$score,$exercises, $msg_out, $msg_in, $added_notes,$read_notes, $chat,$bookmarks, $index_att,$level,$last_access);";
             //echo $sql;
-
-            $res = $db->query($sql);
-            // global $debug;$debug=1;mydebug(__LINE__,__FILE__,$res); $debug=0;
-            if (AMA_DB::isError($res)) {
-                return new AMA_Error($this->errorMessage(AMA_ERR_ADD) .
-                                " while in add_class_report");
-            }
         }
+        
+        $res = $db->query($sql);
+        // global $debug;$debug=1;mydebug(__LINE__,__FILE__,$res); $debug=0;
+        if (AMA_DB::isError($res)) {
+        	return new AMA_Error($this->errorMessage(AMA_ERR_ADD) .
+                                " while in add_class_report");
+        } else {
+        	if (MODULES_TEST) {
+        		if (!isset($id_log)) $id_log = $db->lastInsertID();
+        		$sql = 'update log_classi set `exercises_test`=?, `score_test`=?, `exercises_survey`=?, `score_survey`=? where `id_log`=?';
+        		$res = $this->queryPrepared($sql, array($exercises_test, $score_test, $exercises_survey, $score_survey, $id_log));
+        		if (AMA_DB::isError($res)) {
+        			return new AMA_Error($this->errorMessage(AMA_ERR_UPDATE) .
+        					" while in add_class_report");
+        		}
+        	}
+        }
+        
         return true;
     }
     /**
@@ -6014,41 +6040,65 @@ abstract class AMA_Tester_DataHandler extends Abstract_AMA_DataHandler {
 
         $db =& $this->getConnection();
         if ( AMA_DB::isError( $db ) ) return $db;
+        
+        /**
+         * @author giorgio 27/ott/2014
+         * 
+         * if we've been passed a null date, get the latest
+         * availeble report for the passed course_instance_id
+         */
+        if (is_null($date)) {
+        	$sql = "SELECT MAX(data) FROM log_classi WHERE id_istanza_corso=".$course_instance_id;
+        	$res = $this->getOnePrepared($sql);
+        	$date = (!AMA_DB::isError($res) && strlen($res)>0) ? $res : time();
+        }
 
         $sql = "SELECT L.*, U.nome, U.cognome "
                 . "FROM (SELECT * from log_classi WHERE id_istanza_corso=$course_instance_id AND data=$date) AS L "
                 . "LEFT JOIN utente AS U ON (L.id_user=U.id_utente)";
 
-        $res = $db->getAll($sql);
+        $res = $db->getAll($sql,array(),AMA_FETCH_ASSOC);
 
         //global $debug;$debug=1;mydebug(__LINE__,__FILE__,$res); $debug=0;
         if (AMA_DB::isError($res)) {
             return new AMA_Error($this->errorMessage(AMA_ERR_GET) ." while in get_class_report");
         }
-
+        
         foreach ($res as $res_item) {
-            $id_log = $res_item[0];
-            $student_data[$id_log]['id_stud'] = $res_item[1];
+            $id_log = $res_item['id_log'];
+            $student_data[$id_log]['id_stud'] = $res_item['id_user'];
             // vito, 27 mar 2009
-            $student_data[$id_log]['student'] = $res_item[16] .' '. $res_item[17];
+            $student_data[$id_log]['student'] = $res_item['nome'] .' '. $res_item['cognome'];
 
             //        $student_data[$id_log]['id_course_instance'] = $res_item[2];
             //        $student_data[$id_log]['id_course'] = $res_item[3];
 
-            $student_data[$id_log]['visits'] = $res_item[5];
-            $student_data[$id_log]['date'] = $res_item[4];
+            $student_data[$id_log]['visits'] = $res_item['visite'];
+            $student_data[$id_log]['date'] = $res_item['last_access'];
             //$student_data[$id_log]['visits'] = $res_item[5];
-            $student_data[$id_log]['score'] = $res_item[6];
-            //$student_data[$id_log]['exercises'] = $res_item[7];
-            $student_data[$id_log]['notes_out'] = $res_item[11];
-            $student_data[$id_log]['notes_in'] = $res_item[10];
-            $student_data[$id_log]['msg_in'] = $res_item[9];
-            $student_data[$id_log]['msg_out'] = $res_item[8];
-            $student_data[$id_log]['chat'] = $res_item[12];
-            $student_data[$id_log]['bookmarks'] = $res_item[13];
-            $student_data[$id_log]['indice_att'] = $res_item[14];
-            $student_data[$id_log]['level'] = $res_item[15];
+            $student_data[$id_log]['score'] = $res_item['punti'];
+            $student_data[$id_log]['exercises'] = $res_item['esercizi'];
+            $student_data[$id_log]['notes_out'] = $res_item['notes_out'];
+            $student_data[$id_log]['notes_in'] = $res_item['notes_in'];
+            $student_data[$id_log]['msg_in'] = $res_item['msg_in'];
+            $student_data[$id_log]['msg_out'] = $res_item['msg_out'];
+            $student_data[$id_log]['chat'] = $res_item['chat'];
+            $student_data[$id_log]['bookmarks'] = $res_item['bookmarks'];
+            $student_data[$id_log]['indice_att'] = $res_item['indice_att'];
+            $student_data[$id_log]['level'] = $res_item['level'];
+            if (MODULES_TEST) {
+            	$student_data[$id_log]['exercises_test'] = $res_item['exercises_test'];
+            	$student_data[$id_log]['score_test'] = $res_item['score_test'];
+            	$student_data[$id_log]['exercises_survey'] = $res_item['exercises_survey'];
+            	$student_data[$id_log]['score_survey'] = $res_item['score_survey'];
+            }
         }
+        /**
+         * @author giorgio 27/ott/2014
+         * 
+         * added report generation date
+         */
+        if (isset($student_data)) $student_data['report_generation_date'] = $date;
         return $student_data;
     }
 
@@ -11980,6 +12030,218 @@ public function get_updates_nodes($userObj, $pointer)
       $result = $db->getAll($sql, null, AMA_FETCH_ASSOC);
       return $result;
     }
+    
+    /**
+     * @author giorgio 27/ago/2014
+     * 
+     * gets a menu tree_id from the provider database, if not found 
+     * tries the common database and if still a menu tree_id is not
+     * found for the given script, module and user_type tries the default
+     * 
+     * @param string $module (module for the menu. e.g. browsing, comunica, modules/test)
+     * @param string $script (script for the menu, derived from the URL)
+     * @param string $user_type AMA_USER_TYPE
+     * @param number $self_instruction non zero if course is in self instruction mode
+     * @param boolean $get_all set it to true to get also disabled elements. Defaults to false 
+     * 
+     * @return boolean false | array (
+     * 							'tree_id' the menu tree id to be used
+     * 							'isVertical' non zero if this is a vertical menu
+     * 							'dbToUse' the DataHandler where the menu was found
+     * 						   )
+     * 
+     * @access public
+     */   
+    public function get_menutree_id($module, $script, $user_type, $self_instruction=0) {
+    	
+    	$default_module = 'main';    // module name to be used as a default value
+    	$default_script = 'default'; // script name to be used as a default value
+    	$menu_found = false;
+    	$retVal = array();
+    	
+    	// get the query string as an array
+    	$queryStringArr = (strlen($_SERVER['QUERY_STRING'])>0) ? explode('&', $_SERVER['QUERY_STRING']) : array(); 
+    	
+    	$sql = 'SELECT tree_id, script, isVertical, linked_tree_id FROM menu_page WHERE module=? AND script LIKE ? AND user_type=? AND self_instruction=?';
+    	
+    	$common_dh = AMA_Common_DataHandler::instance();
+    	
+    	/**
+    	 * Rules used to look for a menu:
+    	 * - try passed module/script  in current provider, and if nothing is found
+    	 * - try passed module/script  in common  provider, and if nothing is found
+    	 * - try passed module/default in current provider, and if nothing is found
+    	 * - try passed module/default in common  provider, and if nothing is found
+    	 * - try main/default          in current provider, and if nothing is found
+    	 * - try main/default          in common  provider, and if nothing is found
+    	 * - give up.
+    	 */
+    	
+    	foreach (array($module,$default_module) as $nummodule=>$currentModule) {
+    		foreach (array($script,$default_script) as $numscript=>$currentScript) {
+    			// skip main module/passed script as per above rules
+    			if ($nummodule==1 && $numscript==0) continue;
+    			$params = array ($currentModule, $currentScript.'%', $user_type, $self_instruction);
+    			foreach (array($this,$common_dh) as $dbToUse) {
+    				$candidates = $dbToUse->getAllPrepared($sql, $params, AMA_FETCH_ASSOC);
+    				if (!AMA_DB::isError($candidates) && $candidates!==false && count($candidates)>0) {
+    					$bestScore = 0;
+    					$bestNumOfMatchedParams=0;
+    					/**
+    					 * main loop to look for a menu to return
+    					 */
+    					foreach ($candidates as $menuCandidate) {
+    						/**
+    						 * search if there's a query string and
+    						 * load it in the mneuCandidate array
+    						 */
+    						$querypos = strpos($menuCandidate['script'], '?');    						
+							if ($querypos!==false) {
+								$menuCandidate['queryString'] = substr($menuCandidate['script'], $querypos+1);
+							} else {
+								$menuCandidate['queryString'] = null;
+							}
+							
+    						if (is_null($menuCandidate['queryString'])) {
+    							/**
+    							 * if menu candidate has no query string, it's the menu
+    							 * only if it's the only candidate or the url had no query string
+    							 */
+    							if (count($candidates)===1 || count($queryStringArr)===0) {
+    								$menu_found = true;
+    							} else {
+    								/**
+    								 * save the menu as a default for this script,
+    								 * to be returned if nothing more appropriate is found
+    								 */
+    								if ($bestScore <=0) $bestMatch = $menuCandidate;
+    							}
+    						} else {
+    							/**
+    							 * if menu candidate has a query string the menu is
+    							 * the one with the highest number of matching params
+    							 */
+    							
+    							// make the array of the menuCandidate query string
+    							$menuCandidateArr = explode ('&', $menuCandidate['queryString']);
+    							// find matched parameters array
+    							$matchedParams = array_intersect($menuCandidateArr, $queryStringArr);
+    							if (count($matchedParams)>0) {
+    								
+    								$score = count($matchedParams) / count($menuCandidateArr);
+    								
+    								/**
+    								 * if current candidate has a score higher than the bestScore or
+    								 * if it has an equal score but with more mathched parameters,
+    								 * than it is the new best match
+    								 */
+    								
+    								if ($score > $bestScore ||
+    									($score == $bestScore && count($matchedParams)>$bestNumOfMatchedParams)) {
+    									$bestScore = $score;
+    									$bestNumOfMatchedParams = count($matchedParams);
+    									$bestMatch = $menuCandidate;
+    								}
+    							}
+    						}
+    						if ($menu_found) break;
+    					}
+    					/**
+    					 * if nothing is found BUT there's a bestMatch, use it as the menu
+    					 */
+    					if (!$menu_found && isset($bestMatch)) {
+    						$menu_found = true;
+    						$menuCandidate = $bestMatch;
+    					}
+    					if ($menu_found) break;
+    				}
+    			}
+    			if ($menu_found) break;
+    		}
+    		if ($menu_found) break;
+    	}
+        // if no menu has been found return false right away!
+    	if ($menu_found===true) {
+    		$retVal['tree_id'] = $menuCandidate['tree_id'];
+    		$retVal['isVertical'] = $menuCandidate['isVertical'];
+    		$retVal['dbToUse'] = $dbToUse;
+    		// if is a linked tree, set the actual tree_id to the linked one
+    		if (!is_null($menuCandidate['linked_tree_id'])) {
+    			$retVal['tree_id'] = $menuCandidate['linked_tree_id'];
+    			$retVal['linked_from'] = $menuCandidate['tree_id'];
+    		}
+    	} else $retVal = false;
 
+    	return $retVal;
+    }
+    
+    /**
+     * @author giorgio 27/ago/2014
+     * 
+     * gets the left and right submenu trees
+     * 
+     * @param number $tree_id the id of the menu tree to load
+     * @param AMA_DataHandler $dbToUse the data handler to be used, either Common or Tester
+     * @param boolean $get_all set it to true to get also disabled elements.
+     * 
+     * @return array associative, with 'left' and 'right' keys for each submenu tree
+     * 
+     * @access public
+     */
+    public function get_menu_children($tree_id, $dbToUse, $get_all = false) {
+    	$retVal = array();
+    	// get all the first level items, first left and then right side
+    	foreach (array(0=>'left',1=>'right') as $sideIndex=>$sideString) {
 
+    		$sql = 'SELECT MI.*, MT.extraClass AS menuExtraClass FROM `menu_items` AS MI JOIN `menu_tree` AS MT ON '.
+    			   'MI.item_id=MT.item_id WHERE MT.tree_id=? AND MT.parent_id=0 AND MI.groupRight=?';
+    		if (!$get_all) $sql .= ' AND MI.enabledON!="'.Menu::NEVER_ENABLED.'"';
+    		$sql .= ' ORDER BY MI.order ASC';
+	    	
+    		$res = $dbToUse->getAllPrepared($sql,array($tree_id,$sideIndex),AMA_FETCH_ASSOC);
+	    	
+    		if (!AMA_DB::isError($res) && count($res)>0) {
+	    		
+    			foreach ($res as $count=>$element) {
+    				$res[$count]['children'] = $this->get_menu_children_recursive($tree_id,$element['item_id'],$dbToUse,$get_all);
+    			}
+    			$retVal[$sideString] = $res;
+    		} else {
+    			$retVal[$sideString] = null;
+    		}
+    	}
+    	return $retVal;    	    	
+    }
+    
+    /**
+     * @author giorgio 19/ago/2014
+     * 
+     * recursively gets all the children of a given menu item
+     * 
+     * @param number $tree_id the id of the menu tree to load
+     * @param number $parent_id the id of the parent to get children for
+     * @param AMA_DataHandler $dbToUse the data handler to be used, either Common or Tester
+     * @param boolean $get_all set it to true to get also disabled elements.
+     * 
+     * @return array of found children or null if no children found
+     * 
+     * @access private
+     */
+    private function get_menu_children_recursive($tree_id=0,$parent_id,$dbToUse,$get_all) {
+    	
+    	$sql = 'SELECT MI.*, MT.extraClass AS menuExtraClass FROM `menu_items` AS MI JOIN `menu_tree` AS MT ON '.
+    			'MI.item_id=MT.item_id WHERE MT.tree_id=? AND MT.parent_id=?';
+    	if (!$get_all) $sql .= ' AND MI.enabledON!="'.Menu::NEVER_ENABLED.'"';
+    	$sql .= ' ORDER BY MI.order ASC';
+    	
+    	$res = $dbToUse->getAllPrepared($sql,array($tree_id,$parent_id),AMA_FETCH_ASSOC);
+    	
+    	if (AMA_DB::isError($res) || count($res)<=0 || $res===false) return null;
+    	else {
+    		foreach ($res as $count=>$element) {
+    			$res[$count]['children'] = $this->get_menu_children_recursive($tree_id, $element['item_id'], $dbToUse, $get_all);
+    		}    		
+    		return $res;
+    	}
+    }
 }

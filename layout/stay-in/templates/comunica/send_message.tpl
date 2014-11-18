@@ -9,6 +9,18 @@
 <div id="header">
 		 <template_field class="microtemplate_field" name="header_com">header_com</template_field>
 </div> 
+<!-- menu -->
+    <template_field class="microtemplate_field" name="adamenu">adamenu</template_field>  
+<!-- / menu --> 
+<!-- PERCORSO -->
+<div id="journey">
+<i18n>dove sei:</i18n>
+    <span>
+           <i18n>messaggeria</i18n>
+    </span>
+</div> 
+<!-- / percorso -->
+</div> 
 <!-- contenitore -->
 <div id="container">
 
@@ -29,7 +41,7 @@
 			</div>		
 </div>
 <!-- /label -->
-
+ <div id="status_bar">
 <div id="user_data" class="user_data_default">
   <template_field class="microtemplate_field" name="user_data_mini_micro">user_data_mini_micro</template_field>
 </div>
@@ -110,26 +122,6 @@
 </div> <!--  / contenuto -->
 </div> <!-- / contenitore -->
 
-<!-- MENU -->
-<div id="mainmenucom">
-<ul id="menu">
-	<li id="selfclose">
-		<a href="#" onclick = "closeMeAndReloadParent();"><i18n>chiudi</i18n></a> 
-	</li>
-    <li id="list">
-		<a href="list_messages.php">
-        	<i18n>messaggi</i18n>
-    	</a>
-	</li>
-</ul> <!-- / menu -->
-<! -- PERCORSO -->
-<div id="journey">
-		 <i18n>dove sei:</i18n>
-		 <span>
-		 	<i18n>messaggeria</i18n>
-		 </span>
-	</div> <!-- / percorso -->
-</div> <!-- / MENU -->
 
 <!-- PIEDE -->
 <div id="footer">

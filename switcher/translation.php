@@ -98,7 +98,6 @@ $content_dataAr = array(
   'messages'  => $user_messages->getHtml(),
   'agenda'    => $user_agenda->getHtml(),
   //'results'=>$results,
-  'edit_switcher'=>$edit_profile_link->getHtml(),
   'status'    => $status,
   'banner'    => $banner,
   'help'      => $help,

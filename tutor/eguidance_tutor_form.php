@@ -305,6 +305,7 @@ $content_dataAr = array(
   'user_name' => $user_name,
   'user_type' => $user_type,
   'status'    => $status,
+  'user_modprofilelink' => $userObj->getEditProfilePage(),
   'dati'      => $form->getHtml()
 );
 // if it's default.tpl the template field is data and NOT dati

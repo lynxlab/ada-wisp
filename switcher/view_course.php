@@ -79,6 +79,7 @@ $content_dataAr = array(
     'user_type' => $user_type,
     'status' => $status,
     'label' => $label,
+    'edit_profile'=>$userObj->getEditProfilePage(),
     'help' => $help,
     'data' => $data->getHtml(),
     'module' => $module,

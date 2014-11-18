@@ -126,8 +126,14 @@ UL#menu_std LI A {text-transform: lowercase; color:#fff; font-weight:bold; text-
 ----------------------------------------------- */
 #label {float:left; background:#005281 no-repeat right top; width:30%; padding:0 0 0 10px;}
 #label H1 {margin:0; padding:20px 0 5px 0; font-size:1.2em; color:whitesmoke}
-#user_data {float:right; width:60%; color:#fff; text-align:right; padding:10px 40px 0 0;}
-
+#user_data {
+    float: right;
+    font-size: 0.85em;
+    line-height: 1.3em;
+    padding: 0 25px 0 0;
+    text-align: left;
+    text-transform: capitalize;
+}
 
 /* SEND MESSAGES
 ----------------------------------------------- */

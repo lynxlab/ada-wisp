@@ -25,7 +25,7 @@ $variableToClearAR = array('node', 'layout', 'course', 'course_instance');
 /**
  * Users (types) allowed to access this module.
  */
-$allowedUsersAr = array(AMA_TYPE_VISITOR, AMA_TYPE_STUDENT,AMA_TYPE_ADMIN,AMA_TYPE_AUTHOR, AMA_TYPE_TUTOR);
+$allowedUsersAr = array(AMA_TYPE_VISITOR, AMA_TYPE_STUDENT,AMA_TYPE_ADMIN,AMA_TYPE_AUTHOR, AMA_TYPE_TUTOR,AMA_TYPE_SWITCHER);
 
 /**
  * Performs basic controls before entering this module
@@ -57,6 +57,7 @@ $credits_data = "<p>"
               <li>Stefano Penge</li>
               <li>Vito Modena</li>
               <li>Giorgio Consorti</li>
+              <li>Sara Capotosti</li>		
               <li>Valerio Riva</li>
               <li>Guglielmo Celata</li>
               <li>Stamatis Filippis</li>

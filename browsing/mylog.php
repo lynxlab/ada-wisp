@@ -133,7 +133,7 @@ if (isset($_POST['Submit']))
 	}
        $res = fclose($i);
    }
-    $status = translateFN("Le informazioni sono state registrate.");
+    $msg = translateFN("Le informazioni sono state registrate.");
 }
 // } else {
                 
@@ -238,9 +238,7 @@ $help = translateFN("Nel Diario si possono inserire i propri commenti privati, o
 
 $banner = include ("$root_dir/include/banner.inc.php");
 
-$chat_link = "<a href=\"$http_root_dir/comunica/ada_chat.php\" target=_blank>".translateFN("chat")."</a>";
 //
-
 /*
  * Last access link
  */
@@ -289,10 +287,9 @@ $node_data = array(
                    'course_title'=>'<a href="main_index.php">'.$course_title.'</a>',
                    'today'=>$ymdhms,
                    'path'=>$node_path,
-                   'user_name'=>$user_name,
+                   'user_name'=>$userObj->nome,
                    'user_type'=>$user_type,
                    'user_level'=>$user_level,
-                   //'last_visit'=>$last_access_date,
                    'last_visit'=>$last_access,
                    'data'=>$log_data,
 		   'menu'=>$menu,
@@ -308,21 +305,21 @@ $node_data = array(
                   );
 
                    if ($com_enabled){
-                       $node_data['chat_link']=$chat_link;
-		       $node_data['mychat'] =$my_chat;
-    		       $node_data['myforum'] =$my_forum;
                        $node_data['messages']=$user_messages->getHtml();
                        $node_data['agenda']=$user_agenda->getHtml();
                        $node_data['events']=$user_events->getHtml();
                        $node_data['chat_users']=$online_users;
                    } else {
-                       $node_data['chat_link']=translateFN("chat");
- 		       $node_data['mychat'] ="";
-		       $node_data['myforum'] ="";
                        $node_data['messages'] = translateFN("messaggeria non abilitata");
                        $node_data['agenda']=translateFN("agenda non abilitata");
                        $node_data['chat_users']="";
                    }
+ if(isset($msg))
+{
+    $help=CDOMElement::create('label');
+    $help->addChild(new CText(translateFN(ltrim($msg))));
+    $node_data['help']=$help->getHtml();
+}
 
 	$layout_dataAr['JS_filename'] = array(
 		JQUERY,
