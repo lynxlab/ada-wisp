@@ -52,6 +52,7 @@
 			  </div>
 -->
                       </div>
+                    </div>
                     <!-- / dati utente -->
                     <!-- label -->
                     <div id="label">
@@ -70,7 +71,7 @@
                         </div>
                     </div>
                     <!-- /label -->
-                </div>
+                
             </div>
 
             <!-- contenuto -->
