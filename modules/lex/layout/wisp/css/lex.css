@@ -353,7 +353,7 @@ form#exporteurovocForm #l_exportLang {
  */ 
 .ulactions { list-style-type: none; display: block; padding:0; margin:0; }
 .liactions { text-align:center; border: none !important; margin-bottom: 5px; }
-.zoomButton, .deleteButton, .linkAssetButton { height: 1.5em; }
+.zoomButton, .deleteButton, .linkAssetButton, .linkSourceButton { height: 1.5em; }
 /*
  * end sourcesTable actions
  */

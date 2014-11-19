@@ -462,6 +462,15 @@ function initButtons() {
 			text : false
 		});
 	}
+	
+	if ($j('.linkSourceButton').length>0) {
+		$j('.linkSourceButton').button({
+			icons : {
+				primary : 'ui-icon-link'
+			},
+			text : false
+		});
+	}
 }
 
 /**
