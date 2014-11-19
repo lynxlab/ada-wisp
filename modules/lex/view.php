@@ -52,169 +52,72 @@ $self = whoami();
 require_once MODULES_LEX_PATH . '/include/management/lexManagement.inc.php';
 
 if (isset($_SERVER['REQUEST_METHOD']) && $_SERVER['REQUEST_METHOD'] == 'GET' &&
-isset($assetID) && intval($assetID)>0) {
+(isset($assetID) || isset($sourceID)) ) {
 	
-$pointer = (!is_null($_SESSION['sess_selected_tester'])) ? $_SESSION['sess_selected_tester'] : MODULES_LEX_PROVIDER_POINTER;
-if (isset($GLOBALS['dh'])) $GLOBALS['dh']->disconnect();
-$dh = AMALexDataHandler::instance(MultiPort::getDSN($pointer));
-
-$languageId = getLanguageCode();
-$assetText = $dh->asset_get_text($assetID);
-
-if (!AMA_DB::isError($assetText)) {
-
-	$htmlObj = CDOMElement::create('div','class:assetDetail');
-	if (strlen($assetText)>0) {
-		$htmlObj->addChild (new CText('<p>'.$assetText.'</p>'));
-	}
-
-	$assetEurovocAr = $dh->get_asset_eurovoc ($assetID,$languageId);
-
+	$pointer = (!is_null($_SESSION['sess_selected_tester'])) ? $_SESSION['sess_selected_tester'] : MODULES_LEX_PROVIDER_POINTER;
+	if (isset($GLOBALS['dh'])) $GLOBALS['dh']->disconnect();
+	$dh = AMALexDataHandler::instance(MultiPort::getDSN($pointer));
+	
+	$languageId = getLanguageCode();
+	$htmlObj = CDOMElement::create('div','id:assetDetailsContainer');
+	$title = translateFN('Visualizzazione Dettaglio');
+	
 	/**
-	 * build an ordered list with associated eurovoc terms
-	*/
-	if (!is_null($assetEurovocAr)) {
-		foreach ($assetEurovocAr as $count=>$assetEurovoc) {
-			if (isset($assetEurovoc['libelle']) && strlen($assetEurovoc['libelle'])>0) {
-				// make an UL and a section title element if needed
-				if (!isset($ulElement)) $ulElement = CDOMElement::create('ol','class:assetWords');
-					
-				$liElement = CDOMElement::create('li','class:assetWord');
-				$liElement->addChild(new CText($assetEurovoc['libelle']));
-					
-				if (isset($assetEurovoc['weight']) && strlen($assetEurovoc['weight'])>0) {
-					$weightSpan = CDOMElement::create('span','class:assetWordWeight');
-					$weightSpan->addChild(new CText(' ('.translateFN('peso: ').
-							number_format($assetEurovoc['weight'],3).')'));
-					$liElement->addChild($weightSpan);
-				}
-				$ulElement->addChild($liElement);
-			}
-		}
-			
-		/**
-		 * if a list was built (i.e. there is at least one associated term)
-		 * add it to the returned HTML
-		 */
-		if (isset($ulElement)) {
-			$spanWordsTitle = CDOMElement::create('span','class:assetWordsTitle');
-			$spanWordsTitle->addChild(new CText(translateFN('Termini Associati')));
-			$htmlObj->addChild($spanWordsTitle);
-			$htmlObj->addChild($ulElement);
-		}
-	}
-
-
-	/**
-	 * Check if the asset has been abrogated or abrogates some other asset
+	 * prepare the assetsArray that contains the ids of the
+	 * assets to be loaded, the view.js will take care of
+	 * loading and displaying everything with ajax calls
 	 */
-	$assetAbrogatedAr = $dh->asset_get_abrogated($assetID);
-	$assetAbrogatesAr = $dh->asset_get_abrogates($assetID);
-	
-	foreach (array($assetAbrogatedAr, $assetAbrogatesAr) as $i=>$abrogationArr) {
-		
-		if ($i==0) {
-			$key = 'abrogato_da';
-			$label = translateFN('Abrogato da');
-		} else if ($i==1) {
-			$key = 'abroga';
-			$label = translateFN('Abroga');
-		}
-		
-		if (!AMA_DB::isError($abrogationArr) && is_array($abrogationArr) && count($abrogationArr)>0) {
-			$baseHref = MODULES_LEX_HTTP . '/view.php?assetID=';
-			foreach ($abrogationArr as $count=>$assetAbrogated) {
-				if (!isset($ulAbrogated)) $ulAbrogated = CDOMElement::create('ol','class:assetAbrogated');
-	
-				$link = CDOMElement::create('a','class:abrogatedLink,target:_lextarget,href:'.$baseHref.$assetAbrogated[$key]);
-				$link->addChild (new CText($assetAbrogated['label']));
-	
-				$spanDate = CDOMElement::create('span');
-				$spanDate->addChild (new CText(' '.translateFN('in data').' '.$assetAbrogated['data_abrogazione']));
-	
-				$liAbrogated = CDOMElement::create('li','class:abrogatedElement');
-				$liAbrogated->addChild ($link);
-				$liAbrogated->addChild ($spanDate);
-	
-				$ulAbrogated->addChild ($liAbrogated);
-			}
-			
-			if (isset($ulAbrogated)) {
-				$spanAbrogatedTitle = CDOMElement::create('span','class:assetAbrogatedTitle');
-				$spanAbrogatedTitle->addChild(new CText($label.': '));
-				$htmlObj->addChild($spanAbrogatedTitle);
-				$htmlObj->addChild($ulAbrogated);
-				unset($ulAbrogated);
+	if (isset($assetID) && intval($assetID)) {
+		// user has requested to view an asset	
+		$assetsArray = array (intval($assetID));		
+	} else if (isset($sourceID) && intval($sourceID)>0) {
+		$sourceTitleAr = $dh->get_sources(array('titolo'),true,AMALexDataHandler::$PREFIX.'fonti_id='.intval($sourceID));
+		if (!AMA_DB::isError($sourceTitleAr) && is_array($sourceTitleAr) && count($sourceTitleAr)==1) {
+			$sourceTitle = reset($sourceTitleAr)['titolo'];
+			if (strlen($sourceTitle)>0) {
+				$titleH2 = CDOMElement::create('h2','class:sourceTitle');
+				$titleH2->addChild(new CText($sourceTitle));
+				$htmlObj->addChild($titleH2);
 			}
 		}
-	}
-	
-	$assetHa = $dh->asset_get($assetID);
-	if (!AMA_DB::isError($assetHa)) {
-		$title = str_replace('_', ' ', $assetHa->label);
-	} else $title = '';
-}
-	
+		// user has requested to view a source	
+		$assetsArray = $dh->get_source_assetdids(intval($sourceID),'`label` ASC');
+	} else {
+		$htmlObj = CDOMElement::create('div');
+		$title = '';
+	}	
 } else {
- $htmlObj = CDOMElement::create('div');
- $title = '';
-}
-$data = array ('help'=>$title, 'title'=>'', 'htmlObj'=>$htmlObj);
-
-
-/**
- * include proper jquery ui css file depending on wheter there's one
- * in the template_family css path or the default one
-*/
-
-$templateFamily = (isset($userObj->template_family) && strlen($userObj->template_family)>0) ? $userObj->template_family : ADA_TEMPLATE_FAMILY;
-
-if (!is_dir(MODULES_LEX_PATH.'/layout/'.$templateFamily.'/css/jquery-ui'))
-{
-	$layout_dataAr['CSS_filename'] = array(
-			JQUERY_UI_CSS
-	);
-}
-else
-{
-	$layout_dataAr['CSS_filename'] = array(
-			MODULES_LEX_PATH.'/layout/'.$templateFamily.'/css/jquery-ui/jquery-ui-1.10.3.custom.min.css'
-	);
+	$htmlObj = CDOMElement::create('div');
+	$title = '';
 }
 
-array_push($layout_dataAr['CSS_filename'], JQUERY_DATATABLE_CSS);
-array_push($layout_dataAr['CSS_filename'], ROOT_DIR . '/js/include/jquery/pekeUpload/pekeUpload.css' );
-array_push($layout_dataAr['CSS_filename'], MODULES_LEX_PATH.'/layout/'.$templateFamily.'/css/skin-vista/ui.fancytree.css' );
-array_push($layout_dataAr['CSS_filename'], MODULES_LEX_PATH.'/layout/tooltips.css');
+$data = array ('title'=>$title, 'htmlObj'=>$htmlObj);
 
 $content_dataAr = array(
 		'user_name' => $user_name,
 		'user_type' => $user_type,
 		'status' => $status,
-		'help'  =>  $data['help'],
 		'title' =>  $data['title'],
 		'data'  =>  $data['htmlObj']->getHtml()
 );
 
 $layout_dataAr['JS_filename'] = array(
 		JQUERY,
-		MODULES_LEX_PATH . '/js/jquery.jeditable.js',
-		JQUERY_DATATABLE,
-		JQUERY_DATATABLE_DATE,
 		JQUERY_UI,
-		MODULES_LEX_PATH . '/js/jquery.selectric.min.js',
-		MODULES_LEX_PATH . '/js/jquery.fancytree.js',
-		MODULES_LEX_PATH . '/js/jquery.fancytree.childcounter.js',
-		ROOT_DIR . '/js/include/jquery/ui/i18n/datepickerLang.php',
 		JQUERY_NO_CONFLICT,
-		ROOT_DIR . '/js/include/jquery/pekeUpload/pekeUpload.js'		
 );
 
-$maxFileSize = (int) (ADA_FILE_UPLOAD_MAX_FILESIZE / (1024*1024));
+$layout_dataAr['CSS_filename'] = array(
+		JQUERY_UI_CSS
+);
 
 $avatar = CDOMElement::create('img','class:img_user_avatar,src:'.$userObj->getAvatar());
 $content_dataAr['user_avatar'] = $avatar->getHtml();
 $content_dataAr['user_modprofilelink'] = $userObj->getEditProfilePage();
 
-ARE::render($layout_dataAr, $content_dataAr);
+if (is_array($assetsArray) && count($assetsArray)>0) {
+	$optionsAr['onload_func'] = 'initDoc('.json_encode($assetsArray).');';
+} else $optionsAr = null;
+
+ARE::render($layout_dataAr, $content_dataAr, null, $optionsAr);
 ?>

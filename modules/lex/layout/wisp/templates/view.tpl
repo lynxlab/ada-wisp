@@ -48,9 +48,9 @@
             <div id="content">
                 <div id="contentcontent-nostyle">
                     <div class="first">
-                        <div id="help">
+                        <!--  div id="help">
                             <template_field class="template_field" name="help">help</template_field>
-                        </div>
+                        </div -->
                         <template_field class="template_field" name="data">data</template_field>
                     </div>
                 </div>
