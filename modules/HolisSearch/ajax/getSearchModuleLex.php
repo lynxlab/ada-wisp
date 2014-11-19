@@ -146,7 +146,13 @@ if (isset($_SERVER['REQUEST_METHOD']) && $_SERVER['REQUEST_METHOD'] == 'POST' &&
 				$subtitle = CDOMElement::create('span','class:typology');
 				$subtitle->addChild (new CText( $resultEl['tipologia'] ));
 				
-				$viewFontLink = CDOMElement::create('a','class:gotofont tooltip,target:_lextarget,href:'.MODULES_LEX_HTTP.'/index.php?op=zoom&id='.$j);
+				/**
+				 * use index.php?op=zoom to link to the source page with the datatable
+				 * 
+				 * $viewFontHref = MODULES_LEX_HTTP.'/index.php?op=zoom&id='.$j;
+				 */
+				$viewFontHref = MODULES_LEX_HTTP.'/view.php?sourceID='.$j;
+				$viewFontLink = CDOMElement::create('a','class:gotofont tooltip,target:_lextarget,href:'.$viewFontHref);
 				$viewFontLink->setAttribute('title', translateFN('Clicca per andare alla fonte'));
 				$viewFontLink->addChild(new CText(translateFN('Vai alla Fonte')));
 				
