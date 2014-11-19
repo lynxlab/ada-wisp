@@ -520,6 +520,34 @@ class AMALexDataHandler extends AMA_DataHandler {
 	}
 
 	/**
+	 * gets all the asset ids belonging to the passed source id
+	 * 
+	 * @param number $sourceID
+	 * 
+	 * @param string $orderBy
+	 * 
+	 * @return NULL|mixed
+	 * 
+	 * @access public
+	 */
+	public function get_source_assetdids ($sourceID, $orderBy=null) {
+		
+		$sql = 'SELECT `'.self::$PREFIX.'assets_id` FROM `'.self::$PREFIX.'assets`'.
+			   ' WHERE `'.self::$PREFIX.'fonti_id`=?';
+		
+		if (!is_null($orderBy)) $sql .= ' ORDER BY '.$orderBy;
+		
+		$result = $this->getAllPrepared($sql,$sourceID,AMA_FETCH_ASSOC);
+		
+		if (AMA_DB::isError($result) || count($result)<=0) return null;
+		else {
+			// convert to a non-multiarray of integers
+			foreach ($result as $i=>$res) $result[$i] = intval($res[self::$PREFIX.'assets_id']);
+			return $result;		
+		}
+	}
+
+	/**
 	 * Insert and update for table testi
 	 *
 	 * @param array $testoHa the array to be saved in the DB
