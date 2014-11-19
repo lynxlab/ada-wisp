@@ -84,7 +84,7 @@ if (isset($_SERVER['REQUEST_METHOD']) && $_SERVER['REQUEST_METHOD'] == 'GET') {
 		$linksHtml = "";
 		$id = intval(str_replace($dh::$PREFIX.'fonti:', '', $elem['DT_RowId']));
 		
-		for ($j=0;$j<2;$j++) {
+		for ($j=0;$j<3;$j++) {
 		// set the type, title and link
 			switch ($j)
 			{
@@ -94,6 +94,11 @@ if (isset($_SERVER['REQUEST_METHOD']) && $_SERVER['REQUEST_METHOD'] == 'GET') {
 					$link = 'self.document.location.href=\'index.php?op='.$type.'&id='.$id.'\';';
 					break;
 				case 1:
+					$type = 'linkSource'; 
+					$title = translateFN('Clicca per il testo completo della fonte');
+					$link = 'self.document.location.href=\'view.php?sourceID='.$id.'\';';
+					break;
+				case 2:
 					if (in_array(DELETE_SOURCE, $canDO[$userObj->getType()])) {
 						$type = 'delete';
 						$title = translateFN ('Clicca per cancellare la fonte');
