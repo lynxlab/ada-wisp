@@ -1,11 +1,11 @@
 -- phpMyAdmin SQL Dump
--- version 4.0.10deb1
+-- version 4.2.5
 -- http://www.phpmyadmin.net
 --
 -- Host: localhost
--- Generato il: Nov 18, 2014 alle 16:41
--- Versione del server: 5.5.40-0ubuntu0.14.04.1
--- Versione PHP: 5.5.9-1ubuntu4.5
+-- Generation Time: Nov 19, 2014 alle 10:49
+-- Versione del server: 5.5.38-cll-lve
+-- PHP Version: 5.4.29
 
 SET SQL_MODE = "NO_AUTO_VALUE_ON_ZERO";
 SET time_zone = "+00:00";
@@ -17,7 +17,7 @@ SET time_zone = "+00:00";
 /*!40101 SET NAMES utf8 */;
 
 --
--- 
+-- Database: `stay-in_guidance_common`
 --
 
 -- --------------------------------------------------------
@@ -27,16 +27,14 @@ SET time_zone = "+00:00";
 --
 
 CREATE TABLE IF NOT EXISTS `menu_page` (
-  `tree_id` int(11) NOT NULL AUTO_INCREMENT COMMENT 'id of the menu tree for the given module, script, user_type and self instruction',
+`tree_id` int(11) NOT NULL COMMENT 'id of the menu tree for the given module, script, user_type and self instruction',
   `module` varchar(100) COLLATE utf8_unicode_ci NOT NULL,
   `script` varchar(50) COLLATE utf8_unicode_ci NOT NULL,
   `user_type` int(2) NOT NULL,
   `self_instruction` int(1) NOT NULL DEFAULT '0' COMMENT 'nonzero if course is in self instruction mode',
   `isVertical` int(1) NOT NULL DEFAULT '0' COMMENT 'nonzero if it''s a vertical menu',
-  `linked_tree_id` int(11) DEFAULT NULL,
-  PRIMARY KEY (`tree_id`),
-  UNIQUE KEY `module` (`module`,`script`,`user_type`,`self_instruction`)
-) ENGINE=MyISAM  DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci AUTO_INCREMENT=176 ;
+  `linked_tree_id` int(11) DEFAULT NULL
+) ENGINE=MyISAM  DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci AUTO_INCREMENT=177 ;
 
 --
 -- Dump dei dati per la tabella `menu_page`
@@ -198,20 +196,40 @@ INSERT INTO `menu_page` (`tree_id`, `module`, `script`, `user_type`, `self_instr
 (172, 'comunica', 'videochat.php', 3, 0, 0, NULL),
 (173, 'comunica', 'videochat.php', 4, 0, 0, 172),
 (174, 'comunica', 'send_event_proposal.php', 4, 0, 0, NULL),
-(175, 'comunica', 'event_proposal.php', 3, 0, 0, NULL);
+(175, 'comunica', 'event_proposal.php', 3, 0, 0, NULL),
+(176, 'browsing', 'ask_service.php', 5, 0, 0, 105);
 
+--
+-- Indexes for dumped tables
+--
+
+--
+-- Indexes for table `menu_page`
+--
+ALTER TABLE `menu_page`
+ ADD PRIMARY KEY (`tree_id`), ADD UNIQUE KEY `module` (`module`,`script`,`user_type`,`self_instruction`);
+
+--
+-- AUTO_INCREMENT for dumped tables
+--
+
+--
+-- AUTO_INCREMENT for table `menu_page`
+--
+ALTER TABLE `menu_page`
+MODIFY `tree_id` int(11) NOT NULL AUTO_INCREMENT COMMENT 'id of the menu tree for the given module, script, user_type and self instruction',AUTO_INCREMENT=177;
 /*!40101 SET CHARACTER_SET_CLIENT=@OLD_CHARACTER_SET_CLIENT */;
 /*!40101 SET CHARACTER_SET_RESULTS=@OLD_CHARACTER_SET_RESULTS */;
 /*!40101 SET COLLATION_CONNECTION=@OLD_COLLATION_CONNECTION */;
 
 -- phpMyAdmin SQL Dump
--- version 4.0.10deb1
+-- version 4.2.5
 -- http://www.phpmyadmin.net
 --
 -- Host: localhost
--- Generato il: Nov 18, 2014 alle 16:41
--- Versione del server: 5.5.40-0ubuntu0.14.04.1
--- Versione PHP: 5.5.9-1ubuntu4.5
+-- Generation Time: Nov 19, 2014 alle 10:48
+-- Versione del server: 5.5.38-cll-lve
+-- PHP Version: 5.4.29
 
 SET SQL_MODE = "NO_AUTO_VALUE_ON_ZERO";
 SET time_zone = "+00:00";
@@ -223,7 +241,7 @@ SET time_zone = "+00:00";
 /*!40101 SET NAMES utf8 */;
 
 --
--- 
+-- Database: `stay-in_guidance_common`
 --
 
 -- --------------------------------------------------------
@@ -233,7 +251,7 @@ SET time_zone = "+00:00";
 --
 
 CREATE TABLE IF NOT EXISTS `menu_items` (
-  `item_id` int(11) NOT NULL AUTO_INCREMENT,
+`item_id` int(11) NOT NULL,
   `label` varchar(255) COLLATE utf8_unicode_ci NOT NULL,
   `extraHTML` text COLLATE utf8_unicode_ci,
   `icon` text COLLATE utf8_unicode_ci,
@@ -246,9 +264,8 @@ CREATE TABLE IF NOT EXISTS `menu_items` (
   `groupRight` int(1) NOT NULL DEFAULT '0',
   `specialItem` int(1) NOT NULL DEFAULT '0',
   `order` int(3) unsigned NOT NULL DEFAULT '0',
-  `enabledON` varchar(128) COLLATE utf8_unicode_ci NOT NULL DEFAULT '%ALWAYS%',
-  PRIMARY KEY (`item_id`)
-) ENGINE=MyISAM  DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci AUTO_INCREMENT=148 ;
+  `enabledON` varchar(128) COLLATE utf8_unicode_ci NOT NULL DEFAULT '%ALWAYS%'
+) ENGINE=MyISAM  DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci AUTO_INCREMENT=149 ;
 
 --
 -- Dump dei dati per la tabella `menu_items`
@@ -382,21 +399,40 @@ INSERT INTO `menu_items` (`item_id`, `label`, `extraHTML`, `icon`, `icon_size`, 
 (144, 'Edit author_hu_images content', NULL, 'photo', NULL, NULL, '%HTTP_ROOT_DIR%/admin', 'edit_content.php?type=author_hu_images', NULL, NULL, 0, 0, 0, '%ALWAYS%'),
 (145, 'Edit tutor_hu_images content', NULL, 'photo', NULL, NULL, '%HTTP_ROOT_DIR%/admin', 'edit_content.php?type=tutor_hu_images', NULL, NULL, 0, 0, 0, '%ALWAYS%'),
 (146, 'fonti', NULL, 'book', NULL, NULL, '%HTTP_ROOT_DIR%/modules/lex/', NULL, NULL, NULL, 0, 0, 0, '%MODULES_LEX%'),
-(147, '<template_field class="template_field" name="info">info</template_field>', '', 'info', NULL, NULL, '%HTTP_ROOT_DIR%', '<template_field class="template_field" name="manuale">manuale</template_field>', NULL, NULL, 0, 0, 0, '%ALWAYS%');
+(147, '<template_field class="template_field" name="info">info</template_field>', '', 'info', NULL, NULL, '%HTTP_ROOT_DIR%', '<template_field class="template_field" name="manuale">manuale</template_field>', NULL, NULL, 0, 0, 0, '%ALWAYS%'),
+(148, 'chiedi aiuto', NULL, 'wrench', 'large', NULL, '%HTTP_ROOT_DIR%/browsing', 'ask_service.php', NULL, NULL, 0, 0, 0, '%ALWAYS%');
 
+--
+-- Indexes for dumped tables
+--
+
+--
+-- Indexes for table `menu_items`
+--
+ALTER TABLE `menu_items`
+ ADD PRIMARY KEY (`item_id`);
+
+--
+-- AUTO_INCREMENT for dumped tables
+--
+
+--
+-- AUTO_INCREMENT for table `menu_items`
+--
+ALTER TABLE `menu_items`
+MODIFY `item_id` int(11) NOT NULL AUTO_INCREMENT,AUTO_INCREMENT=149;
 /*!40101 SET CHARACTER_SET_CLIENT=@OLD_CHARACTER_SET_CLIENT */;
 /*!40101 SET CHARACTER_SET_RESULTS=@OLD_CHARACTER_SET_RESULTS */;
 /*!40101 SET COLLATION_CONNECTION=@OLD_COLLATION_CONNECTION */;
 
-
 -- phpMyAdmin SQL Dump
--- version 4.0.10deb1
+-- version 4.2.5
 -- http://www.phpmyadmin.net
 --
 -- Host: localhost
--- Generato il: Nov 18, 2014 alle 16:41
--- Versione del server: 5.5.40-0ubuntu0.14.04.1
--- Versione PHP: 5.5.9-1ubuntu4.5
+-- Generation Time: Nov 19, 2014 alle 10:49
+-- Versione del server: 5.5.38-cll-lve
+-- PHP Version: 5.4.29
 
 SET SQL_MODE = "NO_AUTO_VALUE_ON_ZERO";
 SET time_zone = "+00:00";
@@ -408,7 +444,7 @@ SET time_zone = "+00:00";
 /*!40101 SET NAMES utf8 */;
 
 --
--- 
+-- Database: `stay-in_guidance_common`
 --
 
 -- --------------------------------------------------------
@@ -421,8 +457,7 @@ CREATE TABLE IF NOT EXISTS `menu_tree` (
   `tree_id` int(10) unsigned NOT NULL,
   `parent_id` int(10) unsigned NOT NULL DEFAULT '0',
   `item_id` int(10) unsigned NOT NULL DEFAULT '0',
-  `extraClass` varchar(255) COLLATE utf8_unicode_ci NOT NULL,
-  PRIMARY KEY (`tree_id`,`parent_id`,`item_id`)
+  `extraClass` varchar(255) COLLATE utf8_unicode_ci NOT NULL
 ) ENGINE=MyISAM DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
 
 --
@@ -897,7 +932,7 @@ INSERT INTO `menu_tree` (`tree_id`, `parent_id`, `item_id`, `extraClass`) VALUES
 (138, 0, 16, ''),
 (138, 16, 17, ''),
 (138, 16, 18, ''),
-(138, 0, 15, ''),
+(138, 0, 148, ''),
 (138, 0, 14, ''),
 (139, 0, 45, ''),
 (139, 0, 22, ''),
@@ -958,7 +993,16 @@ INSERT INTO `menu_tree` (`tree_id`, `parent_id`, `item_id`, `extraClass`) VALUES
 (175, 0, 24, ''),
 (142, 0, 24, '');
 
+--
+-- Indexes for dumped tables
+--
+
+--
+-- Indexes for table `menu_tree`
+--
+ALTER TABLE `menu_tree`
+ ADD PRIMARY KEY (`tree_id`,`parent_id`,`item_id`);
+
 /*!40101 SET CHARACTER_SET_CLIENT=@OLD_CHARACTER_SET_CLIENT */;
 /*!40101 SET CHARACTER_SET_RESULTS=@OLD_CHARACTER_SET_RESULTS */;
 /*!40101 SET COLLATION_CONNECTION=@OLD_COLLATION_CONNECTION */;
-
