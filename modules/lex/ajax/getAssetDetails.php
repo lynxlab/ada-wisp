@@ -60,7 +60,14 @@ if (isset($_SERVER['REQUEST_METHOD']) && $_SERVER['REQUEST_METHOD'] == 'GET' &&
 	
 	$languageId = getLanguageCode();
 	
+	$assetObj  = $dh->asset_get($assetID);
+	if (!AMA_DB::isError($assetObj)) {
+		$retArray['title'] = str_replace('_', ' ', $assetObj->label);
+	}
+	
 	$assetText = $dh->asset_get_text($assetID);
+
+	$retArray['assetID'] = $assetID;
 	
 	if (!AMA_DB::isError($assetText)) {
 		$retArray['status'] = 'OK';
