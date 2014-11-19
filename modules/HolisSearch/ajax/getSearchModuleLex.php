@@ -47,7 +47,7 @@ require_once MODULES_HOLISSEARCH_PATH .'/config/config.inc.php';
 require_once MODULES_LEX_PATH . '/include/functions.inc.php';
 
 $retArray = null;
-$getOnlyVerifiedAssets = false;
+$getOnlyVerifiedAssets = true;
 if (isset($abrogatedStatus) && is_numeric($abrogatedStatus)) $abrogatedStatus=intval($abrogatedStatus);
 else $abrogatedStatus = -1;
 
