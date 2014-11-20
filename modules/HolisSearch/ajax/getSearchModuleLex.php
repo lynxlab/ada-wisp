@@ -151,7 +151,7 @@ if (isset($_SERVER['REQUEST_METHOD']) && $_SERVER['REQUEST_METHOD'] == 'POST' &&
 				 * 
 				 * $viewFontHref = MODULES_LEX_HTTP.'/index.php?op=zoom&id='.$j;
 				 */
-				$viewFontHref = MODULES_LEX_HTTP.'/view.php?sourceID='.$j;
+				$viewFontHref = MODULES_LEX_HTTP.'/view.php?mode=newwin&op=source&sourceID='.$j;
 				$viewFontLink = CDOMElement::create('a','class:gotofont tooltip,target:_lextarget,href:'.$viewFontHref);
 				$viewFontLink->setAttribute('title', translateFN('Clicca per andare alla fonte'));
 				$viewFontLink->addChild(new CText(translateFN('Vai alla Fonte')));
@@ -166,9 +166,9 @@ if (isset($_SERVER['REQUEST_METHOD']) && $_SERVER['REQUEST_METHOD'] == 'POST' &&
 				 */
 				$baseLink = MODULES_LEX_HTTP;
 				if ($userObj->getType() == AMA_TYPE_AUTHOR) {
-					$baseLink .= '/index.php?op=zoom&assetID=';
+					$baseLink .= '/index.php?mode=newwin&op=zoom&assetID=';
 				} else {
-					$baseLink .= '/view.php?assetID=';
+					$baseLink .= '/view.php?mode=newwin&assetID=';
 				}
 									
 				foreach ($resultEl['data'] as $dataEl) {

@@ -130,7 +130,7 @@ if (isset($_SERVER['REQUEST_METHOD']) && $_SERVER['REQUEST_METHOD'] == 'GET' &&
 			}
 			
 			if (!AMA_DB::isError($abrogationArr) && is_array($abrogationArr) && count($abrogationArr)>0) {
-				$baseHref = MODULES_LEX_HTTP . '/view.php?assetID=';
+				$baseHref = MODULES_LEX_HTTP . '/view.php?mode=newwin&assetID=';
 				foreach ($abrogationArr as $count=>$assetAbrogated) {
 					if (!isset($ulAbrogated)) $ulAbrogated = CDOMElement::create('ol','class:assetAbrogated');
 								

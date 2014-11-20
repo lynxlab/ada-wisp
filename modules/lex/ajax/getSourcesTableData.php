@@ -96,7 +96,7 @@ if (isset($_SERVER['REQUEST_METHOD']) && $_SERVER['REQUEST_METHOD'] == 'GET') {
 				case 1:
 					$type = 'linkSource'; 
 					$title = translateFN('Clicca per il testo completo della fonte');
-					$link = 'self.document.location.href=\'view.php?sourceID='.$id.'\';';
+					$link = 'self.document.location.href=\'view.php?op=source&sourceID='.$id.'\';';
 					break;
 				case 2:
 					if (in_array(DELETE_SOURCE, $canDO[$userObj->getType()])) {
