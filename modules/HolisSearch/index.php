@@ -203,7 +203,8 @@ $optionsAr['onload_func'] = 'initDoc();';
  * instruct javascript to do the serach accordingly
  */
 if (count($searchCoursesIDs)>0) { 
-	$optionsAr['onload_func'] = 'initDoc('.json_encode($searchCoursesIDs).','.(defined('MODULES_LEX') ? 'true' : 'false').');';
+	$optionsAr['onload_func'] = 'initDoc('.json_encode($searchCoursesIDs).','.(defined('MODULES_LEX') ? 'true' : 'false').
+	','.(($userObj->getType()==AMA_TYPE_AUTHOR) ? 'true' : 'false').');';
 }
 
 $avatar = CDOMElement::create('img','class:img_user_avatar,src:'.$userObj->getAvatar());

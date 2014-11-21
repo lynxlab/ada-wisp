@@ -60,7 +60,14 @@ if (isset($_SERVER['REQUEST_METHOD']) && $_SERVER['REQUEST_METHOD'] == 'GET' &&
 	
 	$languageId = getLanguageCode();
 	
+	$assetObj  = $dh->asset_get($assetID);
+	if (!AMA_DB::isError($assetObj)) {
+		$retArray['title'] = str_replace('_', ' ', $assetObj->label);
+	}
+	
 	$assetText = $dh->asset_get_text($assetID);
+
+	$retArray['assetID'] = $assetID;
 	
 	if (!AMA_DB::isError($assetText)) {
 		$retArray['status'] = 'OK';
@@ -107,35 +114,48 @@ if (isset($_SERVER['REQUEST_METHOD']) && $_SERVER['REQUEST_METHOD'] == 'GET' &&
 		}
 		
 		/**
-		 * Check if the asset has been abrogated
+		 * Check if the asset has been abrogated or abrogates some other asset
 		 */
 		$assetAbrogatedAr = $dh->asset_get_abrogated($assetID);
+		$assetAbrogatesAr = $dh->asset_get_abrogates($assetID);
 		
-		if (!AMA_DB::isError($assetAbrogatedAr) && is_array($assetAbrogatedAr) && count($assetAbrogatedAr)>0) {
-			$baseHref = MODULES_LEX_HTTP . '/view.php?assetID=';
-			foreach ($assetAbrogatedAr as $count=>$assetAbrogated) {
-				if (!isset($ulAbrogated)) $ulAbrogated = CDOMElement::create('ol','class:assetAbrogated');
-								
-				$link = CDOMElement::create('a','class:abrogatedLink,target:_blank,href:'.$baseHref.$assetAbrogated['abrogato_da']);
-				$link->addChild (new CText($assetAbrogated['label']));
-				
-				$spanDate = CDOMElement::create('span');
-				$spanDate->addChild (new CText(' '.translateFN('in data').' '.$assetAbrogated['data_abrogazione']));
-				
-				$liAbrogated = CDOMElement::create('li','class:abrogatedElement');
-				$liAbrogated->addChild ($link);
-				$liAbrogated->addChild ($spanDate);
-				
-				$ulAbrogated->addChild ($liAbrogated);
+		foreach (array($assetAbrogatedAr, $assetAbrogatesAr) as $i=>$abrogationArr) {
+			
+			if ($i==0) {
+				$key = 'abrogato_da';
+				$label = translateFN('Abrogato da');
+			} else if ($i==1) {
+				$key = 'abroga';
+				$label = translateFN('Abroga');
 			}
 			
-			if (isset($ulAbrogated)) {
-				$spanAbrogatedTitle = CDOMElement::create('span','class:assetAbrogatedTitle');
-				$spanAbrogatedTitle->addChild(new CText(translateFN('Abrogato da').': '));
-				$htmlObj->addChild($spanAbrogatedTitle);
-				$htmlObj->addChild($ulAbrogated);
-			}			
-		}		
+			if (!AMA_DB::isError($abrogationArr) && is_array($abrogationArr) && count($abrogationArr)>0) {
+				$baseHref = MODULES_LEX_HTTP . '/view.php?mode=newwin&assetID=';
+				foreach ($abrogationArr as $count=>$assetAbrogated) {
+					if (!isset($ulAbrogated)) $ulAbrogated = CDOMElement::create('ol','class:assetAbrogated');
+								
+					$link = CDOMElement::create('a','class:abrogatedLink,target:_lextarget,href:'.$baseHref.$assetAbrogated[$key]);
+					$link->addChild (new CText($assetAbrogated['label']));
+				
+					$spanDate = CDOMElement::create('span');
+					$spanDate->addChild (new CText(' '.translateFN('in data').' '.$assetAbrogated['data_abrogazione']));
+				
+					$liAbrogated = CDOMElement::create('li','class:abrogatedElement');
+					$liAbrogated->addChild ($link);
+					$liAbrogated->addChild ($spanDate);
+				
+					$ulAbrogated->addChild ($liAbrogated);
+				}
+			
+				if (isset($ulAbrogated)) {
+					$spanAbrogatedTitle = CDOMElement::create('span','class:assetAbrogatedTitle');
+					$spanAbrogatedTitle->addChild(new CText($label.': '));
+					$htmlObj->addChild($spanAbrogatedTitle);
+					$htmlObj->addChild($ulAbrogated);
+					unset($ulAbrogated);
+				}
+			}
+		}
 		
 		$retArray['html'] = $htmlObj->getHtml();
 	}

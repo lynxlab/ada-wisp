@@ -430,6 +430,28 @@ class AMALexDataHandler extends AMA_DataHandler {
 	}
 
 	/**
+	 * gets infos about assets that another asset abrogates 
+	 *
+	 * @param number $assetID the id of the asset
+	 *
+	 * @return AMA_Error|array
+	 *
+	 *  @access public
+	 */
+	public function asset_get_abrogates ($assetID) {
+		$sql = 'SELECT A.`'.self::$PREFIX.'assets_id` AS abroga, A.`data_abrogazione`, `label` FROM `'.self::$PREFIX.'assets_abrogati` AS A '.
+				' JOIN `'.self::$PREFIX.'assets` AS ASSET ON ASSET.`'.self::$PREFIX.'assets_id`= A.`'.self::$PREFIX.'assets_id`'.
+				' WHERE `abrogato_da`=?';
+	
+		$result = $this->getAllPrepared($sql,$assetID,AMA_FETCH_ASSOC);
+	
+		if (!AMA_DB::isError($result) && $result!==false && count($result)>0) {
+			array_walk($result, function (&$value) { $value['data_abrogazione'] = $this->ts_to_date($value['data_abrogazione']); });
+		}
+		return $result;
+	}
+
+	/**
 	 * sets abrogated info about an asset
 	 * 
 	 * @param number $assetID the id of the asset
@@ -495,6 +517,34 @@ class AMALexDataHandler extends AMA_DataHandler {
 
 		if (AMA_DB::isError($result) || count($result)<=0) return null;
 		else return $result;
+	}
+
+	/**
+	 * gets all the asset ids belonging to the passed source id
+	 * 
+	 * @param number $sourceID
+	 * 
+	 * @param string $orderBy
+	 * 
+	 * @return NULL|mixed
+	 * 
+	 * @access public
+	 */
+	public function get_source_assetdids ($sourceID, $orderBy=null) {
+		
+		$sql = 'SELECT `'.self::$PREFIX.'assets_id` FROM `'.self::$PREFIX.'assets`'.
+			   ' WHERE `'.self::$PREFIX.'fonti_id`=?';
+		
+		if (!is_null($orderBy)) $sql .= ' ORDER BY '.$orderBy;
+		
+		$result = $this->getAllPrepared($sql,$sourceID,AMA_FETCH_ASSOC);
+		
+		if (AMA_DB::isError($result) || count($result)<=0) return null;
+		else {
+			// convert to a non-multiarray of integers
+			foreach ($result as $i=>$res) $result[$i] = intval($res[self::$PREFIX.'assets_id']);
+			return $result;		
+		}
 	}
 
 	/**

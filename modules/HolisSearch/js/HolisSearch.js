@@ -30,9 +30,10 @@ function initDoc() {
 		 * we've been asked to perform a search
 		 * arguments[0] is the courseID array
 		 * arguments[1] tells if modules lex must be searched
+		 * arguments[2] tells if the user is an author
 		 * 
 		 */
-		hsm.doSearch(arguments[0],arguments[1]);
+		hsm.doSearch(arguments[0],arguments[1],arguments[2]);
 	}
 }
 
@@ -212,7 +213,7 @@ var HolisSearchManagement = (function() {
 		 * If #abrogato is not there, then it's a forceAbrogated search
 		 */
 		var abrogatedStatus = ($j('#abrogato').length > 0) ? $j('#abrogato').val() : 1; 
-		
+		var isAuthor = this.isAuthor;
     	$j.ajax({
 			type	:	'POST',
 			url		:	'ajax/getSearchModuleLex.php',
@@ -241,7 +242,7 @@ var HolisSearchManagement = (function() {
 				                       { "sWidth": "60%" },
 				                       { "sWidth": "10%" , "bVisible" : false },
 				                       { "sWidth": "10%" },
-				                       { "sWidth": "10%" }
+				                       { "sWidth": "10%" , "bVisible" : isAuthor },
 				                       ],
 				        "fnInitComplete": function(settings, json) {
 				        	// reset dataTables_wrapper classes that were removed by dataTable
@@ -369,11 +370,13 @@ var HolisSearchManagement = (function() {
  * @param searchCoursesIDs array of course ids to be searched
  * @param hasModuleLex true if module lex must be searched as well
  */	
-HolisSearchManagement.prototype.doSearch = function(searchCoursesIDs, hasModuleLex) {
+HolisSearchManagement.prototype.doSearch = function(searchCoursesIDs, hasModuleLex, isAuthor) {
 	// set courses to search
 	this.searchCoursesIDs = searchCoursesIDs;
 	// set the boolean to search the lex module
-	this.hasModuleLex = hasModuleLex;	
+	this.hasModuleLex = hasModuleLex;
+	// set the boolean that tells if user is an author
+	this.isAuthor = isAuthor;
 	// reference of this to make it visible to done function
 	var thisReference = this;
 	

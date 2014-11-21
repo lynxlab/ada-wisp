@@ -47,7 +47,7 @@ require_once MODULES_HOLISSEARCH_PATH .'/config/config.inc.php';
 require_once MODULES_LEX_PATH . '/include/functions.inc.php';
 
 $retArray = null;
-$getOnlyVerifiedAssets = false;
+$getOnlyVerifiedAssets = true;
 if (isset($abrogatedStatus) && is_numeric($abrogatedStatus)) $abrogatedStatus=intval($abrogatedStatus);
 else $abrogatedStatus = -1;
 
@@ -146,7 +146,13 @@ if (isset($_SERVER['REQUEST_METHOD']) && $_SERVER['REQUEST_METHOD'] == 'POST' &&
 				$subtitle = CDOMElement::create('span','class:typology');
 				$subtitle->addChild (new CText( $resultEl['tipologia'] ));
 				
-				$viewFontLink = CDOMElement::create('a','class:gotofont tooltip,target:_blank,href:'.MODULES_LEX_HTTP.'/index.php?op=zoom&id='.$j);
+				/**
+				 * use index.php?op=zoom to link to the source page with the datatable
+				 * 
+				 * $viewFontHref = MODULES_LEX_HTTP.'/index.php?op=zoom&id='.$j;
+				 */
+				$viewFontHref = MODULES_LEX_HTTP.'/view.php?mode=newwin&op=source&sourceID='.$j;
+				$viewFontLink = CDOMElement::create('a','class:gotofont tooltip,target:_lextarget,href:'.$viewFontHref);
 				$viewFontLink->setAttribute('title', translateFN('Clicca per andare alla fonte'));
 				$viewFontLink->addChild(new CText(translateFN('Vai alla Fonte')));
 				
@@ -154,12 +160,20 @@ if (isset($_SERVER['REQUEST_METHOD']) && $_SERVER['REQUEST_METHOD'] == 'POST' &&
 				
 				$resultDIV->addChild($title);
 				$title->addChild($subtitle);
-				
-				$baseLink = MODULES_LEX_HTTP . '/view.php?assetID=';
+
+				/**
+				 * if user is an author, link goes to zoom single asset
+				 */
+				$baseLink = MODULES_LEX_HTTP;
+				if ($userObj->getType() == AMA_TYPE_AUTHOR) {
+					$baseLink .= '/index.php?mode=newwin&op=zoom&assetID=';
+				} else {
+					$baseLink .= '/view.php?mode=newwin&assetID=';
+				}
 									
 				foreach ($resultEl['data'] as $dataEl) {
 					
-					$labelHref = CDOMElement::create('a','target:_blank,class:tooltip,href:'.$baseLink.$dataEl[AMALexDataHandler::$PREFIX.'assets_id']);
+					$labelHref = CDOMElement::create('a','target:_lextarget,class:tooltip,href:'.$baseLink.$dataEl[AMALexDataHandler::$PREFIX.'assets_id']);
 					// $labelHref->setAttribute('title', translateFN('Clicca per andare al testo'));
 					/**
 					 * if user is an author, show asset id as a tooltip
@@ -178,9 +192,23 @@ if (isset($_SERVER['REQUEST_METHOD']) && $_SERVER['REQUEST_METHOD'] == 'POST' &&
 					} else {
 						$res_isabrogated = translateFN('No');
 					}
+					
+					$typeSpan = CDOMElement::create('span');
+					$typeSpan->addChild(new CText($dataEl['type']));
+					
+					if (in_array($dataEl['type'], array('ID','FT'))) {
+						$typeSpan->setAttribute('class', 'tooltip');
+						if ('ID'==$dataEl['type']) {
+							$typeSpan->setAttribute('title', translateFN('Risultato da termine Eurovoc'));
+						} else if ('FT'==$dataEl['type']) {
+							$typeSpan->setAttribute('title', translateFN('Risultato da ricerca testuale'));
+						}
+					}
+					
+					$res_type = $typeSpan->getHtml();
 			
 					$temp_results = array($thead_data[0] => $res_name, $thead_data[1] => $res_score, 
-										  $thead_data[2] => $res_isabrogated, $thead_data[3]=>$dataEl['type'] );
+										  $thead_data[2] => $res_isabrogated, $thead_data[3]=>$res_type );
 			
 					array_push ($resAr,$temp_results);
 				}

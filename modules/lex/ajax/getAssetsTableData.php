@@ -49,6 +49,7 @@ require_once MODULES_LEX_PATH . '/include/management/eurovocManagement.inc.php';
 if (isset($_SERVER['REQUEST_METHOD']) && $_SERVER['REQUEST_METHOD'] == 'GET') {
 
 	$sourceID = (isset($sourceID) && intval($sourceID)>0) ? intval($sourceID) : -1;
+	$assetID  = (isset($assetID)  && intval($assetID) >0) ? explode(',', trim($assetID)) : -1;
 	
 	$languageId = getLanguageCode();
 	
@@ -71,6 +72,10 @@ if (isset($_SERVER['REQUEST_METHOD']) && $_SERVER['REQUEST_METHOD'] == 'GET') {
 	
 	$dh = AMALexDataHandler::instance(MultiPort::getDSN($pointer));
 	
+	$whereClause  = ($sourceID!=-1) ? '`'.$dh::$PREFIX.'assets`.`'.$dh::$PREFIX.'fonti_id`='.$sourceID : '' ;
+	$whereClause .= (($sourceID!=-1) && ($assetID!=-1)) ? ' AND ' : '';
+	$whereClause .= ($assetID!=-1) ? '`'.$dh::$PREFIX.'assets`.`'.$dh::$PREFIX.'assets_id` IN ('.implode(',', $assetID).')'  : '';
+	
 	$output = $dh->getDataForDataTable (
 			array ( $dh::$PREFIX.'assets_id',
 					$dh::$PREFIX.'assets_id', // duplicate select field is a hack to make room for expand button
@@ -92,7 +97,7 @@ if (isset($_SERVER['REQUEST_METHOD']) && $_SERVER['REQUEST_METHOD'] == 'GET') {
 			        ),
 					$dh::$PREFIX.'assets_id',
 					$dh::$PREFIX.'assets',
-					'`'.$dh::$PREFIX.'assets`.`'.$dh::$PREFIX.'fonti_id`='.$sourceID,
+					$whereClause,
 					true /* true forces duplicate removal */ );
 	
 	foreach ($output['aaData'] as $i=>$elem) {

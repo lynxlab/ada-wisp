@@ -251,13 +251,6 @@ form#exporteurovocForm #l_exportLang {
 #resetEurovocBtnContainer {
 	text-align: center;
 }
-/*
- * this is needed to have the dialog
- * and the overlay on top of the menu bar
- */
-.ui-front {
-z-index: 1200 !important;
-}
 
 /*
  * sourcesTable jQuery dataTable
@@ -360,7 +353,7 @@ z-index: 1200 !important;
  */ 
 .ulactions { list-style-type: none; display: block; padding:0; margin:0; }
 .liactions { text-align:center; border: none !important; margin-bottom: 5px; }
-.zoomButton, .deleteButton, .linkAssetButton { height: 1.5em; }
+.zoomButton, .deleteButton, .linkAssetButton, .linkSourceButton { height: 1.5em; }
 /*
  * end sourcesTable actions
  */
