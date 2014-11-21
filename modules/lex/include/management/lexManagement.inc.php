@@ -38,9 +38,9 @@ class lexManagement
     	/* @var $html string holds html code to be retuned */
     	$htmlObj = null;
     	/* @var $path   string  path var to render in the help message */
-    	$help = translateFN('Benvenuto nel modulo LEX');
+    	$help = translateFN('Benvenuto nel modulo GIUR');
     	/* @var $status string status var to render in the breadcrumbs */
-    	$title= translateFN('lex');
+    	$title= translateFN('GIUR');
     	
     	$assetOK = true;
     	
@@ -94,9 +94,9 @@ class lexManagement
     	/* @var $html string holds html code to be retuned */
     	$htmlObj = null;
     	/* @var $path   string  path var to render in the help message */
-    	$help = translateFN('Benvenuto nel modulo LEX');
+    	$help = translateFN('Benvenuto nel modulo GIUR');
     	/* @var $status string status var to render in the breadcrumbs */
-    	$title= translateFN('lex');
+    	$title= translateFN('GIUR');
     	
     	if (is_null($sourceID)) {
     		$htmlObj = CDOMElement::create('div','class:no-permissions');
@@ -134,9 +134,9 @@ class lexManagement
 		/* @var $html string holds html code to be retuned */
 		$htmlObj = null;		
 		/* @var $path   string  path var to render in the help message */
-		$help = translateFN('Benvenuto nel modulo LEX');
+		$help = translateFN('Benvenuto nel modulo GIUR');
 		/* @var $status string status var to render in the breadcrumbs */
-		$title= translateFN('lex');
+		$title= translateFN('GIUR');
 		
 		if (isset ($this->_canDO) && count ($this->_canDO)>0) {
 			// user has permissions to do something
