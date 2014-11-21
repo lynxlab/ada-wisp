@@ -3,7 +3,7 @@
 -- http://www.phpmyadmin.net
 --
 -- Host: localhost
--- Generation Time: Nov 13, 2014 alle 12:41
+-- Generation Time: Nov 21, 2014 alle 17:32
 -- Versione del server: 5.5.38-cll-lve
 -- PHP Version: 5.4.29
 
@@ -34,14 +34,14 @@ CREATE TABLE IF NOT EXISTS `menu_page` (
   `self_instruction` int(1) NOT NULL DEFAULT '0' COMMENT 'nonzero if course is in self instruction mode',
   `isVertical` int(1) NOT NULL DEFAULT '0' COMMENT 'nonzero if it''s a vertical menu',
   `linked_tree_id` int(11) DEFAULT NULL
-) ENGINE=MyISAM  DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci AUTO_INCREMENT=176 ;
+) ENGINE=MyISAM  DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci AUTO_INCREMENT=192 ;
 
 --
 -- Dump dei dati per la tabella `menu_page`
 --
 
 INSERT INTO `menu_page` (`tree_id`, `module`, `script`, `user_type`, `self_instruction`, `isVertical`, `linked_tree_id`) VALUES
-(1, 'browsing', 'view.php', 3, 0, 0, 152),
+(1, 'browsing', 'view.php', 3, 0, 0, NULL),
 (2, 'main', 'default', 5, 0, 0, 105),
 (3, 'browsing', 'default', 5, 0, 0, NULL),
 (4, 'main', 'info.php', 5, 0, 0, NULL),
@@ -81,7 +81,7 @@ INSERT INTO `menu_page` (`tree_id`, `module`, `script`, `user_type`, `self_instr
 (42, 'browsing', 'external_link.php?file=practitioner_it.html', 4, 0, 0, 29),
 (43, 'tutor', 'edit_tutor.php', 4, 0, 0, 11),
 (44, 'main', 'default', 4, 0, 0, 105),
-(45, 'browsing', 'view.php', 4, 0, 0, 152),
+(45, 'browsing', 'view.php', 4, 0, 0, NULL),
 (46, 'browsing', 'main_index.php?op=forum', 4, 0, 0, 22),
 (47, 'browsing', 'search.php', 4, 0, 0, 28),
 (48, 'comunica', 'chat.php', 4, 0, 0, 24),
@@ -178,7 +178,7 @@ INSERT INTO `menu_page` (`tree_id`, `module`, `script`, `user_type`, `self_instr
 (148, 'switcher', 'edit_content.php', 6, 0, 0, NULL),
 (168, 'modules/HolisSearch', 'default', 3, 0, 0, 124),
 (167, 'modules/lex', 'default', 3, 0, 0, 124),
-(152, 'browsing', 'sview.php', 3, 0, 0, NULL),
+(152, 'browsing', 'sview.php', 3, 0, 0, 1),
 (153, 'browsing', 'external_link.php?file=gpl.txt', 3, 0, 0, 29),
 (154, 'switcher', 'zoom_user.php', 6, 0, 0, 105),
 (155, 'switcher', 'assign_practitioner.php', 6, 0, 0, 105),
@@ -187,7 +187,7 @@ INSERT INTO `menu_page` (`tree_id`, `module`, `script`, `user_type`, `self_instr
 (158, 'browsing', 'external_link.php?file=gpl.txt', 6, 0, 0, 29),
 (159, 'switcher', 'delete_lservice.php', 6, 0, 0, 105),
 (160, 'browsing', 'external_link.php?file=gpl.txt', 4, 0, 0, 29),
-(161, 'browsing', 'sview.php', 4, 0, 0, 152),
+(161, 'browsing', 'sview.php', 4, 0, 0, NULL),
 (162, 'tutor', 'eguidance_tutor_form.php', 4, 0, 0, NULL),
 (163, 'tutor', 'service_info.php', 4, 0, 0, 105),
 (164, 'tutor', 'user_service_detail.php', 4, 0, 0, 105),
@@ -196,7 +196,22 @@ INSERT INTO `menu_page` (`tree_id`, `module`, `script`, `user_type`, `self_instr
 (172, 'comunica', 'videochat.php', 3, 0, 0, NULL),
 (173, 'comunica', 'videochat.php', 4, 0, 0, 172),
 (174, 'comunica', 'send_event_proposal.php', 4, 0, 0, NULL),
-(175, 'comunica', 'event_proposal.php', 3, 0, 0, NULL);
+(175, 'comunica', 'event_proposal.php', 3, 0, 0, NULL),
+(176, 'modules/lex', 'index.php', 3, 0, 0, NULL),
+(177, 'modules/lex', 'view.php?mode=newwin', 3, 0, 0, 181),
+(178, 'browsing', 'mylog.php', 3, 0, 0, NULL),
+(179, 'browsing', 'download.php', 3, 0, 0, NULL),
+(180, 'modules/lex', 'view.php?op=source', 3, 0, 0, NULL),
+(181, 'abstract', 'chiudi', 3, 0, 0, NULL),
+(183, 'modules/lex', 'index.php?mode=newwin', 1, 0, 0, 181),
+(184, 'modules/lex', 'view.php', 1, 0, 0, NULL),
+(185, 'modules/lex', 'view.php?op=source', 1, 0, 0, 124),
+(186, 'abstract', 'modules_lex_index.php?op=zoom', 5, 0, 0, NULL),
+(187, 'modules/lex', 'index.php?op=zoom', 1, 0, 0, 186),
+(188, 'modules/lex', 'index.php?op=zoom', 3, 0, 0, 186),
+(189, 'modules/lex', 'index.php?op=zoom&mode=edit', 1, 0, 0, 124),
+(190, 'modules/lex', 'view.php?mode=newwin', 6, 0, 0, 181),
+(191, 'modules/lex', 'view.php?mode=newwin', 4, 0, 0, 181);
 
 --
 -- Indexes for dumped tables
@@ -216,18 +231,17 @@ ALTER TABLE `menu_page`
 -- AUTO_INCREMENT for table `menu_page`
 --
 ALTER TABLE `menu_page`
-MODIFY `tree_id` int(11) NOT NULL AUTO_INCREMENT COMMENT 'id of the menu tree for the given module, script, user_type and self instruction',AUTO_INCREMENT=176;
+MODIFY `tree_id` int(11) NOT NULL AUTO_INCREMENT COMMENT 'id of the menu tree for the given module, script, user_type and self instruction',AUTO_INCREMENT=192;
 /*!40101 SET CHARACTER_SET_CLIENT=@OLD_CHARACTER_SET_CLIENT */;
 /*!40101 SET CHARACTER_SET_RESULTS=@OLD_CHARACTER_SET_RESULTS */;
 /*!40101 SET COLLATION_CONNECTION=@OLD_COLLATION_CONNECTION */;
-
 
 -- phpMyAdmin SQL Dump
 -- version 4.2.5
 -- http://www.phpmyadmin.net
 --
 -- Host: localhost
--- Generation Time: Nov 13, 2014 alle 12:51
+-- Generation Time: Nov 21, 2014 alle 17:32
 -- Versione del server: 5.5.38-cll-lve
 -- PHP Version: 5.4.29
 
@@ -265,7 +279,7 @@ CREATE TABLE IF NOT EXISTS `menu_items` (
   `specialItem` int(1) NOT NULL DEFAULT '0',
   `order` int(3) unsigned NOT NULL DEFAULT '0',
   `enabledON` varchar(128) COLLATE utf8_unicode_ci NOT NULL DEFAULT '%ALWAYS%'
-) ENGINE=MyISAM  DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci AUTO_INCREMENT=148 ;
+) ENGINE=MyISAM  DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci AUTO_INCREMENT=165 ;
 
 --
 -- Dump dei dati per la tabella `menu_items`
@@ -273,11 +287,11 @@ CREATE TABLE IF NOT EXISTS `menu_items` (
 
 INSERT INTO `menu_items` (`item_id`, `label`, `extraHTML`, `icon`, `icon_size`, `href_properties`, `href_prefix`, `href_path`, `href_paramlist`, `extraClass`, `groupRight`, `specialItem`, `order`, `enabledON`) VALUES
 (1, 'home', NULL, 'home', 'large', NULL, '%HTTP_ROOT_DIR%/browsing', 'user.php', NULL, NULL, 0, 0, 0, '%ALWAYS%'),
-(2, 'Comunica', '<div class="ui label" id="msglabel" style="display:none;">             <i class="mail small icon"></i><span id="unreadmsgbadge"></span>         </div>', 'comment', 'large', NULL, NULL, NULL, NULL, NULL, 0, 0, 10, '%ALWAYS%'),
+(2, 'Comunica', '<div class="ui label" id="msglabel" style="display:none;">             <i class="mail small icon"></i><span id="unreadmsgbadge"></span>         </div>', 'comment', 'large', NULL, NULL, NULL, NULL, NULL, 0, 0, 10, '%NOT_MAGISTRATE%'),
 (3, 'Messaggeria', NULL, 'mail', NULL, '{"onclick":"openMessenger(''../comunica/list_messages.php'',800,600);"}', NULL, NULL, NULL, NULL, 0, 0, 5, '%ALWAYS%'),
 (4, 'Forum', NULL, 'community basic', NULL, NULL, '%HTTP_ROOT_DIR%/browsing', 'main_index.php?op=forum', '', NULL, 0, 0, 10, '%ALWAYS%'),
 (9, 'Esci', NULL, 'sign out', 'large', NULL, '%HTTP_ROOT_DIR%', NULL, NULL, NULL, 1, 0, 500, '%ALWAYS%'),
-(10, 'cerca', '<div class="ui search small icon input">\r\n<span><i18n>Cerca</i18n></span>\r\n<input type="text" placeholder="<i18n>Cerca</i18n>...">\r\n        <i class="search link icon"></i>\r\n</div>', NULL, NULL, NULL, NULL, NULL, NULL, 'searchItem', 1, 1, 0, '%ALWAYS%'),
+(10, 'cerca', '<div class="ui search small icon input">\r\n<span><i18n>Cerca</i18n></span>\r\n<input type="text" placeholder="<i18n>Cerca</i18n>...">\r\n        <i class="search link icon"></i>\r\n</div>', NULL, NULL, NULL, NULL, NULL, NULL, 'searchItem', 1, 1, 0, '%NOT_MAGISTRATE%'),
 (11, 'Naviga', NULL, 'globe', 'large', '{"onclick":"javascript: navigationPanelToggle();"}', NULL, NULL, NULL, '', 0, 0, 25, '%ALWAYS%'),
 (14, 'registrati', NULL, 'sign in', 'large', NULL, '%HTTP_ROOT_DIR%/browsing', 'registration.php', NULL, NULL, 0, 0, 0, '%ALWAYS%'),
 (15, 'corsi', NULL, 'book', 'large', NULL, '%HTTP_ROOT_DIR%', 'info.php', NULL, NULL, 0, 0, 20, '%ALWAYS%'),
@@ -285,15 +299,15 @@ INSERT INTO `menu_items` (`item_id`, `label`, `extraHTML`, `icon`, `icon_size`, 
 (17, 'informazioni', NULL, 'info', NULL, '{"target":"_blank"}', '%HTTP_ROOT_DIR%', 'help.php', '', NULL, 0, 0, 0, '%ALWAYS%'),
 (18, 'credits', NULL, 'trophy', NULL, NULL, '%HTTP_ROOT_DIR%', 'credits.php', NULL, NULL, 0, 0, 5, '%ALWAYS%'),
 (20, 'strumenti', NULL, 'wrench', 'large', NULL, NULL, NULL, NULL, NULL, 0, 0, 10, '%ALWAYS%'),
-(21, 'agenda', NULL, 'calendar', NULL, '{"onclick":"openMessenger(''../comunica/list_events.php'',800,600);"}', NULL, NULL, NULL, NULL, 0, 0, 0, '%ALWAYS%'),
+(21, 'agenda', NULL, 'calendar', NULL, '{"onclick":"openMessenger(''../comunica/list_events.php'',800,600);"}', NULL, NULL, NULL, NULL, 0, 0, 0, '%NOT_MAGISTRATE%'),
 (22, 'agisci', NULL, 'pencil', 'large', NULL, NULL, NULL, NULL, NULL, 0, 0, 15, '%ALWAYS%'),
-(23, 'modifica profilo', NULL, 'user', NULL, NULL, NULL, '<template_field class="template_field" name="edit_profile">edit_profile</template_field>', 'self_instruction', NULL, 0, 0, 0, '%ALWAYS%'),
+(23, 'modifica profilo', NULL, 'user', NULL, NULL, NULL, '<template_field class="template_field" name="edit_profile">edit_profile</template_field>', 'self_instruction', NULL, 0, 0, 0, '%NEVER%'),
 (24, '<template_field class="template_field" name="user_name">user_name</template_field>', NULL, 'user', 'large', NULL, NULL, NULL, NULL, 'userpopup', 1, 0, 495, '%ALWAYS%'),
 (25, 'chat', NULL, 'chat', NULL, '{"target":"_blank"}', '%HTTP_ROOT_DIR%/comunica', 'chat.php', 'id_room,id_course', NULL, 0, 0, 15, '%ALWAYS%'),
 (26, 'video conference', NULL, 'facetime video', NULL, '{"target":"_blank"}', '%HTTP_ROOT_DIR%/comunica', 'videochat.php', NULL, NULL, 0, 0, 20, '%ALWAYS%'),
 (27, 'collabora', NULL, 'share', NULL, NULL, '%HTTP_ROOT_DIR%/browsing', 'download.php', NULL, NULL, 0, 0, 25, '%ALWAYS%'),
-(28, 'diario', NULL, 'empty calendar', NULL, NULL, '%HTTP_ROOT_DIR%/browsing', 'mylog.php', NULL, NULL, 0, 0, 10, '%ALWAYS%'),
-(29, 'cronologia', NULL, 'time basic', NULL, NULL, '%HTTP_ROOT_DIR%/browsing', 'history.php', NULL, NULL, 0, 0, 15, '%ALWAYS%'),
+(28, 'diario', NULL, 'empty calendar', NULL, NULL, '%HTTP_ROOT_DIR%/browsing', 'mylog.php', NULL, NULL, 0, 0, 10, '%NOT_MAGISTRATE%'),
+(29, 'cronologia', NULL, 'time basic', NULL, NULL, '%HTTP_ROOT_DIR%/browsing', 'history.php', NULL, NULL, 0, 0, 15, '%NOT_MAGISTRATE%'),
 (30, 'storico esercizi', NULL, 'chart basic', NULL, NULL, '%HTTP_ROOT_DIR%/browsing', 'exercise_history.php', 'id_course_instance', NULL, 0, 0, 20, '%ALWAYS%'),
 (31, 'storico test', NULL, 'bar chart', NULL, NULL, '%MODULES_TEST_HTTP%', 'history.php', '<template_field class="template_field" name="test_history">test_history</template_field>', NULL, 0, 0, 25, '%MODULES_TEST%'),
 (32, 'storico sondaggi', NULL, 'edit', NULL, NULL, '%MODULES_TEST_HTTP%', 'history.php?op=survey', 'id_course, id_course_instance', NULL, 0, 0, 30, '%MODULES_TEST%'),
@@ -315,7 +329,7 @@ INSERT INTO `menu_items` (`item_id`, `label`, `extraHTML`, `icon`, `icon_size`, 
 (48, 'chiudi', NULL, 'off', 'large', '{"onclick":"exitChat();"}', NULL, NULL, NULL, NULL, 1, 0, 500, '%ALWAYS%'),
 (49, 'Messaggeria\r\n', NULL, 'mail', NULL, '{"onclick":"openMessenger(''../../comunica/list_messages.php'',800,600);"}', NULL, NULL, NULL, NULL, 0, 0, 5, '%ALWAYS%'),
 (50, 'chatrooms', NULL, 'chat', NULL, NULL, ' %HTTP_ROOT_DIR%/comunica', 'list_chatrooms.php', NULL, NULL, 0, 0, 10, '%ALWAYS%'),
-(51, 'agenda', NULL, 'calendar', NULL, '{"onclick":"openMessenger(''../../comunica/list_events.php'',800,600);"}', NULL, NULL, NULL, NULL, 0, 0, 0, '%ALWAYS%'),
+(51, 'agenda', NULL, 'calendar', NULL, '{"onclick":"openMessenger(''../../comunica/list_events.php'',800,600);"}', NULL, NULL, NULL, NULL, 0, 0, 0, '%NOT_MAGISTRATE%'),
 (52, 'messaggi ricevuti', NULL, 'reply mail', 'large', NULL, '%HTTP_ROOT_DIR%/comunica', 'list_messages.php?messages=received', NULL, NULL, 0, 0, 5, '%ALWAYS%'),
 (60, 'crea chatroom', NULL, 'chat', NULL, NULL, '%HTTP_ROOT_DIR%/comunica', 'create_chat.php', NULL, NULL, 0, 0, 0, '%ALWAYS%'),
 (54, 'chiudi', NULL, 'off', 'large', '{"onclick":"<template_field class=\\"template_field\\" name=\\"onclick\\">onclick</template_field>"}', NULL, NULL, NULL, NULL, 1, 0, 500, '%ALWAYS%'),
@@ -390,8 +404,8 @@ INSERT INTO `menu_items` (`item_id`, `label`, `extraHTML`, `icon`, `icon_size`, 
 (135, 'elimina esercizio', NULL, 'trash', NULL, '{"onclick":"<template_field class=\\"template_field\\" name=\\"onclick\\">onclick</template_field>"}', '%HTTP_ROOT_DIR%/browsing', 'exercise.php', 'id_node', NULL, 0, 0, 10, '%ALWAYS%'),
 (136, 'Modifica esercizio', NULL, 'edit', NULL, NULL, '%HTTP_ROOT_DIR%/services', 'edit_exercise.php?op=edit', NULL, NULL, 0, 0, 5, '%ALWAYS%'),
 (137, 'Modifica home page ', NULL, 'edit', NULL, NULL, '%HTTP_ROOT_DIR%/admin', 'edit_content.php', NULL, NULL, 0, 0, 40, '%ALWAYS%'),
-(138, 'documenti', NULL, 'file', 'large', NULL, '%HTTP_ROOT_DIR%/browsing', 'download.php', NULL, NULL, 0, 0, 15, '%ALWAYS%'),
-(139, 'contenuti', NULL, 'globe', 'large', '{"onclick":"javascript: navigationPanelToggle();"}', NULL, NULL, NULL, NULL, 0, 0, 25, '%ALWAYS%'),
+(138, 'documenti', NULL, 'file', '', NULL, '%HTTP_ROOT_DIR%/browsing', 'download.php', NULL, NULL, 0, 0, 15, '%ALWAYS%'),
+(139, 'contenuti', NULL, 'globe', 'large', '{"onclick":"javascript: navigationPanelToggle();"}', NULL, NULL, NULL, NULL, 0, 0, 35, '%ALWAYS%'),
 (140, 'chiudi', NULL, 'off', 'large', '{"onclick":"javascript:self.close();"}', NULL, NULL, NULL, NULL, 0, 0, 500, '%ALWAYS%'),
 (141, 'Riepilogo attività', NULL, 'browser', NULL, NULL, '%HTTP_ROOT_DIR%/admin', 'log_report.php', NULL, NULL, 0, 0, 0, '%ALWAYS%'),
 (142, 'Edit switcher_hu_images content', NULL, 'photo', NULL, NULL, '%HTTP_ROOT_DIR%/admin', 'edit_content.php?type=switcher_hu_images', NULL, NULL, 0, 0, 0, '%ALWAYS%'),
@@ -399,7 +413,23 @@ INSERT INTO `menu_items` (`item_id`, `label`, `extraHTML`, `icon`, `icon_size`, 
 (144, 'Edit author_hu_images content', NULL, 'photo', NULL, NULL, '%HTTP_ROOT_DIR%/admin', 'edit_content.php?type=author_hu_images', NULL, NULL, 0, 0, 0, '%ALWAYS%'),
 (145, 'Edit tutor_hu_images content', NULL, 'photo', NULL, NULL, '%HTTP_ROOT_DIR%/admin', 'edit_content.php?type=tutor_hu_images', NULL, NULL, 0, 0, 0, '%ALWAYS%'),
 (146, 'fonti', NULL, 'book', NULL, NULL, '%HTTP_ROOT_DIR%/modules/lex/', NULL, NULL, NULL, 0, 0, 0, '%MODULES_LEX%'),
-(147, '<template_field class="template_field" name="info">info</template_field>', '', 'info', NULL, NULL, '%HTTP_ROOT_DIR%', '<template_field class="template_field" name="manuale">manuale</template_field>', NULL, NULL, 0, 0, 0, '%ALWAYS%');
+(147, '<template_field class="template_field" name="info">info</template_field>', '', 'book', NULL, NULL, '%HTTP_ROOT_DIR%', '<template_field class="template_field" name="manuale">manuale</template_field>', NULL, NULL, 0, 0, 0, '%ALWAYS%'),
+(148, 'help_', NULL, 'info', NULL, '{"target":"_blank"}', '%HTTP_ROOT_DIR%', 'help.php', NULL, NULL, 0, 0, 5, '%ALWAYS%'),
+(149, 'funzioni', NULL, 'keyboard', 'large', NULL, NULL, NULL, NULL, NULL, 0, 0, 20, '%IS_MAGISTRATE%'),
+(150, 'Giur', NULL, 'legal', NULL, '', '%MODULES_LEX_HTTP%', '', NULL, NULL, 0, 0, 0, '%MODULES_LEX%'),
+(151, 'org', NULL, 'legal', NULL, NULL, '%HTTP_ROOT_DIR%/browsing', 'view.php?id_node=10_0&id_course=10&id_course_instance=19#10_0', NULL, NULL, 0, 0, 0, '%ALWAYS%'),
+(152, 'Leg', NULL, 'legal', NULL, NULL, '%HTTP_ROOT_DIR%/browsing', 'sview.php?id_node=6_0&id_course=6&id_course_instance=5#6_0', NULL, NULL, 0, 0, 0, '%IS_MAGISTRATE%'),
+(153, 'servizi', NULL, 'setting', 'large', NULL, NULL, NULL, NULL, NULL, 0, 0, 25, '%IS_MAGISTRATE%'),
+(158, 'manuale', NULL, 'book', NULL, NULL, '%HTTP_ROOT_DIR%/browsing', 'view.php?id_node=3_0&id_course=3&id_course_instance=4#3_0', NULL, NULL, 0, 0, 0, '%ALWAYS%'),
+(154, 'soluzioni', NULL, 'bullseye', NULL, NULL, '%HTTP_ROOT_DIR%/browsing', 'view.php?id_node=5_0&id_course=5&id_course_instance=3#5_0', NULL, NULL, 0, 0, 0, '%ALWAYS%'),
+(155, 'eTutoring', NULL, 'retweet', NULL, NULL, '%HTTP_ROOT_DIR%/browsing', 'ask_service.php', NULL, NULL, 0, 0, 0, '%ALWAYS%'),
+(156, 'elearning', NULL, 'shuffle', NULL, NULL, '%HTTP_ROOT_DIR%/browsing', 'view.php?id_node=8_0&id_course=8&id_course_instance=17#8_0', NULL, NULL, 0, 0, 0, '%ALWAYS%'),
+(157, 'credits', NULL, 'trophy', 'large', NULL, '%HTTP_ROOT_DIR%', 'credits.php', NULL, NULL, 1, 0, 0, '%ALWAYS%'),
+(159, 'repository', NULL, 'share', NULL, NULL, '%HTTP_ROOT_DIR%/browsing', 'mylog.php', NULL, NULL, 0, 0, 0, '%IS_MAGISTRATE%'),
+(160, 'esporta', NULL, 'download disk', NULL, NULL, '%HTTP_ROOT_DIR%/browsing', 'mylog.php', NULL, NULL, 0, 0, 40, '%ALWAYS%'),
+(161, 'modifica', NULL, 'edit', 'large', NULL, '%MODULES_LEX_HTTP%', 'index.php?op=zoom&mode=edit', 'assetID', NULL, 0, 0, 0, '%MODULES_LEX%'),
+(162, 'vai alla fonte', NULL, 'book', 'large', NULL, '%MODULES_LEX_HTTP%', 'view.php?op=source', 'sourceID', NULL, 0, 0, 0, '%MODULES_LEX%'),
+(164, 'strumenti', NULL, 'wrench', 'large', NULL, NULL, NULL, NULL, NULL, 0, 0, 0, '%IS_MAGISTRATE%');
 
 --
 -- Indexes for dumped tables
@@ -419,18 +449,17 @@ ALTER TABLE `menu_items`
 -- AUTO_INCREMENT for table `menu_items`
 --
 ALTER TABLE `menu_items`
-MODIFY `item_id` int(11) NOT NULL AUTO_INCREMENT,AUTO_INCREMENT=148;
+MODIFY `item_id` int(11) NOT NULL AUTO_INCREMENT,AUTO_INCREMENT=165;
 /*!40101 SET CHARACTER_SET_CLIENT=@OLD_CHARACTER_SET_CLIENT */;
 /*!40101 SET CHARACTER_SET_RESULTS=@OLD_CHARACTER_SET_RESULTS */;
 /*!40101 SET COLLATION_CONNECTION=@OLD_COLLATION_CONNECTION */;
-
 
 -- phpMyAdmin SQL Dump
 -- version 4.2.5
 -- http://www.phpmyadmin.net
 --
 -- Host: localhost
--- Generation Time: Nov 13, 2014 alle 12:41
+-- Generation Time: Nov 21, 2014 alle 17:33
 -- Versione del server: 5.5.38-cll-lve
 -- PHP Version: 5.4.29
 
@@ -480,13 +509,10 @@ INSERT INTO `menu_tree` (`tree_id`, `parent_id`, `item_id`, `extraClass`) VALUES
 (5, 2, 3, ''),
 (5, 0, 16, ''),
 (5, 16, 147, ''),
-(5, 16, 18, ''),
+(5, 16, 148, ''),
 (5, 0, 9, ''),
 (5, 0, 20, ''),
 (5, 20, 21, ''),
-(152, 0, 20, ''),
-(152, 0, 2, ''),
-(152, 0, 1, ''),
 (5, 0, 24, ''),
 (3, 0, 24, ''),
 (130, 22, 145, ''),
@@ -516,10 +542,6 @@ INSERT INTO `menu_tree` (`tree_id`, `parent_id`, `item_id`, `extraClass`) VALUES
 (7, 0, 9, ''),
 (9, 0, 139, ''),
 (10, 0, 1, ''),
-(10, 0, 2, ''),
-(10, 2, 3, ''),
-(10, 0, 20, ''),
-(10, 20, 21, ''),
 (10, 0, 16, ''),
 (10, 16, 17, ''),
 (10, 16, 18, ''),
@@ -635,12 +657,19 @@ INSERT INTO `menu_tree` (`tree_id`, `parent_id`, `item_id`, `extraClass`) VALUES
 (34, 16, 18, ''),
 (34, 0, 9, ''),
 (53, 2, 3, ''),
+(1, 16, 148, ''),
 (53, 0, 1, ''),
 (34, 20, 146, ''),
-(152, 2, 26, ''),
 (5, 20, 146, ''),
 (139, 0, 0, ''),
 (84, 0, 24, ''),
+(5, 0, 157, ''),
+(5, 153, 156, ''),
+(5, 153, 155, ''),
+(5, 153, 154, ''),
+(5, 0, 153, ''),
+(5, 149, 152, ''),
+(5, 149, 151, ''),
 (56, 0, 1, ''),
 (56, 0, 2, ''),
 (56, 0, 24, ''),
@@ -654,6 +683,8 @@ INSERT INTO `menu_tree` (`tree_id`, `parent_id`, `item_id`, `extraClass`) VALUES
 (56, 20, 21, ''),
 (56, 0, 22, ''),
 (56, 22, 25, ''),
+(5, 149, 150, ''),
+(5, 0, 149, ''),
 (53, 0, 24, ''),
 (53, 0, 9, ''),
 (53, 0, 16, ''),
@@ -882,8 +913,8 @@ INSERT INTO `menu_tree` (`tree_id`, `parent_id`, `item_id`, `extraClass`) VALUES
 (124, 0, 9, ''),
 (124, 0, 16, ''),
 (124, 0, 24, ''),
-(124, 16, 17, ''),
 (124, 16, 18, ''),
+(124, 16, 17, ''),
 (124, 0, 56, ''),
 (130, 0, 1, ''),
 (130, 0, 9, ''),
@@ -969,21 +1000,9 @@ INSERT INTO `menu_tree` (`tree_id`, `parent_id`, `item_id`, `extraClass`) VALUES
 (148, 22, 119, ''),
 (148, 22, 120, ''),
 (146, 0, 24, ''),
-(152, 0, 138, ''),
-(152, 0, 139, ''),
-(152, 0, 16, ''),
-(152, 0, 9, ''),
-(152, 0, 24, ''),
-(152, 16, 17, ''),
-(152, 16, 18, ''),
-(152, 2, 3, ''),
-(152, 2, 25, ''),
 (79, 22, 146, ''),
-(152, 20, 21, ''),
-(152, 20, 28, ''),
-(152, 20, 29, ''),
-(152, 0, 10, ''),
-(152, 20, 33, ''),
+(186, 0, 24, ''),
+(178, 20, 160, ''),
 (69, 0, 20, ''),
 (69, 20, 146, ''),
 (172, 0, 1, ''),
@@ -993,7 +1012,148 @@ INSERT INTO `menu_tree` (`tree_id`, `parent_id`, `item_id`, `extraClass`) VALUES
 (174, 0, 24, ''),
 (175, 0, 42, ''),
 (175, 0, 24, ''),
-(142, 0, 24, '');
+(142, 0, 24, ''),
+(1, 0, 16, ''),
+(1, 0, 1, ''),
+(1, 0, 149, ''),
+(186, 16, 17, ''),
+(186, 0, 16, ''),
+(1, 16, 158, ''),
+(176, 0, 1, ''),
+(176, 0, 9, ''),
+(176, 0, 16, ''),
+(176, 0, 164, ''),
+(176, 0, 24, ''),
+(186, 16, 18, ''),
+(176, 0, 149, ''),
+(176, 0, 153, ''),
+(176, 0, 157, ''),
+(176, 16, 148, ''),
+(176, 16, 158, ''),
+(176, 164, 159, ''),
+(176, 149, 150, ''),
+(176, 149, 151, ''),
+(176, 149, 152, ''),
+(176, 153, 154, ''),
+(176, 153, 155, ''),
+(176, 153, 156, ''),
+(1, 149, 150, ''),
+(1, 149, 151, ''),
+(1, 149, 152, ''),
+(1, 0, 153, ''),
+(1, 153, 154, ''),
+(1, 153, 155, ''),
+(1, 153, 156, ''),
+(1, 0, 20, ''),
+(1, 20, 159, ''),
+(1, 20, 138, ''),
+(1, 20, 33, ''),
+(1, 0, 139, ''),
+(1, 0, 24, ''),
+(1, 0, 157, ''),
+(1, 0, 9, ''),
+(178, 0, 1, ''),
+(178, 0, 149, ''),
+(178, 149, 150, ''),
+(178, 149, 151, ''),
+(178, 149, 152, ''),
+(178, 0, 153, ''),
+(178, 153, 154, ''),
+(178, 153, 155, ''),
+(178, 153, 156, ''),
+(178, 0, 20, ''),
+(178, 20, 33, ''),
+(178, 0, 157, ''),
+(178, 0, 24, ''),
+(178, 0, 9, ''),
+(179, 0, 1, ''),
+(179, 0, 149, ''),
+(179, 149, 150, ''),
+(179, 149, 151, ''),
+(179, 149, 152, ''),
+(179, 0, 153, ''),
+(179, 153, 154, ''),
+(179, 153, 155, ''),
+(179, 153, 156, ''),
+(179, 0, 164, ''),
+(179, 164, 159, ''),
+(179, 0, 24, ''),
+(179, 0, 9, ''),
+(179, 0, 157, ''),
+(180, 0, 1, ''),
+(180, 0, 16, ''),
+(180, 16, 148, ''),
+(180, 16, 158, ''),
+(180, 0, 149, ''),
+(180, 149, 150, ''),
+(180, 149, 151, ''),
+(180, 149, 152, ''),
+(180, 0, 153, ''),
+(180, 153, 154, ''),
+(180, 153, 155, ''),
+(180, 153, 156, ''),
+(180, 0, 20, ''),
+(180, 20, 159, ''),
+(180, 20, 33, ''),
+(180, 0, 157, ''),
+(180, 0, 24, ''),
+(180, 0, 9, ''),
+(184, 0, 56, ''),
+(180, 0, 56, ''),
+(186, 0, 1, ''),
+(184, 0, 161, ''),
+(184, 0, 1, ''),
+(184, 0, 9, ''),
+(184, 0, 24, ''),
+(184, 16, 18, ''),
+(184, 16, 17, ''),
+(161, 0, 1, ''),
+(161, 0, 2, ''),
+(161, 0, 9, ''),
+(161, 0, 10, ''),
+(161, 0, 16, ''),
+(161, 0, 20, ''),
+(161, 0, 24, ''),
+(161, 0, 138, ''),
+(161, 0, 139, ''),
+(161, 2, 3, ''),
+(161, 2, 25, ''),
+(161, 2, 26, ''),
+(161, 16, 17, ''),
+(161, 16, 18, ''),
+(161, 20, 21, ''),
+(161, 20, 28, ''),
+(161, 20, 29, ''),
+(161, 20, 33, ''),
+(45, 0, 1, ''),
+(45, 0, 2, ''),
+(45, 0, 9, ''),
+(45, 0, 10, ''),
+(45, 0, 16, ''),
+(45, 0, 20, ''),
+(45, 0, 24, ''),
+(45, 0, 138, ''),
+(45, 0, 139, ''),
+(45, 2, 3, ''),
+(45, 2, 25, ''),
+(45, 2, 26, ''),
+(45, 16, 17, ''),
+(45, 16, 18, ''),
+(45, 20, 21, ''),
+(45, 20, 28, ''),
+(45, 20, 29, ''),
+(45, 20, 33, ''),
+(181, 0, 140, ''),
+(186, 0, 9, ''),
+(186, 0, 162, ''),
+(181, 0, 24, ''),
+(1, 0, 2, ''),
+(1, 2, 3, ''),
+(1, 2, 25, ''),
+(1, 20, 21, ''),
+(1, 20, 28, ''),
+(1, 20, 29, ''),
+(1, 0, 10, '');
 
 --
 -- Indexes for dumped tables
@@ -1008,14 +1168,5 @@ ALTER TABLE `menu_tree`
 /*!40101 SET CHARACTER_SET_CLIENT=@OLD_CHARACTER_SET_CLIENT */;
 /*!40101 SET CHARACTER_SET_RESULTS=@OLD_CHARACTER_SET_RESULTS */;
 /*!40101 SET COLLATION_CONNECTION=@OLD_COLLATION_CONNECTION */;
-
-
-
-
-
-
-
-
-
 
 
