@@ -41,7 +41,7 @@
 .ui.menu.ada div.item.searchItem > div.search.input {
 	width: 100%;
 }
-.ui.computer.inverted.teal.menu {
+.ui.computer.inverted.menu {
     background-color: #4a4a4a;
 }
 .ui.search.input span { display: none; }
@@ -77,11 +77,11 @@
 .ui.vertical.ada.mobile.menu .item { width: 95%; padding-right:0; }
 body.left.pushed > div.ui.popup.right.center.transition.visible { z-index: 9999; } 
 
-.ui.labeled.teal.button, .ui.teal.buttons .button {
+.ui.labeled.button, .ui.buttons .button {
     background-color: #4a4a4a;
     color: #fff;
 }
-.ui.mobile.inverted.teal.menu {
+.ui.mobile.inverted.menu {
     background-color: #4a4a4a;
 }
 /**
@@ -131,10 +131,10 @@ div.right.sidebar .accordion .content.field table tbody td a {
 div.right.sidebar .accordion .content.field table.table_link_table { width:100%; } 
 div.right.sidebar .accordion .content.field table.table_link_table tbody td img { display: inline; vertical-align: middle; } 
 
-.ui.teal.block.dividing.header {
+.ui.block.dividing.header {
     border-bottom: 3px solid #4a4a4a;
 }
-.ui.teal.block.header {
+.ui.block.header {
     color: #4a4a4a !important;
 }
  /**
