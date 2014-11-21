@@ -119,5 +119,9 @@ if (is_array($assetsArray) && count($assetsArray)>0) {
 	$optionsAr['onload_func'] = 'initDoc('.json_encode($assetsArray).');';
 } else $optionsAr = null;
 
-ARE::render($layout_dataAr, $content_dataAr, null, $optionsAr);
+if(isset($assetID)) {
+	$menuOptions['assetID']=$assetID;
+} else $menuOptions = null;
+ 
+ARE::render($layout_dataAr, $content_dataAr, null, $optionsAr,$menuOptions);
 ?>

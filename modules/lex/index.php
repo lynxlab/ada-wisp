@@ -132,5 +132,9 @@ $avatar = CDOMElement::create('img','class:img_user_avatar,src:'.$userObj->getAv
 $content_dataAr['user_avatar'] = $avatar->getHtml();
 $content_dataAr['user_modprofilelink'] = $userObj->getEditProfilePage();
 
-ARE::render($layout_dataAr, $content_dataAr, NULL, $optionsAr);
+if(isset($sourceID)) {
+	$menuOptions['sourceID']=$sourceID;
+} else $menuOptions = null;
+
+ARE::render($layout_dataAr, $content_dataAr, NULL, $optionsAr,$menuOptions);
 ?>
