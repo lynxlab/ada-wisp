@@ -397,7 +397,6 @@ margin: 17px 0 0;
 
 #menuright .default_table {
     width: auto !important;
-    width: /**/auto;
 }
 #menuright tbody td, #mainmenu tbody td { line-height: normal; }
 
