@@ -10,5 +10,6 @@ and open the template in the editor.
 
 .ui.menu.ada,
 .ui.mobile.ada.menu,
-.ui.labeled.icon.down 
+.ui.labeled.icon.down,
+#journey
 {display:none; }
