@@ -134,8 +134,8 @@
                      <!-- 
                        <template_field class="template_field_disabled" name="add_exercise">add_exercise</template_field>
                       -->  
-                     <template_field class="template_field" name="add_note">add_note</template_field>
-                     <template_field class="template_field" name="add_private_note">add_private_note</template_field>
+                     <!--template_field class="template_field" name="add_note">add_note</template_field>
+                     <template_field class="template_field" name="add_private_note">add_private_note</template_field-->
                      <template_field class="template_field" name="edit_note">edit_note</template_field>
                      <template_field class="template_field" name="delete_note">delete_note</template_field>
                      <template_field class="template_field" name="publish_note">publish_note</template_field>
@@ -170,6 +170,7 @@
                   </div>
                   <!-- /accordion -->  
                 </div>
+              </div>
             <!-- / menudestra  -->
             </div>
         <!-- / contenitore -->
