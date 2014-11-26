@@ -167,9 +167,12 @@ if (isset($op) && ($op=="export")){
     header("Cache-Control: post-check=0, pre-check=0", false);
     header("Pragma: no-cache");                          // HTTP/1.0
     //header("Content-Type: text/plain");
-    header("Content-Type: text/html");
+//    header("Content-Type: text/html");
+    header("Content-type: application/vnd.ms-word");
     //header("Content-Length: ".filesize($name));
-    header("Content-Disposition: attachment; filename=$name_tmp");
+//    $logfileToExport = $root_dir . $user_dir .  $sess_id_user. '/'.'log'.$sess_id_user.'.doc';
+    $logfileToExport = 'sespius_repository.doc';
+    header("Content-Disposition: attachment; filename=$logfileToExport");
     echo $log_text;
     exit;
 } else {
@@ -196,27 +199,11 @@ $online_users_listing_mode = 2;
 $online_users = ADALoggableUser::get_online_usersFN($id_course_instance,$online_users_listing_mode);
 
 
-/*
- $online_users_listing_mode = 0;
-
-// vito 19 gennaio 2009
-//$online_users = User::get_online_usersFN($id_course_instance,$online_users_listing_mode);
-if(isset($sess_id_course_instance) && !empty($sess_id_course_instance)) {
-  $online_users = User::get_online_usersFN($sess_id_course_instance,$online_users_listing_mode);
-}
-else {
-  $online_users = '';
-}
-*/
-
-$export_log_link = "<a href=$http_root_dir/browsing/mylog.php?op=export>".translateFN("Esporta")."</a><br/>";
-$menu = $export_log_link;
-$print_link = '<a href='.$http_root_dir.'/browsing/mylog_print.php target="_blank">'.translateFN("Stampa")."</a>";
-$help = translateFN('Nel Diario si possono inserire i propri commenti privati. Esportarli per conservarli').'. '. $print_link;
+$export_log_link = "<a href=$http_root_dir/browsing/mylog.php?op=export>".translateFN("esportare")."</a>";
+$print_link = '<a href='.$http_root_dir.'/browsing/mylog_print.php target="_blank">'.translateFN("stampare")."</a>";
+$help = translateFN('Nel Repository si possono inserire anche i propri commenti. E\' possibile'. ' '.$export_log_link. ' ' .'per conservarli o '). $print_link;
 
 $banner = include ("$root_dir/include/banner.inc.php");
-
-
 
  $body_onload = "includeFCKeditor('log_today'); \$j('input, a.button, button').uniform();";
  $options = array('onload_func' => $body_onload);
@@ -227,7 +214,7 @@ $banner = include ("$root_dir/include/banner.inc.php");
          
 $node_data = array(
        'banner'=>$banner,
-       'course_title'=>'<a href="main_index.php">'.$course_title.'</a>',
+       'course_title'=> translateFN('Repository'),
        'today'=>$ymdhms,
        'path'=>$node_path,
        'user_name'=>$userObj->nome,
@@ -236,7 +223,6 @@ $node_data = array(
        'last_visit'=>$last_access,
 //                   'data'=>$log_data,
        'data'=>$log_form,
-       'menu'=>$menu,
        'help'=>$help,
        'bookmarks'=>$user_bookmarks,
        'status'=>$status,

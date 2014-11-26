@@ -158,7 +158,7 @@ $banner = include ("$root_dir/include/banner.inc.php");
  $imgAvatar = $userObj->getAvatar();
  $avatar = CDOMElement::create('img','src:'.$imgAvatar);
  $avatar->setAttribute('class', 'img_user_avatar');
- $course_title = translateFN('Diario personale');
+ $course_title = translateFN('Repository');
 
  $layout_family = $_SESSION['sess_userObj']->template_family;
  
