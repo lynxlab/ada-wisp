@@ -68,9 +68,10 @@ function doAccordion(elementID) {
 
 function copyAssetInMyLog() {
     asset = $j('.assetDetail').html();
+    okCopy = true;
     if (asset.length>0) {
 
-            var waitElement = $j('<span>Copying...</span>');
+            var waitElement = $j('<span> Copying...</span>');
 
             $j.ajax({
                     type	:	'GET',
@@ -81,16 +82,19 @@ function copyAssetInMyLog() {
                             $j('.assetTitle').append(waitElement);
                             }
             }).done(function (JSONObj){
-                    if (JSONObj && JSONObj.status=='OK') {
-                            // set the returned user type
-                            // display the returned message
-                            if (JSONObj.msg) {
-                                    $j('<span class="suggestedUserType">'+JSONObj.msg+'</span>').insertAfter('#codice_fiscale');
-                            }				
-                    }
-            }).always(function() {
-                    $j(waitElement).remove();
-
+//                    if (JSONObj && JSONObj.status=='OK') {
+//                            // set the returned user type
+//                            // display the returned message
+//                            if (JSONObj.msg) {
+//                                    $j('<span class="suggestedUserType">'+JSONObj.msg+'</span>').insertAfter('#codice_fiscale');
+//                            }				
+//                    }
+            }).always(function(JSONObj) {
+                      $activeElement = $j('li.active');
+//                      $( "ul li" ).filter( ".current" );
+                      $activeElement.removeClass('active');
+                      $j(waitElement).remove();
+                      showHideDiv("" ,JSONObj.msg,JSONObj.status);
             });
     }
 }

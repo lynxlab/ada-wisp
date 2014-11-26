@@ -56,11 +56,14 @@ if (isset($_SERVER['REQUEST_METHOD']) && $_SERVER['REQUEST_METHOD'] == 'GET' &&
     
     $logfile = $root_dir . $user_dir .  $sess_id_user. '/'.'log'.$sess_id_user.$log_extension;
     if (!$fileOpened = fopen($logfile, 'a')) {
-         $retArray['status'] = translateFN('Errore nell\'apertura del file').': '. $logfile;
+         $retArray['status'] = false;
+         $retArray['msg'] = translateFN('Errore nell\'apertura del file').': '. $logfile;
     } elseif (fwrite($fileOpened, $asset) === FALSE) {
-        $retArray['status'] = translateFN('Errore nella scrittura del file').': '. $logfile;
+         $retArray['status'] = false;
+        $retArray['msg'] = translateFN('Errore nella scrittura del file').': '. $logfile;
     } else {
-        $retArray['status'] = translateFN('Scrittura nel repository riuscita').': '. $logfile;
+         $retArray['status'] = true;
+        $retArray['msg'] = translateFN('Copia nel repository riuscita');
     }
     $res = fclose($fileOpened);            
 
