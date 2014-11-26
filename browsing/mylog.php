@@ -89,7 +89,7 @@ $errObj = new ADA_error(translateFN("Utente non trovato"),translateFN("Impossibi
 }
 
 // set the  title:	 
-$module_title = translateFN("Diario");
+$module_title = translateFN("Repository");
 
 // building file name
 // rootdir  + media path + author_id + filename
@@ -121,6 +121,12 @@ if (isset($sess_id_course) &&  (!($sess_id_course=="")) && $each_course) {
 	$logfile = $root_dir . "/services/media/" . $author_id . "/" . $name_tmp;
 } else {
 	$logfile = $root_dir . $user_dir .  $sess_id_user. '/'.'log'.$sess_id_user.$log_extension;
+        $userUploadPath = $root_dir . $user_dir .  $sess_id_user;
+        if (!is_dir($userUploadPath)) {
+            if (mkdir($userUploadPath) == FALSE) {
+                $makedir = false;
+            }
+        }
 }
 
 if (!file_exists($logfile))

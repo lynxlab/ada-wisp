@@ -46,7 +46,7 @@ require_once(ROOT_DIR.'/include/module_init.inc.php');
 require_once MODULES_LEX_PATH .'/config/config.inc.php';
 #require_once MODULES_LEX_PATH . '/include/management/eurovocManagement.inc.php';
 
-$retArray = array ('status'=>'ERROR');
+$retArray = array ('status'=>true);
 $user_dir = '/upload_file/uploaded_files/';
 $date = today_dateFN()." ".today_timeFN()."\n<BR />";
 $log_extension = ".htm";	
@@ -54,18 +54,27 @@ $log_extension = ".htm";
 if (isset($_SERVER['REQUEST_METHOD']) && $_SERVER['REQUEST_METHOD'] == 'GET' &&
     isset($asset) && ($asset)!= '') {
     
-    $logfile = $root_dir . $user_dir .  $sess_id_user. '/'.'log'.$sess_id_user.$log_extension;
-    if (!$fileOpened = fopen($logfile, 'a')) {
-         $retArray['status'] = false;
-         $retArray['msg'] = translateFN('Errore nell\'apertura del file').': '. $logfile;
-    } elseif (fwrite($fileOpened, $asset) === FALSE) {
-         $retArray['status'] = false;
-        $retArray['msg'] = translateFN('Errore nella scrittura del file').': '. $logfile;
-    } else {
-         $retArray['status'] = true;
-        $retArray['msg'] = translateFN('Copia nel repository riuscita');
+    $userUploadPath = $root_dir . $user_dir .  $sess_id_user;
+    if (!is_dir($userUploadPath)) {
+        if (mkdir($userUploadPath) == FALSE) {
+            $retArray['status'] = false;
+            $retArray['msg'] = translateFN('Errore nella creazione della cartella').': '. $userUploadPath;        
+        }
     }
-    $res = fclose($fileOpened);            
-
+    if ($retArray['status']) {
+        $logfile = $root_dir . $user_dir .  $sess_id_user. '/'.'log'.$sess_id_user.$log_extension;
+        if (!$fileOpened = fopen($logfile, 'a')) {
+             $retArray['status'] = false;
+             $retArray['msg'] = translateFN('Errore nell\'apertura del file').': '. $logfile;
+        } elseif (fwrite($fileOpened, $asset) === FALSE) {
+             $retArray['status'] = false;
+            $retArray['msg'] = translateFN('Errore nella scrittura del file').': '. $logfile;
+        } else {
+            $retArray['status'] = true;
+            $retArray['msg'] = translateFN('Copia nel repository riuscita');
+        }
+        $res = fclose($fileOpened);            
+        
+    }
 }
 echo json_encode($retArray);
