@@ -130,7 +130,7 @@ if (isset($_SERVER['REQUEST_METHOD']) && $_SERVER['REQUEST_METHOD'] == 'POST') {
         } else {
 
 //          $errObj = new ADA_Error($id_course);
-            $help = translateFN('Si è verificato un errore durante la creazione del corso: codice corso duplicato ');
+            $help = translateFN('Si è verificato un errore durante la creazione del corso: codice servizio duplicato ');
         }
     } else {
         $form = new CText(translateFN('I dati inseriti nel form non sono validi'));
