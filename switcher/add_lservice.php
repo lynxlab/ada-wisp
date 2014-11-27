@@ -154,10 +154,8 @@ if (isset($_SERVER['REQUEST_METHOD']) && $_SERVER['REQUEST_METHOD'] == 'POST') {
               $form = new CText(translateFN('Si è verificato un errore durante la creazione del corso. (2)'));
           }
         } else {
-            $errObj = new ADA_Error($result);
-            $text = translateFN('Si è verificato un errore durante la creazione del corso. (3)');
-            $text .= ' '.translateFN('Suggerimento').': '.translateFN('Provare a cambiare il codice servizio'); 
-            $form = new CText($text);
+            //          $errObj = new ADA_Error($id_course);
+            $help = translateFN('Si è verificato un errore durante la creazione del corso: codice servizio duplicato ');
         }
     } else {
         $form = new CText(translateFN('I dati inseriti nel form non sono validi'));
@@ -179,7 +177,7 @@ if (isset($_SERVER['REQUEST_METHOD']) && $_SERVER['REQUEST_METHOD'] == 'POST') {
 }
 
 $label = translateFN('Aggiunta corso');
-$help = translateFN('Da qui il provider admin può creare un nuovo corso');
+if(!isset($help)){$help = translateFN('Da qui il provider admin può creare un nuovo corso');}
 
 $imgAvatar = $userObj->getAvatar();
 $avatar = CDOMElement::create('img','src:'.$imgAvatar);
