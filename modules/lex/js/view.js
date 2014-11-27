@@ -65,3 +65,36 @@ function doAccordion(elementID) {
 	      .addClass("ui-accordion-content  ui-helper-reset ui-widget-content ui-corner-bottom")
 	      .show();
 }
+
+function copyAssetInMyLog() {
+    asset = $j('.assetDetail').html();
+    okCopy = true;
+    if (asset.length>0) {
+
+            var waitElement = $j('<span> Copying...</span>');
+
+            $j.ajax({
+                    type	:	'GET',
+                    url		:	'ajax/copyToMyLog.php',
+                    data	:	{ asset: asset },
+                    dataType:	'json',
+                    beforeSend : function() { 
+                            $j('.assetTitle').append(waitElement);
+                            }
+            }).done(function (JSONObj){
+//                    if (JSONObj && JSONObj.status=='OK') {
+//                            // set the returned user type
+//                            // display the returned message
+//                            if (JSONObj.msg) {
+//                                    $j('<span class="suggestedUserType">'+JSONObj.msg+'</span>').insertAfter('#codice_fiscale');
+//                            }				
+//                    }
+            }).always(function(JSONObj) {
+                      $activeElement = $j('li.active');
+//                      $( "ul li" ).filter( ".current" );
+                      $activeElement.removeClass('active');
+                      $j(waitElement).remove();
+                      showHideDiv("" ,JSONObj.msg,JSONObj.status);
+            });
+    }
+}
