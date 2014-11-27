@@ -9,16 +9,16 @@
  * @version		   0.1
  */
 
-function initDoc (assetsArray) {
-	loadAndDisplayAssets (assetsArray);
+function initDoc (assetsArray, isSource) {
+	loadAndDisplayAssets (assetsArray, isSource);
 }
 
-function loadAndDisplayAssets (assetsArray) {
+function loadAndDisplayAssets (assetsArray, isSource) {
 	if (assetsArray) {
 		$j.ajax({
 			type	:	'GET',
-			url		:	'ajax/getAssetDetails.php',
-			data	:	{ assetID: assetsArray.shift() },
+			url		:	'ajax/getAssetDetails.php',			
+			data	:	{ isSource: (isSource ? 1:0), assetID: assetsArray.shift() },
 			dataType:	'json'
 		}).done (function(JSONObj){
 			if (JSONObj && JSONObj.status=='OK' && JSONObj.html.length>0 && JSONObj.assetID) {
@@ -36,7 +36,7 @@ function loadAndDisplayAssets (assetsArray) {
 				$j('#'+JSONObj.assetID).fadeIn();				
 			}
 		}).always(function (JSONObj) {
-			 if (assetsArray.length>0) loadAndDisplayAssets(assetsArray);
+			 if (assetsArray.length>0) loadAndDisplayAssets(assetsArray, isSource);
 		});
 	}
 }
