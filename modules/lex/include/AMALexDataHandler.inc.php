@@ -530,7 +530,7 @@ class AMALexDataHandler extends AMA_DataHandler {
 	 * 
 	 * @access public
 	 */
-	public function get_source_assetdids ($sourceID, $orderBy=null) {
+	public function get_source_assetids ($sourceID, $orderBy=null) {
 		
 		$sql = 'SELECT `'.self::$PREFIX.'assets_id` FROM `'.self::$PREFIX.'assets`'.
 			   ' WHERE `'.self::$PREFIX.'fonti_id`=?';
@@ -545,6 +545,27 @@ class AMALexDataHandler extends AMA_DataHandler {
 			foreach ($result as $i=>$res) $result[$i] = intval($res[self::$PREFIX.'assets_id']);
 			return $result;		
 		}
+	}
+
+	/**
+	 * get the source which the passed asset ids belongs to
+	 * 
+	 * @param unknown $assetID
+	 * 
+	 * @return NULL|mixed
+	 * 
+	 * @access public
+	 */
+	public function get_source_from_asset ($assetID) {
+		
+		$sql = 'SELECT F.* FROM `'.self::$PREFIX.'fonti` AS F JOIN'.
+			   '`'.self::$PREFIX.'assets` AS A ON F.`'.self::$PREFIX.'fonti_id` = '.
+			   'A.`'.self::$PREFIX.'fonti_id` WHERE A.`'.self::$PREFIX.'assets_id`=?';
+		
+		$result = $this->getRowPrepared($sql,$assetID,AMA_FETCH_ASSOC);
+		
+		if (AMA_DB::isError($result) || count($result)<=0) return null;
+		else return $result;
 	}
 
 	/**
