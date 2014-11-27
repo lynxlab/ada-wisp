@@ -63,6 +63,13 @@ if (isset($_SERVER['REQUEST_METHOD']) && $_SERVER['REQUEST_METHOD'] == 'GET' &&
 	$assetObj  = $dh->asset_get($assetID);
 	if (!AMA_DB::isError($assetObj)) {
 		$retArray['title'] = str_replace('_', ' ', $assetObj->label);
+		if (isset($isSource) && intval($isSource)===0) {
+			
+			$source = $dh->get_source_from_asset($assetID);
+			if (!is_null($source)) {
+				$retArray['title'] = $source['titolo'].': '.$retArray['title'];
+			}
+		}
 	}
 	
 	$assetText = $dh->asset_get_text($assetID);

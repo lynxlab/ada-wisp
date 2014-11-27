@@ -68,8 +68,9 @@ if (isset($_SERVER['REQUEST_METHOD']) && $_SERVER['REQUEST_METHOD'] == 'GET' &&
 	 * loading and displaying everything with ajax calls
 	 */
 	if (isset($assetID) && intval($assetID)) {
-		// user has requested to view an asset	
-		$assetsArray = array (intval($assetID));		
+		// user has requested to view an asset
+		$assetsArray = array (intval($assetID));
+		$isSource = false;
 	} else if (isset($sourceID) && intval($sourceID)>0) {
 		$sourceTitleAr = $dh->get_sources(array('titolo'),true,AMALexDataHandler::$PREFIX.'fonti_id='.intval($sourceID));
 		if (!AMA_DB::isError($sourceTitleAr) && is_array($sourceTitleAr) && count($sourceTitleAr)==1) {
@@ -80,12 +81,13 @@ if (isset($_SERVER['REQUEST_METHOD']) && $_SERVER['REQUEST_METHOD'] == 'GET' &&
 				$htmlObj->addChild($titleH2);
 			}
 		}
-		// user has requested to view a source	
-		$assetsArray = $dh->get_source_assetdids(intval($sourceID),'`label` ASC');
+		// user has requested to view a source
+		$assetsArray = $dh->get_source_assetids(intval($sourceID),'`label` ASC');
+		$isSource = true;
 	} else {
 		$htmlObj = CDOMElement::create('div');
 		$title = '';
-	}	
+	}
 } else {
 	$htmlObj = CDOMElement::create('div');
 	$title = '';
@@ -116,7 +118,7 @@ $content_dataAr['user_avatar'] = $avatar->getHtml();
 $content_dataAr['user_modprofilelink'] = $userObj->getEditProfilePage();
 
 if (is_array($assetsArray) && count($assetsArray)>0) {
-	$optionsAr['onload_func'] = 'initDoc('.json_encode($assetsArray).');';
+	$optionsAr['onload_func'] = 'initDoc('.json_encode($assetsArray).','.($isSource ? 'true' : 'false').');';
 } else $optionsAr = null;
 
 if(isset($assetID)) {
