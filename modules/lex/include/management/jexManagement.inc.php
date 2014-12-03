@@ -141,6 +141,31 @@ class jexManagement extends importManagement
 	 */
 	protected function _importXMLRoot ($XMLObj, $tableName, $isUserDefined=false) {
 		
+		$full_documents = $XMLObj->getElementsByTagName('full_document');
+		foreach ($full_documents as $full_document) {
+			if (strlen($full_document->getAttribute('id'))>0) {
+				if (!$this->_saveAttachedFile($full_document->getAttribute('id'))) return -1;
+			}
+
+			$saveTypology = false;
+			if (strlen($full_document->getAttribute('tipologia'))>0) {
+				$typology = $full_document->getAttribute('tipologia');
+				$saveTypology = true;
+			} else $typology = null;
+			
+			if (strlen($full_document->getAttribute('categoria'))>0) {
+				$category = $full_document->getAttribute('categoria');
+				$saveTypology = true;
+			} else $category = null;
+			
+			if (strlen($full_document->getAttribute('classe'))>0) {
+				$class = $full_document->getAttribute('classe');
+				$saveTypology = true;
+			} else $class = null;
+			
+			if ($saveTypology) $this->_saveTypology($typology, $category, $class);
+		}
+		
 		$documents = $XMLObj->getElementsByTagName('document');
 		$savedAssetCount = 0;
 		
@@ -217,6 +242,80 @@ class jexManagement extends importManagement
 		$this->_logMessage($savedAssetCount.' '.translateFN('asset importati'));
 		return $savedAssetCount;
 	}
+
+	/**
+	 * saves a file attached to the source
+	 * 
+	 * @param string $fileName name of the file to be saved
+	 * 
+	 * @return Ambigous <boolean, multitype:, AMA_Error> true on success
+	 * 
+	 * @access private
+	 */
+	private function _saveAttachedFile ($fileName) {
+		$retVal = false;
+		
+		if (is_file($this->_destDir . DIRECTORY_SEPARATOR . $fileName)) {
+			$this->_logMessage(translateFN('File allegato').' '.$fileName.'...');
+			
+			// check if target dir exists and create it
+			if (!is_dir(MODULES_LEX_FILES_DIR. DIRECTORY_SEPARATOR.$this->_id_fonte)) {
+				mkdir(MODULES_LEX_FILES_DIR. DIRECTORY_SEPARATOR.$this->_id_fonte);
+			}
+			// move the passed file into target dir
+			if (rename($this->_destDir . DIRECTORY_SEPARATOR . $fileName, 
+					   MODULES_LEX_FILES_DIR.DIRECTORY_SEPARATOR.$this->_id_fonte.DIRECTORY_SEPARATOR.$fileName)) {
+				// if file has been moved, update db row
+			   	$fonteAr = array(
+			   			AMALexDataHandler::$PREFIX.'fonti_id' => $this->_id_fonte,
+			   			'attachedFile' => $fileName			   			
+			   	);
+			   	$retVal = $this->_dh->fonti_set($fonteAr);
+			   	if (!AMA_DB::isError($retVal)) $this->_logMessage(translateFN('Salvato'));
+			   	else {
+			   		$this->_logMessage('**'.print_r($retVal, true).'**');
+					$retVal = false;			   		
+			   	}
+			} else {
+				$retVal = false;
+				$this->_logMessage('**'.translateFN('Impossibile salvare il file alleagato').'**');
+			}			
+		}
+		return $retVal;
+	}
+
+	/**
+	 * saves source typology, adding a row to the typlogies table 
+	 * if passed values are not found
+	 * 
+	 * @param string $typology
+	 * @param string $category
+	 * @param string $class
+	 * 
+	 * @return boolean true on success
+	 * 
+	 * @access private
+	 */
+	private function _saveTypology($typology, $category, $class) {
+		
+		$typologyID = $this->_dh->getTypologyID ($typology, $category, $class);
+		
+		if (is_null($typologyID)) {
+			// typology was not found, add it
+			$typologyID = $this->_dh->addTypology($typology, $category, $class);
+			if (AMA_DB::isError($typologyID)) return false;
+		}
+		
+		if (!is_null($typologyID)) {
+			$fonteAr = array(
+					AMALexDataHandler::$PREFIX.'fonti_id' => $this->_id_fonte,
+					AMALexDataHandler::$PREFIX.'tipologie_fonti_id' => $typologyID
+			);
+			$retVal = $this->_dh->fonti_set($fonteAr);
+			return !AMA_DB::isError($retVal);
+		}
+		return false;
+	}
 	
 	/**
 	 * gets the label to be used in the UI tab
@@ -247,7 +346,7 @@ class jexManagement extends importManagement
      * 
      * @access public
      */
-    public static function getSourceZoomContent($title, $sourceID, $canEdit) {
+    public static function getSourceZoomContent($title, $sourceID, $canEdit, $attachedFile=null) {
     	
     	$htmlObj = CDOMElement::create('div','id:assetsContainer_'.$sourceID);
     	
@@ -268,6 +367,19 @@ class jexManagement extends importManagement
          * container div for the assets main table
     	 */
     	$tableDIV = CDOMElement::create('div','class:assetTableContainer ui-widget-content');
+    	/**
+    	 * download attachment link
+    	 */
+    	if (!is_null($attachedFile) && strlen($attachedFile)>0) {
+    		$attachDIV = CDOMElement::create('div','id:attachmentDownload');
+    		$attachLink = CDOMElement::create('a','target:_lextarget,href:'.
+    				MODULES_LEX_HTTP . MODULES_LEX_FILES_SUBDIR . DIRECTORY_SEPARATOR . $sourceID.
+				   DIRECTORY_SEPARATOR . $attachedFile);
+    		$attachLink->addChild(new CText(translateFN('Scarica il documento allegato')));
+    		$attachDIV->addChild($attachLink);
+    		$htmlObj->addChild($attachDIV);
+    	}
+    	
     	$tableDIV->addChild(new CText($assetsTable->getTable()));
     	
     	/**

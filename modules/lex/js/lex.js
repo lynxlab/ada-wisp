@@ -471,6 +471,15 @@ function initButtons() {
 			text : false
 		});
 	}
+	
+	if ($j('.downloadButton').length>0) {
+		$j('.downloadButton').button({
+			icons : {
+				primary : 'ui-icon-disk'
+			},
+			text : false
+		});
+	}
 }
 
 /**

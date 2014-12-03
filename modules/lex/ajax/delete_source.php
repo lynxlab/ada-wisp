@@ -52,6 +52,11 @@ if (isset($_SERVER['REQUEST_METHOD']) && $_SERVER['REQUEST_METHOD'] == 'POST') {
 	if (!isset($_POST['id'])) $retArray = array("status"=>"ERROR", "msg"=>translateFN("Non so cosa cancellare"));
 	else
 	{
+		// delete source attachment dir
+		if (is_dir(MODULES_LEX_FILES_DIR. DIRECTORY_SEPARATOR.intval($_POST['id']))) {
+			 delTree (MODULES_LEX_FILES_DIR. DIRECTORY_SEPARATOR.intval($_POST['id']));
+		}
+		// delete from db
 		$result = $dh->delete_source(intval($_POST['id']));
 		
 		if (!AMA_DB::isError($result))

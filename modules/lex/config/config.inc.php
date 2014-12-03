@@ -62,6 +62,12 @@
 	define ('EUROVOC_VERSION',4.40);
 
 	/**
+	 * directory to store source attachments
+	 */
+	define ('MODULES_LEX_FILES_SUBDIR','/attachments');
+	define ('MODULES_LEX_FILES_DIR', MODULES_LEX_PATH. MODULES_LEX_FILES_SUBDIR);
+
+	/**
 	 * array of what action a user can do while in the lex module
 	 * here you specify which actions a user can do and the order
 	 * they appear in the UI tabs

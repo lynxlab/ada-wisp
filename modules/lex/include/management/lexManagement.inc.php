@@ -107,7 +107,7 @@ class lexManagement
     		$sourceArr = $jexObj->getSource($sourceID);
     		
     		$htmlObj = CDOMElement::create('div','id:sourceZoom');
-    		$htmlObj->addChild (jexManagement::getSourceZoomContent($sourceArr['titolo'],$sourceArr[AMALexDataHandler::$PREFIX.'fonti_id'], $this->canDo(EDIT_SOURCE)));
+    		$htmlObj->addChild (jexManagement::getSourceZoomContent($sourceArr['titolo'],$sourceArr[AMALexDataHandler::$PREFIX.'fonti_id'], $this->canDo(EDIT_SOURCE), $sourceArr['attachedFile']));
     		
     	} else {
 			// user cannot do anything, report it as a message
