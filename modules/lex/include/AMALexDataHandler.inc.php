@@ -96,7 +96,7 @@ class AMALexDataHandler extends AMA_DataHandler {
 		
 		$params = array (urldecode($descrizione));
 	
-		if (is_null($categoria)) {
+		if (is_null($categoria) || strlen($categoria)<=0) {
 			$sql .= ' IS NULL';
 		} else {
 			$sql .= '=?';
@@ -105,7 +105,7 @@ class AMALexDataHandler extends AMA_DataHandler {
 		
 		$sql .= ' AND `classe`';
 		
-		if (is_null($classe)) {
+		if (is_null($classe) || strlen($classe)<=0) {
 			$sql .= ' IS NULL';
 		} else {
 			$sql .= '=?';
