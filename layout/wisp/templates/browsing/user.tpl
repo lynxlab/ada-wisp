@@ -61,14 +61,14 @@
                     <!-- start tre blocchi grafici homepage -->
                 <div id="holisuserhome">
                 
-                    <div id="funzioni" class="rotate"><span>Sottosistemi e Funzioni</span></div>
+                    <!-- div id="funzioni" class="rotate"><span>Sottosistemi e Funzioni</span></div -->
                     <div id="funzioni1"><span>Le fonti informative a supporto degli Operatori
                     del mondo Giustizia</span></div>
                     <div id="funzioni2"><span>Il DataWarehouse del PCT a supporto della gestione
                     degli Organi della Giustizia</span></div>
                     <div id="funzioni3"><span>Conoscere e valutare l'impatto di una<br/>nuova legge</span></div>
                     
-                    <div id="servizi" class="rotate"><span>Servizi</span></div>
+                    <!-- div id="servizi" class="rotate"><span>Servizi</span></div -->
                     <div id="servizi1"><span>Temi risolti</span></div>
                     <div id="servizi2"><span>Consulenza online</span></div>
                     <div id="servizi3"><span>Esempi e corsi per conoscere e<br/>ottimizzare l'uso del sistema</span></div>
