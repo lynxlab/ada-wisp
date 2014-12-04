@@ -4,61 +4,11 @@
  * added jquery uniform plugin on document ready
  *  
  */
-var lastSubmit = -1;
-var isCheckingFiscalCode = false;
-
 function initDoc()
 {
 //	alert ('uniform');
 		$j("select, input, a.button, button, textarea").uniform();
-		
-		$j('#codice_fiscale').on('keypress', function(e) {			
-            /* ENTER PRESSED*/
-            if (e.keyCode == 13 && !isCheckingFiscalCode) {
-            	e.preventDefault();            	
-            	checkFiscalCode ($j('#codice_fiscale').val().trim(),true);            	
-            }
-		});
-		
-		$j("#codice_fiscale").on ('change', function() {
-			if (!isCheckingFiscalCode) checkFiscalCode ($j('#codice_fiscale').val().trim(), false);
-		});
-}
-
-function checkFiscalCode (fiscalcode, mustSubmit) {
-
-	if (fiscalcode.length>0) {
-		
-		var waitElement = $j('<span>Checking...</span>');
-		
-		$j.ajax({
-			type	:	'GET',
-			url		:	'ajax/checkFiscalCode.php',
-			data	:	{ fiscalcode: fiscalcode },
-			dataType:	'json',
-			beforeSend : function() { 
-				$j('.suggestedUserType').remove();
-				$j('#codice_fiscale').hide();
-				$j('#codice_fiscale').parents('li').append(waitElement);
-				isCheckingFiscalCode= true; }
-		}).done(function (JSONObj){
-			if (JSONObj && JSONObj.status=='OK') {
-				// set the returned user type
-				if (JSONObj.userType) {
-					$j('#matricola').val(JSONObj.userType);
-				}
-				// display the returned message
-				if (JSONObj.msg) {
-					$j('<span class="suggestedUserType">'+JSONObj.msg+'</span>').insertAfter('#codice_fiscale');
-				}				
-			}
-		}).always(function() {
-			isCheckingFiscalCode = false;
-			$j(waitElement).remove();
-			$j('#codice_fiscale').show();
-			if (mustSubmit) $j('#submit_registration').click();
-		});
-	}
+	
 }
 
 

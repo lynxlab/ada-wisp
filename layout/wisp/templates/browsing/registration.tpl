@@ -59,7 +59,7 @@
             <div id="content">
                 <div id="contentcontent" class="contentcontent_default">
                     <div id="help">
-                        <!--template_field class="template_field" name="help">help</template_field-->
+                        <template_field class="template_field" name="help">help</template_field>
                     </div>
                     <div id="data">
 						<div id="data_reg">

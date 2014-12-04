@@ -134,7 +134,7 @@
             <!-- /com_tools -->
             <!-- menudestra -->
             <div id="menuright" class="menuright_view ui wide right sidebar">
-              <h3 class="ui block dividing center aligned  header"><i class="globe icon"></i><i18n>Naviga</i18n></h3>
+              <h3 class="ui teal block dividing center aligned  header"><i class="globe icon"></i><i18n>Naviga</i18n></h3>
                 <div id="menurightcontent">
                   <div class="ui right labeled icon mini fluid top attached button"  onclick="javascript: hideSideBarFromSideBar();">
                     <i class="close icon"></i><i18n>Chiudi</i18n>

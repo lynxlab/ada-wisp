@@ -78,7 +78,7 @@ abstract class FForm
   					{  							
   							if (typeof myJQuery == "undefined") myJQuery = jQuery.noConflict(true);
   							if (!appliedUniform) {
-  							 myJQuery("select, input, a.button, button, textarea").not(":file").not(".dontuniform").uniform();
+  							 myJQuery("select, input, a.button, button, textarea").not(":file").uniform();
   							 appliedUniform = true;
   							}
   					}
@@ -106,10 +106,10 @@ abstract class FForm
     public final function fillWithPostData() {
     		$this->fillWithArrayData($_POST);
 //         foreach($this->_controls as $control) {
-//             if(isset($_POST[$control->getId()]) &&!(is_a($control,'FCFieldset')) ) {
+//             if(isset($_POST[$control->getId()]) &&!($control instanceof FCFieldset) ) {
 //                 $control->withData($_POST[$control->getId()]);
 //             }
-//             else if (is_a($control,'FCFieldset'))
+//             else if ($control instanceof FCFieldset)
 //             {            	
 //             	foreach ($control->getControls() as $field)
 //             	{            		
@@ -126,11 +126,11 @@ abstract class FForm
      */
     public final function fillWithArrayData($formData = array()) {
         foreach($this->_controls as $control) {
-            if(isset($formData[$control->getId()]) && (!(is_a($control,'FCFieldset'))))  
+            if(isset($formData[$control->getId()]) && (!($control instanceof FCFieldset)))  
             {
                 $control->withData($formData[$control->getId()]);
             }
-            else if (is_a($control,'FCFieldset'))
+            else if ($control instanceof FCFieldset)
             {
             	foreach ($control->getControls() as $field)
             	{
@@ -167,10 +167,10 @@ abstract class FForm
     public function toArray() {
         $formAsArray = array();
         foreach($this->_controls as $control) {
-            if (!is_a($control,'FCFieldset')) {
+            if (!$control instanceof FCFieldset) {
                 $formAsArray[$control->getId()] = $control->getData();
                 
-            } elseif (is_a($control,'FCFieldset')) {
+            } elseif ($control instanceof FCFieldset) {
                 foreach($control->getControls() as $field) {
                     $formAsArray[$field->getId()] = $field->getData();
                 }
@@ -187,15 +187,6 @@ abstract class FForm
 		else {
 			$this->_customJavascript = $js;
 		}
-    }
-    
-    protected function setUniformJavascript($js,$append = true) {
-    	if ($append) {
-    		$this->_uniformJavascript .= "\n".$js;
-    	}
-    	else {
-    		$this->_uniformJavascript = $js;
-    	}
     }
 
     protected function setId($id) {
@@ -508,7 +499,7 @@ abstract class FForm
 		foreach ($this->_controls as $control) {
 			$v = $control->getValidator();
 			if (!is_null($v)) {
-				if (! is_a($control,'FCFieldset')) {
+				if (! $control instanceof FCFieldset) {
 					$jsFields[] = $control->getId();
 					$jsRegexps[] = $validator->getRegexpForValidator($control->getValidator());
 				}

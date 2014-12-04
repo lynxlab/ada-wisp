@@ -266,12 +266,5 @@ class DataValidator
     }
     return false;
   }
-  
-  public static function validate_italian_fiscalcode ($code) {
-  	if (preg_match('/^[A-Z]{6}[0-9]{2}[A-Z][0-9]{2}[A-Z][0-9]{3}[A-Z]$/i', $code)) {
-  		return $code;
-  	}
-  	return false;
-  }
 }
 ?>

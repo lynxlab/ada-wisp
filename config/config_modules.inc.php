@@ -47,31 +47,6 @@
 	else {
 		define('MODULES_SERVICECOMPLETE', false);
 	}
-	//defines for module lex
-	define('MODULES_LEX_PATH', MODULES_DIR.'/lex');
-	if (file_exists(MODULES_LEX_PATH.'/index.php'))
-	{
-		require_once(MODULES_LEX_PATH.'/config/config.inc.php');
-	
-		define('MODULES_LEX', true);
-		define('MODULES_LEX_HTTP', HTTP_ROOT_DIR.'/modules/lex');
-	}
-	else {
-		define('MODULES_LEX', false);
-	}
-	
-	//defines for module HolisSearch
-	define('MODULES_HOLISSEARCH_PATH', MODULES_DIR.'/HolisSearch');
-	if (file_exists(MODULES_HOLISSEARCH_PATH.'/index.php'))
-	{
-		require_once(MODULES_HOLISSEARCH_PATH.'/config/config.inc.php');
-	
-		define('MODULES_HOLISSEARCH', true);
-		define('MODULES_HOLISSEARCH_HTTP', HTTP_ROOT_DIR.'/modules/HolisSearch');
-	}
-	else {
-		define('MODULES_HOLISSEARCH', false);
-	}
         
         //defines for module impexport
         define ('MODULES_IMPEXPORT_PATH', MODULES_DIR.'/impexport');

@@ -466,7 +466,6 @@ else if($id_profile == AMA_TYPE_STUDENT || $id_profile == AMA_TYPE_TUTOR || $id_
     'level'        => $node_level,
     'keywords'	   => $node_keywords,
     'course_title' => $course_title,
-    'user_modprofilelink' => $userObj->getEditProfilePage(),
     'path'         => $node_path
     //'node_medias'  => $node_medias,
     //'node_links'   => $media_links

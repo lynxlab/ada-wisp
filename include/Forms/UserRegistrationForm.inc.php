@@ -62,12 +62,8 @@ class UserRegistrationForm extends FForm
              ),
              '0');
 
-        $this->addTextInput('matricola', translateFN('Numero di matricola'))
-        	->withData(AMA_TYPE_USER_GENERIC)->setHidden();
+        $this->addTextInput('matricola', translateFN('numero di matricola (se studente)'));
         
-        $this->addTextInput('codice_fiscale', translateFN('Codice Fiscale'))
-        	->setRequired()->setValidator(FormValidator::ITALIAN_FISCALCODE_VALIDATOR);
-                
         $accetto = translateFN ('accetto i');
         $termini = translateFN('termini di servizio e le norme sulla privacy');
         

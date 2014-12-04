@@ -10,10 +10,10 @@
 <div id="header">
 		 <template_field class="microtemplate_field" name="header_com">header_com</template_field>
 </div> 
-<!-- menu -->
-    <template_field class="microtemplate_field" name="adamenu">adamenu</template_field>  
-<!-- / menu --> 
 <!-- contenitore -->
+<!-- menu -->
+           <template_field class="microtemplate_field" name="adamenu">adamenu</template_field>  
+<!-- / menu --> 
 <div id="container">
 <!--dati utente-->
 <div id="user_wrap">
@@ -39,14 +39,7 @@
 </div>
  <!-- / dati utente -->
 
-<!-- PERCORSO -->
-<div id="journey">
-		 <i18n>dove sei: </i18n>
-		 <span>
-		 			 <i18n>agenda</i18n>
-		 </span>
-	</div> <!-- / percorso -->
-</div>
+
 <!-- contenuto -->
 <div id="content">	 
 <div id="contentcontent">

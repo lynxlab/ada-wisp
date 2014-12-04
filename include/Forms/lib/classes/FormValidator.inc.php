@@ -67,8 +67,6 @@ class FormValidator
                 return self::MULTILINE_TEXT_VALIDATOR_REGEXP;
             case self::NON_NEGATIVE_MONEY_VALIDATOR:
                 return self::NON_NEGATIVE_MONEY_VALIDATOR_REGEXP;
-            case self::ITALIAN_FISCALCODE_VALIDATOR:
-            	return self::ITALIAN_FISCALCODE_VALIDATOR_REGEXP;
             default:
                 return self::DEFAULT_VALIDATOR_REGEXP;
         }
@@ -87,7 +85,6 @@ class FormValidator
     const TIME_VALIDATOR = 9;
     const MULTILINE_TEXT_VALIDATOR = 10;
     const NON_NEGATIVE_MONEY_VALIDATOR = 11;
-    const ITALIAN_FISCALCODE_VALIDATOR = 12;
 
 
     const DEFAULT_VALIDATOR_REGEXP = '/^.*|\s$/';
@@ -103,5 +100,4 @@ class FormValidator
     const TIME_VALIDATOR_REGEXP = '/^[0-9]{2}\:[0-9]{2}\:[0-9]{2}$/';
     const MULTILINE_TEXT_VALIDATOR_REGEXP = '/^.*$/m'; // /m is equivalent to /s in javascript regex (multiline)
     const NON_NEGATIVE_MONEY_VALIDATOR_REGEXP = '/0\.00|^[1-9][0-9]*\.[0-9]{2}$/'; // /^[0]|^[1-9][0-9]*\.[0-9]{2}$/';
-    const ITALIAN_FISCALCODE_VALIDATOR_REGEXP = '/^[A-Z]{6}[0-9]{2}[A-Z][0-9]{2}[A-Z][0-9]{3}[A-Z]$/i';
 }

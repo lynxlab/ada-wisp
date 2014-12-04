@@ -282,7 +282,7 @@ $content_dataAr = array(
 	'author' => $author_info_link, //'author'=>$node_author,
 	'tutor' => $tutor_info_link, //'tutor'=>$tutor_uname,
 	'search_form' => $search_form,
-    //	'index' => $node_index,
+//	'index' => $node_index,
 	'go_map' => $go_map,
 	'go_next' => $next_node_link,
 	//'go_XML'=>$go_XML,

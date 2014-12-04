@@ -14,6 +14,9 @@
         <!-- menu -->
             <template_field class="microtemplate_field" name="adamenu">adamenu</template_field>  
         <!-- / menu -->
+        <!-- help -->
+            <template_field class="template_field" name="help">help</template_field>  
+        <!-- / help -->     
         <!-- contenitore -->
         <div id="container">
             <!-- percorso -->
@@ -97,70 +100,81 @@
             </div>
             <!-- /com_tools -->
             <!-- menudestra -->
-             <!-- <div id="menuright" class="sottomenu_off menuright_view "> -->
+            <!-- <div id="menuright" class="sottomenu_off menuright_view "> -->
             <div id="menuright" class="menuright_view ui wide right sidebar">
-                <h3 class="ui block dividing center aligned header"><i class="globe icon"></i><i18n>Contenuti</i18n></h3>
+              <h3 class="ui teal block dividing center aligned  header"><i class="globe icon"></i><i18n>Naviga</i18n></h3>
                 <div id="menurightcontent">
-                    <div class="ui right labeled icon mini fluid top attached button" onclick="javascript: hideSideBarFromSideBar();">
-                        <i class="close icon"></i><i18n>Chiudi</i18n>
-                    </div>
-            <!-- accordion -->
-            <div class="ui attached segment accordion">
-                <div class="title" onClick="showIndex();">
-                    <i class="icon dropdown"></i>
-                        <i18n>indice</i18n><i class="sitemap icon" style="float:right;"></i>
+                  <div class="ui right labeled icon mini fluid top attached button"  onclick="javascript: hideSideBarFromSideBar();">
+                    <i class="close icon"></i><i18n>Chiudi</i18n>
                 </div>
-            <div class="content field">
-                <div id="show_index">
-                    <div class="loader-wrapper">
-                        <div class="ui active inline mini text loader">
-                            <i18n>Caricamento</i18n>...
-                        </div>
-                    </div>
+                  <!-- accordion -->
+                  <div class="ui attached segment accordion">
+                  
+			       <div class="title" onClick="showIndex();">
+			         <i class="icon dropdown"></i>
+			         <i18n>indice</i18n><i class="sitemap icon" style="float:right;"></i>
                 </div>
+			       <div class="content field">
+			         <div id="show_index">
+			             <div class="loader-wrapper">
+			                 <div class="ui active inline mini text loader">
+			                     <i18n>Caricamento</i18n>...
             </div>
-            <div class="active title">
-                <i class="icon dropdown"></i>
-                    <i18n>azioni</i18n> <i class="edit sign icon"></i>
-            </div>
-            <div class="active content field">
-                <template_field class="template_field" name="add_node">add_node</template_field>
-                <template_field class="template_field" name="edit_node">edit_node</template_field>
-                <template_field class="template_field" name="delete_node">delete_node</template_field>
-           </div>
-            <div class="title">
-                <i class="icon dropdown"></i>
-                    <i18n>approfondimenti</i18n><i class="pin icon"></i>
-            </div>
-            <div class="content field">
-                <template_field class="template_field" name="index">index</template_field>
-            </div>
-            <div class="title">
-                <i class="icon dropdown"></i>
-                    <i18n>collegamenti</i18n><i class="url icon"></i>
-            </div>
-            <div class="content field">
-                <template_field class="template_field" name="link">link</template_field>
-            </div>
-            <div class="title">
-                <i class="icon dropdown"></i>
-                    <i18n>risorse</i18n><i class="browser icon"></i>
-            </div>
-                <div class="content field">
-                    <template_field class="template_field" name="media">media</template_field>
-                </div>
-            </div>
-            <!-- /accordion -->
-            </div>
-           </div> 
-            <!-- / menudestra  -->
         </div>
+                    </div>
+                    </div>
+		   <div class="active title">
+                     <i class="icon dropdown"></i>
+                     <i18n>azioni</i18n> <i class="edit sign icon"></i> 
+                   </div>
+                   <div class="active content field">
+                     <template_field class="template_field" name="add_node">add_node</template_field>
+                     <template_field class="template_field" name="edit_node">edit_node</template_field>
+                     <template_field class="template_field" name="delete_node">delete_node</template_field>
+                     <!-- 
+                       <template_field class="template_field_disabled" name="add_exercise">add_exercise</template_field>
+                      -->  
+                     <!--template_field class="template_field" name="add_note">add_note</template_field>
+                     <template_field class="template_field" name="add_private_note">add_private_note</template_field-->
+                     <template_field class="template_field" name="edit_note">edit_note</template_field>
+                     <template_field class="template_field" name="delete_note">delete_note</template_field>
+                     <template_field class="template_field" name="publish_note">publish_note</template_field>
+                     <!--
+                       <template_field class="template_field_disabled" name="go_XML">go_XML</template_field> 
+                     -->
+                      <!--template_field class="template_field" name="go_map">go_map</template_field-->
+                   </div>
+                      
+                   <div class="title">
+                     <i class="icon dropdown"></i>
+                     <i18n>approfondimenti</i18n><i class="pin icon"></i>
+                    </div>
+                   <div class="content field">
+                     <template_field class="template_field" name="index">index</template_field>
+                </div>
+                   
+                   <div class="title">
+                     <i class="icon dropdown"></i>
+                     <i18n>collegamenti</i18n><i class="url icon"></i>
+                    </div>
+                   <div class="content field">
+                       <template_field class="template_field" name="link">link</template_field>
+                    </div>
+                  <div class="title">
+                     <i class="icon dropdown"></i>
+                     <i18n>risorse</i18n><i class="browser icon"></i>
+        </div>
+                   <div class="content field">
+                     <template_field class="template_field" name="media">media</template_field>
+                   </div>
+                  </div>
+                  <!-- /accordion -->  
+                </div>
+              </div>
+            <!-- / menudestra  -->
+            </div>
         <!-- / contenitore -->
 
-        <!-- notifiche eventi -->
-        <template_field class="template_field" name="events">events</template_field>
-        <!-- / notifiche eventi -->
-         
         <!-- pannello video -->
         <div id="rightpanel" class="sottomenu_off rightpanel_view">
             <div id="toprightpanel">

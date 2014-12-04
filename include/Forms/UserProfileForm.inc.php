@@ -82,7 +82,7 @@ class UserProfileForm extends UserRegistrationForm {
         'IT');
  * 
  */
-//        $this->addTextInput('codice_fiscale', translateFN('Cod. Fiscale'));
+        $this->addTextInput('codice_fiscale', translateFN('Cod. Fiscale'));
         
         /**
          * @author giorgio 29/mag/2013

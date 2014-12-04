@@ -101,20 +101,6 @@ class Menu
     			$this->_rightItemsArray = isset($resItems['right']) ? $resItems['right'] : null;
     		}
     	}
-    	
-    	/**
-    	 * below defines are used in holis version only
-    	 */
-     	if (isset($_SESSION['sess_userObj']) && $_SESSION['sess_userObj'] instanceof ADALoggableUser &&
-     			$_SESSION['sess_userObj']->getType()==AMA_TYPE_STUDENT &&
-     			$_SESSION['sess_userObj']->getSerialNumber()==AMA_TYPE_USER_MAGISTRATE &&
-     			!defined('IS_MAGISTRATE')) {
-     				define ('IS_MAGISTRATE', true);
-     	}     	
-     	if (!defined ('IS_MAGISTRATE')) define ('NOT_MAGISTRATE',true);
-     	/**
-     	 * end of defines used in holis version only
-     	 */
     }
     
 	/**

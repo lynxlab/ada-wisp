@@ -49,11 +49,7 @@ function dataTablesExec() {
                                 null
                             ],
          
-                'bPaginate': false,
-                "oLanguage": 
-                {
-                    "sUrl": HTTP_ROOT_DIR + "/js/include/jquery/dataTables/dataTablesLang.php"
-                }                
+                'bPaginate': false
 //		'sPaginationType': 'full_numbers'
 	}).show();
 
@@ -79,11 +75,7 @@ function dataTablesExec() {
                                 { 'sType': "date-euro" }
                             ],
          
-                'bPaginate': false,
-                "oLanguage": 
-                {
-                    "sUrl": HTTP_ROOT_DIR + "/js/include/jquery/dataTables/dataTablesLang.php"
-                }
+                'bPaginate': false
 //		'sPaginationType': 'full_numbers'
 	}).show();
         
@@ -102,11 +94,7 @@ function initListLservices() {
 			"aTargets" : [ 5 ]
 		} ],
 		"aoColumns" : [ null, null, null, null, null, null ],
-		"bPaginate" : false,
-        "oLanguage": 
-        {
-            "sUrl": HTTP_ROOT_DIR + "/js/include/jquery/dataTables/dataTablesLang.php"
-        }
+		"bPaginate" : false
 	}).show();	
 }
 

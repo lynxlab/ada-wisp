@@ -15,8 +15,8 @@
 #rightpanel,
 #footer img,
 #index_in_text,
-#exercises_in_text,
-.ui.menu.ada{
+#exercises_in_text
+	{
 	display: none;
 }
 

@@ -76,16 +76,10 @@ class ServiceModelForm extends FForm {
         $desc = translateFN('Livello servizio:');
         $service_type = array(
                     ADA_SERVICE_HELP => translateFN('Help per studente'), 
-                    ADA_SERVICE_LEG => translateFN('Leg'),
-                    ADA_SERVICE_LEG_NO_TIMELINE => translateFN('Leg no timeline'),
-                    ADA_SERVICE_COMMON_TUTOR => translateFN('Common tutor'),
-                    ADA_SERVICE_GIUR => translateFN('Giur'),
-                    ADA_SERVICE_ORG => translateFN('Org'),
-                    ADA_SERVICE_MANUALE=>translateFN('Manuale'),
-                    ADA_SERVICE_TEMI_RISOLTI=>translateFN('Temi risolti'),
-                    ADA_SERVICE_ELEARNING=>translateFN('E-learning'),
-                    ADA_SERVICE_COURSE=>translateFN('Course'),
-        );
+                    ADA_SERVICE_COMMON => translateFN('Area di interazione per utenti registrati'),
+                    ADA_SERVICE_COMMON_STUDENT => translateFN('Area comune per studenti'),
+                    ADA_SERVICE_COMMON_TUTOR => translateFN('Area riservata ai tutor'),
+                );
 
         $this->addSelect('common_area',$desc,$service_type,0)
              ->setRequired();

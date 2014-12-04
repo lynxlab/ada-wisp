@@ -6,10 +6,10 @@
 ---------------------------------------------------------------*/
 
 
-.ui.ada.menu { float:left; width: 100%; background-color: #4a4a4a; color: white; 
+.ui.ada.menu { float:left; width: 100%; background-color: teal; color: white; 
     
     border-radius:0;
-    border-bottom: 1px solid #9a9a9a;
+    border-bottom: 1px solid #009F98;
     }
     
 #msglabel, #menuright { display: none; }
@@ -89,20 +89,19 @@
 	}
 	.sm-ada li.ui.item.dropdown a:hover, .sm-ada a:focus, .sm-ada a:active,
 	.sm-ada a.highlighted {
-		background:#6a6a6a;
-		color:#f0f0f0;
+		background:#009F98;
+		color:#555;
 	}
 	
 	.sm-ada li.ui.item.dropdown ul li.item:hover,
 	.sm-ada li.ui.item.dropdown ul li.item a:hover {
-	   background: #eaeaea;
-	   color: #6a6a6a;
+	   background: #eee;
 	}
 	
 	/* current items - add the class manually to some item or check the "markCurrentItem" script option */
 	.sm-ada a.current, .sm-ada a.current:hover, .sm-ada a.current:focus, .sm-ada a.current:active {
 		background:#555;
-		color:#000;
+		color:#fff;
 	}
 	.sm-ada a.has-submenu {
 		padding-right:32px;
