@@ -563,6 +563,25 @@ if($last_access=='' || is_null($last_access))
 //        $content_dataAr['events'] = $user_events_2->getHtml().$user_events->getHtml();
 
 //print_r($content_dataAr);
+
+	/**
+	 * user home page links for HOLIS
+	 */
+	$content_dataAr['giurLink'] =  MODULES_LEX_HTTP;
+	$content_dataAr['orgLink'] =   HTTP_ROOT_DIR.'/browsing/view.php?id_node=10_0&id_course=10&id_course_instance=19#10_0';
+	if ($userObj->getSerialNumber()==AMA_TYPE_USER_LAWYER) {
+		// leg no timeline for lawyer only so the link is to view.php
+		$content_dataAr['legLink'] =   HTTP_ROOT_DIR.'/browsing/view.php?id_node=6_0&id_course=6&id_course_instance=5#6_0';
+	} else {
+		// leg with timeline for other users, so the link is to sview.php
+		$content_dataAr['legLink'] =   HTTP_ROOT_DIR.'/browsing/sview.php?id_node=6_0&id_course=6&id_course_instance=5#6_0';
+	}
+	
+	$content_dataAr['soluzioniLink'] =  HTTP_ROOT_DIR.'/browsing/view.php?id_node=5_0&id_course=5&id_course_instance=3#5_0';
+	$content_dataAr['etutoringLink'] =  HTTP_ROOT_DIR.'/browsing/ask_service.php';
+	$content_dataAr['elearningLink'] =  HTTP_ROOT_DIR.'/browsing/view.php?id_node=8_0&id_course=8&id_course_instance=17#8_0';
+	$content_dataAr['fontiLink'] =  HTTP_ROOT_DIR.'/browsing/sview.php?id_node=4_0&id_course=4&id_course_instance=2#4_0';
+	
         
 
 /**

@@ -59,6 +59,32 @@
             <div id="content">
                 <div id="contentcontent" class="contentcontent_default">
                     <!-- start tre blocchi grafici homepage -->
+                <div id="holisuserhome">
+                
+                    <div id="funzioni" class="rotate"><span>Sottosistemi e Funzioni</span></div>
+                    <div id="funzioni1"><span>Le fonti informative a supporto degli Operatori
+                    del mondo Giustizia</span></div>
+                    <div id="funzioni2"><span>Il DataWarehouse del PCT a supporto della gestione
+                    degli Organi della Giustizia</span></div>
+                    <div id="funzioni3"><span>Conoscere e valutare l'impatto di una<br/>nuova legge</span></div>
+                    
+                    <div id="servizi" class="rotate"><span>Servizi</span></div>
+                    <div id="servizi1"><span>Temi risolti</span></div>
+                    <div id="servizi2"><span>Consulenza online</span></div>
+                    <div id="servizi3"><span>Esempi e corsi per conoscere e<br/>ottimizzare l'uso del sistema</span></div>
+                    <div id="servizi4"><span>Data base Fonti informative</span></div>
+                    
+                    <div id="giurhome"><a href="<template_field class="template_field" name="giurLink">giurLink</template_field>">GIUR</a></div>
+                    <div id="orghome"><a href="<template_field class="template_field" name="orgLink">orgLink</template_field>">ORG</a></div>
+                    <div id="leghome"><a href="<template_field class="template_field" name="legLink">legLink</template_field>">LEG</a></div>
+                    
+                    <div id="soluzionihome"><a href="<template_field class="template_field" name="soluzioniLink">soluzioniLink</template_field>">SOLUZIONI</a></div>
+                    <div id="etutoringhome"><a href="<template_field class="template_field" name="etutoringLink">etutoringLink</template_field>">eTUTORING</a></div>
+                    <div id="elearninghome"><a href="<template_field class="template_field" name="elearningLink">elearningLink</template_field>">eLEARNING</a></div>
+                    <div id="fontihome"><a href="<template_field class="template_field" name="fontiLink">fontiLink</template_field>">FONTI</a></div>
+                    
+                </div>
+
 
 			<div id="twobox">
 				<div id="boxone">

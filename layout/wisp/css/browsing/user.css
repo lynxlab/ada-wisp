@@ -192,3 +192,183 @@ padding: 10px;
 .ui-corner-all, .ui-corner-top, .ui-corner-left, .ui-corner-tl {
     border-top-left-radius: 2px;
 }
+
+/**
+ * user home for HOLIS
+ */
+#twobox,#boxtwo { display: none !important; }
+#holisuserhome {
+	width: 596px;
+	height: 535px;
+	background: url("../../img/home_user_bg.png");
+	margin: 0 auto;
+	position: relative;
+}
+ 
+#funzioni {
+	width: 256px;
+	position: absolute;
+	top: 106px;
+	left: -85px;
+	height: 67px;
+	text-align: center;
+	vertical-align: middle;
+	color: #fff;
+	font-size:2em;
+}
+
+#funzioni1,
+#funzioni2,
+#funzioni3 {
+    position: absolute;
+    left: 124px;
+    height: 60px;
+    width: 352px;
+}
+
+#funzioni1 span,
+#funzioni2 span,
+#funzioni3 span,
+#servizi1 span,
+#servizi2 span,
+#servizi3 span,
+#servizi4 span {
+	color: #fff;
+    width: 352px;
+    display: table-cell;
+    vertical-align: middle;
+    text-align: center;
+    font-size: 1.2em;
+}
+
+#funzioni1 span,
+#funzioni2 span,
+#funzioni3 span {	
+	height: 60px;	
+}
+
+#funzioni1 { top: 26px; }
+#funzioni2 { top: 111px; }
+#funzioni3 { top: 197px; }
+
+#giurhome,
+#orghome,
+#leghome {
+	position: absolute;
+	left: 497px;
+	width: 78px;
+    height: 52px;
+}
+
+#giurhome {	top: 30px; }
+#orghome  { top: 114px; }
+#leghome  { top: 201px; }
+
+#giurhome a,
+#orghome a,
+#leghome a {
+	width: 78px;
+    height: 52px;
+    display: table-cell;
+    vertical-align: middle;
+    text-align: center;
+    color: #fff;
+    text-decoration: none;
+    text-shadow: 2px 2px 4px #000000;
+    font-size: 1.2em;
+}
+
+#giurhome a:hover,
+#orghome a:hover,
+#leghome a:hover { text-shadow: 0 0 3px #FF0000; }
+
+#soluzionihome a:hover,
+#etutoringhome a:hover,
+#elearninghome a:hover,
+#fontihome a:hover { text-shadow: 0 0 3px #0000FF; }
+
+#servizi {
+	position: absolute;
+	top: 367px;
+	left: -87px;
+	width: 259px;
+	height: 65px;
+	text-align: center;
+	color: #fff;
+    font-size:2em;
+}
+
+#servizi1,
+#servizi2,
+#servizi3,
+#servizi4 {
+    position: absolute;
+    left: 124px;
+    height: 37px;
+    width: 352px;	
+}
+
+#servizi1 span,
+#servizi2 span,
+#servizi3 span,
+#servizi4 span {
+	height: 37px;
+}
+
+#servizi1 { top: 293px; }
+#servizi2 { top: 351px; }
+#servizi3 { top: 410px; line-height: 18px; }
+#servizi4 { top: 466px; }
+
+#servizi span {
+    line-height: 65px;
+}
+
+#soluzionihome,
+#etutoringhome,
+#elearninghome,
+#fontihome {
+    position: absolute;
+    left: 498px;
+    width: 78px;
+    height: 30px;   
+}
+
+#soluzionihome { top: 296px; }
+#etutoringhome { top: 355px; }
+#elearninghome { top: 413px; }
+#fontihome { top: 469px; }
+
+#soluzionihome a,
+#etutoringhome a,
+#elearninghome a,
+#fontihome a {
+    left: 498px;
+    width: 78px;
+    height: 30px;
+    display: table-cell;
+    vertical-align: middle;
+    text-align: center;
+    color: #fff;
+    text-decoration: none;
+    text-shadow: 2px 2px 4px #000000;   
+    font-size: 0.9em; 
+}
+
+.rotate {
+  -webkit-transform: rotate(-90deg);
+  -moz-transform: rotate(-90deg);
+  -ms-transform: rotate(-90deg);
+  -o-transform: rotate(-90deg);
+  transform: rotate(-90deg);
+
+  /* also accepts left, right, top, bottom coordinates; not required, but a good idea for styling */
+  -webkit-transform-origin: 50% 50%;
+  -moz-transform-origin: 50% 50%;
+  -ms-transform-origin: 50% 50%;
+  -o-transform-origin: 50% 50%;
+  transform-origin: 50% 50%;
+
+  /* Should be unset in IE9+ I think. */
+  filter: progid:DXImageTransform.Microsoft.BasicImage(rotation=3);
+}
