@@ -1,0 +1,365 @@
+<!DOCTYPE html>
+<!--
+To change this license header, choose License Headers in Project Properties.
+To change this template file, choose Tools | Templates
+and open the template in the editor.
+-->
+<html>
+    <head>
+        <title>Manuale_Holis</title>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        
+        <link rel="stylesheet" href="./css/index.css" type="text/css" media="screen">
+        
+        <!--for syntax highlight-->
+        <script type="text/javascript" src="./sintax_highlight/jquery-1.4.2.min.js"></script>
+        <script type="text/javascript" src="./sintax_highlight/jquery.syntaxhighlighter.min.js"></script>
+        <script type="text/javascript">$.SyntaxHighlighter.init();</script>
+    </head>
+    <body>
+        <div id="logo">
+	
+        </div> 
+        <h1 class="title">HOLIS - REFERENCE MANUAL </h1>
+        <div id="mainmenu">
+            <div id="bar"></div>
+            <ul id="menu">
+
+                    <li>
+                        <a href='index.html' name="index2">Capire Holis</a>
+                    </li>
+                    <li id="box">
+                        <a>Guida all'istallazione</a>
+                    </li> 
+                    <li>
+                        <a href='guida_amministratore.html'>Guida per l'amministratore</a>
+                    </li> 
+                    <li>
+                        <a href='gestione_lingue.html'>Gestione lingue</a>
+                    </li> 
+                    <li>
+                        <a href='gestione_layout.html'>Personalizzare i layout</a>
+                    </li>
+                    <li>
+                        <a>Coding</a>
+            </ul>
+        </div>
+            <div id="content">
+                <div id="box2">
+                   <h4 id="index"><a>index</a></h4>
+                   <ul>
+                       <li>
+                         <a href="#System_requirements">System requirements</a>  
+                       </li>
+                       <li>
+                         <a href="#Configurazione">Configurazione</a>  
+                       </li>
+                       <li>
+                         <a href="#Modalità_Multi_NonMulti">Modalità Multiprovider/non-Multiprovider</a>  
+                       </li>
+                       <li>
+                         <a href="#Installare_moduli">Installare moduli</a>  
+                       </li>
+                       <li>
+                         <a href="#Configurare_widget">Configurare widget</a>  
+                       </li>
+                        <li>
+                         <a href="#Configurazioni_extra">Configurazioni extra</a>  
+                       </li>
+                   </ul>
+                </div>
+                <div>
+                    <h2 class="separator">
+                        System Requirements
+                        <a name="System_requirements"></a>
+                    </h2>
+                    <p>
+                        <ul>
+                            <li>
+                                Apache 2.2.21<br>
+                                MySql 5.1.6 <br>
+                                PHP 5.3.*> compiled with support for MySql, XML, GD, PDO <br>
+                                PEAR::XML_Parser 1.3.x <br>
+                                PEAR 1.9.x <br>
+                                PEAR::XML_Util 1.2.x <br>
+                            </li>
+                        </ul>
+                    </p>
+                    <br><br>
+                   <div><a href="#logo" class="index">Indice</a></div>  
+                </div>
+               
+                  <div>
+                    <h2 class="separator">
+                        Configurazione
+                        <a name="Configurazione"></a>
+                    </h2>
+                    <ol>
+                    <li><p>copiare tutti i file, e l'albero delle directory, nella directory di root</p></li>
+                    <li>
+                    <p>creare almeno 2 DB (ogni provider ha il suo DB. Se ad es. hai 2 provider, hai bisogno di 3 DB, un DB comune, ed 2 DB per )
+                     ciascun provider).</p>
+
+                    <ul>
+                    <li>ada_common --&gt; DB common.</li>
+                    <li>ada_provider0 --&gt; DB del provider 0. </li>
+                    <li>ada_provider1 --&gt; DB del provider 1. </li>
+                    </ul>
+                    </li>
+                    <li><p>importare lo script ada_common.sql in ada_common</p></li>
+                    <li><p>importare lo script ada_provider0.sql in ada_provider0</p></li>
+                    <li><p>importare lo script ada_provider_empty.sql in ada_provider1 (se hai bisogno di un altro provider)</p></li>
+                    <li><p>rinominare il file config_path_DEFAULT.inc.php in config_path.inc.php</p></li>
+                    <li>
+                    <p>modificare il file config_path.inc.php valorizzando correttamente la define ROOT_DIR,
+                    es. se hai copiato i files e le directory  in /var/www/wisp:</p>
+
+                    <ul>
+                    <li>define('ROOT_DIR','/var/www/html/wisp');</li>
+                    </ul>
+                    </li>
+                    <li><p>rinominare la directory config/config_install_DEFAULT.inc.php in config/config_install.inc.php</p></li>
+                    <li>
+                    <p>modificare la directory config/config_install.inc.php</p>
+
+                    <ul>
+                    <li>valorizzare correttamente * WISP Common database</li>
+                    <li>valorizzare correttamente * WISP default provider</li>
+                    <li>valorizzare correttamente * Default admin mail address</li>
+                    <li>valorizzare correttamente URL. Fare attenzione a non rimuovere the trailing: // <em>js_import</em>
+                    define('HTTP_ROOT_DIR','<a href="http://ada.lynxlab.com">http://ada.lynxlab.com</a>');</li>
+                    <li>opzionalmente modificare il Default template family (solo se vuoi utilizzare un differente tema di layout)</li>
+                    <li>opzionalmente modificare la define('PORTAL_NAME','ADA - e-learning ');</li>
+                    </ul>
+                    </li>
+                    <li><p>rinominare la directory clients_DEFAULT in clients</p></li> 
+                    <li>
+                    <p>modicare la directory clients/client0/client_config.inc.php (ogni provider ha la sua propria directory. es.: provider 1 avrà client1 come directory di riferimento)</p>
+
+                    <ul>
+                    <li>cambiare i parametri di accesso al DB </li>
+                    <li>cambiare,in caso, il timezone del provider</li>
+                    </ul>
+                    </li>
+                    <li><p>se hai più di un provider devi creare più di un file client_config.inc.php
+                    es.: 2 providers. Devi configuare il file clients/client0/client_config.inc.php e il file clients/client1/client_config.inc.php.<br>
+                    Ogni file client_x/client_config.inc.php deve essere valorizzato in questo modo:<br>
+                    es: client1/client_config.inc.php deve avere il nome delle costanti così: CLIENT1_DB_NAME, CLIENT1_DB_USER, CLIENT1_DB_PASS, CLIENT1_DB_HOST, CLIENT1_TIMEZONE</p></li>
+                    <li><p>cambiare i permessi della directory services/media/ in modo tale che il  web server sia in grado di scriverci dentro</p></li>
+                    <li><p>cambiare i permessi della directory upload_file/ in modo tale che il  web server sia in grado di scriverci dentro</p></li>
+                    <li><p>cambiare i permessi della directory docs/ n modo tale che il  web server sia in grado di scriverci dentro</p></li>
+                    <li><p>cambiare le informazioni del file di news: browsing/news_language (ex.: news_en per le news in inglese) 
+                    oppure accedere alla pagina edit_news.php dopo aver effettuato il login come amministratore</p></li>
+                    <li><p>configurare i widgets caricati in home page
+                    copiare il file widgets/main/index_DEFAULT.XML in widgets/main/index.xml
+                    accedere al link "configurare i widget" di questo maunale, per capire come configurare correttamente i widget.</p></li>
+                    </ol> 
+                    <br><br>
+                    <div><a href="#logo" class="index">Indice</a></div>  
+                 </div>
+                 <div>
+                    <h2 class="separator">
+                        Modalità Multiprovider/non-Multiprovider
+                        <a name="Modalità_Multi_NonMulti"></a>
+                    </h2>
+                    <p>
+                        <ul>
+                            <li>
+                                Nel file root/config_path.inc.php è definita la variabile MULTIPROVIDER.<br>
+                                Settare define ('MULTIPROVIDER',true);Continuare ....
+                            </li>
+                        </ul>
+                    </p>
+                    <br><br>
+                    <div><a href="#logo" class="index">Indice</a></div> 
+                </div>
+               
+                <div>
+                    <h2 class="separator">
+                        Installare moduli
+                        <a name="Installare_moduli"></a>
+                    </h2>
+                    <p>
+                        <ul>
+                            <li>PREREQUISITI:</li><br>
+
+                        
+                        <li>Se l'installazione non supporta i moduli, si prega di aggiornare i seguenti file
+                            di installazione (prendendoli dall'ultima versione di ADA)</li><br>
+                            <ul>
+                            <li>* include/Forms/lib</li>
+                            <li>* include/layout_classes.inc.php</li>
+                            <li>* include/output_classes.inc.php</li>
+                            <li>* config/ada_config.inc.php</li>
+                            <li>* config/config_install.inc.php</li></ul><br>
+
+                            
+
+                            <li>INSTALLAZIONE:</li><br>
+                            
+                            <li>Importare / Eseguire nel database common il file: ada_NOME_MODULO_module.sql</li>
+
+                            <li>Copiare i file tutti i file contenuti in * modules/NOME_MODULO/*</li>
+
+                            <li>Assicurarsi di creare una cartella layout per ogni layout esistente
+                            (o usato) nell'installazione</li>
+                            <br>
+
+                            
+
+                            <li>CONFIGURAZIONE:</li><br>
+
+                            <li>Aggiungere (o creare) nel file config/config_modules.inc.php</li><br>
+                           
+                                    <pre class="highlight">
+                                        es.: defines for modules test
+                                        define('MODULES_TEST_PATH', ROOT_DIR.'/modules/test');
+                                        if (file_exists(MODULES_TEST_PATH.'/index.php')
+                                         && file_exists(MODULES_TEST_PATH.'/edit_test.php')
+                                         && file_exists(MODULES_TEST_PATH.'/tutor.php')) {
+
+                                        require_once(MODULES_TEST_PATH.'/config/config.inc.php');
+
+                                        define('MODULES_TEST', true);
+                                        define('MODULES_TEST_HTTP', HTTP_ROOT_DIR.'/modules/test');
+                                        }
+                                        else {
+                                        define('MODULES_TEST', false);
+                                        }
+                                    </pre>
+                              
+                            
+                        </ul>
+                    </p>
+                    <br><br>
+                    <div><a href="#logo" class="index">Indice</a></div>
+                </div>
+                <div>
+                    <h2 class="separator">
+                        Configurare widget
+                        <a name="Configurare_widget"></a>
+                    </h2>
+                    <p>
+                        <ul>
+                            <li>
+                               Rinominare il file widget/main/index_DEFAULT.xml in widget/main/index.xml: questo sarà il file di configurazione 
+                               per i widget che compariranno nella pagina di index,qualsiasi altro widget da inserire in un' altra pagina deve seguire 
+                               il path del file.tpl nel quale desideriamo che compaia il widget.
+                               Quindi a titolo esplicativo:
+                               <ul><br>
+                               <li>Se il template si trova in: layout/TEMA/templates/XXX/YYY.tpl<li>
+                               <li>il file di configurazione del widget dovrà essere posizionato in: widget/XXX/YYY.xml  </li>
+                               <li>Se l'ambiente è NON-MULTIPROVIDER, ed esiste il seguente file :clients/PROVIDER_NAME/widgets/XXX/YYY.xml, questo avra
+                               priorità su qualsiasi altro.</li>
+                               </ul><br>
+                               qualsiasi tag &ltwidget&gt deve contenere i seguenti tag:
+                               <ul><br>
+                                   <li>* &ltfield&gt  che valorizzerà il nome del template_field contenuto nel file.tpl dove apparirà il widget.<sup><font size='1'>1</font></sup></li>
+                                   <li>* &ltid&gt  questo valorizzerà l'id che sarà assegnato al div html  che conterrà il widget.<sup><font size='1'>2</font></sup></li>
+                                   <li>* &ltmodule&gt questo è il nome del file contenuto nella directory widgets/ajax che sarà eseguito per permettere la visualizzazione del widget. </li>
+                               </ul>
+                               opzioni di rendering:
+                               <ul><br>
+                                  <li>* &ltactive&gt è un parametro opzionale 0/1 che stabilisce se il widget è attivo o no.</li>
+                                  <li>* &ltasync&gt è un parametro opzionale 0/1 che stabilisce se il widget è caricato in modo asincrono (1) o in modo sincrono (0)</li>
+                                  <li>* &ltparam&gt usato per passare dei parametri al file indicato in &ltmodule&gt.</li>
+                               </ul>
+                               <br>
+                               <font size='1'>1 Richiesto per il widget che lavora sia in modalità sincrona che asincrona.</font><br>
+                               <font size='1'>2 Richiesto per il widget che lavora in modalità asincrona.</font><br><br>
+                               Note:
+                               <ul>
+                                   <li>
+                                       Se si desidera utilizzare il modulo Twitter, bisogna configurare un access token:
+                                       <ul><br>
+                                           <li>* rinominare il file TwitterAccess_DEFAULT.inc.php in TwitterAccess.inc.php ed inserirlo nella directory: widgets/ajax/include</li>
+                                           <li>* configuare il proprio accedd token.  </li>
+                                       </ul>
+                                   </li>
+                               </ul>
+                            </li>
+                        </ul>
+                    </p>
+                    <br><br>
+                    <div><a href="#logo" class="index">Indice</a></div> 
+                </div>
+                <div>
+                    <h2 class="separator">
+                        Configurazioni extra
+                        <a name="Configurazioni_extra"></a>
+                    </h2>
+                    <p>
+                        <ul>
+                            <li>
+                                Welcome Message Mail:
+                                <ul><br>
+                                    <li>
+                                        E' possibile cambiare il messaggio di benvenuto spedito a un'utente che si è appena registrato:
+                                        accedere al seguente file e modificarlo: /docs/welcome_language.txt (ex.: /docs/welcome_en.txt english message).
+                                    </li>    
+                                </ul><br>
+                                 Help:
+                                <ul><br>
+                                    <li>
+                                        La directory docs contiene un file di help per l'utente. Accedere al file e modificarlo: /docs/help_language.txt (ex.: /docs/help_en.txt english message).
+                                    </li>    
+                                    <li>
+                                        E' possibile inoltre cambiare il file di help seguendo questa procedura alternativa:
+                                        <ul>
+                                            <li>
+                                               * Eseguire il login come amministratore.
+                                            </li>   
+                                            <li>
+                                               * Accedere alla voce di menù "Agisci".
+                                            </li>
+                                            <li>
+                                               * Cliccare su "Edit help content".
+                                            </li>
+                                            <li>
+                                               * Cliccare sul file che si desidera modificare.
+                                            </li>
+                                            <li>
+                                               * Eseguire le modifche desiderate. E' possibile inserire HTML tags.
+                                            </li>
+                                        </ul>    
+                                    </li>   
+                                </ul><br>
+                                News:
+                                <ul><br>
+                                    <li>
+                                        La directory docs contiene un file di news per l'utente. Per modificarlo seguire la procedura sopra descritta per il file di help.
+                                    </li>    
+                                     
+                                </ul><br>
+                                Info:
+                                <ul><br>
+                                    <li>
+                                        La directory docs contiene un file di info per l'utente. Per modificarlo seguire la procedura sopra descritta per il file di help.
+                                    </li>    
+                                     
+                                </ul><br>
+                                 Corso pubblico:
+                                <ul><br>
+                                    <li>
+                                        E' possibile settare un corso pubblico:
+                                        <ul><br>
+                                        <li>
+                                            In un ambiente MULTIPROVIDER, il corso dovrà essere creato nel provider0, settare la costante PUBLIC_COURSE_ID_FOR_NEWS  definita 
+                                            in config/config_install.inc.php con l'id del corso destinato ad essere un corso pubblico. </li>
+                                        <li>
+                                            In un ambiente NON-MULTIPROVIDER ogni providerX può avere il proprio corso pubblico: settare 
+                                            la costante PUBLIC_COURSE_ID_FOR_NEWS definita in clientX.inc.php con l'id del corso destinato ad essere un corso pubblico.
+                                        </li>
+                                        </ul>
+                                    </li>    
+                                </ul>
+                            </li>
+                        </ul>
+                    </p>
+                    <br><br>
+                   <div><a href="#logo" class="index">Indice</a></div>  
+                </div>
+            </div>
+    </body>
+</html>

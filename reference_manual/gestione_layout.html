@@ -1,0 +1,859 @@
+<!DOCTYPE html>
+<!--
+To change this license header, choose License Headers in Project Properties.
+To change this template file, choose Tools | Templates
+and open the template in the editor.
+-->
+<html>
+    <head>
+        <title>Manuale_Holis</title>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        
+        <link rel="stylesheet" href="./css/index.css" type="text/css" media="screen">
+        
+        <!--for syntax highlight-->
+        <script type="text/javascript" src="./sintax_highlight/jquery-1.4.2.min.js"></script>
+        <script type="text/javascript" src="./sintax_highlight/jquery.syntaxhighlighter.min.js"></script>
+        <script type="text/javascript">$.SyntaxHighlighter.init();</script>
+    </head>
+    <body>
+        <div id="logo">
+	
+        </div> 
+        <h1 class="title">HOLIS - REFERENCE MANUAL </h1>
+        <div id="mainmenu">
+            <div id="bar"></div>
+            <ul id="menu">
+
+                    <li>
+                        <a href='index.html' name="index2">Capire Holis</a>
+                    </li>
+                    <li>
+                        <a href='guida_installazione.html'>Guida all'istallazione</a>
+                    </li> 
+                    <li>
+                        <a href='guida_amministratore.html'>Guida per l'amministratore</a>
+                    </li> 
+                    <li>
+                        <a href='gestione_lingue.html'>Gestione lingue</a>
+                    </li> 
+                    <li id="box">
+                        <a>Personalizzare i layout</a>
+                    </li>
+                    <li>
+                        <a>Coding</a>
+                    </li>
+
+            </ul>
+        </div>
+            <div id="content">
+                <div id="box2">
+                   <h4 id="index"><a>index</a></h4>
+                   <ul>
+                       <li>
+                         <a href="#Requisiti_tecnici">Interfaccia: Requisiti tecnici</a>  
+                       </li>
+                       <li>
+                         <a href="#Personalizzare_layout">Personalizzare il layout</a>  
+                       </li>
+                       <li>
+                         <a href="#Modificare_interfaccia">Modificare l'interfaccia</a>  
+                       </li>
+                       <li>
+                         <a href="#Aggiungere_menu">Aggiungere voci di menu</a>  
+                       </li>
+                  </ul>
+                </div>
+                <div>
+                    <h2 class="separator">
+                        Interfaccia: Requisiti tecnici
+                        <a name="Requisiti_tecnici"></a>
+                    </h2>
+                    <h4>
+                       
+                        <li>
+                            <a href="#Struttura">Struttura</a>  
+                        </li>  
+                        <li>
+                            <a href="#Layout_Template">Layout e Template</a>  
+                        </li>  
+                        <li>
+                            <a href="#Microtemplates">Microtemplates</a>  
+                        </li> 
+                         <li>
+                            <a href="#Css">Css</a>  
+                        </li> 
+                         
+                    </h4>
+                    
+                    <ul>
+                        <li>
+                            <h3 class="separator">Struttura<a name="Struttura"></a></h3>
+                            <ul>
+                                <li>
+                                    L'interfaccia dell'applicazione ADA è costituita da 4 gruppi di files:
+                                    <ol><br>
+                                    <li>1. templates</li> 
+                                    <li>2. microtemplates </li>
+                                    <li>3. CSS</li>
+                                    <li>4. immagini di supporto</li>
+                                    </ol><br>
+                                    L'interfaccia è completamente separata dai dati e dalla logica secondo il modello MVC (Model View Control).
+                                    Questa indipendenza consente:
+                                    una veloce modifica dell'interfaccia senza toccare il codice
+                                    uno sviluppo del codice indipendente dall'interfaccia
+                                    un controllo migliore dell'accessibilità. 
+                                </li>
+                            </ul>
+                        </li>
+                        <li>
+                           <h3 class="separator">Layout e Template<a name="Layout_Template"></a></h3> 
+                           <ul>
+                                DEFINIZIONI<br><br>
+                                I templates sono  file html che vengono usati dall'applicazione come modello per tutte le pagine dello stesso tipo generate dinamicamente. 
+                                I layout sono insiemi di templates e css che possono essere associati alla piattaforma, al corso o al profilo dell'utente.
+                                Per ogni sezione dell'applicazione (ADMIN, TUTOR, STUDENT, COURSES, COMUNICA) possono quindi esserci diversi Layout (es. ADMIN/DEFAULT), all'interno dei quali ci sarà un template standard, più un template di default per i casi di emergenza (errori etc).
+                                Potranno poi esserci templates dedicati per moduli specifici con esigenza speciali (es. view che richiede più elementi di index).
+                                <br>Es.<br><br>
+
+                                <li>TEMPLATES/MAIN/DEFAULT/default.tpl</li>
+                                <li>TEMPLATES/ADMIN/DEFAULT/admin.tpl</li>
+                                <li>TEMPLATES/TUTOR/DEFAULT/tutor.tpl</li>
+                                <li>TEMPLATES/BROWSING/DEFAULT/student.tpl</li>
+                                <li>TEMPLATES/COURSES/DEFAULT/author.tpl</li>
+                                ...<br><br>
+                                STANDARD<br></br>
+                                I templates vanno scritti in standard XHTML 1.0 Transitional 
+                                Encoding: UTF-8<br>
+
+                                In questo standard W3C come è noto
+                                <ul><br>
+                                    <li>* ogni tag va chiusa, anche per gli elementi vuoti (es. &ltimg .... /&gt, &ltbr /&gt);</li>
+                                    <li>* non vanno usate lettere accentate o caratteri delle lingue nazionali (à,£, etc) ma le entità corrispondenti HTML(&amp;agrave) o UNICODE (es: &amp;#232;); </li>
+                                    <li>* non va usato & ma l'entità &amp;amp nei link;</li>
+                                    <li>* gli elementi vanno inseriti in minuscolo (&ltp&gt); </li>
+                                    <li>* non devono essere lasciati spazi all'inizio dei valori degli attributi; </li>
+                                    <li>* i valori devono sempre essere inseriti tra virgolette</li>
+                                    <li>etc.</li><br>
+                                </ul>
+
+                                In generale, ogni elemento dovrà avere:
+                                <ul><br>
+                                <li>*un ID unico</li>
+                                <li>*una classe assegnata tra quelle del CSS associato (es. “menu_dx”)</li>
+                                <li>*dove necessario, un'alternativa testuale (alt = “logo”)</li>
+                                <li>*dove necessario, un accesso da tastiera (accesskey="M")</li>
+                                <li>*dove necessario, un ordine di tabulazione (tabindex = “101”)</li>
+
+                           </ul><br>
+                                Nota: non è necessario includere meta-tag (e in generale tutto ciò che appartiene all'head) nel template perché queste verranno generate dinamicamente dall'applicazione. Ma è utile inserire le intestazioni per avere un'anteprima corretta.
+                                <br>Es:
+                                <pre class="language-html">
+                                    &lt?xml version="1.0" encoding="utf-8"?&gt
+                                    &lt!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd"&gt
+                                    &lthtml xmlns="http://www.w3.org/1999/xhtml" xml:lang="it" lang="it"&gt
+                                    &lthead&gt
+                                            &lttitle>Template Tutor&lt/title&gt
+                                            &ltlink rel="stylesheet" type="text/css" href="default.css" /&gt
+                                    &lt/head&gt
+                                    ...
+                                </pre>
+                                <br><br>
+                                LAYER<br><br>
+                                Le pagine saranno organizzate graficamente, dove possibile, con i layer anziché con tabelle, o con altri elementi organizzativi (p, ol, ul, dl, cite, h1-h6):
+                                <pre class="language-html">
+                                &ltdiv class="menu_superiore" id="d_1"&gt
+                                &lt/div&gt
+                                </pre><br>
+                                I layer vanno progettati tenendo anche conto dell'accessibilità, quindi della possibilità di lettura da parte di screen reader.
+                                <br><br>
+                                TABELLE<br><br>
+                                Le tabelle (TABLE) verranno usate solo nel caso in cui ci sia necessità di mostrare dati matriciali e in ogni caso con tutti gli attributi necessari alla loro comprensione tramite browser non visuali:
+                                <pre class="language-html">
+                                    &lttable summary="descrizione dei dati" id="t1">
+                                        &ltthead&gt
+                                            &lttr&gt
+                                                &ltth&gtColonna 1&lt/th&gt&ltth&gtColonna 2&lt/th&gt
+                                            &lt/tr&gt
+                                        &lt/thead&gt
+                                        &lttbody&gt
+                                            &lttr&gt 
+                                                &lttd&gt3&lt/td&gt&lttd&gt3&lt/td&gt
+                                            &lt/tr&gt
+                                            &lttr&gt
+                                                &lttd&gt6&lt/td&gt&lttd&gt5&lt/td&gt
+                                            &lt/tr&gt 
+                                        &lt/tbody&gt
+                                    &lt/table&gt
+                                </pre>
+                                <br><br>
+                                IMMAGINI<br><br>
+                                Le immagini dovranno trovarsi nella sottocartella  IMAGES della cartella del template cui sono relative.
+                                Il formato preferito è PNG. 
+                                Le dimensioni dell'immagine, se fornite come attributi dell'elemento, non devono essere diverse da quelle reali.
+                                <pre class="language-html">
+                                    &ltimg src="images/img.png" alt="logo in versione grande"&gt
+                                </pre>
+                                <br><br>
+                                LINK<br><br>
+                                Ogni link deve avere gli attributi standard XHTML più quelli relativi all'accessibilità (accesskey, tabindex).
+
+                                Es.
+                                Supponendo che vada linkato il modulo “view.php” della sezione “browsing”:
+                                <pre class="language-html">
+                                  &lta href="view.php?id_node=2" type="text/html" class="link" accesskey="V" tabindex=”101”&gtVisita&lt/a&gt  
+                                </pre>
+                                <br><br>
+                                SEGNAPOSTI<br><br>
+                                Gli spazi per l'inserimento delle variabili nei templates sono marcati da segnaposti con la seguente forma:
+                                <pre class="language-html">
+                                    &lttemplate_field class="template_field" name="N_CAMPO"&gtN_CAMPO&lt/template_field&gt
+                                </pre>
+                                Nota: per rendere facilmente distinguibili i campi quando si fa un'anteprima con il browser del template è utile utilizzare nel CSS uno stile apposito.
+                                <pre class="highlight">
+                                    .template_field {font-family: "Courier New", Courier, mono; font-size: 16px; font-weight: bold; color: #FF00FF}
+                                <pre>
+                        </li>
+                    </ul>
+                    <h3 class="separator">Microtemplates<a name="Microtemplates"></a></h3> 
+                    <ul>
+                        <li>
+                            Sono elementi più piccoli, sempre XHTML, ripetuti nei diversi templates. Per comodità del grafico, per evitare compiti ripetitivi e per garantire uniformità in tutta l'applicazione,  possono essere salvati in file separati e richiamati all'interno di altri templates con segnaposti della forma:
+                            <pre class="language-html">
+                                &lttemplate_field class="microtemplate_field" name="footer"&gtfooter&lt/template_field&gt
+                            </pre><br>
+                            I microtemplates  sono porzioni di XHTML (senza intestazioni etc) che possono contenere altri segnaposti del tipo semplice.
+
+                            Saranno microtemplates la testata (header), il piedino (footer), ed eventualmente barre di menu laterali e simili.
+                            <br>Es.<br><br>
+
+                                <li>TEMPLATES/MAIN/DEFAULT/header.tpl</li>
+                                <li>TEMPLATES/MAIN/DEFAULT/footer.tpl</li>
+                                <li>TEMPLATES/ADMIN/DEFAULT/header.tpl</li>
+                                <li>TEMPLATES/ADMIN/DEFAULT/menu_dx.tpl</li>
+                                
+                        </li>
+                    </ul>
+                    <h3 class="separator">Cascading Style Sheets<a name="Css"></a></h3> 
+                    <ul>
+                        <li>Per ogni layout di Sezione (BROWSING/DEFAULT, ADMIN/DEFAULT, etc) ci sarà un CSS di default (default.css), più un CSS specifico per il modulo caricato.
+                        Quindi in ogni modulo possono essere caricati due CSS.</li>
+                        <br>Es.<br><br>
+                        <li>CSS/ADMIN/DEFAULT/default.css</li>
+                        <li>CSS/ADMIN/DEFAULT/admin.css</li><br>
+                        <li>Oltre alla ridefinizione degli elementi principali (h1-h6,a,table,tr,td,hr,p,dl,ul,ol) i CSS dovranno contenere gli stili per le classi utilizzate nei template
+                        Potranno rendersi necessari stili specifici per i CSS relativi a sezioni particolari.</li>
+                        <br><br>
+                        GRAFICA DI SUPPORTO<br><br>
+                        Si intende per grafica di supporto ogni elemento (bordi, ombre, angoli, ) che viene richiamato dai templates o dai CSS.
+                        I files devono essere nella sottocartella /IMAGES di ogni template.
+                        Quando non si tratta di icone o elementi dotati di significato, ma solo di elementi di supporto, il loro inserimento dovrebbe essere fatto ove possibile nel CSS e non nel template.
+                        <pre class="highlight">
+                            .fondino { color:white; background: url(fondo.png) no-repeat;}
+                        <pre>
+                    </ul>
+                    
+                    <br><br>
+                   <div><a href="#logo" class="index">Indice</a></div>  
+                </div>
+                <div>
+                    <h2 class="separator">
+                        Personalizzare il layout
+                        <a name="Personalizzare_layout"></a>
+                    </h2>
+                    <ul>
+                        <li>
+                            La struttura della directory che contiene il layout è:
+                            <ul><br>
+                                
+                                <li>* layout/layout_family/css/module_name</li>
+                                <li>* layout/layout_family/templates/module_name</li>
+                                <li>* layout/layout_family/img/</li>
+                                <li>* js /module_name/</li><br>
+                                NOTA:<br>
+                                Il file layout/layout_family/header.tpl contiene l'header di tutte le pagine. 
+                                E'possibile cambiare il logo e l'header modificando il file layout/layout_family/header.tpl   
+                            </ul>   
+                        </li>   
+                    </ul>  
+                <br><br>
+                <div><a href="#logo" class="index">Indice</a></div> 
+                </div>
+                <div>
+                    <h2 class="separator">
+                        Modificare l' interfaccia
+                        <a name="Modificare_interfaccia"></a>
+                    </h2>
+                    <ul>
+                        La piattaforma ADA segue il paradigma MVC (Model / View /Control) cioè separa tutto ciò che è codice per il funzionamento (che è scritto nei linguaggi PHP, principalmente, con un po' di Javascript) da ciò che è dati (testi, in particolare le etichette e i messaggi che appaiono, e che vengono tradotti in base alla lingua dell'utente) e da ciò che è
+                        interfaccia (icone, elementi grafici, colori, font, dimensioni, posizione relativa di tutti gli elementi)<br><br>
+
+                        Questa indipendenza consente:
+                        <ul><br>
+                            <li>* una veloce modifica dell'interfaccia senza toccare il codice.</li>
+                            <li>* uno sviluppo del codice indipendente dall'interfaccia.</li>
+                            <li>* un controllo migliore dell'accessibilità.</li>
+                        </ul><br>
+                        
+                        In pratica, come già detto,per quanto riguarda l'interfaccia, esistono quattro tipi di
+                        oggetti:<br>
+                        <ul><br>
+                                <li>* templates (file HTML con segnaposti vuoti).</li>
+                                <li>* microtemplates (file HTML) che vengono inclusi nei precedenti.</li>
+                                <li>* CSS.</li>
+                                <li>* immagini (PNG preferibilmente).</li>
+                        </ul><br>
+                        Questi file costituiscono insieme il layout dell'applicazione.
+
+                        Ogni modulo ha il suo layout, che è indipendente dagli altri.
+                        P.es. il modulo Tutor può essere modificato indipendentemente da quello
+                        Browsing (che è quello dello studente).<br>
+
+
+                        Il funzionamento di questa parte di ADA è il seguente:
+                        <ul><br>
+                        <li>* il modulo X legge le preferenze dell'utente, quelle della configurazione.</li>
+                        <li>* ricerca un template corrispondente al modulo X; se non lo trova usa un
+                        default.</li>
+                        <li>* ricerca un CSS corrispondente al modulo X; se non lo trova usa un default.</li>
+                        <li>* ricerca le immagini linkate nel CSS.</li>
+                        <li>* carica i contenuti dal database e li inserisce nei segnaposti appositi
+                        del template.</li>
+                        <li>* invia il tutto al browser</li>
+                        </ul><br>
+                        Per modificare l'interfaccia della piattaforma
+                        <ul><br>
+                        <li>* non è necessario andare a toccare il codice PHP, anzi è fortemente
+                        sconsigliabile.</li>
+                        <li>* non è necessario andare a toccare i templates HTML, a meno che non
+                        ci siano esigenze molto specifiche.</li>
+                        <li>* non è consigliabile aggiungere o togliere stili nei file CSS perché
+                        questo richiede una comprensione più profonda del funzionamento, almeno
+                        di alcune parti (es. il menu' a tendina), e la modifica dei templates.</li>
+                        <li>* è invece possibile modificare gli stili nei file CSS per ottenere
+                        tutti gli effetti grafici che si crede opportuno.</li>
+                        <li>* lo stesso per quanto riguarda icone, bottoni etc (file PNG o JPG o GIF).</li>
+                        </ul><br>
+
+
+                        In sintesi, consigliamo di organizzare il lavoro di modifica dell'interfaccia cosi':
+                        <ul><br>
+                            <li>* fare un'ipotesi generale dello stile dell'interfaccia (palette dei
+                            colori, stile delle icone, stili dei testi, ...).</li>
+
+                            <li>* fare una bozza grafica statica di una pagina partendo da quella
+                            standard esistente (es. browsing/view.php), in JPG.</li>
+
+                            <li>* ritagliare gli elementi grafici e prendere nota dei colori e dei font
+                            utilizzati.</li>
+
+                            <li>* copiare la cartella di default per i template e per i css con nuovo_nome
+                            (es. templates/browsing/nuovo_nome, css/browsing/nuovo_nome).</li>
+
+                            <li>* modificare gli stili nel file CSS corrispondente al layout che si sta
+                            modificando (es CSS/browsing/icon/view.css) ed eventualmente sostituire
+                            le immagini relative (es CSS/browsing/icon/img/_tutor.png).</li>
+
+                            <li>* aprire il template corrispondente al modulo che si vuole
+                            modificare(es. browsing/nuovo_nome/view.tpl) e controllarne il buon
+                            funzionamento con il nuovo CSS e le nuove immagini.</li>
+
+                            <li>* ripetere gli ultimi due passi fino a soddisfazione.</li>
+                        </ul>
+                    </ul>  
+                <br><br>
+                <div><a href="#logo" class="index">Indice</a></div> 
+                </div>
+                <div>
+                    <h2 class="separator">
+                        Aggiungere voci di menu
+                        <a name="Aggiungere_menu"></a>
+                    </h2>
+                    
+                    <ul>
+                       Come fare per creare il seguente menu di esempio:<br><br>
+                       <table border="1" cellpadding="5" cellspacing="0" style="width:500px;">
+                            <tbody>
+                                    <tr>
+                                            <td style="text-align:center;">
+                                                    <strong>VOCE DI MENU</strong></td>
+                                            <td style="text-align:center;">
+                                                    <strong>SOTTOVOCI</strong></td>
+                                    </tr>
+                                    <tr>
+                                            <td>
+                                                    Home</td>
+                                            <td>
+                                                    &nbsp;</td>
+                                    </tr>
+                                    <tr>
+                                            <td>
+                                                    Comunica</td>
+                                            <td>
+                                                    Messaggeria, Forum</td>
+                                    </tr>
+                            </tbody>
+                    </table><br>Nella pagina (ad esempio) browsing/user.php dello studente.<br><br>
+                    PREMESSA<br><br>
+                    Un albero di menu è completamente identificato dai seguenti elementi: &ltmodulo, script, tipo utente, 0/1 se corso in autoistruzione (dove applicabile).&gt
+                    Perciò nel caso di esempio è: &ltbrowsing, user.php, 3 (AMA_TYPE_STUDENT), 0&gt
+                    Lo script può avere o meno dei parametri nella sua querystring, e identificherà un albero di menu diverso. Esempio
+                    user.php può essere associata ad un certo albero di menu e user.php?foo=bar ad un altro albero, diverso dal precedente.
+                    Tutti questi parametri sono dedotti dal sistema, tranne il corso in autoistruzione che viene assunto come falso se non specificato.
+                    <br><br>
+                    I CAMPI DELLE TABELLE<br><br>
+                    
+                    Prima di proseguire, bisogna avere ben chiara la struttura delle tabelle e l'uso che si fa dei campi che le compongono e che sono:
+                    <ul><br>
+                        <li>MENU_PAGE(tree_id, module, script, user_type, self_instruction, isVertical, linked_tree_id);
+                            <ul><br>
+                                <li>* tree_id è autoincrement ad ogni quaterna: module, script, user_type, self_instruction può corrispondere un menu orizzontale e uno verticale a cui è associato un id.</li>
+                                <li>* linked_tree_id serve per creare un menu come copia esatta di uno già esistente, da associare ad una quaterna non già esistente.</li><br>
+                            </ul>
+                        </li>
+                        <li>MENU_TREE (tree_id, parent_id, item_id, extraClass);
+                            <ul><br>
+                                <li>* dato il tree_id possiamo ricostruire l'intero albero che rappresenta il menu tramite la relazione padre/figlio realizzata con parent_id.</li>
+                                <li>* extraClass è usato per scopi grafici e se non è vuoto serve per stilare l'elemento comandato dal dropdown (quello che appare al passaggio del mouse su una voce che ha figli).</li>
+                            </ul>
+                        </li> <br>  
+                        <li>MENU_ITEMS (item_id, label, extraHTML, icon, icon_size, href_properties, href_prefix, href_path, href_paramlist, extraClass, groupRight, specialItem, order, enabled); 
+                            <ul><br>
+                                <li>* label è il testo che apparirià come voce di menu.</li>
+                                <li>* extraHTML è HTML da mettere subito dopo l'etichetta (es. per realizzare la bustina accanto alla voce Comunica oppure l'elemento 'cerca').</li>
+                                <li>* icon è il nome della classe css di fontawesome (importato da semantic-ui: http://semantic-ui.com/elements/icon.html) da usare come icona.</li>
+                                <li>* icon_size è la misura dell'icona, espressa come variante di classe css di fontawesome (es. large, small).</li>
+                                <li>* href_properties serve per specificare proprietà dell'elemento &lta&gt generato (ad esempio onClick) da scrivere sotto forma di array JSON encoded (facilmente, vedi l'esempio).</li>
+                                <li>* href_prefix è il prefisso della url da generare (es. %HTTP_ROOT_DIR% o %MODULES_TEST_HTTP% in cui le costatnti tra i segni percentuali sono quelle di ADA).</li>
+                                <li>* href_path è il file da linkare (es. view.php o index.php).</li>
+                                <li>* href_paramlist è una lista di nomi di variabili necessari per costruire la url, espressa come valori separati da virgola (es. id_course, id_course_instance, op)
+                                oppure come template field che andrà poi riempito da PhP secondo le usuali regole di $content_dataAr (vedi paragrafo relativo).</li>
+                                <li>* extraClass serve per scopi grafici e sono classi da attribuire a: elemento &lta class='item'&gt nel caso di foglie (item) elemento &ltdiv class='dropdown'&gt nel caso di genitori.</li>
+                                <li>* groupRight è true (ossia nonzero) se e solo se l'elemento va raggruppato nella parte destra di menu (ignorato negli elementi che non siano di profondità 1: le voci principali della barra).</li>
+                                <li>* specialItem è true (ossia nonzero) se e solo se l'elemento è 'speciale': non si genera un &lta class='item&gt ma si mette l'extraHTML in un &ltdiv class='item'&gt.
+                                Serve per realizzare il cerca, ad esempio.</li>
+                                <li>* order specifica l'ordine dell'elemento relativamente ai suoi fratelli.</li>
+                                <li>* enabled se è true (ossia nonzero) dice che l'elemento è abilitato (cioè appare nei menu generati).</li>
+                            </ul>
+                        </li> 
+                    </ul>   
+                    <br><br>
+                        QUALE MENU APPARE IN HOME PAGE<br><br>
+                        Per poter personalizzare al massimo le voci di menu presenti in una pagina, le tabelle relative possono essere presenti sia nel DB del singolo provider che in quello common.
+                        Dato un modulo e uno script, l'ordine con cui viene cercato il menu da mostrare (a parità di tipo utente e autoistruzione) è il seguente, prendendo ad esempio la pagina browsing/user.php (perciò modulo=browsing e script=user.php)<br><br>
+                        <ul>
+                            <li>* Si usa il menu per browsing/user.php nel DB del provider, ma se non lo si trova:</li>
+                            <li>* si usa il menu per browsing/user.php nel DB common, ma se non lo si trova:</li>
+                            <li>* si usa il menu per browsing/default nel DB del provider, ma se non lo si trova:</li>
+                            <li>* si usa il menu per browsing/default nel DB common, ma se non lo si trova:</li>
+                            <li>* si usa il menu per main/default nel DB del provider, ma se non lo si trova:</li>
+                            <li>* si usa il menu per main/default nel DB common, ma se non lo si trova:</li>  
+                            <li>*  non appare alcun menu.</li>
+                        </ul>    
+                        <br><br>
+                        FARE APPARIRE IL MENU IN UNA PAGINA<br><br>
+                        Il codice HTML che realizza il menu è posizionato all'interno del template di una certa pagina dove c'è questo codice:<br>
+                        <pre class="language-html">
+                            &lt!-- menu --&gt
+                                &lttemplate_field class="microtemplate_field" name="adamenu"&gtadamenu&lt/template_field&gt 
+                            &lt!-- / menu --&gt
+                        </pre><br>
+                        E' necessario che ogni template abbia questo codice al suo interno, solitamente posizionato subito dopo la <em>testata</em>.
+                    <br><br>
+                    GENERARE UN MENU<br><br>
+                    <ul>
+                        1. Creare un identificativo per l'albero nella pagina di interesse
+                        <ul><br>
+                            Gli identificativi stanno in menu_page quindi nella tabella scrivo i seguenti dati:<br><br>
+                            <table border="1" cellpadding="5" cellspacing="0">
+                                <thead>
+                                        <tr>
+                                                <th>
+                                                        tree_id</th>
+                                                <th>
+                                                        module</th>
+                                                <th>
+                                                        script</th>
+                                                <th>
+                                                        user_type</th>
+                                                <th>
+                                                        self_instruction</th>
+                                                <th>
+                                                        isVertical</th>
+                                                <th>
+                                                        linked_tree_id</th>
+                                        </tr>
+                                </thead>
+                                <tbody>
+                                        <tr>
+                                                <td>
+                                                        &nbsp;</td>
+                                                <td>
+                                                        browsing</td>
+                                                <td>
+                                                        user.php</td>
+                                                <td>
+                                                        3</td>
+                                                <td>
+                                                        0</td>
+                                                <td>
+                                                        0</td>
+                                                <td>
+                                                        <i>NULL</i></td>
+                                        </tr>
+                                </tbody>
+                        </table>
+                         <br>     
+                        tree_id è generato dal DB, quindi prenderne nota. Facciamo il caso che sia tree_id=5
+                        </ul>  <br>
+                        2. Creare le voci di menu
+                        <ul><br>
+                            Le voci di menu sono memorizzate nella tabella menu_items quindi devono essere scritte lì, come segue<br><br>
+                            
+                            <table border="1" cellpadding="1" cellspacing="0">
+                                <thead>
+                                        <tr class="table">
+                                                <th class="table">
+                                                        item_id</th>
+                                                <th class="table">
+                                                        label</th>
+                                                <th class="table">
+                                                        extraHTML</th>
+                                                <th class="table">
+                                                        icon</th>
+                                                <th class="table">
+                                                        icon_size</th>
+                                                <th class="table">
+                                                        href_properties</th>
+                                                <th class="table">
+                                                       href_prefix</th>
+                                                <th class="table">
+                                                        href_path</th>
+                                                <th class="table">
+                                                        href_paramlist</th>
+                                                <th class="table">
+                                                        extraClass</th>
+                                                <th class="table">
+                                                        groupRight</th>
+                                                <th class="table">
+                                                        specialItem</th>
+                                                <th class="table">
+                                                        order</th>
+                                                <th class="table">
+                                                        enabled</th>
+                                        </tr>
+                                </thead>
+                                <tbody>
+                                        <tr class="table">
+                                                <td class="table">
+                                                        &nbsp;</td>
+                                                <td class="table">
+                                                        home</td>
+                                                <td class="table">
+                                                        <i>NULL</i></td>
+                                                <td class="table">
+                                                        home</td>
+                                                <td class="table">
+                                                        large</td>
+                                                <td class="table">
+                                                        <i>NULL</i></td>
+                                                <td class="table">
+                                                        %HTTP_ROOT_DIR%/browsing</td>
+                                                <td class="table">
+                                                        user.php</td>
+                                                <td class="table">
+                                                        <i>NULL</i></td>
+                                                <td class="table">
+                                                        <i>NULL</i></td>
+                                                <td class="table">
+                                                        0</td>
+                                                <td class="table">
+                                                        0</td>
+                                                <td class="table">
+                                                        0</td>
+                                                <td class="table">
+                                                        1</td>
+                                        </tr>
+                                        <tr class="table">
+                                                <td class="table">
+                                                        &nbsp;</td>
+                                                <td class="table">
+                                                        Comunica</td>
+                                                <td class="table">
+                                                        &lt;div class=&quot;ui label&quot; id=&quot;msglabel&quot; style=&quot;display:none;&quot;&gt; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &lt;i class=&quot;mail small icon&quot;&gt;&lt;/i&gt;&lt;span id=&quot;unreadmsgbadge&quot;&gt;&lt;/span&gt; &nbsp; &nbsp; &nbsp; &nbsp; &lt;/div&gt;</td>
+                                                <td class="table">
+                                                        comment</td>
+                                                <td class="table">
+                                                        large</td>
+                                                <td class="table">
+                                                        <i>NULL</i></td>
+                                                <td class="table">
+                                                        <i>NULL</i></td>
+                                                <td class="table">
+                                                        <i>NULL</i></td>
+                                                <td class="table">
+                                                        <i>NULL</i></td>
+                                                <td class="table">
+                                                        <i>NULL</i></td>
+                                                <td class="table">
+                                                        0</td>
+                                                <td class="table">
+                                                        0</td>
+                                                <td class="table">
+                                                        2</td>
+                                                <td class="table">
+                                                        1</td>
+                                        </tr>
+                                        <tr class="table">
+                                                <td class="table">
+                                                        &nbsp;</td>
+                                                <td class="table">
+                                                        Messaggeria</td>
+                                                <td class="table">
+                                                        <i>NULL</i></td>
+                                                <td class="table">
+                                                        mail</td>
+                                                <td class="table">
+                                                        <i>NULL</i></td>
+                                                <td class="table">
+                                                        {&quot;onclick&quot; : &quot;openMessenger (&#39;../comunica/list_messages.php&#39;, 800,600);&quot;}</td>
+                                                <td class="table">
+                                                        <i>NULL</i></td>
+                                                <td class="table">
+                                                        <i>NULL</i></td>
+                                                <td class="table">
+                                                        <i>NULL</i></td>
+                                                <td class="table">
+                                                        <i>NULL</i></td>
+                                                <td class="table">
+                                                        0</td>
+                                                <td class="table">
+                                                        0</td>
+                                                <td class="table">
+                                                        1</td>
+                                                <td class="table">
+                                                        1</td>
+                                        </tr>
+                                        <tr class="table">
+                                                <td class="table">
+                                                        &nbsp;</td>
+                                                <td class="table">
+                                                        Forum</td>
+                                                <td class="table">
+                                                        <i>NULL</i></td>
+                                                <td class="table">
+                                                        community basic</td>
+                                                <td class="table">
+                                                        <i>NULL</i></td>
+                                                <td class="table">
+                                                        <i>NULL</i></td>
+                                                <td class="table">
+                                                        %HTTP_ROOT_DIR%/browsing</td>
+                                                <td class="table">
+                                                        main_index.php?op=forum</td>
+                                                <td class="table">
+                                                        <i>NULL</i></td>
+                                                <td class="table">
+                                                        <i>NULL</i></td>
+                                                <td class="table">
+                                                        0</td>
+                                                <td class="table">
+                                                        0</td>
+                                                <td class="table">
+                                                        2</td>
+                                                <td class="table">
+                                                        1</td>
+                                        </tr>
+                                </tbody>
+                        </table><br>
+                        gli item_id lasciati in bianco  vengono generati dal DB, quindi dopo ogni inserimento bisogna avere cura di scriverli o di ricordarli. Nel nostro caso sono:
+                        home=1, comunica=2, messaggeria=3,forum=4.
+                        I campi dovrebbero essere autoesplicativi, è da segnalare giusto extraHTML che è usato per avere dell'HTML che finirà subito dopo la voce di menu (comunica, nell'esempio).
+                        </ul><br><br>
+                        3. Definire le relazioni all'interno dell'albero
+                        <ul><br>
+                            Sono mantenute nella tabella menu_tree in cui scrivere perciò: <br><br>
+                            <table border="1" cellpadding="5" cellspacing="0">
+                            	<thead>
+                                    <tr>
+                                            <th>
+                                                    tree_id</th>
+                                            <th>
+                                                    parent_id</th>
+                                            <th>
+                                                    item_id</th>
+                                            <th>
+                                                    extraClass</th>
+                                    </tr>
+                            </thead>
+                            <tbody>
+                                    <tr>
+                                            <td>
+                                                    5</td>
+                                            <td>
+                                                    0</td>
+                                            <td>
+                                                    1</td>
+                                            <td>
+                                                    &nbsp;</td>
+                                    </tr>
+                                    <tr>
+                                            <td>
+                                                    5</td>
+                                            <td>
+                                                    0</td>
+                                            <td>
+                                                    2</td>
+                                            <td>
+                                                    &nbsp;</td>
+                                    </tr>
+                            </tbody>
+                        </table>   <br>             
+                          Con questi numeri si sta dicendo che l'albero 5 ha come voci di primo livello(parent_id=0) quelle con id=1(home) e con id=2(comunica). Perciò abbiamo terminato per quanto riguarda la voce home, ma bisogna ancora dire che comunica ha delle sottovoci.Si fa così:  
+                        <br><br>
+                          <table border="1" cellpadding="5" cellspacing="0">
+                                <thead>
+                                        <tr>
+                                                <th>
+                                                        tree_id</th>
+                                                <th>
+                                                        parent_id</th>
+                                                <th>
+                                                        item_id</th>
+                                                <th>
+                                                        extraClass</th>
+                                        </tr>
+                                </thead>
+                                <tbody>
+                                        <tr>
+                                                <td>
+                                                        5</td>
+                                                <td>
+                                                        2</td>
+                                                <td>
+                                                        3</td>
+                                                <td>
+                                                        &nbsp;</td>
+                                        </tr>
+                                        <tr>
+                                                <td>
+                                                        5</td>
+                                                <td>
+                                                        2</td>
+                                                <td>
+                                                        4</td>
+                                                <td>
+                                                        &nbsp;</td>
+                                        </tr>
+                                </tbody>
+                        </table>
+                        <br>
+                    Si sta dicendo che parent_id=2(comunica) è genitore di item_id=3(messaggeria) e item_id=4(forum) relativamente all'albero con tree_id=5
+                        </ul>    
+                     </ul> 
+                    <br><br>
+                    GENERARE UN NUOVO MENU DA UNO ESISTENTE<br><br>
+                    <ul>
+                        Nel caso in cui ci fosse la necessità di duplicare un menu e associarlo ad una quaterna non già esistente, si valorizza il campo linked_tree_id della tabella menu_page.
+                        <br>Esempio:<br>
+                        Se partendo dalla definizione appena fatta del menu per il modulo browsing, script user.php utente=studente si vuole generare un altro menu che ne sia la copia esatta (in tutto e per tutto)
+                        ma associato al modulo services, script author.php utente=autore basterà inserire nella tabella menu_page la riga :
+                       <br><br>
+                        <table border="1" cellpadding="5" cellspacing="0">
+                                <thead>
+                                        <tr>
+                                                <th>
+                                                        tree_id</th>
+                                                <th>
+                                                        module</th>
+                                                <th>
+                                                        script</th>
+                                                <th>
+                                                        user_type</th>
+                                                <th>
+                                                        self_instruction</th>
+                                                <th>
+                                                        isVertical</th>
+                                                <th>
+                                                        linked_tree_id</th>
+                                        </tr>
+                                </thead>
+                                <tbody>
+                                        <tr>
+                                                <td>
+                                                        &nbsp;</td>
+                                                <td>
+                                                        services</td>
+                                                <td>
+                                                        author.php</td>
+                                                <td>
+                                                        1</td>
+                                                <td>
+                                                        0</td>
+                                                <td>
+                                                        0</td>
+                                                <td>
+                                                        5</td>
+                                        </tr>
+                                </tbody>
+                        </table><br>
+                        si genera così un nuovo Menu che punta al menu con tree_id=5 e ne è la copia esatta ma appare in un altra pagina.
+                    </ul>
+                     <br><br>
+                    PASSARE I PARAMETRI DA PHP AD UNA VOCE DI MENU PER GENERARE IL LINK<br><br>
+                    <ul>
+                       Caso 1 Parametri non variabili<br>
+                            <ul><br>
+                                Si possono passare nell'href_path, esempio: main_index.php?op=forum
+                            </ul>   <br>
+                        
+                        Caso 2 Parametri variabili<br>
+                            <ul><br>
+                                Ci sono due strade percorribili:<br>
+                               
+                                <li><br>1. Usare una lista di parametri
+                                    <ul><br>
+                                        Si deve specificare la lista dei parametri come elenco separato da virgole nel campo href_paramlist della tabella, ad esempio: id_course, id_course_instance
+                                        Successivamente, va caricato un array in PhP che abbia come chiavi gli elementi della lista appena specificata e come valori quelli da passare, esempio:
+                                        <pre class="language-php">
+                                            $menuOptions['id_course'] = $sess_id_course;
+                                            $menuOptions['id_course_instance'] = $sess_id_course_instance;
+                                        </pre>
+                                        Infine si passa questo array al motore di render come parametro al metodo statico ARE::render, ad esempio:
+                                        <pre class="language-php">
+                                            ARE::render($layout_dataAR,$content_dataAr, null,$optionsAr,$menuOptions);
+                                            
+                                        </pre>
+                                    </ul>   
+                                </li>
+                                <li><br>2. Usare un template field</li>
+                                <ul><br>
+                                Si deve specificare il template field nel campo href_paramlist della tabella, ad esempio:
+                                <pre class="language-html">
+                                         &lttemplate_field class="template_field" name="test_history"&gttest_history&lt/template_field&gt
+                                </pre>
+                                Successivamente, si carica l'array $content_dataAr con il valore da sostituire avendo l'accortezza di specificare la sola querystring, ad esempio:
+                                <pre class="language-php">
+                                         $content_dataAr['test_history'] = 'op=test&id_course_instance='.$sess_id_course_instance.'&id_course='.$sess_id_course;
+                                </pre>
+                                Infine, passando l'array al motore di rendering con l'usuale chiamata i parametri sono passati, ad esempio:
+                                <pre class="language-php">
+                                         ARE::render($layout_dataAR,$content_dataAr);
+                                </pre>
+                                </ul>
+                                  
+                            </ul>   
+                        </ul> 
+                     
+                    </ul>
+                    
+                    
+                    <br><br>
+                   <div><a href="#logo" class="index">Indice</a></div>  
+                </div>
+               
+                
+            </div>
+    </body>
+</html>

@@ -1,0 +1,181 @@
+<!DOCTYPE html>
+<!--
+To change this license header, choose License Headers in Project Properties.
+To change this template file, choose Tools | Templates
+and open the template in the editor.
+-->
+<html>
+    <head>
+        <title>Manuale_Holis</title>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        
+        <link rel="stylesheet" href="./css/index.css" type="text/css" media="screen">
+        
+        <!--for syntax highlight-->
+        <script type="text/javascript" src="./sintax_highlight/jquery-1.4.2.min.js"></script>
+        <script type="text/javascript" src="./sintax_highlight/jquery.syntaxhighlighter.min.js"></script>
+        <script type="text/javascript">$.SyntaxHighlighter.init();</script>
+    </head>
+    <body>
+        <div id="logo">
+	
+        </div> 
+        <h1 class="title">HOLIS - REFERENCE MANUAL </h1>
+        <div id="mainmenu">
+            <div id="bar"></div>
+            <ul id="menu">
+
+                    <li>
+                        <a href='index.html' name="index2">Capire Holis</a>
+                    </li>
+                    <li>
+                        <a href='guida_installazione.html'>Guida all'istallazione</a>
+                    </li> 
+                    <li id="box">
+                        <a>Guida per l'amministratore</a>
+                    </li> 
+                    <li>
+                        <a href='gestione_lingue.html'>Gestione lingue</a>
+                    </li> 
+                    <li>
+                        <a href='gestione_layout.html'>Personalizzare i layout</a>
+                    </li>
+                    <li>
+                        <a>Coding</a>
+                    </li>
+
+            </ul>
+        </div>
+            <div id="content">
+                <div id="box2">
+                   <h4 id="index"><a>index</a></h4>
+                   <ul>
+                       <li>
+                         <a href="#Struttura">Struttura della piattaforma</a>  
+                       </li>
+                       <li>
+                         <a href="#Provider">Provider</a>  
+                       </li>
+                       <li>
+                         <a href="#Utenti">Utenti</a>  
+                       </li>
+                        
+                   </ul>
+                </div>
+                <div>
+                    <h2 class="separator">
+                        Struttura della piattaforma
+                        <a name="Struttura"></a>
+                    </h2>
+                    
+                    <ul>
+                        <li>
+                          In Holis, ogni provider eroga un certo numero di servizi.I servizi sono salvati nel DB il cui nome è definito nel file
+                          clientX/client_conf.inc.php.
+                        </li>
+                        <li>
+                          Ogni servizio ha una specifica tipologia. Le tipologie di servizio sono definite nel file config/config_main.inc.php.
+                        </li>
+                        <li>
+                          Ogni servizio creato dal provider è automaticamente linkato nella piattaforma comune (salvato,cioè, nel DB common).
+                        </li>
+                         <li>
+                          Ad ogni servizio viene automaticamente associata un'instanza per permettere agli studenti di iscriversi ad essa.
+                        </li>
+                    </ul>
+                    
+                    <ul>
+                        Come fare per creare un nuovo servizio:
+                        <ul><br>
+                            <li>
+                                * eseguire il login come switcher.
+                            </li>
+                            <li>
+                                * cliccare sulla voce di  menu "agisci".
+                            </li>
+                            <li>
+                                * cliccare sulla voce di  menu "aggiungi servizio".
+                            </li>
+                        </ul>
+                    </ul>
+                    
+                    <br><br>
+                   <div><a href="#logo" class="index">Indice</a></div>  
+                </div>
+                <div>
+                    <h2 class="separator">
+                        Provider
+                        <a name="Provider"></a>
+                    </h2>
+                    
+                    <ul>
+                        <li>
+                            L'amministratore è l'unico account che consente l'aggiunta,la rimozione o la modifica di un Provider.
+                        </li>
+                    </ul>
+                    
+                    <ul>
+                        Come aggiungere un provider:
+                        <ul><br>
+                            <li>
+                               creare un nuovo DB. 
+                            </li>
+                            <li>
+                                importare lo script sql ada_provider_empty.sql nel nuovo db.
+                            </li>
+                            <li>
+                                <li>modicare la directory clients/client0/client_config.inc.php (ogni provider ha la sua propria directory. es.: provider 1 avrà client1 come directory di riferimento)</li>
+                                <ul><br>
+                                    <li>cambiare i parametri di accesso al DB. </li>
+                                    <li>cambiare,in caso, il timezone del provide.r</li>
+                                </ul><br>
+                                <li>Il file client_x/client_config.inc.php deve essere valorizzato in questo modo:<br>
+                                es: client1/client_config.inc.php deve avere il nome delle costanti così: CLIENT1_DB_NAME, CLIENT1_DB_USER, CLIENT1_DB_PASS, CLIENT1_DB_HOST, CLIENT1_TIMEZONE.</li>
+                                <li>Eseguire il login come amministratore.</li>
+                                <li>Accedere alla voce di menù "Aggiungi provider".</li>
+                                <li>Riempire corretamente i campi della form facendo attenzione a valorizzare il campo "Puntatore al database" con lo stesso nome della directory
+                                contenuta nella directory clients (ad es. clients1)</li>
+                                <li>Creare un coordinatore (switcher) per il provider appena </li>
+                            </li>  
+                        </ul>
+                    </ul>
+                    
+                   <div><a href="#logo" class="index">Indice</a></div>  
+                </div>
+                <div>
+                    <h2 class="separator">
+                        Utenti
+                        <a name="Utenti"></a>
+                    </h2>
+                    
+                    <ul>
+                        <li>
+                            In Holis i primi utenti sono definiti nel provider default. Questi sono:
+                            <ul><br>
+                                <li>
+                                   * adminAda --> admin.
+                                </li>
+                                <li>
+                                   * autoreHolis --> utente di tipo autore.
+                                </li>
+                                <li>
+                                   * tutorHolis --> utente di tipo tutor.
+                                </li>
+                                <li>
+                                   * switcherHolis --> utente di tipo switcher.
+                                </li>
+                                <li>
+                                   * studenteHolis --> utente di tipo studente.
+                                </li>
+                            </ul><br>
+                            Le relative password sono le stesse degli username. 
+                        </li>
+                    </ul>
+                  
+                    <br><br>
+                   <div><a href="#logo" class="index">Indice</a></div>  
+                </div>
+            </div>
+    </body>
+</html>

@@ -1,0 +1,135 @@
+/*
+To change this license header, choose License Headers in Project Properties.
+To change this template file, choose Tools | Templates
+and open the template in the editor.
+*/
+/* 
+    Created on : 1-dic-2014, 16.17.44
+    Author     : sara
+*/
+#logo{
+    background: url("../img/logo-holis-footer.png") no-repeat scroll left 0 rgba(0, 0, 0, 0);
+     float: right;
+    height: 91px;
+/*    position: relative;*/
+    top: 3px;
+    width: 19%;
+}
+#mainmenu{
+ 
+//margin: 0 auto;
+}
+#bar{
+    background: none repeat scroll 0 0 #980404;
+    color: #ffffff;
+    margin: 1px -10px 5px;
+    padding: 2px 0 2px 10px;
+}
+#menu{
+    
+  margin:12px auto;
+    //width: 400px;
+  
+   
+  //border: 10px solid white;
+  list-style: none;
+  
+  padding:13px;
+  border-radius: 10px; 
+
+  text-align:center;
+}
+#menu li {float: left;
+    margin-top: -10px;
+}
+ 
+#menu li a {
+  cursor: pointer;
+  //font-weight: bold;
+  text-decoration: none;
+  text-transform: lowercase;
+  font-family: "Helvetica Neue", "Helvetica", Arial;
+  padding:21px;
+  color:black;
+  border-radius: 10px;
+  
+ // background-color: yellow;
+
+}
+li,ul {
+    border: 0 none;
+    font-family: inherit;
+    font-style: inherit;
+    font-weight: inherit;
+    text-align: left;
+    vertical-align: baseline;
+    list-style: none;
+}
+li a{
+    cursor: pointer;
+    text-decoration: none;
+    text-transform: lowercase;
+    font-family: "Helvetica Neue", "Helvetica", Arial;
+    color:black;
+    border-radius: 10px;
+    padding:3px;
+    outline: 0;
+}
+/* mouse over link */
+
+a:hover {
+    color: #980404;
+}
+#menu a:hover{
+    color: #980404;
+}
+h3{font-family: "Helvetica Neue", "Helvetica", Arial;}
+.title{
+   font-family: "Helvetica Neue", "Helvetica", Arial; 
+}
+#box{
+  //background-color:#FB6969; 
+ //opacity: 0.4;
+  border-radius: 5px;
+  border: 1px solid #980404;
+ // padding-bottom: 100%;
+}
+#box2{
+  border-radius: 5px;
+  border: 1px solid #980404; 
+  height:200px;
+}
+#index{
+    font-family: "Helvetica Neue", "Helvetica", Arial; 
+    margin-left: 10px;
+    font:bold;
+}
+.index{
+    font-family: "Helvetica Neue", "Helvetica", Arial; 
+    margin-left: 10px;
+    font:bold;
+    text-decoration: none;
+    color: black;  
+    margin-left: 0;
+}
+#content{
+    height: auto;
+    overflow: hidden;
+    margin:2%;
+    width:92%;
+}
+.separator{
+    border-bottom: 1px solid;
+    color: black;
+    width: 100%;
+    font-family: "Helvetica Neue", "Helvetica", Arial; 
+    margin-top:30%;;
+}
+
+.prettyprint.theme-balupton {
+    width: 70%;
+}
+.table{
+    
+    font-size: 0.8em;
+}

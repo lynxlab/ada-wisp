@@ -1,0 +1,153 @@
+<!DOCTYPE html>
+<!--
+To change this license header, choose License Headers in Project Properties.
+To change this template file, choose Tools | Templates
+and open the template in the editor.
+-->
+<html>
+    <head>
+        <title>Manuale_Holis</title>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        
+        <link rel="stylesheet" href="./css/index.css" type="text/css" media="screen">
+        
+        <!--for syntax highlight-->
+        <script type="text/javascript" src="./sintax_highlight/jquery-1.4.2.min.js"></script>
+        <script type="text/javascript" src="./sintax_highlight/jquery.syntaxhighlighter.min.js"></script>
+        <script type="text/javascript">$.SyntaxHighlighter.init();</script>
+    </head>
+    <body>
+        <div id="logo">
+	
+        </div> 
+        <h1 class="title">HOLIS - REFERENCE MANUAL </h1>
+        <div id="mainmenu">
+            <div id="bar"></div>
+            <ul id="menu">
+
+                    <li>
+                        <a href='index.html' name="index2">Capire Holis</a>
+                    </li>
+                    <li>
+                        <a href='guida_installazione.html'>Guida all'istallazione</a>
+                    </li> 
+                    <li>
+                        <a href='guida_amministratore.html'>Guida per l'amministratore</a>
+                    </li> 
+                    <li id="box">
+                        <a>Gestione lingue</a>
+                    </li> 
+                    <li>
+                        <a href='gestione_layout.html'>Personalizzare i layout</a>
+                    </li>
+                    <li>
+                        <a>Coding</a>
+                    </li>
+
+            </ul>
+        </div>
+            <div id="content">
+                <div id="box2">
+                   <h4 id="index"><a>index</a></h4>
+                   <ul>
+                       <li>
+                         <a href="#Localizzazione">Localizzazione e lingue</a>  
+                       </li>
+                       <li>
+                         <a href="#Aggiungere_lingua">Aggiungere una lingua</a>  
+                       </li>
+                       <li>
+                         <a href="#Traduzione">Traduzione dei messaggi</a>  
+                       </li>
+                       
+                   </ul>
+                </div>
+                  <div>
+                    <h2 class="separator">
+                        Localizzazione e lingue
+                        <a name="Localizzazione"></a>
+                    </h2>
+                    <p>
+                        <ul>
+                            <li>
+                                Al momento Holis è tradotto nelle seguenti lingue:
+                                <ul><br>
+                                <li>* Italiano</li>
+                                <li>* Inglese</li>
+                                <li>* Spagnolo</li>
+                                </ul><br>
+                                Ogni traduzione è memorizzata in una specifica tabella del DB_common. Il nome della tabella è messaggi_language (es: messaggi_en per i messaggi tradotti in inglese)
+                            </li>
+                        </ul>
+                    </p>
+                    <br><br>
+                   <div><a href="#logo" class="index">Indice</a></div>  
+                </div>
+                <div>
+                    <h2 class="separator">
+                        Aggiungere una lingua
+                        <a name="Aggiungere_lingua"></a>
+                    </h2>
+                    <p>
+                        <ul>
+                             E' possibile aggiungere una lingua al sistema.Ovviamente bisogna predisporre la traduzione, nella lingua che si sta aggiungendo,dei messaggi contenuti nella tabella
+                             messaggi_di_sistema.La procedura da seguire è la seguente:
+                                <ul><br>
+                                <li>Aggiungere un record alla tabella lingue contenuta nel DB_common, valorizzando correttamente i campi. es: per aggiungere il Francese
+                                valorizzare il record così:
+                                <ul><br><li>* id: sarà valorizzato dal sistema, lasciare il campo vuoto.<li>
+                                    <li>* nome lingua:français </li>
+                                    <li>* codice lingua:fr</li>
+                                    <li>* identificatore tabella:fr</li>
+                                </ul></li><br>
+                                <li>Copiare, ad es: la tabella messaggi_en contenuta nel DB_common e chiamarla messaggi_fr</li>
+                                <li>Nella tabella messaggi_fr valorizzare il campo testo_messaggio con la traduzione corretta del messaggio riportato. E' possibile svolgere 
+                                questo lavoro con il modulo Traduttore (vedere la sezione Traduzione dei messaggi).</li>
+                                </ul><br>
+                             
+                        </ul>
+                    </p>
+                    <br><br>
+                   <div><a href="#logo" class="index">Indice</a></div>  
+                </div>
+                <div>
+                    <h2 class="separator">
+                        Traduzione dei messaggi
+                        <a name="Traduzione"></a>
+                    </h2>
+                    <p>
+                        <ul>
+                         Il sistema traduce real-time tutte le componenti dell'interfaccia (buttons, links, labels) e tutti i messaggi che devono essere inviati all'utente.
+                         Per tardurre un testo seguire la seguente procedura:
+                         <ul><br>
+                             <li>
+                                 * effettuare il login come admin o come switcher.
+                             </li>  
+                             <li>
+                                 * Accedere al link di menu "Agisci" ed cliccare su "Traduci messaggi".
+                             </li> 
+                             <li>
+                                 * Scrivere, nella form mostrata dal sistema, la frase che si vuole tradurre o la cui traduzione si vuole modificare.
+                             </li>  
+                             <li>
+                                 * Il sistema,se presente,mostrerà una lista di frasi simili a quella scritta nella form.
+                             </li>
+                             <li>
+                                 * Cliccare su modifica in corrispondenza della frase che si vuole tradurre.
+                             </li>
+                             <li>
+                                 * Sostituire la frase,mancante o sbagliata, con la frase correttamente tradotta.  
+                             </li>
+                             <li>
+                                 * Salvare.
+                             </li>
+                         </ul>    
+                        </ul>
+                    </p>
+                    <br><br>
+                   <div><a href="#logo" class="index">Indice</a></div>  
+                </div>
+            </div>
+    </body>
+</html>
