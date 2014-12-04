@@ -47,7 +47,7 @@ if (count($serviceProviders) == 1) {
     foreach ($serviceProviders as $Provider) {
         $provider_dh = AMA_DataHandler::instance(MultiPort::getDSN($Provider));
         //$courseInstances_provider = $provider_dh->get_course_instances_active_for_this_student($userObj->getId());
-        $courseInstances_provider = $provider_dh->get_course_instances_for_this_student($userObj->getId());
+        $courseInstances = $provider_dh->get_course_instances_for_this_student($userObj->getId());
         $courseInstances = array_merge($courseInstances, $courseInstances_provider);
     }
 }
@@ -60,10 +60,11 @@ if(!AMA_DataHandler::isError($courseInstances)) {
             foreach($courseInstances as $c) {
                 $courseId = $c['id_corso'];
                 $serviceForInstanceAr = $common_dh->get_service_info_from_course($courseId);
+                
                 if (!AMA_DataHandler::isError($serviceForInstanceAr)) {
                     if ($serviceForInstanceAr[3] == ADA_SERVICE_HELP) {
                         $courseInstanceHelpAr[] = $c;
-                    }elseif ($serviceForInstanceAr[3] == ADA_SERVICE_COMMON || ($serviceForInstanceAr[3] == ADA_SERVICE_COMMON_STUDENT && $userObj->getSerialNumber () != '')) {
+                    }elseif ($serviceForInstanceAr[3] == ADA_SERVICE_LEG || ($serviceForInstanceAr[3] == ADA_SERVICE_LEG_NO_TIMELINE && $userObj->getSerialNumber () != '')) {
                         $courseInstanceCommonAreaAr[] = $c;
                     } 
                 }
@@ -74,23 +75,11 @@ if(!AMA_DataHandler::isError($courseInstances)) {
                  * disable the widget (to be used only for generic registered users)
                  */
                 $layout_dataAr['widgets']['bloccoUnoContenutoWidget'] = array ("active"=>0);
-                $HelpTitle = '<h2>'.translateFN('Cose che mi riguardano').'</h2>';
+                $HelpTitle = '<h2>'.translateFN('Consulenze').'</h2>';
 
-                 /* ***********************
-                 * appointments and proposal for all instances
-                 * $user_events and $user_events_2 are valorized in browsing_function.inc.php
-                 */
+                
                 $serviceDOM = CDOMElement::create('div','id:servicesRequired');
-                if (is_object($user_events) || is_object($user_events_2)) {
-                    $divAppointments = CDOMElement::create('div','class:appointments');
-//                    $divAppointments->addChild(new CText('<h3>'.translateFN('Appuntamenti').'</h3>'));
-                    if ($user_events->getHtml() != '') $divAppointments->addChild($user_events);
-                    if ($user_events_2->getHtml() != '') $divAppointments->addChild($user_events_2);
-                    if ($user_events_2->getHtml() == '' && $user_events->getHtml() == '') {
-                        $divAppointments->addChild(new CText(translateFN('Non ci sono appuntamenti')));
-                    }
-                    $content_dataAr['bloccoUnoAppuntamenti'] = '<h3>'.translateFN('Appuntamenti').'</h3>'.$divAppointments->getHtml();
-                }   
+                
                 
                 foreach($courseInstanceHelpAr as $c) {
                     
@@ -209,160 +198,138 @@ if(!AMA_DataHandler::isError($courseInstances)) {
         /* *****************
          * COMMON AREA SERVICE
          */
-         $CommonTitle = '<h2>'.translateFN('Aree comuni').'</h2>';
-         $content_dataAr['bloccoDueTitolo'] = $CommonTitle;
+         $UserServices = '<h2>'.translateFN('Lista servizi').'</h2>';
+         $content_dataAr['bloccoDueTitolo'] = $UserServices;
          
          /*
           * COMMON AREA ALREADY SUBSCRIBED
           */
-         $commonAreasSubscribedAr = array();
-         $CommonAreaDOM = CDOMElement::create('div','id:CommonAreaRequired');
-         if (count($courseInstanceCommonAreaAr) > 0) {
-             foreach ($courseInstanceCommonAreaAr as $singleCommonArea) {
-                 $commonAreasSubscribedAr[] = $singleCommonArea['id_istanza_corso'];
-                 
-                    /* ***********************
-                     * INFO for each instance 
-                     */
-                    $divCommonNews = '';
-                    $courseId = $singleCommonArea['id_corso'];
-                    $courseDataAr = $dh->get_course($courseId);
-                    if (!AMA_DataHandler::isError($courseDataAr)) {
-                        $courseName = $courseDataAr['titolo'];
-                        $nodeId = $courseId . '_0';
-                        $courseInstanceId = $singleCommonArea['id_istanza_corso'];
-                        $subscription_status = $singleCommonArea['status'];
-                        $started = ($singleCommonArea['data_inizio'] > 0 && $singleCommonArea['data_inizio'] < time()) ? translateFN('Si') : translateFN('No');
-                        $start_date = ($singleCommonArea['data inizio'] > 0) ? $singleCommonArea['data_inizio'] : $singleCommonArea['data_inizio_previsto'];
-                        $isEnded = ($singleCommonArea['data_fine'] > 0 && $singleCommonArea['data_fine'] < time()) ? true : false;
-                        $isStarted = ($singleCommonArea['data_inizio'] > 0 && $singleCommonArea['data_inizio'] <= time()) ? true : false;
+         
+         $User_Services = CDOMElement::create('div','id:user_services');
+        
+         if (count($courseInstances) > 0) {
+             foreach ($courseInstances as $Instance) {
+                /* ***********************
+                 * INFO for each instance 
+                 */
+                $divCommonNews = '';
+                $courseId = $Instance['id_corso'];
 
-                        $service = CDOMElement::create('div','id:serviceRequired'.$courseInstanceId);
-                        $service->setAttribute('class', 'single_service');
 
-                        $access_link = BaseHtmlLib::link("#", translateFN('Non sei ancora abilitato a partecipare...'));
+                /* service level */
+                $clause = ' st.id_corso ='.$courseId;
+                $ServiceInfo = $common_dh->get_services(null,$clause);
+                $serviceLevel=$ServiceInfo[0][2];
 
-                        if ($subscription_status != ADA_STATUS_SUBSCRIBED && $subscription_status != ADA_STATUS_VISITOR && $subscription_status!= ADA_SERVICE_SUBSCRIPTION_STATUS_COMPLETED) {
-                                $access_link = BaseHtmlLib::link("#",translateFN('Non sei ancora abilitato a partecipare...'));
-                        } elseif ($isStarted && !$isEnded) {
-                                $tutorAssignedAR = $dh->course_instance_tutor_info_get($courseInstanceId,1);
-                                if (!AMA_DataHandler::isError($tutorAssignedAR) && sizeof($tutorAssignedAR) > 0 && $tutorAssignedAR[0] != '') {
-                                    $tutorText = translateFN('il moderatore dell\'area è').' '. ucfirst($tutorAssignedAR[1]) . ' ' . ucfirst($tutorAssignedAR[2]);
-                                } else {
-                                    $tutorText = '';
-                                }
-                                $access_link = CDOMElement::create('div','class:helpRequired');
-                                $access_link->addChild(new CText($tutorText . ' '));
-                                $access_link->addChild(new CText('<br /> '));
-                                $link = CDOMElement::create('a');
-                                $link->setAttribute('href', 'sview.php?id_node='.$nodeId.'&id_course='.$courseId.'&id_course_instance='.$courseInstanceId.'#'.$nodeId);
-                                $link->addChild(new CText(translateFN('Accedi per partecipare...')));
-                                $access_link->addChild($link);
+                $courseDataAr = $dh->get_course($courseId);
+                if(!AMA_DataHandler::isError($courseDataAr) && (!empty($courseDataAr))){
+                    if($serviceLevel!=ADA_SERVICE_HELP)
+                    {
+                        if($serviceLevel == ADA_SERVICE_MANUALE){
 
-                                /* ***********************
-                                 * get new nodes for each instance
-                                 */
-                                $ulNews = '';
-                                $nodeTypesArray = array ( ADA_LEAF_TYPE, ADA_GROUP_TYPE, ADA_NOTE_TYPE );
-                                $instancesArray[0]['id_istanza_corso'] = $courseInstanceId;
-                                $new_nodes = $dh->get_new_nodes($userObj->getId(), $maxNodes = 3, $nodeTypesArray,$instancesArray);
-                                if (!AMA_DataHandler::isError($new_nodes) && sizeof($new_nodes) > 0) {
-                                    
-                                    
-                                    foreach ($new_nodes as $new_node) {
-                                        $courseOfNewNodeAr = explode('_',$new_node['id_nodo']);
-                                        if ($courseId == $courseOfNewNodeAr[0]) {
-                                            if (!is_object($ulNews)) $ulNews = CDOMElement::create('ul','class:ulNews');
-                                            $liNews = CDOMElement::create('li');
-    //                                        $access_news->addChild(new CText(translateFN('Hai chiesto di essere aiutato per '). $courseName . ', '. $tutorText . ' '));
-                                            $link_news = CDOMElement::create('a','href:sview.php?id_node='.$new_node['id_nodo'].'&id_course='.$courseId.'&id_course_instance='.$courseInstanceId.'#'.$nodeId);
-                                            $link_news->addChild(new CText($new_node['nome']));
-                                            $liNews->addChild($link_news);
-                                            $ulNews->addChild($liNews);
+                            $courseInstanceId = $Instance['id_istanza_corso'];
+                            $nodeId = $courseId . '_0';
+                            $link_Manuale = 'browsing/view.php?id_node='.$nodeId.'&id_course='.$courseId.'&id_course_instance='.$courseInstanceId.'#'.$nodeId;
+                            
+                        }
+                        else{
+
+                            $courseName = $courseDataAr['titolo'];
+                            $nodeId = $courseId . '_0';
+                            $courseInstanceId = $Instance['id_istanza_corso'];
+                            $subscription_status = $Instance['status'];
+                            $started = ($Instance['data_inizio'] > 0 && $Instance['data_inizio'] < time()) ? translateFN('Si') : translateFN('No');
+                            $start_date = ($Instance['data inizio'] > 0) ? $Instance['data_inizio'] : $Instance['data_inizio_previsto'];
+                            $isEnded = ($Instance['data_fine'] > 0 && $Instance['data_fine'] < time()) ? true : false;
+                            $isStarted = ($Instance['data_inizio'] > 0 && $Instance['data_inizio'] <= time()) ? true : false;
+
+                            $service = CDOMElement::create('div','id:serviceRequired'.$courseInstanceId);
+                            $service->setAttribute('class', 'single_service');
+
+                            $access_link = BaseHtmlLib::link("#", translateFN('Non sei ancora abilitato a partecipare...'));
+
+                            if ($subscription_status != ADA_STATUS_SUBSCRIBED && $subscription_status != ADA_STATUS_VISITOR) {
+                                    $access_link = BaseHtmlLib::link("#",translateFN('Non sei ancora abilitato a partecipare...'));
+                            } elseif ($isStarted && !$isEnded) {
+                                    $tutorAssignedAR = $dh->course_instance_tutor_info_get($courseInstanceId,1);
+                                    if (!AMA_DataHandler::isError($tutorAssignedAR) && sizeof($tutorAssignedAR) > 0 && $tutorAssignedAR[0] != '') {
+                                        $tutorText = translateFN('il moderatore dell\'area è').' '. ucfirst($tutorAssignedAR[1]) . ' ' . ucfirst($tutorAssignedAR[2]);
+                                    } else {
+                                        $tutorText = '';
+                                    }
+                                    $access_link = CDOMElement::create('div','class:helpRequired');
+                                    $access_link->addChild(new CText($tutorText . ' '));
+                                    $access_link->addChild(new CText('<br /> '));
+                                    $link = CDOMElement::create('a');
+                                    if($serviceLevel == ADA_SERVICE_LEG){
+                                        $link->setAttribute('href', 'sview.php?id_node='.$nodeId.'&id_course='.$courseId.'&id_course_instance='.$courseInstanceId.'#'.$nodeId);
+                                    }
+                                    else
+                                        {
+                                        $link->setAttribute('href', 'view.php?id_node='.$nodeId.'&id_course='.$courseId.'&id_course_instance='.$courseInstanceId.'#'.$nodeId);
+                                    }
+                                    $link->addChild(new CText(translateFN('Accedi')));
+                                    $access_link->addChild($link);
+
+                                    /* ***********************
+                                     * get new nodes for each instance
+                                     */
+                                    $ulNews = '';
+                                    $nodeTypesArray = array ( ADA_LEAF_TYPE, ADA_GROUP_TYPE, ADA_NOTE_TYPE );
+                                    $instancesArray[0]['id_istanza_corso'] = $courseInstanceId;
+                                    $new_nodes = $dh->get_new_nodes($userObj->getId(), $maxNodes = 3, $nodeTypesArray,$instancesArray);
+                                    if (!AMA_DataHandler::isError($new_nodes) && sizeof($new_nodes) > 0) {
+
+
+                                        foreach ($new_nodes as $new_node) {
+                                            $courseOfNewNodeAr = explode('_',$new_node['id_nodo']);
+                                            if ($courseId == $courseOfNewNodeAr[0]) {
+                                                if (!is_object($ulNews)) $ulNews = CDOMElement::create('ul','class:ulNews');
+                                                $liNews = CDOMElement::create('li');
+            //                                        $access_news->addChild(new CText(translateFN('Hai chiesto di essere aiutato per '). $courseName . ', '. $tutorText . ' '));
+                                                if($serviceLevel == ADA_SERVICE_LEG){
+                                                    $link_news = CDOMElement::create('a','href:sview.php?id_node='.$new_node['id_nodo'].'&id_course='.$courseId.'&id_course_instance='.$courseInstanceId.'#'.$nodeId);
+                                                }
+                                                else{
+                                                    $link_news = CDOMElement::create('a','href:view.php?id_node='.$new_node['id_nodo'].'&id_course='.$courseId.'&id_course_instance='.$courseInstanceId.'#'.$nodeId);
+                                                }
+                                                $link_news->addChild(new CText($new_node['nome']));
+                                                $liNews->addChild($link_news);
+                                                $ulNews->addChild($liNews);
+                                            }
+                                        }
+                                        if (is_object($ulNews)) {
+                                            $divCommonNews = CDOMElement::create('div','class:newsInCommonArea');
+                                            $newsText = translateFN('Novità');
+                                            $divCommonNews->addChild(new CText('<h4>'.$newsText.'</h4>'));
+                                            $divCommonNews->addChild($ulNews);
+
                                         }
                                     }
-                                    if (is_object($ulNews)) {
-                                        $divCommonNews = CDOMElement::create('div','class:newsInCommonArea');
-                                        $newsText = translateFN('Novità');
-                                        $divCommonNews->addChild(new CText('<h4>'.$newsText.'</h4>'));
-                                        $divCommonNews->addChild($ulNews);
-                                        
-                                    }
-                                }
-                        }
-                        elseif ($isEnded) {
-                            $access_link = BaseHtmlLib::link("#",
-                                    translateFN('Servizio terminato'));
-                        }
-                        $service->addChild($access_link);
-                        if (is_object($divCommonNews)) $service->addChild($divCommonNews);
-//                        $serviceDOM->addChild($divAppointments)
-                        $CommonAreaDOM->addChild(new CText('<h3>'. $courseName.'</h3>'));
-                        $CommonAreaDOM->addChild($service);
-                        
+                            }
+                            elseif ($isEnded) {
+                                $access_link = BaseHtmlLib::link("#",
+                                        translateFN('Servizio terminato'));
+                            }
+                            $service->addChild($access_link);
+                            if (is_object($divCommonNews)) $service->addChild($divCommonNews);
+            //                        $serviceDOM->addChild($divAppointments)
+                            $User_Services->addChild(new CText('<h3>'. $courseName.'</h3>'));
+                            $User_Services->addChild($service);
+
+
                     }
-             }
+                } 
+              } 
+           }
         } else {
-            $data = new CText(translateFN('Non sei ancora iscritto a nessuna area comune'));
+            $data = new CText(translateFN('Non sei ancora iscritto a nessun servizio'));
 //            $CommonAreaDOM->addChild($data);
         }
-         $content_dataAr['bloccoDueContenuto'] = $CommonAreaDOM->getHtml();
-
-         
-         /*
-          * COMMON AREA TO SUBSCRIBED (if the user wish to)
-          */
-
-         // $userProvider = $GLOBALS['user_provider'];
-         $field_list_ar = array('id_corso', 'data_fine', 'price', 'self_registration', 'open_subscription');
-         $clause = "self_registration = 1 AND price = '0.00' AND open_subscription  = 1";
-         $allServiceInstanceAr = $dh->course_instance_find_list($field_list_ar, $clause);
-         if (!AMA_DataHandler::isError($allServiceInstanceAr)) {
-             $commonAreaToSubscibeAr = array();
-    //         print_r($allServiceInstanceAr);
-             foreach ($allServiceInstanceAr as $singleServiceInstanceAr) {
-                 if (!in_array($singleServiceInstanceAr[0], $commonAreasSubscribedAr)) {
-                     $instanceIdToSub = $singleServiceInstanceAr[0];
-                     $courseIdToSub = $singleServiceInstanceAr[1];
-                     $serviceForInstanceAr = $common_dh->get_service_info_from_course($courseIdToSub);
-                     if (!AMA_DataHandler::isError($serviceForInstanceAr)) {
-                         if ($serviceForInstanceAr[3] == ADA_SERVICE_COMMON || ($serviceForInstanceAr[3] == ADA_SERVICE_COMMON_STUDENT && $userObj->getSerialNumber() != '')) {
-                             array_push($commonAreaToSubscibeAr, $singleServiceInstanceAr);
-                         }
-                     }
-                 }
-             }
-             if (count($commonAreaToSubscibeAr)> 0 ) {
-                 $divCommonToSubscribe = CDOMElement::create('div','id:commonToSubscribe');
-                 foreach ($commonAreaToSubscibeAr as $singleAreaToSubscribe) {
-                     $instanceIdToSub = $singleAreaToSubscribe[0];
-                     $courseIdToSub = $singleAreaToSubscribe[1];
-                     $courseInfoTmp = $dh->get_course($courseIdToSub);
-                     if (!AMA_DataHandler::isError($courseInfoTmp)) {
-                         $courseName = $courseInfoTmp['titolo'];
-                         $nodeId = $courseIdToSub . '_0';
-                         $divSingleAreaToSubscribe = CDOMElement::create('div','id:commonToSubscribe'.$instanceIdToSub);
-                         $divSingleAreaToSubscribe->setAttribute('class', 'single_service');
-//                         $divSingleAreaToSubscribe->addChild(new CText('<h3>'.translateFN('Area comune '). $courseName.'</h3>'));
-//                         $divSingleAreaToSubscribe->addChild(new CText('<h3>'. $courseName.'</h3>'));
-                         $AreaCommonPreview = substr($courseInfoTmp['descr'], 0, 50).'...';
-                         $divSingleAreaToSubscribe->addChild(new CText($AreaCommonPreview.'<br />'));
-                         $link = CDOMElement::create('a','href:student_service_instance_subscribe.php?&id_course='.$courseIdToSub.'&id_course_instance='.
-                                 $instanceIdToSub.'&userId='.$userObj->getId());
-                         $link->addChild(new CText(translateFN('Entra nell\'area comune')));
-                         $divSingleAreaToSubscribe->addChild($link);
-                     }
-                     $divCommonToSubscribe->addChild(new CText('<h3>'. $courseName.'</h3>'));
-                     $divCommonToSubscribe->addChild($divSingleAreaToSubscribe);
-                 }
-                 $content_dataAr['bloccoDueIscrizione'] = $divCommonToSubscribe->getHtml();
-             }
-
-         }
-//         $id_instance = $course_instanceAr[0][0];
-         
-
         
+         $content_dataAr['bloccoDueContenuto'] = $User_Services->getHtml();
+
+    
             // @author giorgio 24/apr/2013
 	    // end else... line
                     // @author giorgio 24/apr/2013
@@ -474,7 +441,7 @@ if(!AMA_DataHandler::isError($courseInstances)) {
                 $askServiceDiv->addChild(new CText($askServiceHelp));
                 $askServiceDiv->addChild(new CText($AskServiceForm->getHtml()));
 
-                $content_dataAr['bloccoUnoAskService'] = '<h3>'.translateFN('Chiedi aiuto').'</h3>'.$askServiceDiv->getHtml();
+                $content_dataAr['bloccoUnoAskService'] = '<h3>'.translateFN('Chiedi una consulenza').'</h3>'.$askServiceDiv->getHtml();
             }
             //print_r($content_dataAr);
             
@@ -541,6 +508,14 @@ if($last_access=='' || is_null($last_access))
         $avatar->setAttribute('class', 'img_user_avatar');
         
         $content_dataAr['user_modprofilelink'] = $userObj->getEditProfilePage();
+        
+        if (array_key_exists($userObj->getSerialNumber(), $GLOBALS['user_type_labels'])) {
+        	$UserProfile = ' ('.translateFN($GLOBALS['user_type_labels'][$userObj->getSerialNumber()]).')';
+        } else {
+        	$UserProfile = '';
+        }
+          
+        $welcome_msg = translateFN('<strong> Benvenuto/a ').$userObj->getFullName().'!'.$UserProfile.translateFN(' Questa è la tua Home Page </strong>');
 
 	$gochat_link = "";
 	$content_dataAr['gostart'] = $gostart_link;
@@ -562,6 +537,7 @@ if($last_access=='' || is_null($last_access))
 	//$content_dataAr['last_visit'] = $userObj->get_last_accessFN();
         $content_dataAr['last_visit'] = $last_access;
 	$content_dataAr['message'] = $message;
+        $content_dataAr['welcome_msg'] = $welcome_msg;
 	$content_dataAr['course_title'] = translateFN("Home dell'utente");
 	$content_dataAr['submenu_actions'] =  $submenu_actions;
         
@@ -572,6 +548,16 @@ if($last_access=='' || is_null($last_access))
         } else {
             $content_dataAr['bloccoUnoTitolo'] =  '<h2>'.translateFN('Le ultime notizie').'</h2>';
             $content_dataAr['bloccoUnoH3Widget'] =  '<h3>'.translateFN('Twitter').'</h3>';
+        }
+        if(!is_null($link_Manuale)){
+            $content_dataAr['manuale'] = $link_Manuale;
+            $content_dataAr['info'] = translateFN('Manuale');
+        }
+        else
+        {
+            $link_info='info.php';
+            $content_dataAr['manuale'] = $link_info;
+            $content_dataAr['info'] = translateFN('Informazioni');
         }
 	$content_dataAr['status'] = $status;
 //        $content_dataAr['events'] = $user_events_2->getHtml().$user_events->getHtml();

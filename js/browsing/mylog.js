@@ -5,7 +5,7 @@ function includeFCKeditor(textarea_name) {
    var oFCKeditor = new FCKeditor( textarea_name );
    oFCKeditor.BasePath = '../external/fckeditor/';
    oFCKeditor.Width = '90%';
-   oFCKeditor.Height = '250';
+   oFCKeditor.Height = '400px';
    oFCKeditor.ToolbarSet = 'Basic';
    oFCKeditor.ReplaceTextarea(); 
   } 

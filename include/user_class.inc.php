@@ -114,6 +114,24 @@ abstract class ADAGenericUser {
                 return translateFN('Ospite');
         }
     }
+    
+    public function getSubType() {
+        return $this->getSerialNumber();
+    }
+    
+    public function getSubTypeAsString() {
+        switch($this->getSubType()) {
+            case AMA_TYPE_USER_MAGISTRATE:
+                return translateFN('Magistrato');
+            case AMA_TYPE_USER_LAWYER:
+                return translateFN('Avvocato');
+            case AMA_TYPE_USER_AUX:
+                return translateFN('Ausiliario');
+            case AMA_TYPE_USER_GENERIC:
+                return translateFN('Utente');
+        }
+    }
+    
     public function getEmail() {
         return $this->email;
     }
@@ -378,6 +396,10 @@ abstract class ADAGenericUser {
         $this->SerialNumber = $matricola;
     }
 
+    public function setSubType($matricola) {
+        $this->setSerialNumber($matricola);
+    }
+    
     public function setAvatar($avatar) {
         $this->avatar = $avatar;
     }
@@ -1495,5 +1517,86 @@ class ADAAdmin extends ADALoggableUser {
         parent::__construct($user_dataAr);
 
         $this->setHomePage(HTTP_ROOT_DIR.'/admin/admin.php');
+    }
+}
+
+
+class Batch_Subscription {
+     protected $id_user;
+     protected $user_AccessAr;
+     protected $matricola;
+     protected $UserSuscribed_obj;
+
+
+     public function __construct($UserSuscribed_obj,$userAccessAr) {
+         $this->user_AccessAr = $userAccessAr;
+         $this->UserSuscribed_obj=$UserSuscribed_obj;
+         $this->id_user=$this->UserSuscribed_obj->getId();
+         $this->matricola=$this->UserSuscribed_obj->getSerialNumber();
+    }
+    public function batchRegistration($common_dh)
+    {
+        $Ada_service_help =0;        
+        $id_user=$this->id_user;
+        $ArrayUserLevel=array();
+        foreach($this->user_AccessAr as $key => $value)
+        {
+            if(in_array($this->matricola,$value))
+            {
+                array_push($ArrayUserLevel, $key);
+            }
+        }
+        
+        $clause = 's.livello IN ('.implode(',',$ArrayUserLevel).')';
+        $UserServices = $common_dh->get_services(null,$clause);
+        
+        foreach($UserServices as $arrayUser)
+        {
+            
+            if($arrayUser[2]!= $Ada_service_help){
+                $id_service = $arrayUser[0];
+                $id_testerAr=$common_dh->get_tester_for_service($id_service);
+
+                if(!AMA_DataHandler::isError($id_testerAr) && (!empty($id_testerAr)))
+                {
+                    $id_tester = $id_testerAr[0]; 
+                    $testerAr=$common_dh->get_tester_info_from_id($id_tester);
+                    if(!AMA_DataHandler::isError($testerAr) && !empty($testerAr))
+                    {
+                        $testerUserAr = $this->UserSuscribed_obj->getTesters();
+
+                        /* add user to tester */
+                        if(!in_array($testerAr[10],$testerUserAr))
+                        {
+                            $addUser=Multiport::setUser($this->UserSuscribed_obj, array($testerAr[10]));
+                            $this->UserSuscribed_obj->setTesters(array($testerAr[10]));
+                        }
+                        /* starts subscription user to instances */
+                        $coursesAr = $common_dh->get_courses_for_service($id_service);
+
+                        if(!AMA_DataHandler::isError($coursesAr) && !empty($coursesAr))
+                        {
+                            foreach($coursesAr as $courseData){
+                                $id_course = $courseData['id_corso'];
+                                $Id_tester = $courseData['id_tester']; 
+                                $testerInfoAr = $common_dh->get_tester_info_from_id($Id_tester); 
+                                $tester_dh = AMA_DataHandler::instance(MultiPort::getDSN($testerInfoAr[10])); 
+                                $InstanceAr=$tester_dh->course_instance_subscribeable_get_list(array('title'),$id_course);
+
+                                if(!AMA_DataHandler::isError($InstanceAr) && !empty($InstanceAr))
+                                {
+                                    foreach($InstanceAr as $instance)
+                                    {
+                                        $id_instance = $instance[0];
+                                        $result = $tester_dh->course_instance_student_presubscribe_add($id_instance,$id_user);
+                                        $result_1=$tester_dh->course_instance_student_subscribe($id_instance, $id_user, ADA_STATUS_SUBSCRIBED);
+                                    }
+                                }    
+                            }
+                        }                    
+                    }
+                 }  
+            }  
+        }
     }
 }

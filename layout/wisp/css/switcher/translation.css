@@ -101,8 +101,18 @@ button.buttonTranslate:hover {
     width: 100%;	
 }
 .fg-toolbar.ui-widget-header {
-    background: url("images/ui-bg_gloss-wave_55_5c9ccc_500x100.png") repeat-x scroll 50% 50% #BCD6D7;
     border: 1px solid #A3A99A;
     color: #585857;
     font-weight: bold;
+}
+#journey {
+    background: #980404;
+    color: #ffffff;
+    padding-top: 2px;
+    padding-right: 0px;
+    padding-bottom: 2px;
+    padding-left: 10px;
+    height: 15px;
+    margin-top:2px;
+    margin-bottom:50px;
 }

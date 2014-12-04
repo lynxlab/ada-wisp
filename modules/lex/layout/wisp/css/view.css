@@ -1,0 +1,18 @@
+@CHARSET "UTF-8";
+@import url("selectric.css");
+@import url("showHideDiv.css");
+
+/* THIS IS JUST THE BASIC CSS WITH THE BACK BUTTON STYLED
+   USE IT TO BUILD MODULE'S OWN CSS */
+
+#back a {
+	background: url(../../../../../layout/wisp/img/back.png) no-repeat
+		center left;
+	display: block;
+	padding: 0 0 0 40px;
+}
+
+#journey { margin-bottom: 0; }
+.sourceTitle { float:left; }
+#attachmentDownload { padding: 10px; border: 1px dotted gray; margin: 5px; display: inline-block; float: right; }
+#attachmentDownload a { cursor: pointer; }

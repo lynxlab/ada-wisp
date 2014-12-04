@@ -46,8 +46,11 @@ $fileUploader = new FileUploader(ADA_UPLOAD_PATH.$userId.'/'); // $fieldUploadNa
 if($fileUploader->upload(true) == false) {
 	$data = $fileUploader->getErrorMessage();
 } else {
-	 $_SESSION['uploadHelper']['filename'] = $fileUploader->getPathToUploadedFile();
-	 $_SESSION['uploadHelper']['fileNameWithoutPath'] = $fileUploader->getFileName();
+	
+	 if (!isset($sessionVar) || strlen($sessionVar)<=0) $sessionVar = 'uploadHelper'; 
+	
+	 $_SESSION[$sessionVar]['filename'] = $fileUploader->getPathToUploadedFile();
+	 $_SESSION[$sessionVar]['fileNameWithoutPath'] = $fileUploader->getFileName();
 	 $data = '1'; // '1' means okay
 }
 

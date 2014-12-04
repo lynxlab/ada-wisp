@@ -30,19 +30,25 @@ $allowedUsersAr = array(AMA_TYPE_STUDENT,AMA_TYPE_AUTHOR, AMA_TYPE_TUTOR);
  * Get needed objects
  */
 $neededObjAr = array(
-    AMA_TYPE_STUDENT => array('node', 'layout', 'tutor', 'course', 'course_instance'),
-    AMA_TYPE_TUTOR => array('node', 'layout', 'course', 'course_instance'),
-    AMA_TYPE_AUTHOR => array('node', 'layout', 'course')
+//    AMA_TYPE_STUDENT => array('node', 'layout', 'tutor', 'course', 'course_instance'),
+//    AMA_TYPE_TUTOR => array('node', 'layout', 'course', 'course_instance'),
+//    AMA_TYPE_AUTHOR => array('node', 'layout')
+    AMA_TYPE_STUDENT => array('layout'),
+    AMA_TYPE_TUTOR => array('layout'),
+    AMA_TYPE_AUTHOR => array('layout')
 );
 
 require_once ROOT_DIR . '/include/module_init.inc.php';
 $self = whoami();
 include_once 'include/browsing_functions.inc.php';
 
+require_once ROOT_DIR . '/include/Forms/LogForm.inc.php';
+
 $debug = 0; 
 $mylog_mode = 0; // default: only one file for user
-//$log_extension = ".txt";	
+
 $log_extension = ".htm";	
+
 
 $self =  whoami();  // = mylog
 
@@ -83,15 +89,18 @@ $errObj = new ADA_error(translateFN("Utente non trovato"),translateFN("Impossibi
 }
 
 // set the  title:	 
-$module_title = translateFN("Diario");
+$module_title = translateFN("Repository");
 
 // building file name
 // rootdir  + media path + author_id + filename
 $public_dir = "/services/media/";
+$user_dir = '/upload_file/uploaded_files/';
 // a public access directory where log files can be written
 // building file name
 
-if (isset($sess_id_course) and  (!($sess_id_course==""))) {
+$each_course = false; //used to make the user log indipendent from course and instance course
+
+if (isset($sess_id_course) &&  (!($sess_id_course=="")) && $each_course) {
 // finding course's author
 	$course_ha = $dh->get_course($sess_id_course);
 	if (AMA_DataHandler::isError($course_ha)){ // not enrolled yet?
@@ -111,7 +120,13 @@ if (isset($sess_id_course) and  (!($sess_id_course==""))) {
 
 	$logfile = $root_dir . "/services/media/" . $author_id . "/" . $name_tmp;
 } else {
-	$logfile = $root_dir . $public_dir . "log".$sess_id_user.$log_extension;
+	$logfile = $root_dir . $user_dir .  $sess_id_user. '/'.'log'.$sess_id_user.$log_extension;
+        $userUploadPath = $root_dir . $user_dir .  $sess_id_user;
+        if (!is_dir($userUploadPath)) {
+            if (mkdir($userUploadPath) == FALSE) {
+                $makedir = false;
+            }
+        }
 }
 
 if (!file_exists($logfile))
@@ -119,12 +134,14 @@ if (!file_exists($logfile))
 
 //set the  body:
 
-if (isset($_POST['Submit']))
+if (isset($_SERVER['REQUEST_METHOD']) && $_SERVER['REQUEST_METHOD'] == 'POST')
 {
+    $form = new LogForm();
+    $form->fillWithPostData();
     
     if (isset($_POST['log_today']))
     {
-       $log = $_POST['log_text']."<br/>".$_POST['log_today'];
+       $log = $_POST['log_today']; //."<br/>".$_POST['log_today'];
        $i = fopen($logfile,'w');
        if (get_magic_quotes_gpc()) {
 	       $res = fwrite($i,stripslashes($log));
@@ -136,12 +153,12 @@ if (isset($_POST['Submit']))
     $msg = translateFN("Le informazioni sono state registrate.");
 }
 // } else {
-                
 if ($fp = fopen($logfile,'r'))
 	$log_text = fread ($fp,16000);
 else
 	$log_text = "";
 fclose($fp);
+
 if (isset($op) && ($op=="export")){
     header("Expires: Mon, 26 Jul 1997 05:00:00 GMT");    // Date in the past
     header("Last-Modified: " . gmdate("D, d M Y H:i:s") . " GMT");
@@ -150,45 +167,28 @@ if (isset($op) && ($op=="export")){
     header("Cache-Control: post-check=0, pre-check=0", false);
     header("Pragma: no-cache");                          // HTTP/1.0
     //header("Content-Type: text/plain");
-    header("Content-Type: text/html");
+//    header("Content-Type: text/html");
+    header("Content-type: application/vnd.ms-word");
     //header("Content-Length: ".filesize($name));
-    header("Content-Disposition: attachment; filename=$name_tmp");
+//    $logfileToExport = $root_dir . $user_dir .  $sess_id_user. '/'.'log'.$sess_id_user.'.doc';
+    $logfileToExport = 'sespius_repository.doc';
+    header("Content-Disposition: attachment; filename=$logfileToExport");
     echo $log_text;
     exit;
 } else {
+    
     $date = today_dateFN()." ".today_timeFN()."\n";
-    $log_form = new Form();
-    $log_data= array(
-    array(
-        'label'=>"",
-        'type'=>'textarea',
-        'name'=>'log_today',
-        'rows'=>'10',
-        'cols'=>'80',
-        'wrap'=>'virtual',
-	'value'=>$date
-        ),
-    array(
-        'label'=>"",
-        'type'=>'hidden',
-        'name'=>'log_text',
-        'value'=>$log_text
-        ),
-    array(
-        'label'=>'',
-        'type'=>'submit',
-        'name'=>'Submit',
-        'value'=>'Salva'
-        )
+    $arrayLogAr = array(
+        'log_text' => $log_text,
+        'log_today' => $date.'<br />'.$log_text
     );
+    $form = new LogForm();
+    $form->fillWithArrayData($arrayLogAr);   
+    $log_form = $form->render();
 
-   $log_form->initForm("$http_root_dir/browsing/mylog.php","POST","multipart/form-data");
-   $log_form->setForm($log_data);
-   $log_data = $log_form->getForm();
    $log_data.= $log_text;
 }
 
-$export_log_link = "<a href=$http_root_dir/browsing/mylog.php?op=export>".translateFN("Esporta")."</a><br/>";
 
 // Who's online
 // $online_users_listing_mode = 0 (default) : only total numer of users online
@@ -199,121 +199,50 @@ $online_users_listing_mode = 2;
 $online_users = ADALoggableUser::get_online_usersFN($id_course_instance,$online_users_listing_mode);
 
 
-/*
- $online_users_listing_mode = 0;
-
-// vito 19 gennaio 2009
-//$online_users = User::get_online_usersFN($id_course_instance,$online_users_listing_mode);
-if(isset($sess_id_course_instance) && !empty($sess_id_course_instance)) {
-  $online_users = User::get_online_usersFN($sess_id_course_instance,$online_users_listing_mode);
-}
-else {
-  $online_users = '';
-}
-*/
-
-$menu = $export_log_link;
-// vito 19 gennaio 2009
-if(isset($sess_id_course_instance) && !empty($sess_id_course_instance)) {
-  $last_visited_node_id = $userObj->get_last_accessFN($sess_id_course_instance,"N");
-  $node_path = $nodeObj->findPathFN();
-}
-else {
-  $last_visited_node_id = '';
-}
-if  (!empty($last_visited_node_id)){
-           $last_node = $dh->get_node_info($last_visited_node_id);
-           $last_visited_node_name = $last_node['name'];
-           $last_node_visited = "<a href=view.php?id_node=$last_visited_node_id>".translateFN("torna")."</a><br>";
-} else {
-           $last_node_visited = "";
-}
-
-
-$menu.= $last_node_visited;
-
-
-$help = translateFN("Nel Diario si possono inserire i propri commenti privati, oppure esportarli per conservarli.");
-// CHAT, BANNER etc
+$export_log_link = "<a href=$http_root_dir/browsing/mylog.php?op=export>".translateFN("esportare")."</a>";
+$print_link = '<a href='.$http_root_dir.'/browsing/mylog_print.php target="_blank">'.translateFN("stampare")."</a>";
+$help = translateFN('Nel Repository si possono inserire anche i propri commenti. E\' possibile'. ' '.$export_log_link. ' ' .'per conservarli o '). $print_link;
 
 $banner = include ("$root_dir/include/banner.inc.php");
 
-//
-/*
- * Last access link
- */
+ $body_onload = "includeFCKeditor('log_today'); \$j('input, a.button, button').uniform();";
+ $options = array('onload_func' => $body_onload);
 
-if(isset($_SESSION['sess_id_course_instance'])){
-    $last_access=$userObj->get_last_accessFN(($_SESSION['sess_id_course_instance']),"UT",null);
-    $last_access=AMA_DataHandler::ts_to_date($last_access);
-  }
-  else {
-    $last_access=$userObj->get_last_accessFN(null,"UT",null);
-    $last_access=AMA_DataHandler::ts_to_date($last_access);
-  }
- if($last_access=='' || is_null($last_access)){
-    $last_access='-';
-}
-
-/* 3.
-HTML page building
-*/
-
-/*
-  'user_name'=>$user_name,
-  'user_type'=>$user_type,
-  'level'=>$user_level,
-  'index'=>$node_index,
-  'title'=>$node_title,
-  'author'=>$node_author,
-  'text'=>$data['text'],
-  'link'=>$data['link'],
-  'messages'=>$user_messages->getHtml(),
-  'agenda'=>$user_agenda->getHtml(),
-  'events'=>$user_events->getHtml(),
-  'chat_users'=>$online_users
-
-*/
-
-         $body_onload = "includeFCKeditor('log_today'); \$j('input, a.button, button').uniform();";
-         $options = array('onload_func' => $body_onload);
-
-         $imgAvatar = $userObj->getAvatar();
-         $avatar = CDOMElement::create('img','src:'.$imgAvatar);
-         $avatar->setAttribute('class', 'img_user_avatar');
+ $imgAvatar = $userObj->getAvatar();
+ $avatar = CDOMElement::create('img','src:'.$imgAvatar);
+ $avatar->setAttribute('class', 'img_user_avatar');
          
 $node_data = array(
-                   'banner'=>$banner,
-                   'course_title'=>'<a href="main_index.php">'.$course_title.'</a>',
-                   'today'=>$ymdhms,
-                   'path'=>$node_path,
-                   'user_name'=>$userObj->nome,
-                   'user_type'=>$user_type,
-                   'user_level'=>$user_level,
-                   'last_visit'=>$last_access,
-                   'data'=>$log_data,
-		   'menu'=>$menu,
-		   'help'=>$help,
-                   'bookmarks'=>$user_bookmarks,
-                   'status'=>$status,
-                   'profilo'=>$profilo,
-                   'myforum'=>$my_forum,
-                   'title'=>$node_title,
-				   'user_avatar'=>$avatar->getHtml(),
-				   'user_modprofilelink' => $userObj->getEditProfilePage()		
-                   //'mylog'=>$mylog,
-                  );
+       'banner'=>$banner,
+       'course_title'=> translateFN('Repository'),
+       'today'=>$ymdhms,
+       'path'=>$node_path,
+       'user_name'=>$userObj->nome,
+       'user_type'=>$user_type,
+       'user_level'=>$user_level,
+       'last_visit'=>$last_access,
+//                   'data'=>$log_data,
+       'data'=>$log_form,
+       'help'=>$help,
+       'bookmarks'=>$user_bookmarks,
+       'status'=>$status,
+       'profilo'=>$profilo,
+       'myforum'=>$my_forum,
+       'title'=>$node_title,
+       'user_avatar'=>$avatar->getHtml(),
+       'user_modprofilelink' => $userObj->getEditProfilePage()		
+    );
 
-                   if ($com_enabled){
-                       $node_data['messages']=$user_messages->getHtml();
-                       $node_data['agenda']=$user_agenda->getHtml();
-                       $node_data['events']=$user_events->getHtml();
-                       $node_data['chat_users']=$online_users;
-                   } else {
-                       $node_data['messages'] = translateFN("messaggeria non abilitata");
-                       $node_data['agenda']=translateFN("agenda non abilitata");
-                       $node_data['chat_users']="";
-                   }
+if ($com_enabled){
+   $node_data['messages']=$user_messages->getHtml();
+   $node_data['agenda']=$user_agenda->getHtml();
+   $node_data['events']=$user_events->getHtml();
+   $node_data['chat_users']=$online_users;
+} else {
+   $node_data['messages'] = translateFN("messaggeria non abilitata");
+   $node_data['agenda']=translateFN("agenda non abilitata");
+   $node_data['chat_users']="";
+}
  if(isset($msg))
 {
     $help=CDOMElement::create('label');
@@ -342,5 +271,3 @@ ARE::render($layout_dataAr,$node_data, NULL, $options);
  $xmlObj->outputFN('page','XML');
 
 */
-
-?>

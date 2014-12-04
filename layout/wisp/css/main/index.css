@@ -21,9 +21,10 @@ html,body {
 }
 
 #submenubanner {
-	background: #bf236c;
+	background: #980404;
 	color: #FFFFFF;
-	padding: 0 5px;
+	padding-left: 5px;
+	margin: 0px -20px;
 }
 
 #newscont {

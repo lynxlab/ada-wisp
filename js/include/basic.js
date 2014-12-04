@@ -114,6 +114,11 @@ function validateContent(elements, regexps, formName) {
 					 }
 				}
 			}
+		} else {
+			if($(label)) {
+				$(label).addClassName('error');
+				error_found = true;
+			}
 		}
 	}
 

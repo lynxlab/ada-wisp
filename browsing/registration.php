@@ -37,6 +37,7 @@ require_once ROOT_DIR.'/include/Forms/UserRegistrationForm.inc.php';
 include_once ROOT_DIR.'/include/token_classes.inc.php';
 
 require_once ROOT_DIR.'/include/phpMailer/class.phpmailer.php';
+require_once '../config/config_HOLIS.inc.php';
 
 $self =  whoami();
 /**
@@ -87,10 +88,16 @@ if(isset($_SERVER['REQUEST_METHOD']) && $_SERVER['REQUEST_METHOD'] == 'POST') {
             header('Location:'.HTTP_ROOT_DIR.'/browsing/registration.php?message='.$message);
             exit();
         }
+        
+        $Bach_Subscription_obj = new Batch_Subscription($userObj,$GLOBALS['user_service_access']);
+        $Bach_Subscription_obj->batchRegistration($common_dh);
+        
+        
         /**
          * Create a registration token for this user and send it to the user
          * with the confirmation request.
          */
+        
         $tokenObj = TokenManager::createTokenForUserRegistration($userObj);
         if($tokenObj == false) {
             $message = translateFN('An error occurred while performing your request. Pleaser try again later.');
@@ -159,7 +166,7 @@ if(isset($_SERVER['REQUEST_METHOD']) && $_SERVER['REQUEST_METHOD'] == 'POST') {
         }
         /**
          * Send the message an email message
-         * via PHPMailer
+         * via PHPMailer 
          */
         $phpmailer = new PHPMailer();
         $phpmailer->CharSet = ADA_CHARSET;

@@ -8,7 +8,9 @@
     </div>
 	-->
 	
+	<!-- **luca** logo di destra nascosto
 	<div id="bis_logo">
     </div>
+	-->
 	
 </div>

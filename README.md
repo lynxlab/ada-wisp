@@ -1,6 +1,6 @@
-WISP
+ADA
 ==========
-WISP stands for __Web Integrated Services Provider__. It is a request/support management system that allows registered users to ask for help or consultancy, to manage these requests and to activate support sessions via chat or videoconference.
+ADA stand for __Ambiente Digitale di Apprendimento__. It is a knowledge and e-learning management system that allows you to create, administer and follow courses via the Internet or intranet with ease and flexibility.
 
 CONTENTS OF THIS FILE
 ---------------
@@ -41,14 +41,14 @@ HOW TO INSTALL
 6. copy config_path_DEFAULT.inc.php in config_path.inc.php
 
 7. modify config_path.inc.php writing the correct root path
-   ex. if you have copied the files and directory in /var/www/wisp you have to modify it in the follow way:
-  + define('ROOT_DIR','/var/www/html/wisp');
+   ex. if you have copied the files and directory in /var/www/ada you have to modify it in the follow way:
+  + define('ROOT_DIR','/var/www/html/ada');
 
 8. copy config/config_install_DEFAULT.inc.php in config/config_install.inc.php
 
 9. modify config/config_install.inc.php
-  + change the * WISP Common database section
-  + change the * WISP default provider
+  + change the * ADA Common database section
+  + change the * ADA default provider
   + change the * Default admin mail address
   + change the URL define. Pay attention to not remove the trailing // *js_import*
     define('HTTP_ROOT_DIR','http://ada.lynxlab.com');
@@ -96,18 +96,17 @@ The structure of the directories that contain the layout is:
 
 LOCALIZATION AND LANGUAGES
 --------------
-At the moment WISP is translated in the following languages:
+At the moment ADA is translated in the following languages:
 - english
 - italian
 - spanish
-- hungarian
 
 Each translation is stored in a table contained in the DB common.
 the name of the table is messaggi_language (ex.: english messaggi_en)
 
 ### Translation of messages and GUI ###
   The system translates at real time all the interface (buttons, links, labels) and all the messages that are to be sent to the user (welcome message excluded, see below).
-  After logging into WISP as Switcher or Admin, go to this address:
+  After logging into ADA as Switcher or Admin, go to this address:
   http://your_domain_of_wisp/switcher/translation.php
 
   You'll see a small form to search the sentences or part of them.
@@ -119,12 +118,12 @@ the name of the table is messaggi_language (ex.: english messaggi_en)
   * Go back
 
 ### Note and suggestions. ###
-  In order to have the experience of WISP use and to check the correct translation in context,
+  In order to have the experience of ADA use and to check the correct translation in context,
   we suggest you to open two different web browsers (NOT two windows of the same browser),
   say A. Firefox
   and B. Google Chrome.
 
-  - In browser "A" you can login as user or pratitioner or switcher and use the WISP platform normally.
+  - In browser "A" you can login as user or pratitioner or switcher and use the ADA platform normally.
   - In browser "B" you have to login as switcher and go to the translation module
   - When, navigating in browser "A", you may find a sentence not translated in your language, or with a wrong translation,
   - in browser "B" you can search for that sentence and change its translation
@@ -156,7 +155,7 @@ SYSTEM SETUP
 1. **change the news in home page**.
    You can change the news from inside the platform, logging in with administer user and clicking the voice "edit news" in act (or do) menù
    You can also modify it, changing the files docs/news/news_language.txt (es.: english news_en.txt)
-   You can open it and change using any text editor. It is possibile to use HTML tags.
+   You can open it and change using any text editor. It is possibile to use HTML tag.
 
 2. **Create the users of type switcher (coordinator) and Tutors.**
    How to do:
@@ -165,22 +164,22 @@ SYSTEM SETUP
    - click on add user,
    - choose the provider to which associate the user.
 
-3. **Arrangement of services provided**
+3. **Arrangement of courses provided**
 
-   How the WISP platform works
-   + In the WISP platform (DB common) there is the list of potential services
-   + Each provider holds its own instance of service (they are saved in DBs whose name is found in the clientX/client_conf.inc.php file)
-   + Each service created by the provider is (automatically) linked to the platform  (saved in DB common).
-   + Each provider has to create at least one instance of the service in order to allow the studentes to subscribe the instance
+   How the ADA platform works
+   + In the ADA platform are defined the courses delivered (they are saved in DB common)
+   + Each provider creates their own courses (they are saved in DB indicated in the clientX/client_conf.inc.php)
+   + Each course created by the provider is (automatically) linked to the platform courses (saved in DB common).
+   + Each provider has to create at least one instance of the course (the classroom) in order to allow the students to subscribe the instance
 
    How to do:
    + log on with the switcher account,
    + click on Do menù,
-   + click on add a service
-   + click on add instance, near the service
+   + click on add a course
+   + click on add instance, near the course
 
 ### Notes ###
-   Users have to register in the platform in order to ask for a service. (users registered in WISP receive an email to confirm the registration)
+   Users have to register in the platform in order to participate the courses. (the users that have registered in ADA receive an email to confirm the registration)
 
 Add one provider
 --------------
