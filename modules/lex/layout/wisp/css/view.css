@@ -13,3 +13,6 @@
 }
 
 #journey { margin-bottom: 0; }
+.sourceTitle { float:left; }
+#attachmentDownload { padding: 10px; border: 1px dotted gray; margin: 5px; display: inline-block; float: right; }
+#attachmentDownload a { cursor: pointer; }

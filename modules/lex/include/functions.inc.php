@@ -71,5 +71,5 @@ function sendToBrowser ($message) {
 // 	echo '<script type="text/javascript">window.scrollTo(0,document.body.scrollHeight);</script>';
 
 	ob_flush();
-	flush();
+// 	flush();
 }

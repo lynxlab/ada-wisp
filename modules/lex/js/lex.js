@@ -11,6 +11,7 @@
 
 // tells if the uploaded file is ok
 var fileError = false;
+var lastSubmit = -1;
 /**
  * the fancytree object
  * either for switcher to edit the tree
@@ -118,7 +119,22 @@ function initDoc(maxSize, userId, canEdit, passedOpts) {
 			});
 
 		// function to call on submit
-		$j("form[name='jex']").on('submit', function() { doImportJex(); } );
+		$j("form[name='jex']").on('submit', function(e) { 
+			/**
+			 * event timestamp is not valorized correctlry in firefox
+			 * due to a bug opened since 2004, see:
+			 * 
+			 * http://api.jquery.com/event.timeStamp/
+			 */
+			e.timeStamp = (new Date).getTime();
+
+			if (lastSubmit+500 >  e.timeStamp) {
+				return;
+			} else {
+				lastSubmit = e.timeStamp;
+			}
+			
+			doImportJex(); } );
 
 		// autocomplete feature for numero_fonte and titolo_fonte fields
 		var fieldName = null;
@@ -219,6 +235,7 @@ function addFonte() {
 	$j("form[name='jex']")[0].reset();
 	$j('#tipologia').selectric('refresh');
 	$j('.pekecontainer').html('');
+	$j('#jexResults').contents().find('html').html('');
 	$j('#jexResults').slideUp (500, function(){
 		$j("form[name='jex']").slideDown(500);
 	});
@@ -467,6 +484,15 @@ function initButtons() {
 		$j('.linkSourceButton').button({
 			icons : {
 				primary : 'ui-icon-link'
+			},
+			text : false
+		});
+	}
+	
+	if ($j('.downloadButton').length>0) {
+		$j('.downloadButton').button({
+			icons : {
+				primary : 'ui-icon-disk'
 			},
 			text : false
 		});

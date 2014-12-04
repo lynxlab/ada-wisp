@@ -96,7 +96,7 @@ class AMALexDataHandler extends AMA_DataHandler {
 		
 		$params = array (urldecode($descrizione));
 	
-		if (is_null($categoria)) {
+		if (is_null($categoria) || strlen($categoria)<=0) {
 			$sql .= ' IS NULL';
 		} else {
 			$sql .= '=?';
@@ -105,7 +105,7 @@ class AMALexDataHandler extends AMA_DataHandler {
 		
 		$sql .= ' AND `classe`';
 		
-		if (is_null($classe)) {
+		if (is_null($classe) || strlen($classe)<=0) {
 			$sql .= ' IS NULL';
 		} else {
 			$sql .= '=?';
@@ -336,16 +336,18 @@ class AMALexDataHandler extends AMA_DataHandler {
 	 * Inserts a new typology in the module_lex_tipologie_fonti DB table
 	 *
 	 * @param string $newTypology
+	 * @param string $newCategory
+	 * @param string $newClass
 	 *
 	 * @return number|AMA_Error
 	 *
 	 * @access public
 	 */
-	public function addTypology($newTypology=null) {
+	public function addTypology($newTypology=null, $newCategory=null, $newClass=null) {
 		if (!is_null($newTypology) && strlen ($newTypology)>0) {
-			$sql = 'INSERT INTO `'.self::$PREFIX.'tipologie_fonti`(`descrizione`) VALUES (?)';
+			$sql = 'INSERT INTO `'.self::$PREFIX.'tipologie_fonti`(`descrizione`,`categoria`,`classe`) VALUES (?,?,?)';
 
-			$result = $this->queryPrepared($sql,$newTypology);
+			$result = $this->queryPrepared($sql,array($newTypology,$newCategory,$newClass));
 
 			if (!AMA_DB::isError($result)) {
 				return $this->getConnection()->lastInsertID();
@@ -1231,6 +1233,17 @@ class AMALexDataHandler extends AMA_DataHandler {
 
 		return $res;
 	}
+	
+	public function getAttachedSourceLink ($sourceID) {
+		$sql = 'SELECT `attachedFile` FROM `'.self::$PREFIX.'fonti` WHERE `'.self::$PREFIX.'fonti_id`=?';
+		
+		$result = $this->getOnePrepared($sql,$sourceID);
+		
+		if (!AMA_DB::isError($result) && $result!==false && strlen($result)>0) {
+			return MODULES_LEX_HTTP . MODULES_LEX_FILES_SUBDIR . DIRECTORY_SEPARATOR . $sourceID.
+				   DIRECTORY_SEPARATOR . $result;
+		} else return null;
+	}
 
 	/**
 	 * gets the data to fill a table managed by jQuery dataTable plugin
@@ -1525,7 +1538,7 @@ class AMALexDataHandler extends AMA_DataHandler {
 				 */
 				$primaryKeyVal = $setHa[$primaryKey];
 				unset ($setHa[$primaryKey]);
-				$args = array_values($setHa) + array ($primaryKeyVal);
+				$args = array_merge(array_values($setHa), array ($primaryKeyVal));
 			} else {
 				$isInsert = true;
 				if (isset($setHa[$primaryKey])) unset ($setHa[$primaryKey]);
@@ -1563,10 +1576,10 @@ class AMALexDataHandler extends AMA_DataHandler {
 		if (!$generateInsert) {
 			$sql = 'UPDATE `'.$tableName.'` SET ';
 			foreach ($fields as $count=>$field) {
-				$sql = '`'.$field.'`=?';
-				if ($count < count($fields)) $sql.=', ';
+				$sql .= '`'.$field.'`=?';
+				if ($count < count($fields)-1) $sql.=', ';
 			}
-			$sql = 'WHERE `'.$primaryKey.'`=?';
+			$sql .= 'WHERE `'.$primaryKey.'`=?';
 
 		} else {
 			$sql  = 'INSERT INTO `'.$tableName.'` ('. implode(',', $fields) . ') VALUES (';

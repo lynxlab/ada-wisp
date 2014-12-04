@@ -84,7 +84,7 @@ if (isset($_SERVER['REQUEST_METHOD']) && $_SERVER['REQUEST_METHOD'] == 'GET') {
 		$linksHtml = "";
 		$id = intval(str_replace($dh::$PREFIX.'fonti:', '', $elem['DT_RowId']));
 		
-		for ($j=0;$j<3;$j++) {
+		for ($j=0;$j<4;$j++) {
 		// set the type, title and link
 			switch ($j)
 			{
@@ -103,6 +103,14 @@ if (isset($_SERVER['REQUEST_METHOD']) && $_SERVER['REQUEST_METHOD'] == 'GET') {
 						$type = 'delete';
 						$title = translateFN ('Clicca per cancellare la fonte');
 						$link = 'deleteSource ($j(this), '.$id.' , \''.urlencode(translateFN("Questo cancellerà l'elemento selezionato")).'\');';
+					}
+					break;
+				case 3:
+					$attachmentLink = $dh->getAttachedSourceLink($id);
+					if (!is_null($attachmentLink)) {
+						$type = 'download';
+						$title = translateFN('Clicca per scaricare il documento allegato');
+						$link = 'self.document.location.href=\''.$attachmentLink.'\'';
 					}
 					break;
 			}

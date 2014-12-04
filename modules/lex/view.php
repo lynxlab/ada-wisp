@@ -80,6 +80,20 @@ if (isset($_SERVER['REQUEST_METHOD']) && $_SERVER['REQUEST_METHOD'] == 'GET' &&
 				$titleH2->addChild(new CText($sourceTitle));
 				$htmlObj->addChild($titleH2);
 			}
+			
+			/**
+			 * download attachment link
+			 */
+			$attachmentLink = $dh->getAttachedSourceLink($sourceID);
+			if (!is_null($attachmentLink)) {
+				$attachDIV = CDOMElement::create('div','id:attachmentDownload');
+				$attachLink = CDOMElement::create('a','target:_lextarget,href:'.$attachmentLink);
+				$attachLink->addChild(new CText(translateFN('Scarica il documento allegato')));
+				$attachDIV->addChild($attachLink);
+				$htmlObj->addChild($attachDIV);
+			}
+			
+			$htmlObj->addChild(CDOMElement::create('div','class:clearfix'));
 		}
 		// user has requested to view a source
 		$assetsArray = $dh->get_source_assetids(intval($sourceID),'`label` ASC');

@@ -213,6 +213,7 @@ CREATE TABLE IF NOT EXISTS `module_lex_fonti` (
   `titolo` VARCHAR(255) NULL,
   `data_pubblicazione` INT(12) NULL DEFAULT NULL,
   `module_lex_tipologie_fonti_id` INT NOT NULL,
+  `attachedFile` VARCHAR(255) NULL DEFAULT NULL
   PRIMARY KEY (`module_lex_fonti_id`, `module_lex_tipologie_fonti_id`))
 ENGINE = MyISAM DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
 
