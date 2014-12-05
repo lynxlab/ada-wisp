@@ -117,10 +117,9 @@ h3{font-family: "Helvetica Neue", "Helvetica", Arial;}
     font-family: "Helvetica Neue", "Helvetica", Arial; 
     margin-top:15%;
 }
-
-.prettyprint.theme-balupton {
-    width: 70%;
-}
 .table{
     font-size: 0.7em;
+}
+.img2{
+    float:left;
 }

@@ -9,13 +9,15 @@ and open the template in the editor.
         <title>Manuale_Holis</title>
         <meta charset="UTF-8">
         <meta name="viewport" content="width=device-width, initial-scale=1.0">
-        
+        <link rel="stylesheet" href="./jquery.highlight/jquery.highlight.css" type="text/css" media="screen">
         <link rel="stylesheet" href="./css/index.css" type="text/css" media="screen">
         
         <!--for syntax highlight-->
-        <script type="text/javascript" src="./sintax_highlight/jquery-1.4.2.min.js"></script>
-        <script type="text/javascript" src="./sintax_highlight/jquery.syntaxhighlighter.min.js"></script>
-        <script type="text/javascript">$.SyntaxHighlighter.init();</script>
+        <script type="text/javascript" src="../js/include/jquery/jquery-1.11.1.min.js"></script>
+        <script type="text/javascript" src="./jquery.highlight/jquery.highlight.js"></script>
+        <script type="text/javascript">$(document).ready(function(){
+            $('pre.code').highlight({source:1, zebra:1, indent:'space', list:'ol',attribute: 'data-language'});
+        });</script>
     </head>
     <body>
         <div id="logo">
@@ -67,9 +69,9 @@ and open the template in the editor.
                    </ul>
                 </div>
                 <div>
+                    <a name="Struttura"></a>
                     <h2 class="line_block">
                         Classi-struttura
-                        <a name="Struttura"></a>
                     </h2>
                     
                     <ul>
@@ -85,15 +87,112 @@ and open the template in the editor.
                     </h2>
                     
                     <ul>
+                        <li><h4>ADA Rendering Engine</h4><li>
+                        ARE è pensato per gestire l'intero
+                        flusso di creazione del contenuto HTML/XHTML dinamico, la
+                        selezione del corretto template, CSS, JavaScript e la produzione
+                        dell'output separando completamente logica e interfaccia. I
+                        templates utilizzati sono puro HTML senza parti in altri
+                        linguaggi, e possono quindi essere gestiti e visualizzati
+                        autonomamente. Il codice HTML generato è uniforme e
+                        parametrizzato.
+                        E' composto da due moduli, CORE (Common Output
+                        Rendering Engine) e ALE (ADA Layout Engine).
+                        Il primo (CORE) viene utilizzato per la generazione OO degli
+                        elementi del DOM ed è pensato per aiutare lo sviluppatore nella
+                        produzione di codice valido rispetto al DTD utilizzato. CORE
+                        genera automaticamente gli elementi del DOM in base al DTD
+                        impostato nella configurazione
+                        Il secondo (ALE) viene utilizzato come template engine per
+                        selezionare automaticamente in base ad alcuni parametri
+                        (modulo, profilo utente, tipologia del nodo, del corso, preferenze
+                        di installazione) il template HTML, i CSS e i file JavaScript
+                        appropriati. ALE permette di usare templates di default e
+                        microtemplates ricorsivi per semplificare il lavoro del grafico.
+                        I due moduli possono in ogni caso essere utilizzati
+                        indipendentemente l'uno dall'altro. E' possibile generare e
+                        renderizzare una pagina HTML utilizzando solo CORE oppure
+                        inviare gli oggetti CORE al template engine ALE che provvede a
+                        renderizzare la pagina HTML. Viceversa è possibile generare
+                        HTML senza utilizzare CORE ed inviarlo al template engine
+                        ALE.<br>
+                        <li><h4>Common Output Rendering Engine</h4><li>
+                        CORE viene utilizzato per la generazione OO degli elementi del
+                        DOM ed è pensato per aiutare lo sviluppatore nella produzione di codice
+                        valido rispetto al DTD utilizzato. CORE genera automaticamente gli
+                        elementi del DOM in base al DTD impostato nella configurazione. Questo
+                        significa svincolare lo sviluppo dell'applicazione dal formato
+                        dell'interfaccia. Per esempio, è possibile avere diverse versioni della stessa
+                        applicazione che producono pagine in HTML 4, XHTML 1.0 etc.
+                        D'altra parte, questo sistema consente anche di proteggere
+                        l'investimento effettuato per adeguarsi a nuovi standard in corso di
+                        definizione. Ad esempio, nel caso in cui si voglia produrre output in
+                        standard HTML 5 non sarà necessario apportare modifiche al codice
+                        dell'applicazione, in quanto sarà CORE a farsi carico delle eventuali
+                        differenze nel rendering degli elementi, oltre a supportare le novità
+                        introdotte dalla nuova versione di HTML.
+                        In teoria, CORE permette un'uscita in linguaggi di definizione della
+                        pagina diversi dalla famiglia dell'HTML, come ad esempio PDF o SWF.
+                        <br>
+                        <li><h4>ADA Layout Engine</h4><li>
+                        2.2ADA Layout Engine
+                        ALE viene utilizzato come template engine per selezionare
+                        automaticamente in base ad alcuni parametri (modulo, profilo
+                        utente, tipologia del contenuto, tipo di device, preferenze di
+                        installazione) il template HTML, i CSS e i file JavaScript
+                        appropriati. ALE permette di usare template di default e
+                        microtemplate ricorsivi per semplificare il lavoro del grafico.
+                        E' possibile avere nella stessa applicazione diverse interfacce
+                        di default predefinite (per tutta l'applicazione, per un modulo, per
+                        una categoria di utenti o per un singolo utente).
+                        I livelli di preferenza più specifici sovrascrivono i livelli più
+                        generali nella selezione della tripletta di layout (template + css +
+                        js). Al momento della renderizzazione dell'interfaccia le
+                        preferenze dell'utente sono considerate prioritarie sulle preferenze
+                        generali dell'applicazione.
+                        L'algoritmo usato per la selezione è il seguente:
+                        <ul><br>
+                        <li>* per un dato modulo M, ALE cerca una specifica
+                        tripletta di layout (template + css + js) tra quelli forniti
+                        dallo stile S specificato nel profilo dell'utente;</li>
                         
+                        <li>* se la tripletta precedente non è disponibile, ALE
+                        utilizza lo stile di default del modulo;</li>
+                        
+                        <li>* se neanche questo è disponibile, ALE caricherà lo stile
+                        definito come default nella configurazione generale.</li>
+                        </ul><br>
+                        I template possono contenere codice HTML/XHTML ma non
+                        codice PHP o in altri linguaggi.
+                        All'interno di ogni template dovranno essere definiti dei
+                        segnaposto che saranno automaticamente riempiti con i dati
+                        inviati dall'applicazione. ALE si occuperà di mostrare l'output
+                        unendo i dati provenienti dall'applicazione con la tripletta di
+                        layout selezionata.
+
+                        
+                     </ul>
+                     <br><br>
+                   <div><a href="#logo" class="index">Indice</a></div>  
+                </div>
+                <div>
+                    <a name="ama"></a>
+                    <h2 class="line_block">
+                        AMA: Ada mind Api
+                    </h2>
+                    
+                    <ul>
+                      <img src="./img/schema"  height="200" width="500"><br> 
+                      AMA (ADA Middle API): è la parte di codice che si occupa di tutti gli accessi al database.
+                       Nella versione attuale  per l'accesso al DB è usato PDO (PHP Data Object, http://it2.php.net/pdo), che è un'estensione scritta in C, molto veloce e standard. A sua volta, PDO si può collegare ad un qualsiasi DBMS.
                     </ul>
                      <br><br>
                    <div><a href="#logo" class="index">Indice</a></div>  
                 </div>
                 <div>
+                    <a name="user_data"></a>
                     <h2 class="line_block">
                         extendig user data
-                        <a name="user_data"></a>
                     </h2>
                     
                     <ul>
@@ -104,31 +203,23 @@ and open the template in the editor.
                                <ul><br>
                                    <li>
                                         1.creare i campi necessari nella tabella di tutti i provider, sia nel caso multiprovider che non multiprovider. Ad esempio: 
-                                        <pre class="highlight">
-                                            ALTER TABLE  `studente` ADD  `samplefield` TEXT NOT NULL 
-                                        </pre>
+                                        <pre class="code" data-language="sql">ALTER TABLE  `studente` ADD  `samplefield` TEXT NOT NULL </pre>
                                    </li>
                                    <li>
                                    2.creare una proprietà della classe ADAUser per ogni campo della tabella studente, che abbia lo steso nome del campo. Ad esempio:
-                                   <pre class="highlight">
-                                        public $samplefield;
-                                   </pre>
+                                   <pre class="code" data-language="php">public $samplefield;</pre>
                                    </li>
                                    <li>
                                    3.verificare che esistano le proprietà $_extraTableName ed $_extraTableKeyProperty della classe ADAUser
                                    e che siano valorizzate rispettivamente al nome dell  tabella dove salvare (studente nell'esempio) ed al nome del suo indice. Ad esempio:
-                                   <pre class="highlight">
-                                        protected static $_extraTableName = "studente";
-                                        protected static $_extraTableKeyProperty = "id_utente_studente"
-                                   </pre>
+                                   <pre class="code" data-language="php">protected static $_extraTableName = "studente";
+protected static $_extraTableKeyProperty = "id_utente_studente"</pre>
                                    </li>
                                    <li>
                                    4.nel file include/Forms/UserExtraForm.inc.php scrivere il codice per la generazione della parte di form relativa ai campi creati nel metodo addExtraControls della classe UserExtraForm. Ad esempio:
-                                   <pre class="highlight">
-                                        $theForm->addTextInput('samplefield', translateFN('Campo di esempio'))
-                                        ->setRequired()
-                                        ->setValidator(FormValidator::NOT_EMPTY_STRING_VALIDATOR);
-                                   </pre>
+                                   <pre class="code" data-language="php">$theForm->addTextInput('samplefield', translateFN('Campo di esempio'))
+->setRequired()
+->setValidator(FormValidator::NOT_EMPTY_STRING_VALIDATOR);</pre>
                                    </li>
                                    <li>
                                     5.se si cambia il nome del form definito nella classe UserExtraForm è necessario rinominare il file browsing/ajax/save_extraDataForm.php
@@ -144,17 +235,13 @@ and open the template in the editor.
                                         <ul>
                                             <li><br>
                                                 * istanziare la form per la gestione dei dati extra. Ad esempio:
-                                                <pre class="highlight">
-                                                    require_once ROOT_DIR . '/include/Forms/UserExtraForm.inc.php';
-                                                    $extraForm = new UserExtraForm ($languages);
-                                                    $extraForm->fillWithArrayData ($user_dataAr);
-                                                </pre>
+                                                <pre class="code" data-language="php">require_once ROOT_DIR . '/include/Forms/UserExtraForm.inc.php';
+$extraForm = new UserExtraForm ($languages);
+$extraForm->fillWithArrayData ($user_dataAr);</pre>
                                             </li>
                                             <li>
                                                 *  in edit_user.php ci sarà un array chiamato $tabsArray che gestisce le etichette dei tab creati e gli oggetti associati, il primo (ma non è necessario) dovrebbe essere quello del form standard, aggiungere un elemento all'array in cui mostrare il form per i dati extra. Ad esempio: 
-                                                <pre class="highlight">
-                                                  $tabsArray[3] = array (translateFN ('Sample Extra'), $extraForm);
-                                                </pre>
+                                                <pre class="code" data-language="php">$tabsArray[3] = array (translateFN ('Sample Extra'), $extraForm);</pre>
                                             </li>
                                         </ul>
                                         </li><br>
@@ -186,66 +273,57 @@ and open the template in the editor.
                                         <ul>
                                             <li><br>
                                                 1.  creare la tabella in cui vuoi salvare i dati. Ad esempio:
-                                                <pre class="highlight">
-                                                   CREATE TABLE `ADA_moreUserFields` (
-                                                    `idMoreUserFields` int(11) unsigned NOT NULL AUTO_INCREMENT,
-                                                    `studente_id_utente_studente` int(11) DEFAULT NULL,
-                                                    `note` text COLLATE utf8_unicode_ci NOT NULL,
-                                                    `preferenze` int(3) NOT NULL,
-                                                    `privacy` int(1) NOT NULL,
-                                                    PRIMARY KEY (`idMoreUserFields`)
-                                                    ) ENGINE=MyISAM DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
-                                                </pre>
+                                                <pre class="code" data-language="sql">CREATE TABLE `ADA_moreUserFields` (
+`idMoreUserFields` int(11) unsigned NOT NULL AUTO_INCREMENT,
+`studente_id_utente_studente` int(11) DEFAULT NULL,
+`note` text COLLATE utf8_unicode_ci NOT NULL,
+`preferenze` int(3) NOT NULL,
+`privacy` int(1) NOT NULL,
+PRIMARY KEY (`idMoreUserFields`)
+) ENGINE=MyISAM DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;</pre>
+                                                
                                             </li>
                                                <li><br>
                                                 2. aggiungere un elemento all'array $_linkedTables della classe ADAUser che abbia lo stesso nome della tabella (senza prefisso).Ad esempio:
-                                                <pre class="highlight">
-                                                  protected static $_linkedTables = array ('moreUserFields');
-                                                </pre>
+                                                <pre class="code" data-language="php">protected static $_linkedTables = array ('moreUserFields');</pre>
+                                                
                                             </li>
                                             <li><br>
                                                 3. verificare ed impostare la proprietà $_tablesPrefix della classe ADAUser, impostarla al prefisso delle tabelle usate, uguale per tutte le tabelle. Ad esempio:
-                                                <pre class="highlight">
-                                                  protected static $_tablesPrefix = "ADA_";
-                                                </pre>
+                                                <pre class="code" data-language="php">protected static $_tablesPrefix = "ADA_";</pre>
                                             </li>
                                             <li><br>
                                                 4. creare una classe che in include/ estenda extraTable e che abbia lo stesso nome della tabella CON L'INIZIALE MINUSCOLA e il cui nome file sia <nome tabella senza prefisso e con iniziale maiuscola>.class.inc.php. Questa classe dovrà necessariamente avere i metodi: getFields, buildArrayFromPOST, getKeyProperty, getForeignKeyProperty e getLabel copiati ed incollati dalla classe fornita come esempio nel file OneToManyDataSample.inc.php fornito nel repository.<em> La classe sarà inclusa e istanzaita automaticamente</em> all'occorenza.
                                             </li>
                                             <li><br>
                                                 5. in questa classe, creare le proprietà pubbliche per tutti i campi da gestire della tabella, incluso id e 'foreign Key'. Ad esempio:
-                                                <pre class="highlight">
-                                                    public $idMoreUserFields;                  // proprietà che rappresenta la chiave primaria della tabella
-                                                    public $studente_id_utente_studente;       // proprietà che rappresenta la chiave esterna verso la tabella utente
-                                                    public $note;
-                                                    public $preferenze;
-                                                    public $privacy;
-                                                </pre>
+                                                <pre class="code" data-language="php">public $idMoreUserFields;                  // proprietà che rappresenta la chiave primaria della tabella
+public $studente_id_utente_studente;       // proprietà che rappresenta la chiave esterna verso la tabella utente
+public $note;
+public $preferenze;
+public $privacy;</pre>
+                                                
                                             </li>
                                              <li><br>
                                                 6. in questa classe, verificare che esistano le proprietà $keyProperty e $foreignKeyProperty e che siano valorizzate rispettivamente al nome del campo indice della tabella ed al nome del campo che ha la foreign key verso la tabella utente. Ad esempio:
-                                                <pre class="highlight">
-                                                    protected static $keyProperty = "idMoreUserFields";
-                                                    protected static $foreignKeyProperty = "studente_id_utente_studente";
-                                                </pre>
+                                                <pre class="code" data-language="php">protected static $keyProperty = "idMoreUserFields";
+protected static $foreignKeyProperty = "studente_id_utente_studente";</pre>
+                                                
                                             </li>
                                              <li><br>
                                                 7. nel costruttore di questa classe, valorizzare l'array privato _labels con i valori delle etichette che appariranno in fase di render dei dati avendo l'accortezza di farli corrispondere all'ordine in cui vengono definite le proprietà al punto 5 e di impostare a null i valori corrispondenti ai campi id e foreign key della tabella. Ad esempio:
-                                                <pre class="highlight">
-                                                    $this->_labels = array (
-                                                    null,
-                                                    null,
-                                                    translateFN('Note'),
-                                                    translateFN('Preference'),
-                                                    translateFN('Privacy') );
-                                                </pre>
+                                                <pre class="code" data-language="php">$this->_labels = array (
+null,
+null,
+translateFN('Note'),
+translateFN('Preference'),
+translateFN('Privacy') );</pre>
+                                                
                                             </li>
                                              <li><br>
                                                 8. creare un form per la tabella in una classe il cui nome sia: 'User'+&ltnome tabella senza prefisso e con iniziale maiuscola&gt+'Form' che estenda FForm e sia in un file dentro include/Forms il cui nome file sia uguale a quello della classe + '.inc.php'. Ad esempio:
                                                 nel file include/Forms/UserOneToManyDataSampleForm.inc.php
-                                                <pre class="highlight">
-                                                   class UserOneToManyDataSampleForm extends FForm {... }
-                                                </pre>
+                                                <pre class="code" data-language="php">class UserOneToManyDataSampleForm extends FForm {... }</pre>
                                             </li>
                                              <li><br>
                                                 9. usare il file di esempio fornito nel repository per generare la form.
@@ -257,9 +335,8 @@ and open the template in the editor.
                                             </li>
                                             <li><br>
                                                 10. In edit_user.php ci sarà un array chiamato $tabsArray che gestisce le etichette dei tab creati, il primo è quello del form standard (ma gli si può cambiare posizione), aggiungere un elemento all'array in cui mostrare il form per la tabella in questione ed associarlo alla tabella. Ad esempio:
-                                                <pre class="highlight">
-                                                   $tabsArray[4] = array (translateFN ('Sample Extra 1:n'), 'moreUserFields');
-                                                </pre>
+                                                <pre class="code" data-language="php">$tabsArray[4] = array (translateFN ('Sample Extra 1:n'), 'moreUserFields');</pre>
+                                                
                                             </li>
                                             <font size='1'>Note: Essendo i dati dell'utente memorizzati in sessione potrebbe essere necessario fare un logout/login invece di un semplice refresh della pagina edit_user.php per vedere le modifiche!</font><br>
                                         </ul>   
