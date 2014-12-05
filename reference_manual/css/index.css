@@ -63,6 +63,9 @@ li a{
     padding:3px;
     outline: 0;
 }
+pre.code li {
+  list-style-type : decimal;
+}
 /* mouse over link */
 
 a:hover {

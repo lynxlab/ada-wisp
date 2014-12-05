@@ -10,12 +10,15 @@ and open the template in the editor.
         <meta charset="UTF-8">
         <meta name="viewport" content="width=device-width, initial-scale=1.0">
         
+        <link rel="stylesheet" href="./jquery.highlight/jquery.highlight.css" type="text/css" media="screen">
         <link rel="stylesheet" href="./css/index.css" type="text/css" media="screen">
         
         <!--for syntax highlight-->
-        <script type="text/javascript" src="./sintax_highlight/jquery-1.4.2.min.js"></script>
-        <script type="text/javascript" src="./sintax_highlight/jquery.syntaxhighlighter.min.js"></script>
-        <script type="text/javascript">$.SyntaxHighlighter.init();</script>
+        <script type="text/javascript" src="../js/include/jquery/jquery-1.11.1.min.js"></script>
+        <script type="text/javascript" src="./jquery.highlight/jquery.highlight.js"></script>
+        <script type="text/javascript">$(document).ready(function(){
+            $('pre.code').highlight({source:1, zebra:1, indent:'space', list:'ol',attribute: 'data-language'});
+        });</script>
     </head>
     <body>
         <div id="logo">
@@ -154,71 +157,70 @@ and open the template in the editor.
                            </ul><br>
                                 Nota: non è necessario includere meta-tag (e in generale tutto ciò che appartiene all'head) nel template perché queste verranno generate dinamicamente dall'applicazione. Ma è utile inserire le intestazioni per avere un'anteprima corretta.
                                 <br>Es:
-                                <pre class="language-html">
-                                    &lt?xml version="1.0" encoding="utf-8"?&gt
-                                    &lt!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd"&gt
-                                    &lthtml xmlns="http://www.w3.org/1999/xhtml" xml:lang="it" lang="it"&gt
-                                    &lthead&gt
-                                            &lttitle>Template Tutor&lt/title&gt
-                                            &ltlink rel="stylesheet" type="text/css" href="default.css" /&gt
-                                    &lt/head&gt
-                                    ...
-                                </pre>
+                                <pre class="code" data-language="html">
+&lt?xml version="1.0" encoding="utf-8"?&gt
+&lt!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd"&gt
+&lthtml xmlns="http://www.w3.org/1999/xhtml" xml:lang="it" lang="it"&gt
+&lthead&gt
+        &lttitle>Template Tutor&lt/title&gt
+        &ltlink rel="stylesheet" type="text/css" href="default.css" /&gt
+&lt/head&gt
+...
+</pre>
                                 <br><br>
                                 LAYER<br><br>
                                 Le pagine saranno organizzate graficamente, dove possibile, con i layer anziché con tabelle, o con altri elementi organizzativi (p, ol, ul, dl, cite, h1-h6):
-                                <pre class="language-html">
-                                &ltdiv class="menu_superiore" id="d_1"&gt
-                                &lt/div&gt
-                                </pre><br>
+                                <pre class="code" data-language="html">
+&ltdiv class="menu_superiore" id="d_1"&gt
+&lt/div&gt
+</pre><br>
                                 I layer vanno progettati tenendo anche conto dell'accessibilità, quindi della possibilità di lettura da parte di screen reader.
                                 <br><br>
                                 TABELLE<br><br>
                                 Le tabelle (TABLE) verranno usate solo nel caso in cui ci sia necessità di mostrare dati matriciali e in ogni caso con tutti gli attributi necessari alla loro comprensione tramite browser non visuali:
-                                <pre class="language-html">
-                                    &lttable summary="descrizione dei dati" id="t1">
-                                        &ltthead&gt
-                                            &lttr&gt
-                                                &ltth&gtColonna 1&lt/th&gt&ltth&gtColonna 2&lt/th&gt
-                                            &lt/tr&gt
-                                        &lt/thead&gt
-                                        &lttbody&gt
-                                            &lttr&gt 
-                                                &lttd&gt3&lt/td&gt&lttd&gt3&lt/td&gt
-                                            &lt/tr&gt
-                                            &lttr&gt
-                                                &lttd&gt6&lt/td&gt&lttd&gt5&lt/td&gt
-                                            &lt/tr&gt 
-                                        &lt/tbody&gt
-                                    &lt/table&gt
-                                </pre>
+                                <pre class="code" data-language="html">
+&lttable summary="descrizione dei dati" id="t1">
+    &ltthead&gt
+        &lttr&gt
+            &ltth&gtColonna 1&lt/th&gt&ltth&gtColonna 2&lt/th&gt
+        &lt/tr&gt
+    &lt/thead&gt
+    &lttbody&gt
+        &lttr&gt 
+            &lttd&gt3&lt/td&gt&lttd&gt3&lt/td&gt
+        &lt/tr&gt
+        &lttr&gt
+            &lttd&gt6&lt/td&gt&lttd&gt5&lt/td&gt
+        &lt/tr&gt 
+    &lt/tbody&gt
+&lt/table&gt
+</pre>
                                 <br><br>
                                 IMMAGINI<br><br>
                                 Le immagini dovranno trovarsi nella sottocartella  IMAGES della cartella del template cui sono relative.
                                 Il formato preferito è PNG. 
                                 Le dimensioni dell'immagine, se fornite come attributi dell'elemento, non devono essere diverse da quelle reali.
-                                <pre class="language-html">
-                                    &ltimg src="images/img.png" alt="logo in versione grande"&gt
-                                </pre>
+                                <pre class="code" data-language="html">
+&ltimg src="images/img.png" alt="logo in versione grande"&gt
+</pre>
                                 <br><br>
                                 LINK<br><br>
                                 Ogni link deve avere gli attributi standard XHTML più quelli relativi all'accessibilità (accesskey, tabindex).
 
                                 Es.
                                 Supponendo che vada linkato il modulo “view.php” della sezione “browsing”:
-                                <pre class="language-html">
-                                  &lta href="view.php?id_node=2" type="text/html" class="link" accesskey="V" tabindex=”101”&gtVisita&lt/a&gt  
-                                </pre>
+                                <pre class="code" data-language="html">
+&lta href="view.php?id_node=2" type="text/html" class="link" accesskey="V" tabindex=”101”&gtVisita&lt/a&gt  
+</pre>
                                 <br><br>
                                 SEGNAPOSTI<br><br>
                                 Gli spazi per l'inserimento delle variabili nei templates sono marcati da segnaposti con la seguente forma:
-                                <pre class="language-html">
-                                    &lttemplate_field class="template_field" name="N_CAMPO"&gtN_CAMPO&lt/template_field&gt
-                                </pre>
+                                <pre class="code" data-language="html">
+&lttemplate_field class="template_field" name="N_CAMPO"&gtN_CAMPO&lt/template_field&gt</pre>
                                 Nota: per rendere facilmente distinguibili i campi quando si fa un'anteprima con il browser del template è utile utilizzare nel CSS uno stile apposito.
-                                <pre class="highlight">
-                                    .template_field {font-family: "Courier New", Courier, mono; font-size: 16px; font-weight: bold; color: #FF00FF}
-                                <pre>
+                                <pre class="code" data-language="css">
+.template_field {font-family: "Courier New", Courier, mono; font-size: 16px; font-weight: bold; color: #FF00FF;}
+</pre>
                     </ul>
                     </li>
 
@@ -229,9 +231,9 @@ and open the template in the editor.
                     <ul>
                         <li>
                             Sono elementi più piccoli, sempre XHTML, ripetuti nei diversi templates. Per comodità del grafico, per evitare compiti ripetitivi e per garantire uniformità in tutta l'applicazione,  possono essere salvati in file separati e richiamati all'interno di altri templates con segnaposti della forma:
-                            <pre class="language-html">
-                                &lttemplate_field class="microtemplate_field" name="footer"&gtfooter&lt/template_field&gt
-                            </pre><br>
+                            <pre class="code" data-language="html">
+&lttemplate_field class="microtemplate_field" name="footer"&gtfooter&lt/template_field&gt
+</pre><br>
                             I microtemplates  sono porzioni di XHTML (senza intestazioni etc) che possono contenere altri segnaposti del tipo semplice.
 
                             Saranno microtemplates la testata (header), il piedino (footer), ed eventualmente barre di menu laterali e simili.
@@ -262,9 +264,9 @@ and open the template in the editor.
                         Si intende per grafica di supporto ogni elemento (bordi, ombre, angoli, ) che viene richiamato dai templates o dai CSS.
                         I files devono essere nella sottocartella /IMAGES di ogni template.
                         Quando non si tratta di icone o elementi dotati di significato, ma solo di elementi di supporto, il loro inserimento dovrebbe essere fatto ove possibile nel CSS e non nel template.
-                        <pre class="highlight">
-                            .fondino { color:white; background: url(fondo.png) no-repeat;}
-                        <pre>
+                        <pre class="code" data-language="css">
+.fondino { color:white; background: url(fondo.png) no-repeat;}
+</pre>
                     </ul>
                     </li>
                   
@@ -468,11 +470,11 @@ and open the template in the editor.
                         <br><br>
                         FARE APPARIRE IL MENU IN UNA PAGINA<br><br>
                         Il codice HTML che realizza il menu è posizionato all'interno del template di una certa pagina dove c'è questo codice:<br>
-                        <pre class="language-html">
-                            &lt!-- menu --&gt
-                                &lttemplate_field class="microtemplate_field" name="adamenu"&gtadamenu&lt/template_field&gt 
-                            &lt!-- / menu --&gt
-                        </pre><br>
+                        <pre class="code" data-language="html">
+&lt!-- menu --&gt
+    &lttemplate_field class="microtemplate_field" name="adamenu"&gtadamenu&lt/template_field&gt 
+&lt!-- / menu --&gt
+</pre><br>
                         E' necessario che ogni template abbia questo codice al suo interno, solitamente posizionato subito dopo la <em>testata</em>.
                     <br><br>
                     GENERARE UN MENU<br><br>
@@ -830,31 +832,30 @@ and open the template in the editor.
                                     <ul><br>
                                         Si deve specificare la lista dei parametri come elenco separato da virgole nel campo href_paramlist della tabella, ad esempio: id_course, id_course_instance
                                         Successivamente, va caricato un array in PhP che abbia come chiavi gli elementi della lista appena specificata e come valori quelli da passare, esempio:
-                                        <pre class="language-php">
-                                            $menuOptions['id_course'] = $sess_id_course;
-                                            $menuOptions['id_course_instance'] = $sess_id_course_instance;
-                                        </pre>
+                                        <pre class="code" data-language="php">
+$menuOptions['id_course'] = $sess_id_course;
+$menuOptions['id_course_instance'] = $sess_id_course_instance;
+</pre>
                                         Infine si passa questo array al motore di render come parametro al metodo statico ARE::render, ad esempio:
-                                        <pre class="language-php">
-                                            ARE::render($layout_dataAR,$content_dataAr, null,$optionsAr,$menuOptions);
-                                            
-                                        </pre>
+                                        <pre class="code" data-language="php">
+ARE::render($layout_dataAR,$content_dataAr, null,$optionsAr,$menuOptions);                                            
+</pre>
                                     </ul>   
                                 </li>
                                 <li><br>2. Usare un template field</li>
                                 <ul><br>
                                 Si deve specificare il template field nel campo href_paramlist della tabella, ad esempio:
-                                <pre class="language-html">
-                                         &lttemplate_field class="template_field" name="test_history"&gttest_history&lt/template_field&gt
-                                </pre>
+                                <pre class="code" data-language="html">
+&lttemplate_field class="template_field" name="test_history"&gttest_history&lt/template_field&gt
+</pre>
                                 Successivamente, si carica l'array $content_dataAr con il valore da sostituire avendo l'accortezza di specificare la sola querystring, ad esempio:
-                                <pre class="language-php">
-                                         $content_dataAr['test_history'] = 'op=test&id_course_instance='.$sess_id_course_instance.'&id_course='.$sess_id_course;
-                                </pre>
+                                <pre class="code" data-language="php">
+$content_dataAr['test_history'] = 'op=test&id_course_instance='.$sess_id_course_instance.'&id_course='.$sess_id_course;
+</pre>
                                 Infine, passando l'array al motore di rendering con l'usuale chiamata i parametri sono passati, ad esempio:
-                                <pre class="language-php">
-                                         ARE::render($layout_dataAR,$content_dataAr);
-                                </pre>
+                                <pre class="code" data-language="php">
+ARE::render($layout_dataAR,$content_dataAr);
+</pre>
                                 </ul>
                                   
                             </ul>   

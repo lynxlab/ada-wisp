@@ -10,12 +10,15 @@ and open the template in the editor.
         <meta charset="UTF-8">
         <meta name="viewport" content="width=device-width, initial-scale=1.0">
         
+        <link rel="stylesheet" href="./jquery.highlight/jquery.highlight.css" type="text/css" media="screen">
         <link rel="stylesheet" href="./css/index.css" type="text/css" media="screen">
         
         <!--for syntax highlight-->
-        <script type="text/javascript" src="./sintax_highlight/jquery-1.4.2.min.js"></script>
-        <script type="text/javascript" src="./sintax_highlight/jquery.syntaxhighlighter.min.js"></script>
-        <script type="text/javascript">$.SyntaxHighlighter.init();</script>
+        <script type="text/javascript" src="../js/include/jquery/jquery-1.11.1.min.js"></script>
+        <script type="text/javascript" src="./jquery.highlight/jquery.highlight.js"></script>
+        <script type="text/javascript">$(document).ready(function(){
+            $('pre.code').highlight({source:1, zebra:1, indent:'space', list:'ol',attribute: 'data-language'});
+        });</script>
     </head>
     <body>
         <div id="logo">
@@ -212,22 +215,21 @@ and open the template in the editor.
 
                             <li>Aggiungere (o creare) nel file config/config_modules.inc.php</li><br>
                            
-                                    <pre class="highlight">
-                                        es.: defines for modules test
-                                        define('MODULES_TEST_PATH', ROOT_DIR.'/modules/test');
-                                        if (file_exists(MODULES_TEST_PATH.'/index.php')
-                                         && file_exists(MODULES_TEST_PATH.'/edit_test.php')
-                                         && file_exists(MODULES_TEST_PATH.'/tutor.php')) {
+                                    <pre class="code" data-language="php">
+// es.: defines for modules test
+define('MODULES_TEST_PATH', ROOT_DIR.'/modules/test');
+if (file_exists(MODULES_TEST_PATH.'/index.php')
+ && file_exists(MODULES_TEST_PATH.'/edit_test.php')
+ && file_exists(MODULES_TEST_PATH.'/tutor.php')) {
 
-                                        require_once(MODULES_TEST_PATH.'/config/config.inc.php');
+    require_once(MODULES_TEST_PATH.'/config/config.inc.php');
 
-                                        define('MODULES_TEST', true);
-                                        define('MODULES_TEST_HTTP', HTTP_ROOT_DIR.'/modules/test');
-                                        }
-                                        else {
-                                        define('MODULES_TEST', false);
-                                        }
-                                    </pre>
+    define('MODULES_TEST', true);
+    define('MODULES_TEST_HTTP', HTTP_ROOT_DIR.'/modules/test');
+} else {
+    define('MODULES_TEST', false);
+}
+</pre>
                               
                             
                         </ul>
