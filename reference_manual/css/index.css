@@ -15,10 +15,7 @@ and open the template in the editor.
     top: 3px;
     width: 19%;
 }
-#mainmenu{
- 
-//margin: 0 auto;
-}
+
 #bar{
     background: none repeat scroll 0 0 #980404;
     color: #ffffff;
@@ -28,15 +25,9 @@ and open the template in the editor.
 #menu{
     
   margin:12px auto;
-    //width: 400px;
-  
-   
-  //border: 10px solid white;
   list-style: none;
-  
   padding:13px;
   border-radius: 10px; 
-
   text-align:center;
 }
 #menu li {float: left;
@@ -45,16 +36,13 @@ and open the template in the editor.
  
 #menu li a {
   cursor: pointer;
-  //font-weight: bold;
   text-decoration: none;
   text-transform: lowercase;
   font-family: "Helvetica Neue", "Helvetica", Arial;
   padding:21px;
   color:black;
   border-radius: 10px;
-  
- // background-color: yellow;
-
+ 
 }
 li,ul {
     border: 0 none;
@@ -88,21 +76,22 @@ h3{font-family: "Helvetica Neue", "Helvetica", Arial;}
    font-family: "Helvetica Neue", "Helvetica", Arial; 
 }
 #box{
-  //background-color:#FB6969; 
- //opacity: 0.4;
   border-radius: 5px;
   border: 1px solid #980404;
- // padding-bottom: 100%;
+ 
 }
 #box2{
   border-radius: 5px;
   border: 1px solid #980404; 
-  height:200px;
+/*  height:200px;*/
 }
 #index{
     font-family: "Helvetica Neue", "Helvetica", Arial; 
     margin-left: 10px;
     font:bold;
+}
+#Coding_index{
+    
 }
 .index{
     font-family: "Helvetica Neue", "Helvetica", Arial; 
@@ -118,18 +107,17 @@ h3{font-family: "Helvetica Neue", "Helvetica", Arial;}
     margin:2%;
     width:92%;
 }
-.separator{
+.line_block{
     border-bottom: 1px solid;
     color: black;
     width: 100%;
     font-family: "Helvetica Neue", "Helvetica", Arial; 
-    margin-top:30%;;
+    margin-top:15%;
 }
 
 .prettyprint.theme-balupton {
     width: 70%;
 }
 .table{
-    
-    font-size: 0.8em;
+    font-size: 0.7em;
 }

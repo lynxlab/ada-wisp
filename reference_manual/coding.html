@@ -1,0 +1,278 @@
+<!DOCTYPE html>
+<!--
+To change this license header, choose License Headers in Project Properties.
+To change this template file, choose Tools | Templates
+and open the template in the editor.
+-->
+<html>
+    <head>
+        <title>Manuale_Holis</title>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        
+        <link rel="stylesheet" href="./css/index.css" type="text/css" media="screen">
+        
+        <!--for syntax highlight-->
+        <script type="text/javascript" src="./sintax_highlight/jquery-1.4.2.min.js"></script>
+        <script type="text/javascript" src="./sintax_highlight/jquery.syntaxhighlighter.min.js"></script>
+        <script type="text/javascript">$.SyntaxHighlighter.init();</script>
+    </head>
+    <body>
+        <div id="logo">
+	
+        </div> 
+        <h1 class="title">HOLIS - REFERENCE MANUAL </h1>
+        <div id="mainmenu">
+            <div id="bar"></div>
+            <ul id="menu">
+
+                    <li>
+                        <a href='index.html' name="index2">overview</a>
+                    </li>
+                    <li>
+                        <a href='guida_installazione.html'>Guida all'istallazione</a>
+                    </li> 
+                    <li>
+                        <a href='guida_amministratore.html'>Guida per l'amministratore</a>
+                    </li> 
+                    <li>
+                        <a href='gestione_lingue.html'>Gestione lingue</a>
+                    </li> 
+                    <li>
+                        <a href='gestione_layout.html'>Personalizzare i layout</a>
+                    </li>
+                    <li id="box">
+                        <a>Coding</a>
+                    </li>
+
+            </ul>
+        </div>
+            <div id="content">
+                <div id="box2">
+                   <h4 id="index"><a>index</a></h4>
+                   <ul>
+                       <li>
+                         <a href="#Struttura">Classi-struttura</a>  
+                       </li>
+                       <li>
+                         <a href="#rendering">ADA rendering engine</a>  
+                       </li>
+                       <li>
+                         <a href="#ama">ADA Mid API</a>  
+                       </li>
+                      <li>
+                         <a href="#user_data">extendig user data</a>  
+                       </li>
+                        
+                   </ul>
+                </div>
+                <div>
+                    <h2 class="line_block">
+                        Classi-struttura
+                        <a name="Struttura"></a>
+                    </h2>
+                    
+                    <ul>
+                        linkare ad ApiGen
+                    </ul>
+                     <br><br>
+                   <div><a href="#logo" class="index">Indice</a></div>  
+                </div>
+                 <div>
+                    <h2 class="line_block">
+                        ARE:ADA rendering engine
+                        <a name="rendering"></a>
+                    </h2>
+                    
+                    <ul>
+                        
+                    </ul>
+                     <br><br>
+                   <div><a href="#logo" class="index">Indice</a></div>  
+                </div>
+                <div>
+                    <h2 class="line_block">
+                        extendig user data
+                        <a name="user_data"></a>
+                    </h2>
+                    
+                    <ul>
+                       Aggiungere tabelle estese di dati utenti, rispetto allo standard.
+                       <ul>
+                           <li>
+                               <h4>Caso 1: dati in relazione 1:1 con l'utente:</h4>
+                               <ul><br>
+                                   <li>
+                                        1.creare i campi necessari nella tabella di tutti i provider, sia nel caso multiprovider che non multiprovider. Ad esempio: 
+                                        <pre class="highlight">
+                                            ALTER TABLE  `studente` ADD  `samplefield` TEXT NOT NULL 
+                                        </pre>
+                                   </li>
+                                   <li>
+                                   2.creare una proprietà della classe ADAUser per ogni campo della tabella studente, che abbia lo steso nome del campo. Ad esempio:
+                                   <pre class="highlight">
+                                        public $samplefield;
+                                   </pre>
+                                   </li>
+                                   <li>
+                                   3.verificare che esistano le proprietà $_extraTableName ed $_extraTableKeyProperty della classe ADAUser
+                                   e che siano valorizzate rispettivamente al nome dell  tabella dove salvare (studente nell'esempio) ed al nome del suo indice. Ad esempio:
+                                   <pre class="highlight">
+                                        protected static $_extraTableName = "studente";
+                                        protected static $_extraTableKeyProperty = "id_utente_studente"
+                                   </pre>
+                                   </li>
+                                   <li>
+                                   4.nel file include/Forms/UserExtraForm.inc.php scrivere il codice per la generazione della parte di form relativa ai campi creati nel metodo addExtraControls della classe UserExtraForm. Ad esempio:
+                                   <pre class="highlight">
+                                        $theForm->addTextInput('samplefield', translateFN('Campo di esempio'))
+                                        ->setRequired()
+                                        ->setValidator(FormValidator::NOT_EMPTY_STRING_VALIDATOR);
+                                   </pre>
+                                   </li>
+                                   <li>
+                                    5.se si cambia il nome del form definito nella classe UserExtraForm è necessario rinominare il file browsing/ajax/save_extraDataForm.php
+                                    in modo che rifletta il nuovo nome dato al form. Ad esempio:
+                                    se il nome è impostato così: $this->setName('renamedExtraDataForm'); allora il file deve essere:  browsing/ajax/save_renamedExtraDataForm.php
+                                   </li><br>
+                                    <li>
+                                    6.Se ci sono solo campi di questo tipo, SENZA che ci siano altri campi del tipo descritti al caso 2, si può decidere se si vuole che i campi creati siano mostrati in
+                                    un apposito tab jQuery oppure direttamente nella form di modifica profilo. Quindi questo punto si divide nei seguenti casi, ma il file di riferimento per le modifiche è sempre browsing/edit_user.php:
+                                    <ul><br>
+                                        <li>1.Campi Extra gestiti con i tab jQuery e salvataggio tramite AJAX
+                                        <em>(attenzione!! in questo caso NON impostare il salvataggio in POST tramite $userObj->useAjax(false); perché in generale ADAUser impedisce di poter impostare il salvataggio in POST quando non si può ma in questo caso è solo una questione di come viene disegnata la form in edit_user.php e quindi ADAUser non riesce a controllarlo!)</em>
+                                        <ul>
+                                            <li><br>
+                                                * istanziare la form per la gestione dei dati extra. Ad esempio:
+                                                <pre class="highlight">
+                                                    require_once ROOT_DIR . '/include/Forms/UserExtraForm.inc.php';
+                                                    $extraForm = new UserExtraForm ($languages);
+                                                    $extraForm->fillWithArrayData ($user_dataAr);
+                                                </pre>
+                                            </li>
+                                            <li>
+                                                *  in edit_user.php ci sarà un array chiamato $tabsArray che gestisce le etichette dei tab creati e gli oggetti associati, il primo (ma non è necessario) dovrebbe essere quello del form standard, aggiungere un elemento all'array in cui mostrare il form per i dati extra. Ad esempio: 
+                                                <pre class="highlight">
+                                                  $tabsArray[3] = array (translateFN ('Sample Extra'), $extraForm);
+                                                </pre>
+                                            </li>
+                                        </ul>
+                                        </li><br>
+                                        <li>2.Campi Extra nella form standard e salvataggio AJAX
+                                            <ul><br>
+                                                <li>
+                                                    *  Commentare o cancellare l'array $tabsArray in edit_user.php
+                                                </li>
+                                            </ul>
+                                        </li><br>
+                                        <li>3.Campi Extra nella form standard e salvataggio tramite POST
+                                            <ul><br>
+                                                <li>
+                                                    * Fare il punto precedente, ed in più, sempre nel file browsing/edit_user.php mettere $userObj->useAjax(false); subito prima della costruzione di $optionsAr['onload_func'].
+                                                </li>
+                                            </ul>
+                                        </li>
+                                    </ul>    
+                                   </li>
+                               </ul>    
+                           </li><br>
+                           <li>
+                               <h4>Caso 2: dati in relazione 1:n con l'utente:</h4>
+                               <ul>
+                                   <li><br>
+                                        ATTENZIONE: Prima di creare la tabella, assicurarsi che il nome del campo che sarà chiave primaria/autoincrement sia così nominato:
+                                        'id'+NOME TABELLA SENZA PREFISSO CON INIZIALE MAIUSCOLA. Per la definizione di prefisso si veda il punto 3.
+                                        <br> Esempio: se la tabella avrà nome ADA_moreUserFields (in cui ADA_ è il prefisso), il nome della sua chiave primaria deve essere: idMoreUserFields.
+                                        <ul>
+                                            <li><br>
+                                                1.  creare la tabella in cui vuoi salvare i dati. Ad esempio:
+                                                <pre class="highlight">
+                                                   CREATE TABLE `ADA_moreUserFields` (
+                                                    `idMoreUserFields` int(11) unsigned NOT NULL AUTO_INCREMENT,
+                                                    `studente_id_utente_studente` int(11) DEFAULT NULL,
+                                                    `note` text COLLATE utf8_unicode_ci NOT NULL,
+                                                    `preferenze` int(3) NOT NULL,
+                                                    `privacy` int(1) NOT NULL,
+                                                    PRIMARY KEY (`idMoreUserFields`)
+                                                    ) ENGINE=MyISAM DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
+                                                </pre>
+                                            </li>
+                                               <li><br>
+                                                2. aggiungere un elemento all'array $_linkedTables della classe ADAUser che abbia lo stesso nome della tabella (senza prefisso).Ad esempio:
+                                                <pre class="highlight">
+                                                  protected static $_linkedTables = array ('moreUserFields');
+                                                </pre>
+                                            </li>
+                                            <li><br>
+                                                3. verificare ed impostare la proprietà $_tablesPrefix della classe ADAUser, impostarla al prefisso delle tabelle usate, uguale per tutte le tabelle. Ad esempio:
+                                                <pre class="highlight">
+                                                  protected static $_tablesPrefix = "ADA_";
+                                                </pre>
+                                            </li>
+                                            <li><br>
+                                                4. creare una classe che in include/ estenda extraTable e che abbia lo stesso nome della tabella CON L'INIZIALE MINUSCOLA e il cui nome file sia <nome tabella senza prefisso e con iniziale maiuscola>.class.inc.php. Questa classe dovrà necessariamente avere i metodi: getFields, buildArrayFromPOST, getKeyProperty, getForeignKeyProperty e getLabel copiati ed incollati dalla classe fornita come esempio nel file OneToManyDataSample.inc.php fornito nel repository.<em> La classe sarà inclusa e istanzaita automaticamente</em> all'occorenza.
+                                            </li>
+                                            <li><br>
+                                                5. in questa classe, creare le proprietà pubbliche per tutti i campi da gestire della tabella, incluso id e 'foreign Key'. Ad esempio:
+                                                <pre class="highlight">
+                                                    public $idMoreUserFields;                  // proprietà che rappresenta la chiave primaria della tabella
+                                                    public $studente_id_utente_studente;       // proprietà che rappresenta la chiave esterna verso la tabella utente
+                                                    public $note;
+                                                    public $preferenze;
+                                                    public $privacy;
+                                                </pre>
+                                            </li>
+                                             <li><br>
+                                                6. in questa classe, verificare che esistano le proprietà $keyProperty e $foreignKeyProperty e che siano valorizzate rispettivamente al nome del campo indice della tabella ed al nome del campo che ha la foreign key verso la tabella utente. Ad esempio:
+                                                <pre class="highlight">
+                                                    protected static $keyProperty = "idMoreUserFields";
+                                                    protected static $foreignKeyProperty = "studente_id_utente_studente";
+                                                </pre>
+                                            </li>
+                                             <li><br>
+                                                7. nel costruttore di questa classe, valorizzare l'array privato _labels con i valori delle etichette che appariranno in fase di render dei dati avendo l'accortezza di farli corrispondere all'ordine in cui vengono definite le proprietà al punto 5 e di impostare a null i valori corrispondenti ai campi id e foreign key della tabella. Ad esempio:
+                                                <pre class="highlight">
+                                                    $this->_labels = array (
+                                                    null,
+                                                    null,
+                                                    translateFN('Note'),
+                                                    translateFN('Preference'),
+                                                    translateFN('Privacy') );
+                                                </pre>
+                                            </li>
+                                             <li><br>
+                                                8. creare un form per la tabella in una classe il cui nome sia: 'User'+&ltnome tabella senza prefisso e con iniziale maiuscola&gt+'Form' che estenda FForm e sia in un file dentro include/Forms il cui nome file sia uguale a quello della classe + '.inc.php'. Ad esempio:
+                                                nel file include/Forms/UserOneToManyDataSampleForm.inc.php
+                                                <pre class="highlight">
+                                                   class UserOneToManyDataSampleForm extends FForm {... }
+                                                </pre>
+                                            </li>
+                                             <li><br>
+                                                9. usare il file di esempio fornito nel repository per generare la form.
+                                                E' necessario modificare: 
+                                                <ul><br>
+                                                    <li>*  il valore della variabile $formName impostandola a &ltnome tabella senza prefisso&gt</li>
+                                                    <li>*  la parte di costruttore dove vengono definiti i controlli di input.</li>
+                                                </ul>
+                                            </li>
+                                            <li><br>
+                                                10. In edit_user.php ci sarà un array chiamato $tabsArray che gestisce le etichette dei tab creati, il primo è quello del form standard (ma gli si può cambiare posizione), aggiungere un elemento all'array in cui mostrare il form per la tabella in questione ed associarlo alla tabella. Ad esempio:
+                                                <pre class="highlight">
+                                                   $tabsArray[4] = array (translateFN ('Sample Extra 1:n'), 'moreUserFields');
+                                                </pre>
+                                            </li>
+                                            <font size='1'>Note: Essendo i dati dell'utente memorizzati in sessione potrebbe essere necessario fare un logout/login invece di un semplice refresh della pagina edit_user.php per vedere le modifiche!</font><br>
+                                        </ul>   
+                                   </li>
+                               </ul>    
+                           </li>
+                       </ul>   
+                    </ul>
+                     <br><br>
+                   <div><a href="#logo" class="index">Indice</a></div>  
+                </div>
+              
+                
+            </div>
+    </body>
+</html>

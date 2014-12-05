@@ -27,7 +27,7 @@ and open the template in the editor.
             <ul id="menu">
 
                     <li>
-                        <a href='index.html' name="index2">Capire Holis</a>
+                        <a href='index.html' name="index2">overview</a>
                     </li>
                     <li>
                         <a href='guida_installazione.html'>Guida all'istallazione</a>
@@ -42,7 +42,7 @@ and open the template in the editor.
                         <a>Personalizzare i layout</a>
                     </li>
                     <li>
-                        <a>Coding</a>
+                        <a href='coding.html'>Coding</a>
                     </li>
 
             </ul>
@@ -66,30 +66,32 @@ and open the template in the editor.
                   </ul>
                 </div>
                 <div>
-                    <h2 class="separator">
+                     <a name="Requisiti_tecnici"></a>
+                    <h2 class="line_block">
                         Interfaccia: Requisiti tecnici
-                        <a name="Requisiti_tecnici"></a>
                     </h2>
-                    <h4>
+                    <ul>
                        
+                        <h4>
                         <li>
                             <a href="#Struttura">Struttura</a>  
                         </li>  
                         <li>
-                            <a href="#Layout_Template">Layout e Template</a>  
+                           <a href="#Layout_Template">Layout e Template</a>  
                         </li>  
                         <li>
-                            <a href="#Microtemplates">Microtemplates</a>  
+                            <a href="#Microtemplates">Microtemplates</a> 
                         </li> 
                          <li>
-                            <a href="#Css">Css</a>  
+                           <a href="#Css">Css</a>  
                         </li> 
-                         
-                    </h4>
+                        </h4>
+                    </ul>  
+                    
                     
                     <ul>
                         <li>
-                            <h3 class="separator">Struttura<a name="Struttura"></a></h3>
+                            <h3 class="line_block">Struttura<a name="Struttura"></a></h3>
                             <ul>
                                 <li>
                                     L'interfaccia dell'applicazione ADA è costituita da 4 gruppi di files:
@@ -107,8 +109,11 @@ and open the template in the editor.
                                 </li>
                             </ul>
                         </li>
+                        <br><br><br>
+                        <div><a href="#Requisiti_tecnici" class="index">torna su</a></div>
+                    
                         <li>
-                           <h3 class="separator">Layout e Template<a name="Layout_Template"></a></h3> 
+                           <h3 class="line_block">Layout e Template<a name="Layout_Template"></a></h3> 
                            <ul>
                                 DEFINIZIONI<br><br>
                                 I templates sono  file html che vengono usati dall'applicazione come modello per tutte le pagine dello stesso tipo generate dinamicamente. 
@@ -214,9 +219,13 @@ and open the template in the editor.
                                 <pre class="highlight">
                                     .template_field {font-family: "Courier New", Courier, mono; font-size: 16px; font-weight: bold; color: #FF00FF}
                                 <pre>
-                        </li>
                     </ul>
-                    <h3 class="separator">Microtemplates<a name="Microtemplates"></a></h3> 
+                    </li>
+
+                    <br><br><br>
+                    <div><a href="#Requisiti_tecnici" class="index">torna su</a></div>
+                    <li>
+                    <h3 class="line_block">Microtemplates<a name="Microtemplates"></a></h3> 
                     <ul>
                         <li>
                             Sono elementi più piccoli, sempre XHTML, ripetuti nei diversi templates. Per comodità del grafico, per evitare compiti ripetitivi e per garantire uniformità in tutta l'applicazione,  possono essere salvati in file separati e richiamati all'interno di altri templates con segnaposti della forma:
@@ -235,7 +244,11 @@ and open the template in the editor.
                                 
                         </li>
                     </ul>
-                    <h3 class="separator">Cascading Style Sheets<a name="Css"></a></h3> 
+                    </li>
+                    <br><br><br>
+                    <div><a href="#Requisiti_tecnici" class="index">torna su</a></div>
+                    <li>
+                    <h3 class="line_block">Cascading Style Sheets<a name="Css"></a></h3> 
                     <ul>
                         <li>Per ogni layout di Sezione (BROWSING/DEFAULT, ADMIN/DEFAULT, etc) ci sarà un CSS di default (default.css), più un CSS specifico per il modulo caricato.
                         Quindi in ogni modulo possono essere caricati due CSS.</li>
@@ -253,14 +266,15 @@ and open the template in the editor.
                             .fondino { color:white; background: url(fondo.png) no-repeat;}
                         <pre>
                     </ul>
-                    
-                    <br><br>
-                   <div><a href="#logo" class="index">Indice</a></div>  
+                    </li>
+                  
                 </div>
+                  <br><br>
+                   <div><a href="#logo" class="index">Indice</a></div>  
                 <div>
-                    <h2 class="separator">
+                    <a name="Personalizzare_layout"></a>
+                    <h2 class="line_block">
                         Personalizzare il layout
-                        <a name="Personalizzare_layout"></a>
                     </h2>
                     <ul>
                         <li>
@@ -281,9 +295,9 @@ and open the template in the editor.
                 <div><a href="#logo" class="index">Indice</a></div> 
                 </div>
                 <div>
-                    <h2 class="separator">
+                    <a name="Modificare_interfaccia"></a>
+                    <h2 class="line_block">
                         Modificare l' interfaccia
-                        <a name="Modificare_interfaccia"></a>
                     </h2>
                     <ul>
                         La piattaforma ADA segue il paradigma MVC (Model / View /Control) cioè separa tutto ciò che è codice per il funzionamento (che è scritto nei linguaggi PHP, principalmente, con un po' di Javascript) da ciò che è dati (testi, in particolare le etichette e i messaggi che appaiono, e che vengono tradotti in base alla lingua dell'utente) e da ciò che è
@@ -365,10 +379,10 @@ and open the template in the editor.
                 <br><br>
                 <div><a href="#logo" class="index">Indice</a></div> 
                 </div>
-                <div>
-                    <h2 class="separator">
+                   <div>
+                    <a name="Aggiungere_menu"></a>
+                    <h2 class="line_block">
                         Aggiungere voci di menu
-                        <a name="Aggiungere_menu"></a>
                     </h2>
                     
                     <ul>
@@ -801,15 +815,15 @@ and open the template in the editor.
                         si genera così un nuovo Menu che punta al menu con tree_id=5 e ne è la copia esatta ma appare in un altra pagina.
                     </ul>
                      <br><br>
-                    PASSARE I PARAMETRI DA PHP AD UNA VOCE DI MENU PER GENERARE IL LINK<br><br>
+                    PASSARE I PARAMETRI DA PHP AD UNA VOCE DI MENU PER GENERARE IL LINK<br>
                     <ul>
-                       Caso 1 Parametri non variabili<br>
-                            <ul><br>
+                       <h4>Caso 1 Parametri non variabili</h4>
+                            <ul>
                                 Si possono passare nell'href_path, esempio: main_index.php?op=forum
-                            </ul>   <br>
+                            </ul>   
                         
-                        Caso 2 Parametri variabili<br>
-                            <ul><br>
+                        <h4>Caso 2 Parametri variabili</h4>
+                            <ul>
                                 Ci sono due strade percorribili:<br>
                                
                                 <li><br>1. Usare una lista di parametri
