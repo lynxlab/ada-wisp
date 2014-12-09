@@ -25,7 +25,8 @@
   border-radius: 10px; 
   text-align:center;
 }
-#menu li {float: left;
+#menu li {
+    float: left;
     margin-top: -10px;
 }
  
@@ -47,8 +48,9 @@ li,ul {
     text-align: left;
     vertical-align: baseline;
     list-style: none;
+    font-family: "Helvetica Neue", "Helvetica", Arial;
 }
-li a{
+ul a,li a{
     cursor: pointer;
     text-decoration: none;
     text-transform: lowercase;
