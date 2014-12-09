@@ -169,8 +169,38 @@ and open the template in the editor.
                     <p>
                         <ul>
                             <li>
-                                Nel file root/config_path.inc.php è definita la variabile MULTIPROVIDER.<br>
-                                Settare define ('MULTIPROVIDER',true);Continuare ....
+                                Nel file root/config_path.inc.php è definita la costante MULTIPROVIDER.
+                                Settare define ('MULTIPROVIDER',true) per utilizzare il sistema in modalità multiprovider,
+                                altrimenti settare define ('MULTIPROVIDER',false), per la modalità non-multiprovider.
+                                Sia in un' ambiente MULTIPROVIDER che in un'ambiente NON-MULTIPROVIDER la struttura dei DB rimane la stessa ovvero 
+                                un DB_Common, un DB_provider0, e un DB per ciascun provider che viene aggiunto.
+                                <br>Di seguito le caratteristiche specifiche di ciascun ambiente.
+                                <br><br>MULTIPROVIDER:
+                                <ul><br>
+                                    <li>
+                                        * Ad ogni studente viene sottomessa una lista di corsi a cui puo iscriversi. Tale lista contiene i corsi aperti, presenti in tutti i provider della piattaforma. 
+                                    </li>
+                                    <li>
+                                        * Non è possibile personalizzare la grafica di ogni provider. Il tema di layout è lo stesso per tutta la piattaforma.  
+                                    </li>
+                                    <li>
+                                        * I contenuti in home-page sono gestibili e modificabili dalla figura dell'admin, che è a tutti gli effetti l'amministratore della piattaforma.
+                                    </li>
+                                </ul>  
+                                <br>NON-MULTIPROVIDER:
+                                <ul><br>
+                                    <li>
+                                        * Ad ogni studente viene sottomessa una lista di corsi a cui puo iscriversi. Tale lista contiene i corsi aperti, presenti nel provider a cui è iscritto lo studente. 
+                                    </li>
+                                    <li>
+                                        * E' possibile personalizzare la grafica di ogni provider. Il tema di layout viene impostato nella directory: clients/PROVIDER_NAME/layout.  
+                                    </li>
+                                    <li>
+                                        * I contenuti in home-page sono gestibili e modificabili dalla figura dello switcher, che è a tutti gli effetti l'amministratore del provider.
+                                    </li>
+                                </ul> 
+                                
+                                
                             </li>
                         </ul>
                     </p>
