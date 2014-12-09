@@ -6,43 +6,117 @@ and open the template in the editor.
 -->
 <html>
     <head>
-        <title>TODO supply a title</title>
+        <title>Holis - Reference Manual</title>
         <meta charset="UTF-8">
         <meta name="viewport" content="width=device-width, initial-scale=1.0">
-        
+
         <link rel="stylesheet" href="./css/index.css" type="text/css" media="screen">
     </head>
     <body>
         <div id="logo">
-	
+
         </div> 
         <h1 class="title">HOLIS - REFERENCE MANUAL </h1>
         <div id="mainmenu">
             <div id="bar"></div>
             <ul id="menu">
 
-                    <li id="box">
-                        <a href='index.html'>overview</a>
-                    </li>
-                    <li>
-                        <a href='guida_installazione.html'>Guida all'istallazione</a>
-                    </li> 
-                    <li>
-                        <a href='guida_amministratore.html'>Guida per l'amministratore</a>
-                    </li> 
-                    <li>
-                        <a href='gestione_lingue.html'>Gestione lingue</a>
-                    </li> 
-                    <li>
-                        <a href='gestione_layout.html'>Personallizare i layout</a>
-                    </li>
-                    <li>
-                        <a href='coding.html'>Coding</a>
-                    </li>
+                <li id="box">
+                    <a href='index.html'>overview</a>
+                </li>
+                <li>
+                    <a href='guida_installazione.html'>Guida all'istallazione</a>
+                </li> 
+                <li>
+                    <a href='guida_amministratore.html'>Guida per l'amministratore</a>
+                </li> 
+                <li>
+                    <a href='gestione_lingue.html'>Gestione lingue</a>
+                </li> 
+                <li>
+                    <a href='gestione_layout.html'>Personallizare i layout</a>
+                </li>
+                <li>
+                    <a href='coding.html'>Coding</a>
+                </li>
 
             </ul>
         </div>
-            <div id="content">
+        <div id="content">
+            <div>
+                <h2 class="line_block">
+                    Struttura dell'ADA FrameworK
+                </h2>
+                <ul>
+                    Quanto segue è applicabile a tutte le versioni di ADA (Abiente Digitale per l'Apprendimento) e a WISP (Web Integrated Services Provider).<br>
+                    <img src="./img/adaFramework.png"><br>
+                    <ul><br>
+                        AMA 
+                        <li><br>
+                            AMA (Ada mid Api) è la parte di codice che si occupa di tutti gli accessi al database. Per una sua descrizione più dettagliata rimandiamo alla sezione Coding. 
+                        </li><br>
+                        CLASSI DI SERVIZIO
+                        <li><br>
+                            AFK è scritta in stile object oriented utilizzando le caratteristiche di PHP 5.*.
+                            Sono presenti alcune classi di basso livello, che sono utilizzate da tutti i moduli, e forniscono le funzionalità trasversali, come l'accesso a differenti provider separati o ai canali di comunicazioni, alla gestione degli errori, al log, etc.
+                        </li>
+                        <br>
+                        MULTIPORT
+                        <li><br>
+                            Ogni installazione di AFK prevede l'esistenza di differenti "provider", ognuno dei quali ha un proprio database indipendente. Questa struttura, insieme ad un meccanismo di indirizzamento tramite l'analisi della URL e all'indipendenza dell'interfaccia, permette di gestire all'interno di una singola installazione degli spazi autonomi di utenti, servizi e interfacce, ognuno accessibile da un dominio di terzo livello separato.
+                        </li><br>
+                        COMUNICAZIONE
+                        <li><br>
+                            La comunicazione tra utenti e tra sistema e utenti è gestita da uno spooler unico. 
+                            Sono disponibili diversi canali: messaggeria interna, email, chat e videoconferenza.
+                            La videoconferenza è gestita con l'integrazione di OpenMeetings. http://openmeetings.apache.org/
+                        </li><br>
+                        OGGETTI PRINCIPALI
+                        <li><br>
+                            Le classi  principali corrispondono agli oggetti dell'applicazione e sono le seguenti:
+                            <ul><br>
+                                <li>* User: gestisce tutti i tipi di utente (guest, student, tutor, author, switcher, admin).</li>
+                                <li>* Node: in AFK ogni oggetto è un nodo oppure un gruppo di nodi.</li>
+                                <li>* Course: il modello di un corso, cui puntano i nodi.</li>
+                                <li>* Course instance: l'edizione del corso, cui puntano gli iscritti.</li>
+                                <li>* Service: è la tipologia generale di corsi.</li>
+                                <li>* Layout: è la classe che gestisce le interfacce utente.</li>   
+                            </ul><br>  
+                            Ogni corso astratto viene istanziato in edizioni, che hanno una durata temporale, cui sono iscritti uno o più utenti, eventualmente seguiti da un tutor.<br><br>
+                            <font size='1'> Nota: per "corso" va inteso qualsiasi insieme coerente di contenuti, dotato di un titolo e di una descrizione, composto da nodi linkati fra di loro, accessibile tramite un indice, una mappa grafica o un motore di ricerca. Alcuni corsi possono essere pubblici, cioè accessibili all'utente guest, altri riservati agli utenti registrati che hanno chiesto l'iscrizione a quel corso.</font><br><br>
+                        </li><br>
+                        CORE
+                        <li><br>
+                            CORE (Common Output Rendering Engine) è la parte di codice che si occupa della generazione dinamica del codice HTML. Per ogni elemento del DOM che deve essere creato, è presente una classe che si occupa della sua renderizzazione.<br>
+                            CORE  è disponibile al seguente indirizzo: https://github.com/lynxlab/ada/tree/master/include/CORE<br>
+                            Attualmente è implementata la versione HTML 4.
+                        </li><br>
+                        ARE 
+                        <li><br>
+                          ARE (ADA Rendering Engine) è il motore che gestisce l'interfaccia di ogni modulo.Per una sua descrizione più dettagliata rimandiamo alla sezione Coding. 
+                        </li><br>
+                        API
+                        <li><br>
+                          Sono state sviluppate delle API che, tramite un meccanismo di autenticazione (via Oauth2, http://oauth.net/2/), permettono di inviare e richiedere dati da applicazioni esterne; ad esempio, per l'iscrizione di utenti da remoto, la verifica dello stato di un utente, dei corsi disponibili, e in generale il recuprto di ogni informazione presente nella piattaforma. Il codice per le chiamate alle API è disponibile in forma di SDK integrabile in altre applicazioni PHP.
+                          https://github.com/lynxlab/ada-php-sdk
+                        </li><br>
+                         ESTENSIONI
+                        <li><br>
+                           AFK prevede due meccanismi semplici per l'estensione :
+                           <ul><br>
+                               <li>* moduli</li>
+                               <li>* widgets</li>
+                           </ul><br>
+                           I moduli sono parti di codice complesso, che necessitano di codice, di tabelle aggiuntive e di template specifici. Esiste uno standard per la scrittura dei moduli, per l'estensione delle classi e per l'aggiunta delle tabelle nel DB.
+                           <br>Ad esempio, qui c'è il codice del modulo per l'invio delle newsletter:<br>https://github.com/lynxlab/ada/tree/master/modules/newsletter
+                           <br><br>I widgets sono invece piccoli frammenti di codice che possono essere inseriti ovunque nella pagina e generalmente utilizzano AJAX per recuperare dati (interni o esterni) e visualizzarli.
+                           I widgets sono configurabili tramite un file XML che contiene il riferimento al codice, lo stato, la posizione nel template.
+                           <br>https://github.com/lynxlab/ada/blob/master/widgets/main/index.xml
+                        </li><br>   
+                    </ul>    
+                </ul>
+
             </div>
+        </div>
     </body>
 </html>

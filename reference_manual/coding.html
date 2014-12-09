@@ -6,7 +6,7 @@ and open the template in the editor.
 -->
 <html>
     <head>
-        <title>Manuale_Holis</title>
+        <title>Holis - Reference Manual</title>
         <meta charset="UTF-8">
         <meta name="viewport" content="width=device-width, initial-scale=1.0">
         <link rel="stylesheet" href="./jquery.highlight/jquery.highlight.css" type="text/css" media="screen">
@@ -81,9 +81,9 @@ and open the template in the editor.
                    <div><a href="#logo" class="index">Indice</a></div>  
                 </div>
                  <div>
+                    <a name="rendering"></a>
                     <h2 class="line_block">
                         ARE:ADA rendering engine
-                        <a name="rendering"></a>
                     </h2>
                     
                     <ul>
@@ -178,13 +178,34 @@ and open the template in the editor.
                 <div>
                     <a name="ama"></a>
                     <h2 class="line_block">
-                        AMA: Ada mind Api
+                        AMA: Ada mid Api
                     </h2>
                     
                     <ul>
-                      <img src="./img/schema"  height="200" width="500"><br> 
-                      AMA (ADA Middle API): è la parte di codice che si occupa di tutti gli accessi al database.
-                       Nella versione attuale  per l'accesso al DB è usato PDO (PHP Data Object, http://it2.php.net/pdo), che è un'estensione scritta in C, molto veloce e standard. A sua volta, PDO si può collegare ad un qualsiasi DBMS.
+                      <img src="./img/schema.png"><br>
+                        <font size='1' class="didascalia"> Figura 1:La gerarchia delle classi costituenti il livello AMA.</font><br><br>
+                        AMA è la parte di codice che si occupa di tutti gli accessi al database.
+                        Nella versione attuale  per l'accesso al DB è usato PDO (PHP Data Object, http://it2.php.net/pdo), che è un'estensione scritta in C, molto veloce e standard. A sua volta, PDO si può collegare ad un qualsiasi DBMS.
+                        AMA è costituita da una classe principale, contenente la maggior parte dei
+                        metodi di accesso ai dati, che è estesa da opportune sottoclassi come è possibile
+                        vedere in figura.<br>
+                        Un tipico metodo del livello AMA si compone delle seguenti operazioni:<br>
+                        <ul><br>
+                            <li>
+                                1. ottiene la connessione al database.
+                            </li>    
+                            <li>
+                                2. costruisce la query.
+                            </li>  
+                            <li>
+                                3. richiama un opportuno metodo del livello di astrazione dal database per eseguire la query.
+                            </li>  
+                            <li>
+                               4. restituisce il risultato ottenuto.
+                            </li> 
+                        </ul>    
+
+
                     </ul>
                      <br><br>
                    <div><a href="#logo" class="index">Indice</a></div>  
