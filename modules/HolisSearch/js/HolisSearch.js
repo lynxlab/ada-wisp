@@ -121,7 +121,7 @@ function updateSelect(what) {
 		$j('#'+what).html('<option></option>');
 	}).always (function() {
 		$j('#'+what).removeAttr('disabled');
-		$j('#'+what).val(0);
+		$j('#'+what+" option:first").attr('selected','selected');
 		$j.uniform.update('#'+what);
 	});
 }
