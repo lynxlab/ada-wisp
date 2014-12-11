@@ -1,8 +1,8 @@
 @CHARSET "UTF-8";
-.ui.menu.ada { 
+div.ui.menu.ada { 
     font-family: "Helvetica Neue", "Helvetica", Arial;
     border-radius:0;
-    border-bottom: 2px solid #4a4a4a; 
+    border-bottom: 0;
        /* background-color: #1C68AD; */
     
 }
@@ -26,7 +26,7 @@
 .ui.menu.ada > ul.menu > li.item.dropdown > a { padding-right:0; }
 .ui.menu.ada > ul.menu > li.item.dropdown > .dropdown.icon { padding-right: .95em; }
 
-.ui.menu.ada > ul.menu > li.item.dropdown > ul.menu { margin-top: 2px !important; /* match .ui.menu.ada border-bottom */ }
+.ui.menu.ada > ul.menu > li.item.dropdown > ul.menu { margin-top: 0px !important; /* match .ui.menu.ada border-bottom */ }
 .ui.menu.ada > ul.menu > li.item.dropdown > ul.menu > li.item { padding:0 !important; }
 .ui.menu.ada > ul.menu > li.item.dropdown > ul.menu > li.item > a { width: 100%; padding: .85em; display: inline-block; }
 
