@@ -198,7 +198,7 @@ if(!AMA_DataHandler::isError($courseInstances)) {
         /* *****************
          * COMMON AREA SERVICE
          */
-         $UserServices = '<h2>'.translateFN('Lista servizi').'</h2>';
+         $UserServices = '<h2>'.translateFN('Sottositemi e servizi').'</h2>';
          $content_dataAr['bloccoDueTitolo'] = $UserServices;
          
          /*
@@ -577,10 +577,10 @@ if($last_access=='' || is_null($last_access))
 		$content_dataAr['legLink'] =   HTTP_ROOT_DIR.'/browsing/sview.php?id_node=6_0&id_course=6&id_course_instance=5#6_0';
 	}
 	
-	$content_dataAr['soluzioniLink'] =  HTTP_ROOT_DIR.'/browsing/view.php?id_node=5_0&id_course=5&id_course_instance=3#5_0';
+	$content_dataAr['soluzioniLink'] =  HTTP_ROOT_DIR.'/browsing/view.php?id_node=5_0&id_course=5&id_course_instance=3';
 	$content_dataAr['etutoringLink'] =  HTTP_ROOT_DIR.'/browsing/ask_service.php';
-	$content_dataAr['elearningLink'] =  HTTP_ROOT_DIR.'/browsing/view.php?id_node=8_0&id_course=8&id_course_instance=17#8_0';
-	$content_dataAr['fontiLink'] =  HTTP_ROOT_DIR.'/browsing/sview.php?id_node=4_0&id_course=4&id_course_instance=2#4_0';
+	$content_dataAr['elearningLink'] =  HTTP_ROOT_DIR.'/browsing/view.php?id_node=8_0&id_course=8&id_course_instance=17';
+	$content_dataAr['fontiLink'] =  HTTP_ROOT_DIR.'/browsing/sview.php?id_node=4_0&id_course=4&id_course_instance=2';
 	
         
 

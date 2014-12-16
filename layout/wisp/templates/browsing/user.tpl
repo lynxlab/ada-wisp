@@ -118,6 +118,36 @@
                                                 <template_field class="template_field" name="bloccoDueTitolo">bloccoDueTitolo</template_field>
                                         </div>
 					<div id="content_blocco_due">
+					 <h3>Sottositema GIUR</h3>
+					 <div class="single_service">
+					  <p>Le fonti informative a supporto degli Operatori del mondo Giustizia</p>
+					  <a href="<template_field class="template_field" name="giurLink">giurLink</template_field>">Accedi</a>
+					 </div>
+					 <h3>Sottositema ORG</h3>
+                     <div class="single_service">
+                      <p>Il DataWarehouse del PCT a supporto della gestione degli Organi della Giustizia</p>
+                      <a href="<template_field class="template_field" name="orgLink">orgLink</template_field>">Accedi</a>
+                     </div>
+                     <h3>Sottositema LEG</h3>
+                     <div class="single_service">
+                      <p>Conoscere e valutare l'impatto di una nuova legge</p>
+                      <a href="<template_field class="template_field" name="legLink">legLink</template_field>">Accedi</a>
+                     </div>
+                     <h3>Temi Risolti</h3>
+                     <div class="single_service">
+                      <p>&nbsp;</p>
+                      <a href="<template_field class="template_field" name="soluzioniLink">soluzioniLink</template_field>">Accedi</a>
+                     </div>
+                     <h3>Servizio di E-learning</h3>
+                     <div class="single_service">
+                      <p>&nbsp;</p>
+                      <a href="<template_field class="template_field" name="elearningLink">elearningLink</template_field>">Accedi</a>
+                     </div>
+                     <h3>Area Discussione</h3>
+                     <div class="single_service">
+                      <p>&nbsp;</p>
+                      <a href="<template_field class="template_field" name="fontiLink">fontiLink</template_field>">Accedi</a>
+                     </div>
                                                 <template_field class="template_field" name="bloccoDueContenuto">bloccoDueContenuto</template_field>
                                                 <template_field class="template_field" name="bloccoDueIscrizione">bloccoDueIscrizione</template_field>
                                         </div>

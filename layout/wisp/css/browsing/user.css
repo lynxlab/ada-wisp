@@ -196,7 +196,7 @@ padding: 10px;
 /**
  * user home for HOLIS
  */
-#twobox,#boxtwo { display: none !important; }
+#holisuserhome { display: none !important; }
 #holisuserhome {
 	width: 596px;
 	height: 535px;
