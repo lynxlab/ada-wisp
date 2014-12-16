@@ -6,8 +6,9 @@
 position: relative;
 }
 
-#twobox h2{
-font-size:1.0em;
+#twobox h2,
+#boxtwo h2{
+font-size:1.1em;
 margin-top: 6px;
 margin-bottom: 1px;
 margin-left: 5px;
@@ -52,12 +53,6 @@ padding: 10px;
     
 }
 
-#boxtwo h2 {
-    font-size: 1em;
-    margin-bottom: 1px;
-    margin-left: 5px;
-    margin-top: 6px;
-}
 #blocco_due {
 /*    
     background-color: #E0E2FF;
@@ -169,7 +164,7 @@ padding: 10px;
 
 
 
-#boxone, #boxtwo { width: 47%; }
+#boxone, #boxtwo { width: 49%; }
 #boxone { float:left; }
 #boxtwo { float: right; }
 

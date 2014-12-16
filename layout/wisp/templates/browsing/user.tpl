@@ -148,8 +148,8 @@
                       <p>&nbsp;</p>
                       <a href="<template_field class="template_field" name="fontiLink">fontiLink</template_field>">Accedi</a>
                      </div>
-                                                <template_field class="template_field" name="bloccoDueContenuto">bloccoDueContenuto</template_field>
-                                                <template_field class="template_field" name="bloccoDueIscrizione">bloccoDueIscrizione</template_field>
+                         <!-- template_field class="template_field_disabled" name="bloccoDueContenuto">bloccoDueContenuto</template_field -->
+                         <!-- template_field class="template_field_disabled" name="bloccoDueIscrizione">bloccoDueIscrizione</template_field -->
                                         </div>
 				</div>
 				<!-- blocco2 end -->			
