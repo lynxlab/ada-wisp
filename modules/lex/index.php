@@ -53,7 +53,7 @@ require_once MODULES_LEX_PATH . '/include/management/lexManagement.inc.php';
 
 $lex = new lexManagement($userObj);
 // optional array to be passed to the initDoc function
-$jsOptions = null;
+$jsOptions = '';
 if (isset($op) && strlen($op)>0) {
 	switch ($op) {
 		case 'zoom':
@@ -61,14 +61,19 @@ if (isset($op) && strlen($op)>0) {
 			if (isset($assetID) && strlen(trim($assetID))>0) {
 				$assetID = explode(',', trim($assetID));				
 				$data = $lex->runSourceAssetZoom($sourceID, $assetID);
-				$jsOptions = htmlspecialchars(json_encode(array('assetID'=>$assetID)), ENT_QUOTES, ADA_CHARSET);			
+				$jsOptions .= htmlspecialchars(json_encode(array('assetID'=>$assetID)), ENT_QUOTES, ADA_CHARSET);			
 			} else {
 				$data = $lex->runSourceZoom($sourceID);
 			}
 			break;
 	}
 } else {
-	$data = $lex->run();
+	$data = $lex->run();	
+}
+
+if (isset($filter) && strlen(trim($filter))>0) {
+	if (strlen($jsOptions)>0) $jsOptions .= ',';
+	$jsOptions .= htmlspecialchars(json_encode(array('filter'=>trim($filter))), ENT_QUOTES, ADA_CHARSET);
 }
 
 
@@ -125,7 +130,7 @@ $layout_dataAr['JS_filename'] = array(
 
 $maxFileSize = (int) (ADA_FILE_UPLOAD_MAX_FILESIZE / (1024*1024));
 $optionsAr['onload_func'] = 'initDoc('.$maxFileSize.','. $userObj->getId().','.intval($lex->canDo(EDIT_SOURCE));
-if (!is_null($jsOptions)) $optionsAr['onload_func'] .= ','.$jsOptions;
+if (strlen($jsOptions)>0) $optionsAr['onload_func'] .= ','.$jsOptions;
 $optionsAr['onload_func'] .= ');';
 
 $avatar = CDOMElement::create('img','class:img_user_avatar,src:'.$userObj->getAvatar());

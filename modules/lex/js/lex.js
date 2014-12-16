@@ -612,6 +612,9 @@ function initDataTables (element, canEdit) {
 						"oLanguage": {
 							"sUrl": HTTP_ROOT_DIR + "/js/include/jquery/dataTables/dataTablesLang.php"
 						},
+						"oSearch" : { 
+							"sSearch" : ('undefined' != typeof opts.filter && opts.filter.length>0) ? opts.filter : ''
+						},
 						"fnDrawCallback":
 							function () {
 								initButtons();

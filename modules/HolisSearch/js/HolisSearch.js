@@ -384,6 +384,14 @@ HolisSearchManagement.prototype.doSearch = function(searchCoursesIDs, hasModuleL
 	// else remove it from the DOM
 	if (this.hasModuleLex) $j('#moduleLexResults').show();
 	else $j('#moduleLexResults').remove();
+	
+	// remove nodes search result div from the DOM if needed
+	if (this.searchCoursesIDs==null || this.searchCoursesIDs.length<=0) {
+		$j('#nodeResults').remove();
+		if ($j('#moduleLexResults').length>0) {
+			$j('#moduleLexResults').css('width','100%');
+		}
+	}
 
 	// when the progress bar has done its initialization
 	$j.when( _initProgressBar.call(this) ).done( function() {
