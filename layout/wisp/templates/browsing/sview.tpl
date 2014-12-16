@@ -64,7 +64,7 @@
                     <!-- blocco2 -->
 					<div id="box_dx">
 					<div id="titolo_box_sx">
-					 	<h2><i18n>Interazioni</i18n></h2>
+					 	<h2><i18n>Comunicazioni</i18n></h2>
 						</div>
                     <div id="blocco_due">
                         <div class="user_agenda">
