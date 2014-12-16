@@ -202,7 +202,7 @@ $optionsAr['onload_func'] = 'initDoc();';
  * if there are courses to be searched and MODULE_LEX is there
  * instruct javascript to do the serach accordingly
  */
-if (count($searchCoursesIDs)>0) { 
+if (isset($searchtext) || count($searchCoursesIDs)>0) { 
 	$optionsAr['onload_func'] = 'initDoc('.json_encode($searchCoursesIDs).','.(defined('MODULES_LEX') ? 'true' : 'false').
 	','.(($userObj->getType()==AMA_TYPE_AUTHOR) ? 'true' : 'false').');';
 }

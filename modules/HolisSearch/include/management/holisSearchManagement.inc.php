@@ -37,18 +37,7 @@ class holisSearchManagement
 	}
 	
 	public function index() {
-		/* @var $html string holds html code to be retuned */
-		$htmlObj = new FormIndexSearch( array('typologiesArr'=>$this->_typologiesArr ), $this->_forceAbrogated );
-		/* @var $path   string  path var to render in the help message */
-		$help = translateFN('Benvenuto nella Ricerca Holis/SESPIUS');
-		/* @var $status string status var to render in the breadcrumbs */
-		$title= translateFN('Ricerca');
-				
-		return array(
-			'htmlObj'   => $htmlObj,
-			'help'      => $help,
-			'title'     => $title,
-		);
+		return $this->runSearch(null);
 	}
 	
 	public function runSearch($searchtext, $searchCourseCount=0) {
@@ -85,10 +74,12 @@ class holisSearchManagement
 			if (isset($_GET['classe']) && strlen(trim($_GET['classe']))>0 && trim($_GET['classe'])!=='null')
 				$formdata['classe'] = trim($_GET['classe']);
 			// set abrogated
-			if (!$this->_forceAbrogated && isset($_GET['abrogato']) && is_numeric($_GET['abrogato']))
-				$formdata['abrogato'] = intval($_GET['abrogato']);
-			else
-				$formdata['abrogato'] = 1;
+			if (!is_null($searchtext)) {
+				if (!$this->_forceAbrogated && isset($_GET['abrogato']) && is_numeric($_GET['abrogato']))
+					$formdata['abrogato'] = intval($_GET['abrogato']);
+				else
+					$formdata['abrogato'] = 1;
+			} else $formdata['abrogato'] = null;
 			
 			/**
 			 * DO NOT REMOVE THIS span, it's needed
@@ -103,92 +94,99 @@ class holisSearchManagement
 		}
 		$searchForm = new FormIndexSearch($formdata, $this->_forceAbrogated);
 
-		/**
-		 * DO NOT REMOVE THIS span, it's needed
-		 * by the javascript to have the $cleantext
-		 */
-		$termSpan = CDOMElement::create('span','id:searchtext');
-		$termSpan->setAttribute('style', 'display:none');
-		$termSpan->addChild(new CText($cleantext));
-		
-		/**
-		 * DO NOT REMOVE THIS span, it's needed
-		 * by the javascript to have the $querystring (aka searchtext)
-		 */
-		$querySpan = CDOMElement::create('span','id:querystring');
-		$querySpan->setAttribute('style', 'display:none');
-		$querySpan->addChild(new CText($searchtext));
-		
-		
-		/**
-         * add a span for the translated text to display
-         * when waiting to receive searched terms taxonomy 
-		 */
-		$taxonomyWaitText = CDOMElement::create('span','id:taxonomyWaitText');
-		$taxonomyWaitText->setAttribute('style', 'display:none');
-		$taxonomyWaitText->addChild (new CText(translateFN('Cerco i sinonimi dei termini di ricerca').'...'));
-		
-		$resultsWrapper = CDOMElement::create('div','id:resultsWrapper');
-		
-		/**
-		 * prepare an hidden div for no results display
-		 */ 
-		$noResults = CDOMElement::create('div','class:noResults');
-		$noResults->setAttribute('style', 'display:none');
-		$noResults->addChild(new CText(translateFN('Nessun risultato trovato')));
-		
-		if (MODULES_LEX) {			
+		if (!is_null($searchtext)) {
 			/**
-			 * prepare div to hold modules/lex search results
+			 * DO NOT REMOVE THIS span, it's needed
+			 * by the javascript to have the $cleantext
 			 */
-			$lexDIV = CDOMElement::create('div','id:moduleLexResults');
+			$termSpan = CDOMElement::create('span','id:searchtext');
+			$termSpan->setAttribute('style', 'display:none');
+			$termSpan->addChild(new CText($cleantext));
 			
 			/**
-			 * add a span for the translated text to display
-			 * when waiting to receive module lex search result
+			 * DO NOT REMOVE THIS span, it's needed
+			 * by the javascript to have the $querystring (aka searchtext)
 			 */
-			$lexSearchWaitText = CDOMElement::create('span','id:lexSearchWaitText');
-			$lexSearchWaitText->setAttribute('style', 'display:none');
-			$lexSearchWaitText->addChild (new CText(translateFN('Cerco tra le fonti legislative').'...'));
+			$querySpan = CDOMElement::create('span','id:querystring');
+			$querySpan->setAttribute('style', 'display:none');
+			$querySpan->addChild(new CText($searchtext));
 			
-			$lexTitle = CDOMElement::create('h2','id:moduleLexResultsTitle');
-			$lexTitle->addChild (new CText(translateFN('Ricerca Fonti')));
-			$lexDIV->addChild ($lexTitle);
 			
-			// add a noresults div to the $lexDIV
-			$clone = clone $noResults;
-			$clone->setAttribute('id', 'noResultsmoduleLex');
+			/**
+	         * add a span for the translated text to display
+	         * when waiting to receive searched terms taxonomy 
+			 */
+			$taxonomyWaitText = CDOMElement::create('span','id:taxonomyWaitText');
+			$taxonomyWaitText->setAttribute('style', 'display:none');
+			$taxonomyWaitText->addChild (new CText(translateFN('Cerco i sinonimi dei termini di ricerca').'...'));
 			
-			$lexDIV->addChild($lexSearchWaitText);
-			$lexDIV->addChild($clone);
+			$resultsWrapper = CDOMElement::create('div','id:resultsWrapper');
 			
-			$resultsWrapper->addChild($lexDIV);						
-		}
-		
-		$nodesDIV = CDOMElement::create('div','id:nodeResults');
-		
-		$nodesTitle = CDOMElement::create('h2','id:nodeResultsTitle');
-		$nodesTitle->addChild (new CText(translateFN('Ricerca nodi')));
-		$nodesDIV->addChild ($nodesTitle);
-		
-		// add a div for each course to be search, to be filled by javascript
-		for ($i=0; $i<$searchCourseCount; $i++) {
-			$nodesDIV->addChild(CDOMElement::create('div','id:nodeResult:'.$i.',class:nodeResult'));			
-		}
-		// add a noresults div to the $nodesDIV
-		$clone = clone $noResults;
-		$clone->setAttribute('id', 'noResultsNode');
-		$nodesDIV->addChild($clone);
-		
-		$resultsWrapper->addChild($nodesDIV);
+			/**
+			 * prepare an hidden div for no results display
+			 */ 
+			$noResults = CDOMElement::create('div','class:noResults');
+			$noResults->setAttribute('style', 'display:none');
+			$noResults->addChild(new CText(translateFN('Nessun risultato trovato')));
+			
+			if (MODULES_LEX) {			
+				/**
+				 * prepare div to hold modules/lex search results
+				 */
+				$lexDIV = CDOMElement::create('div','id:moduleLexResults');
 				
-		$htmlObj->addChild ($termSpan); // do not remove, see above
-		$htmlObj->addChild ($querySpan); // do not remove, see above
-		if (isset($tripleSpan)) $htmlObj->addChild($tripleSpan); // do not remove, see above
-		$htmlObj->addChild (new CText($searchForm->getHtml()));
-		$htmlObj->addChild ($taxonomyWaitText);
-		$htmlObj->addChild (CDOMElement::create('div','class:clearfix'));
-		$htmlObj->addChild ($resultsWrapper);
+				/**
+				 * add a span for the translated text to display
+				 * when waiting to receive module lex search result
+				 */
+				$lexSearchWaitText = CDOMElement::create('span','id:lexSearchWaitText');
+				$lexSearchWaitText->setAttribute('style', 'display:none');
+				$lexSearchWaitText->addChild (new CText(translateFN('Cerco tra le fonti legislative').'...'));
+				
+				$lexTitle = CDOMElement::create('h2','id:moduleLexResultsTitle');
+				$lexTitle->addChild (new CText(translateFN('Ricerca Fonti')));
+				$lexDIV->addChild ($lexTitle);
+				
+				// add a noresults div to the $lexDIV
+				$clone = clone $noResults;
+				$clone->setAttribute('id', 'noResultsmoduleLex');
+				
+				$lexDIV->addChild($lexSearchWaitText);
+				$lexDIV->addChild($clone);
+				
+				$resultsWrapper->addChild($lexDIV);						
+			}
+			
+			$nodesDIV = CDOMElement::create('div','id:nodeResults');
+			
+			$nodesTitle = CDOMElement::create('h2','id:nodeResultsTitle');
+			$nodesTitle->addChild (new CText(translateFN('Ricerca nodi')));
+			$nodesDIV->addChild ($nodesTitle);
+			
+			// add a div for each course to be search, to be filled by javascript
+			for ($i=0; $i<$searchCourseCount; $i++) {
+				$nodesDIV->addChild(CDOMElement::create('div','id:nodeResult:'.$i.',class:nodeResult'));			
+			}
+			// add a noresults div to the $nodesDIV
+			$clone = clone $noResults;
+			$clone->setAttribute('id', 'noResultsNode');
+			$nodesDIV->addChild($clone);
+			
+			$resultsWrapper->addChild($nodesDIV);
+					
+			$htmlObj->addChild ($termSpan); // do not remove, see above
+			$htmlObj->addChild ($querySpan); // do not remove, see above
+			if (isset($tripleSpan)) $htmlObj->addChild($tripleSpan); // do not remove, see above
+			$htmlObj->addChild (new CText($searchForm->getHtml()));
+			$htmlObj->addChild ($taxonomyWaitText);
+			$htmlObj->addChild (CDOMElement::create('div','class:clearfix'));
+			$htmlObj->addChild ($resultsWrapper);
+		} else {
+			/**
+			 * no serachtext, display the search form only
+			 */
+			$htmlObj->addChild (new CText($searchForm->getHtml()));
+		}
 		
 		return array(
 			'htmlObj'   => $htmlObj,
