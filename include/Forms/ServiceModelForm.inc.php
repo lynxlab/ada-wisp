@@ -73,23 +73,13 @@ class ServiceModelForm extends FForm {
          * 
          */
         
-        $desc = translateFN('Livello servizio:');
-        $service_type = array(
-                    ADA_SERVICE_HELP => translateFN('Help per studente'), 
-                    ADA_SERVICE_LEG => translateFN('Leg'),
-                    ADA_SERVICE_LEG_NO_TIMELINE => translateFN('Leg no timeline'),
-                    ADA_SERVICE_COMMON_TUTOR => translateFN('Common tutor'),
-                    ADA_SERVICE_GIUR => translateFN('Giur'),
-                    ADA_SERVICE_ORG => translateFN('Org'),
-                    ADA_SERVICE_MANUALE=>translateFN('Manuale'),
-                    ADA_SERVICE_TEMI_RISOLTI=>translateFN('Temi risolti'),
-                    ADA_SERVICE_ELEARNING=>translateFN('E-learning'),
-                    ADA_SERVICE_COURSE=>translateFN('Course'),
-        );
-
-        $this->addSelect('common_area',$desc,$service_type,0)
-             ->setRequired();
-//             ->setValidator(FormValidator::POSITIVE_NUMBER_VALIDATOR);
+         /* if isset $_SESSION['service_level'] it means that the istallation supports course type */
+      
+        if(isset($_SESSION['service_level'])){
+            $desc = translateFN('Livello servizio').':';
+            $this->addSelect('service_level',$desc,$_SESSION['service_level'],reset($_SESSION['service_level']))
+            ->setRequired();
+        }
 
 /*        
         $this->addRadios(

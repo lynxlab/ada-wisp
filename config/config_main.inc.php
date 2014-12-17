@@ -102,6 +102,11 @@ define('ADA_COURSEINSTANCE_STATUS_PRIVATE',  0);
 define('ADA_COURSEINSTANCE_STATUS_RESERVED', 1);
 define('ADA_COURSEINSTANCE_STATUS_PUBLIC',   2);
 
+/*
+ * default services types 
+ */
+define('DEFAULT_SERVICE_TYPE', 1);
+
 /**
  * HOLIS services types
  */

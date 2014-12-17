@@ -66,6 +66,8 @@ if(is_array($coursesAr) && count($coursesAr) > 0) {
 		$isServiceCommonLevel = false;
         if (!AMA_DB::isError($serviceInfo))
         {
+            if(isset($_SESSION['service_level']))$serviceLevelTxt = $_SESSION['service_level'][$serviceInfo[3]];
+            else{
         		switch ($serviceInfo[3])
         		{
         			case ADA_SERVICE_HELP:
@@ -111,7 +113,7 @@ if(is_array($coursesAr) && count($coursesAr) > 0) {
         				$serviceLevelTxt = translateFN("N/A");
         				break;
         		}
-
+            }
         }
         else $serviceLevelTxt = translateFN("N/A");
         

@@ -77,7 +77,8 @@ if (isset($_SERVER['REQUEST_METHOD']) && $_SERVER['REQUEST_METHOD'] == 'POST') {
             'id_lingua' => $_POST['id_lingua'],
             'static_mode' => $_POST['static_mode'],
             'crediti' => $_POST['crediti'],
-            'common_area' => $_POST['common_area']
+            'duration_hours' => $_POST['duration_hours'],
+            'service_level' => $_POST['service_level']
         );
         
         $id_course = $dh->add_course($course);
@@ -101,7 +102,7 @@ if (isset($_SERVER['REQUEST_METHOD']) && $_SERVER['REQUEST_METHOD'] == 'POST') {
           $service_dataAr = array(
             'service_name' => $_POST['titolo'],
             'service_description' => $_POST['descrizione'],
-            'service_level' => $_POST['common_area'],   
+            'service_level' => $_POST['service_level'],
             'service_duration'=> 0,
             'service_min_meetings' => 0,
             'service_max_meetings' => 0,
@@ -121,7 +122,7 @@ if (isset($_SERVER['REQUEST_METHOD']) && $_SERVER['REQUEST_METHOD'] == 'POST') {
                     /* *
                      * if needed it creates the instance and chat...
                      */
-                if($_POST['common_area']!= ADA_SERVICE_HELP){ 
+                if($_POST['service_level']!= ADA_SERVICE_HELP){ 
                     $course_instanceAr = array(
                         'data_inizio_previsto' => time(), // dt2tsFN($_POST['data_inizio_previsto']),
                         'data_inizio' => time(), // dt2tsFN($_POST['data_inizio_previsto']),

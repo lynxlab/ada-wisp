@@ -79,7 +79,8 @@ if (isset($_SERVER['REQUEST_METHOD']) && $_SERVER['REQUEST_METHOD'] == 'POST') {
             'id_lingua' => $_POST['id_lingua'],
             'static_mode' => $_POST['static_mode'],
             'crediti' => $_POST['crediti'],
-            'common_area' => $_POST['common_area']
+            'duration_hours' => $_POST['duration_hours'],
+            'service_level' => $_POST['service_level']
         );
         $result = $dh->set_course($_POST['id_corso'], $course);
 
@@ -89,7 +90,7 @@ if (isset($_SERVER['REQUEST_METHOD']) && $_SERVER['REQUEST_METHOD'] == 'POST') {
                 $update_serviceDataAr = array(
                     'service_name' => $_POST['titolo'],
                     'service_description' => $_POST['descrizione'],
-                    'service_level' => $_POST['common_area'], //$service_dataAr[3],
+                    'service_level' => $_POST['service_level'], //$service_dataAr[3],
                     'service_duration' => $service_dataAr[4],
                     'service_min_meetings' => $service_dataAr[5],
                     'service_max_meetings' => $service_dataAr[6],
@@ -107,7 +108,7 @@ if (isset($_SERVER['REQUEST_METHOD']) && $_SERVER['REQUEST_METHOD'] == 'POST') {
                     $fieldsAr = array('data_inizio', 'data_inizio_previsto', 'durata', 'data_fine', 'title');
                     $id_course = $_POST['id_corso'];
                     $instancesAr = $dh->course_instance_get_list($fieldsAr, $id_course);
-                    if (($_POST['common_area'] == ADA_SERVICE_COMMON || $_POST['common_area'] == ADA_SERVICE_COMMON_STUDENT || $_POST['common_area'] == ADA_SERVICE_COMMON_TUTOR)
+                    if (($_POST['service_level'] == ADA_SERVICE_COMMON || $_POST['service_level'] == ADA_SERVICE_COMMON_STUDENT || $_POST['service_level'] == ADA_SERVICE_COMMON_TUTOR)
                             && !AMA_DataHandler::isError($instancesAr) && count($instancesAr) == 0) {
                         $course_instanceAr = array(
                             'data_inizio_previsto' => time(), // dt2tsFN($_POST['data_inizio_previsto']),
@@ -125,7 +126,7 @@ if (isset($_SERVER['REQUEST_METHOD']) && $_SERVER['REQUEST_METHOD'] == 'POST') {
                             $id_chatroom = Course_instance::add_chatRoom($id_course, $course_instanceAr);
                         }
                     }
-                    elseif (!$_POST['common_area'] && !AMA_DataHandler::isError($instancesAr) && count($instancesAr==1) && ($service_dataAr[3] != $_POST['common_area'])) {
+                    elseif (!$_POST['service_level'] && !AMA_DataHandler::isError($instancesAr) && count($instancesAr==1) && ($service_dataAr[3] != $_POST['service_level'])) {
                         /* ***********
                          * if instances of service exist, they are deleted before to delete service and link to general service
                          */
@@ -181,7 +182,7 @@ if (isset($_SERVER['REQUEST_METHOD']) && $_SERVER['REQUEST_METHOD'] == 'POST') {
         if (AMA_Common_DataHandler::isError($service_dataAr) || count($service_dataAr)==0) {
             $form = new CText(translateFN('Servizio non trovato (2)'));
         } else {
-            $common_area = intval($service_dataAr[3]);
+   //         $common_area = intval($service_dataAr[3]);
 //            $common_area = $service_dataAr[3];
             $providerAuthors = $dh->find_authors_list(array('username'), '');
             $authors = array();
@@ -215,8 +216,10 @@ if (isset($_SERVER['REQUEST_METHOD']) && $_SERVER['REQUEST_METHOD'] == 'POST') {
                     'data_creazione' => $courseObj->getCreationDate(),
                     'data_pubblicazione' => $courseObj->getPublicationDate(),
 //                    'common_area' => $common_area ? 1 : 0,
-                    'common_area' => $common_area,
-                    'crediti' =>  $courseObj->getCredits() // modifica in Course
+                    //'common_area' => $common_area,
+                    'crediti' =>  $courseObj->getCredits(), // modifica in Course
+                    'duration_hours' => $courseObj->getDurationHours(),
+                    'service_level'  =>$courseObj->getServiceLevel()
                 );
                 $form->fillWithArrayData($formData);
             } else {
