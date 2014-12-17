@@ -66,54 +66,52 @@ if(is_array($coursesAr) && count($coursesAr) > 0) {
 		$isServiceCommonLevel = false;
         if (!AMA_DB::isError($serviceInfo))
         {
-            if(isset($_SESSION['service_level']))$serviceLevelTxt = $_SESSION['service_level'][$serviceInfo[3]];
-            else{
-        		switch ($serviceInfo[3])
-        		{
-        			case ADA_SERVICE_HELP:
-        				$serviceLevelTxt = translateFN('Help per studente');
-        				break;
-        			case ADA_SERVICE_LEG:
-        				$serviceLevelTxt = translateFN('Leg');
-        				$isServiceCommonLevel = true;
-        				break;
-        			case ADA_SERVICE_LEG_NO_TIMELINE:
-        				$serviceLevelTxt = translateFN('Leg no timeline');
-        				$isServiceCommonLevel = true;
-        				break;
-        			case ADA_SERVICE_COMMON_TUTOR:
-        				$serviceLevelTxt = translateFN('Area riservata ai tutor');
-        				$isServiceCommonLevel = true;
-        				break;
-                                case ADA_SERVICE_GIUR:
-        				$serviceLevelTxt = translateFN('Giur');
-        				$isServiceCommonLevel = true;
-        				break;
-                                case ADA_SERVICE_ORG:
-        				$serviceLevelTxt = translateFN('Org');
-        				$isServiceCommonLevel = true;
-        				break;
-                                case ADA_SERVICE_MANUALE:
-        				$serviceLevelTxt = translateFN('Manuale');
-        				$isServiceCommonLevel = true;
-        				break;
-                                case ADA_SERVICE_TEMI_RISOLTI:
-        				$serviceLevelTxt = translateFN('Temi risolti');
-        				$isServiceCommonLevel = true;
-        				break;
-                                case ADA_SERVICE_ELEARNING:
-        				$serviceLevelTxt = translateFN('E-learning');
-        				$isServiceCommonLevel = true;
-        				break;
-                                case ADA_SERVICE_COURSE:
-        				$serviceLevelTxt = translateFN('Course');
-        				$isServiceCommonLevel = true;
-        				break;
-        			default:
-        				$serviceLevelTxt = translateFN("N/A");
-        				break;
-        		}
+            switch ($serviceInfo[3])
+            {
+                case ADA_SERVICE_HELP:
+                        $serviceLevelTxt = translateFN('Help per studente');
+                        break;
+                case ADA_SERVICE_LEG:
+                        $serviceLevelTxt = translateFN('Leg');
+                        $isServiceCommonLevel = true;
+                        break;
+                case ADA_SERVICE_LEG_NO_TIMELINE:
+                        $serviceLevelTxt = translateFN('Leg no timeline');
+                        $isServiceCommonLevel = true;
+                        break;
+                case ADA_SERVICE_COMMON_TUTOR:
+                        $serviceLevelTxt = translateFN('Area riservata ai tutor');
+                        $isServiceCommonLevel = true;
+                        break;
+                case ADA_SERVICE_GIUR:
+                        $serviceLevelTxt = translateFN('Giur');
+                        $isServiceCommonLevel = true;
+                        break;
+                case ADA_SERVICE_ORG:
+                        $serviceLevelTxt = translateFN('Org');
+                        $isServiceCommonLevel = true;
+                        break;
+                case ADA_SERVICE_MANUALE:
+                        $serviceLevelTxt = translateFN('Manuale');
+                        $isServiceCommonLevel = true;
+                        break;
+                case ADA_SERVICE_TEMI_RISOLTI:
+                        $serviceLevelTxt = translateFN('Temi risolti');
+                        $isServiceCommonLevel = true;
+                        break;
+                case ADA_SERVICE_ELEARNING:
+                        $serviceLevelTxt = translateFN('E-learning');
+                        $isServiceCommonLevel = true;
+                        break;
+                case ADA_SERVICE_COURSE:
+                        $serviceLevelTxt = translateFN('Course');
+                        $isServiceCommonLevel = true;
+                        break;
+                default:
+                        $serviceLevelTxt = translateFN("N/A");
+                        break;
             }
+            
         }
         else $serviceLevelTxt = translateFN("N/A");
         
