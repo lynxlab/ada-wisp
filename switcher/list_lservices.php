@@ -66,30 +66,28 @@ if(is_array($coursesAr) && count($coursesAr) > 0) {
 		$isServiceCommonLevel = false;
         if (!AMA_DB::isError($serviceInfo))
         {
-            if(isset($_SESSION['service_level']))$serviceLevelTxt = $_SESSION['service_level'][$serviceInfo[3]];
-            else{
-                    switch ($serviceInfo[3])
-                    {
-                            case ADA_SERVICE_HELP:
-                                    $serviceLevelTxt = translateFN('Help per studente');
-                                    break;
-                            case ADA_SERVICE_COMMON:
-                                    $serviceLevelTxt = translateFN('Area di interazione per utenti registrati');
-                                    $isServiceCommonLevel = true;
-                                    break;
-                            case ADA_SERVICE_COMMON_STUDENT:
-                                    $serviceLevelTxt = translateFN('Area comune per studenti');
-                                    $isServiceCommonLevel = true;
-                                    break;
-                            case ADA_SERVICE_COMMON_TUTOR:
-                                    $serviceLevelTxt = translateFN('Area riservata ai tutor');
-                                    $isServiceCommonLevel = true;
-                                    break;
-                            default:
-                                    $serviceLevelTxt = translateFN("N/A");
-                                    break;
-                    }
+            switch ($serviceInfo[3])
+            {
+                case ADA_SERVICE_HELP:
+                        $serviceLevelTxt = translateFN('Help per studente');
+                        break;
+                case ADA_SERVICE_COMMON:
+                        $serviceLevelTxt = translateFN('Area di interazione per utenti registrati');
+                        $isServiceCommonLevel = true;
+                        break;
+                case ADA_SERVICE_COMMON_STUDENT:
+                        $serviceLevelTxt = translateFN('Area comune per studenti');
+                        $isServiceCommonLevel = true;
+                        break;
+                case ADA_SERVICE_COMMON_TUTOR:
+                        $serviceLevelTxt = translateFN('Area riservata ai tutor');
+                        $isServiceCommonLevel = true;
+                        break;
+                default:
+                        $serviceLevelTxt = translateFN("N/A");
+                        break;
             }
+            
         }
         else $serviceLevelTxt = translateFN("N/A");
         
