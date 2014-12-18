@@ -73,9 +73,13 @@ class ServiceModelForm extends FForm {
          * 
          */
         
-         /* if isset $_SESSION['service_level'] it means that the istallation supports course type */
-      
+     /* if isset $_SESSION['service_level'] it means that the istallation supports course type */
+        
         if(isset($_SESSION['service_level'])){
+            
+            /* in stay-in, pubblic course level is set to 99, but it should not appear in form service. */
+            unset($_SESSION['service_level'][99]); 
+            
             $desc = translateFN('Livello servizio').':';
             $this->addSelect('service_level',$desc,$_SESSION['service_level'],reset($_SESSION['service_level']))
             ->setRequired();
