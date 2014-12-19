@@ -81,7 +81,7 @@ if (isset($_SERVER['REQUEST_METHOD']) && $_SERVER['REQUEST_METHOD'] == 'GET' &&
 		
 		$htmlObj = CDOMElement::create('div','class:assetDetail');
 		if (strlen($assetText)>0) {
-			$htmlObj->addChild (new CText('<p>'.$assetText.'</p>'));
+			$htmlObj->addChild (new CText('<p>'.nl2br($assetText).'</p>'));
 		}
 		
 		$assetEurovocAr = $dh->get_asset_eurovoc ($assetID,$languageId);
