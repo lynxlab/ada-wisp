@@ -215,7 +215,7 @@ if(!AMA_DataHandler::isError($courseInstances)) {
         /* *****************
          * COMMON AREA SERVICE
          */
-         $UserServices = '<h2>'.translateFN('Sottositemi e servizi').'</h2>';
+         $UserServices = '<h2>'.translateFN('Sottosistemi e servizi').'</h2>';
          $content_dataAr['bloccoDueTitolo'] = $UserServices;
          
          /*
