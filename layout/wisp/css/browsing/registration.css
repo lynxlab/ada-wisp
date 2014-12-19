@@ -16,3 +16,13 @@ div.fform { width: 50%; }
 	display: block;
 	margin-top: 5px;
 }
+
+#data_reg {
+	width: 60%;
+	margin: 0 auto;
+	float: none;
+}
+
+form[name=registration] input {
+	width: 45%;
+}

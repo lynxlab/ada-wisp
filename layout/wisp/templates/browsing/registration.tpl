@@ -65,7 +65,7 @@
 						<div id="data_reg">
                         <template_field class="template_field" name="data">data</template_field>
 						</div>
-						<div id="data_reg_img"></div>
+						<!-- div id="data_reg_img"></div -->
                     </div>                    
                 </div>
                 <div id="bottomcont">
@@ -84,7 +84,8 @@
 
         
 		<!-- PIEDE -->
-        <div id="footer_ask">
+		<div class="clearfix"></div>
+        <div id="footer">
             <template_field class="microtemplate_field" name="footer">footer</template_field>
         </div>
         <!-- / piede -->
