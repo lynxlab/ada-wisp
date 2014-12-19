@@ -585,7 +585,8 @@ if($last_access=='' || is_null($last_access))
 	 * user home page links for HOLIS
 	 */
 	if (in_array($userObj->getSerialNumber(), $GLOBALS['user_service_access'][ADA_SERVICE_GIUR])) {
-		$giurLink =  MODULES_LEX_HTTP;
+//		$giurLink =  MODULES_LEX_HTTP; http://ada.lynxlab.com/holis_test/browsing/view.php?id_node=9_0&id_course=9 
+		$giurLink =  HTTP_ROOT_DIR.'/browsing/view.php?id_node=9_0&id_course=9&id_course_instance=18';
 		$content_dataAr['giurBox'] = '<h3>Sottosistema GIUR</h3>
 					 <div class="single_service">
 					  <p>Le fonti informative a supporto degli Operatori del mondo Giustizia</p>
@@ -620,7 +621,7 @@ if($last_access=='' || is_null($last_access))
 		$temiLink = HTTP_ROOT_DIR.'/browsing/view.php?id_node=5_0&id_course=5&id_course_instance=3'; 
 		$content_dataAr['temiBox'] = '<h3>Temi Risolti</h3>
                      <div class="single_service">
-                      <p>&nbsp;</p>
+                      <p>Analisi di casi concreti</p>
                       <a href="'.$temiLink.'">Accedi</a>
                      </div>';
 	}
@@ -629,7 +630,7 @@ if($last_access=='' || is_null($last_access))
 		$elearningLink = HTTP_ROOT_DIR.'/browsing/view.php?id_node=8_0&id_course=8&id_course_instance=17';
 		$content_dataAr['elearningBox'] = '<h3>Servizio di E-learning</h3>
                      <div class="single_service">
-                      <p>&nbsp;</p>
+                      <p>Formazione a distanza sul sistema SESPIUS</p>
                       <a href="'.$elearningLink.'">Accedi</a>
                      </div>';
 	}
