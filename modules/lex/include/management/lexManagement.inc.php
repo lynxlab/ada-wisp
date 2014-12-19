@@ -95,8 +95,9 @@ class lexManagement
     	$htmlObj = null;
     	/* @var $path   string  path var to render in the help message */
     	$help = translateFN('Benvenuto nel modulo GIUR');
+    	if (isset($_GET['filter']) && strlen($_GET['filter'])>0) $help .= ' - ' .ucwords(trim($_GET['filter']));
     	/* @var $status string status var to render in the breadcrumbs */
-    	$title= translateFN('GIUR');
+    	$title= translateFN('SOTTOSISTEMA GIUR');
     	
     	if (is_null($sourceID)) {
     		$htmlObj = CDOMElement::create('div','class:no-permissions');
@@ -135,8 +136,9 @@ class lexManagement
 		$htmlObj = null;		
 		/* @var $path   string  path var to render in the help message */
 		$help = translateFN('Benvenuto nel modulo GIUR');
+		if (isset($_GET['filter']) && strlen($_GET['filter'])>0) $help .= ' - ' .ucwords(trim($_GET['filter']));
 		/* @var $status string status var to render in the breadcrumbs */
-		$title= translateFN('GIUR');
+		$title= translateFN('SOTTOSISTEMA GIUR');
 		
 		if (isset ($this->_canDO) && count ($this->_canDO)>0) {
 			// user has permissions to do something
