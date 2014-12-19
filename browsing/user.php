@@ -71,6 +71,23 @@ if(!AMA_DataHandler::isError($courseInstances)) {
             }
 //            if (count($courseInstanceHelpAr) > 0 && $userObj->getSerialNumber() != '') {
             if ($userObj->getSerialNumber() != '') {
+            	
+            	/* ***********************
+            	 * appointments and proposal for all instances
+            	 * $user_events and $user_events_2 are valorized in browsing_function.inc.php
+            	 */
+            	$serviceDOM = CDOMElement::create('div','id:servicesRequired');
+            	if (is_object($user_events) || is_object($user_events_2)) {
+            		$divAppointments = CDOMElement::create('div','class:appointments');
+            		//                    $divAppointments->addChild(new CText('<h3>'.translateFN('Appuntamenti').'</h3>'));
+            		if ($user_events->getHtml() != '') $divAppointments->addChild($user_events);
+            		if ($user_events_2->getHtml() != '') $divAppointments->addChild($user_events_2);
+            		if ($user_events_2->getHtml() == '' && $user_events->getHtml() == '') {
+            			$divAppointments->addChild(new CText(translateFN('Non ci sono appuntamenti')));
+            		}
+            		$content_dataAr['bloccoUnoAppuntamenti'] = '<h3>'.translateFN('Appuntamenti').'</h3>'.$divAppointments->getHtml();
+            	}
+            	
                 /*
                  * disable the widget (to be used only for generic registered users)
                  */
@@ -567,20 +584,67 @@ if($last_access=='' || is_null($last_access))
 	/**
 	 * user home page links for HOLIS
 	 */
-	$content_dataAr['giurLink'] =  MODULES_LEX_HTTP;
-	$content_dataAr['orgLink'] =   HTTP_ROOT_DIR.'/browsing/view.php?id_node=10_0&id_course=10&id_course_instance=19#10_0';
-	if ($userObj->getSerialNumber()==AMA_TYPE_USER_LAWYER) {
-		// leg no timeline for lawyer only so the link is to view.php
-		$content_dataAr['legLink'] =   HTTP_ROOT_DIR.'/browsing/view.php?id_node=6_0&id_course=6&id_course_instance=5#6_0';
-	} else {
-		// leg with timeline for other users, so the link is to sview.php
-		$content_dataAr['legLink'] =   HTTP_ROOT_DIR.'/browsing/sview.php?id_node=6_0&id_course=6&id_course_instance=5#6_0';
+	if (in_array($userObj->getSerialNumber(), $GLOBALS['user_service_access'][ADA_SERVICE_GIUR])) {
+		$giurLink =  MODULES_LEX_HTTP;
+		$content_dataAr['giurBox'] = '<h3>Sottosistema GIUR</h3>
+					 <div class="single_service">
+					  <p>Le fonti informative a supporto degli Operatori del mondo Giustizia</p>
+					  <a href="'.$giurLink.'">Accedi</a>
+					 </div>';
 	}
 	
-	$content_dataAr['soluzioniLink'] =  HTTP_ROOT_DIR.'/browsing/view.php?id_node=5_0&id_course=5&id_course_instance=3';
-	$content_dataAr['etutoringLink'] =  HTTP_ROOT_DIR.'/browsing/ask_service.php';
-	$content_dataAr['elearningLink'] =  HTTP_ROOT_DIR.'/browsing/view.php?id_node=8_0&id_course=8&id_course_instance=17';
-	$content_dataAr['fontiLink'] =  HTTP_ROOT_DIR.'/browsing/sview.php?id_node=4_0&id_course=4&id_course_instance=2';
+	if (in_array($userObj->getSerialNumber(), $GLOBALS['user_service_access'][ADA_SERVICE_ORG])) {
+		$orgLink =  HTTP_ROOT_DIR.'/browsing/view.php?id_node=10_0&id_course=10&id_course_instance=19#10_0';
+		$content_dataAr['orgBox'] = '<h3>Sottosistema ORG</h3>
+                     <div class="single_service">
+                      <p>Il DataWarehouse del PCT a supporto della gestione degli Organi della Giustizia</p>
+                      <a href="'.$orgLink.'">Accedi</a>
+                     </div>'; 
+	}
+	
+	if (in_array($userObj->getSerialNumber(), $GLOBALS['user_service_access'][ADA_SERVICE_LEG])) {
+		$legLink = HTTP_ROOT_DIR.'/browsing/view.php?id_node=6_0&id_course=6&id_course_instance=5#6_0';
+	} else if (in_array($userObj->getSerialNumber(), $GLOBALS['user_service_access'][ADA_SERVICE_LEG_NO_TIMELINE])) {
+		$legLink = MODULES_HOLISSEARCH_HTTP.'/legSearch.php';
+	}
+	
+	if (isset($legLink) && strlen($legLink)>0) {
+		$content_dataAr['legBox'] = '<h3>Sottosistema LEG</h3>
+                     <div class="single_service">
+                      <p>Conoscere e valutare l\'impatto di una nuova legge</p>
+                      <a href="'.$legLink.'">Accedi</a>
+                     </div>';
+	}
+	
+	if (in_array($userObj->getSerialNumber(), $GLOBALS['user_service_access'][ADA_SERVICE_TEMI_RISOLTI])) {
+		$temiLink = HTTP_ROOT_DIR.'/browsing/view.php?id_node=5_0&id_course=5&id_course_instance=3'; 
+		$content_dataAr['temiBox'] = '<h3>Temi Risolti</h3>
+                     <div class="single_service">
+                      <p>&nbsp;</p>
+                      <a href="'.$temiLink.'">Accedi</a>
+                     </div>';
+	}
+	
+	if (in_array($userObj->getSerialNumber(), $GLOBALS['user_service_access'][ADA_SERVICE_ELEARNING])) {
+		$elearningLink = HTTP_ROOT_DIR.'/browsing/view.php?id_node=8_0&id_course=8&id_course_instance=17';
+		$content_dataAr['elearningBox'] = '<h3>Servizio di E-learning</h3>
+                     <div class="single_service">
+                      <p>&nbsp;</p>
+                      <a href="'.$elearningLink.'">Accedi</a>
+                     </div>';
+	}
+	
+	if (false) { // molto probabilmente non serve
+		$discussioneLink = HTTP_ROOT_DIR.'/browsing/sview.php?id_node=4_0&id_course=4&id_course_instance=2';
+		$content_dataAr['discussioneBox'] = '<h3>Area Discussione</h3>
+                     <div class="single_service">
+                      <p>&nbsp;</p>
+                      <a href="'.$discussioneLink.'">Accedi</a>
+                     </div>';
+	}
+	
+	// $content_dataAr['etutoringLink'] =  HTTP_ROOT_DIR.'/browsing/ask_service.php';
+	
 	
         
 
