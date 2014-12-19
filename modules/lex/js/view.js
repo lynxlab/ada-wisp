@@ -67,7 +67,9 @@ function doAccordion(elementID) {
 }
 
 function copyAssetInMyLog() {
-    asset = $j('.assetDetail').html();
+    var asset = $j('.assetDetail').clone();
+    $j(asset).find('.assetWordsTitle,.assetWords,.assetWord').remove();
+    asset = $j(asset).html();
     okCopy = true;
     if (asset.length>0) {
 
