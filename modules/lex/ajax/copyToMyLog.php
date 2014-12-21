@@ -51,7 +51,7 @@ $user_dir = '/upload_file/uploaded_files/';
 $date = today_dateFN()." ".today_timeFN()."\n<BR />";
 $log_extension = ".htm";	
 
-if (isset($_SERVER['REQUEST_METHOD']) && $_SERVER['REQUEST_METHOD'] == 'GET' &&
+if (isset($_SERVER['REQUEST_METHOD']) && $_SERVER['REQUEST_METHOD'] == 'POST' &&
     isset($asset) && ($asset)!= '') {
     
     $userUploadPath = $root_dir . $user_dir .  $sess_id_user;

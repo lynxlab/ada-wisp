@@ -76,7 +76,7 @@ function copyAssetInMyLog() {
             var waitElement = $j('<span> Copying...</span>');
 
             $j.ajax({
-                    type	:	'GET',
+                    type	:	'POST',
                     url		:	'ajax/copyToMyLog.php',
                     data	:	{ asset: asset },
                     dataType:	'json',
