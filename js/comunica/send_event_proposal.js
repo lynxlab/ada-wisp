@@ -305,10 +305,10 @@ function initDoc(initDatas, inputProposalNames, max_proposal_count) {
 				center: 'title',
 				right: 'month,agendaWeek,agendaDay'
 			},
-			eventSources : [  {
+			eventSources : [  /*{
 			                	url : GCAL_HOLIDAYS_FEED,
 								className: 'holiday'
-							  },
+							  },*/
 							  {
 				                url : HTTP_ROOT_DIR + "/comunica/ajax/getProposals.php",
 				                // WARNING: js code is based on these classnmes, do not change them!
