@@ -43,6 +43,7 @@ $neededObjAr = array ();
 /**
  * Performs basic controls before entering this module
  */
+$trackPageToNavigationHistory = false;
 require_once ROOT_DIR . '/include/module_init.inc.php';
 
 
