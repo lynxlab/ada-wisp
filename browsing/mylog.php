@@ -154,7 +154,8 @@ if (isset($_SERVER['REQUEST_METHOD']) && $_SERVER['REQUEST_METHOD'] == 'POST')
 }
 // } else {
 if ($fp = fopen($logfile,'r'))
-	$log_text = fread ($fp,16000);
+	$log_text = fread ($fp,filesize($logfile));
+//        $log_text = fread ($fp); //,16000);
 else
 	$log_text = "";
 fclose($fp);
