@@ -125,7 +125,11 @@ class Menu
      			$_SESSION['sess_userObj']->getSerialNumber()==AMA_TYPE_USER_AUX &&
      			!defined('IS_AUX')) {
      				define ('IS_AUX', true);
-     	}  else if (isset($_SESSION['sess_userObj']) && $_SESSION['sess_userObj'] instanceof ADALoggableUser &&
+     	} else if (isset($_SESSION['sess_userObj']) && $_SESSION['sess_userObj'] instanceof ADALoggableUser &&
+     			$_SESSION['sess_userObj']->getType()==AMA_TYPE_STUDENT &&
+     			!defined ('IS_STUDENT')) {
+     				define ('IS_STUDENT', true);
+     	} else if (isset($_SESSION['sess_userObj']) && $_SESSION['sess_userObj'] instanceof ADALoggableUser &&
      			$_SESSION['sess_userObj']->getType()==AMA_TYPE_TUTOR &&
      			!defined('IS_TUTOR')) {
      				define ('IS_TUTOR', true);
@@ -138,6 +142,7 @@ class Menu
      	if (!defined('IS_MAGISTRATE')) define('NOT_MAGISTRATE', true);
      	if (!defined('IS_LAWYER'))     define('NOT_LAWYER', true);
      	if (!defined('IS_GENERIC'))    define('NOT_GENERIC', true);
+     	if (!defined('IS_STUDENT'))    define('NOT_STUDENT', true);
      	if (!defined('IS_AUX'))        define('NOT_AUX', true);
      	if (!defined('IS_TUTOR'))      define('NOT_TUTOR', true);
      	if (!defined('IS_AUTHOR'))     define('NOT_AUTHOR', true);
