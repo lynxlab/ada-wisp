@@ -1575,6 +1575,33 @@ class MultiPort
       $msgFlags = ADA_EVENT_PROPOSED;
     }
     $result_Ar = self::get_messages($userObj, ADA_MSG_AGENDA, $msgFlags);
+    
+    /**
+     * @author giorgio 29/dic/2014
+     * 
+     * load each event and if all of the proposed dates are invalid
+     * or in the past, remove it from the returned elements
+     */
+    foreach ($result_Ar as $tester=>$appointment_data_Ar) {
+    	$mh = MessageHandler::instance(self::getDSN($tester));    	
+    	foreach ($appointment_data_Ar as $appointment_id => $appointment_Ar) {
+    		$msg_ha = $mh->get_message($userObj->getId(), $appointment_id);
+    		if (!AMA_DB::isError($msg_ha) && is_array($msg_ha) && count($msg_ha)>0) {
+    			$datetimesAr = ADAEventProposal::extractDateTimesFromEventProposalText($msg_ha['testo']);    			
+    			$isElementOK = false;    				
+    			if($datetimesAr !== false) {
+    				$now = dt2tsFN('now');
+    				foreach ($datetimesAr as $datetime) {
+    					$isElementOK = $isElementOK || (dt2tsFN($datetime['date'],$datetime['time'].':00') >= $now);
+    				}
+    			}
+    			if ($isElementOK === false) {
+    				// unset event
+    				unset ($result_Ar[$tester][$appointment_id]);
+    			}
+    		}
+    	}
+    }
 
     return $result_Ar;
     //return self::getEventsAsTable($userObj, $result_Ar);
