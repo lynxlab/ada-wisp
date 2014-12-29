@@ -195,24 +195,42 @@ function sumDateTimeFN ($arraydate){
 
 
 
-function dt2tsFN ($date){
-  $date_ar = split ('[\\/.-]', $date);
-  if (count($date_ar)<3)
-  return 0;
-  $format_ar = split ('[/.-]',ADA_DATE_FORMAT);
-  if ($format_ar[0]=="%d"){
-    $giorno = (int)$date_ar[0];
-    $mese = (int)$date_ar[1];
-  } else {   // english-like format
-    $giorno = (int)$date_ar[1];
-    $mese = (int)$date_ar[0];
-  }
-
-  $anno =(int)$date_ar[2];
-
-  $unix_date = mktime(0,0,0,$mese,$giorno,$anno,-1);
-  return $unix_date;
-
+function dt2tsFN ($date, $time=null){
+	if ($date == "NULL") {
+		return $date;
+	}
+	
+	if ($date == "now") {
+		return time();
+	}
+	
+	$date_ar = split ('[\\/.-]', $date);
+	if (count($date_ar)<3) {
+		return 0;
+	}
+	
+	$format_ar = split ('[/.-]',ADA_DATE_FORMAT);
+	if ($format_ar[0]=="%d") {
+		$giorno = (int)$date_ar[0];
+		$mese = (int)$date_ar[1];
+	}
+	else {
+		$giorno = (int)$date_ar[1];
+		$mese = (int)$date_ar[0];
+	}
+	
+	$anno =(int)$date_ar[2];
+	
+	if (!is_null($time)) {
+		list ($ora, $minuti, $secondi) = explode(':', $time);
+	} else {
+		$ora = 0;
+		$minuti = 0;
+		$secondi = 0;
+	}
+	
+	$unix_date = mktime($ora,$minuti,$secondi,$mese,$giorno,$anno);
+	return $unix_date;
 }
 
 
