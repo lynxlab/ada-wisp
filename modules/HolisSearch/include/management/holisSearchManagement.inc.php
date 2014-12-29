@@ -18,6 +18,20 @@
 
 require_once MODULES_HOLISSEARCH_PATH . '/include/form/formIndexSearch.php';
 
+/**
+ * @author giorgio 29/dic/2014
+ *
+ * if user is not allowed to use this module, redirect to home page
+ * uncomment below code to enable
+ */
+// if ( (isset($_SESSION['sess_userObj']) && $_SESSION['sess_userObj'] instanceof ADALoggableUser &&
+// 	  $_SESSION['sess_userObj']->getType()==AMA_TYPE_STUDENT ) &&
+// 	 (!isset($GLOBALS['user_service_access'][ADA_SERVICE_GIUR]) ||
+// 	  !in_array($_SESSION['sess_userObj']->getSerialNumber(), $GLOBALS['user_service_access'][ADA_SERVICE_GIUR]))
+// ) {
+// 	redirect($_SESSION['sess_userObj']->getHomePage());
+// }
+
 class holisSearchManagement
 {
 	private $_typologiesArr = null;
