@@ -87,7 +87,7 @@ function initDoc(maxSize, userId, canEdit, passedOpts) {
 		} , commonPekeOptions));
 
 		// make a selectric
-		$j('#tipologia, #categoria, #classe').selectric();
+		$j('#tipologia, #categoria, #classe, #forcetipologia').selectric();
 		// hook onchange event of select elements
 		$j('#tipologia').on ('change',function(){
 			$j.when(updateSelect('categoria')).done( function() { updateSelect('classe'); } );
@@ -233,7 +233,7 @@ function addTipologia() {
 function addFonte() {
 	$j('#nuova_fonte_btn').css('display','none');
 	$j("form[name='jex']")[0].reset();
-	$j('#tipologia').selectric('refresh');
+	$j('#tipologia, #forcetipologia').selectric('refresh');
 	$j('.pekecontainer').html('');
 	$j('#jexResults').contents().find('html').html('');
 	$j('#jexResults').slideUp (500, function(){

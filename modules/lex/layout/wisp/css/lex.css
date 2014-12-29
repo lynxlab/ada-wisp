@@ -152,7 +152,8 @@ div.show_error {
 
 #l_tipologia,
 #l_categoria,
-#l_classe {
+#l_classe,
+#l_forcetipologia {
 	float:left;
 	margin-right: 10px;
 	margin-left: 0px;

@@ -147,23 +147,28 @@ class jexManagement extends importManagement
 				if (!$this->_saveAttachedFile($full_document->getAttribute('id'))) return -1;
 			}
 
-			$saveTypology = false;
-			if (strlen($full_document->getAttribute('tipologia'))>0) {
-				$typology = $full_document->getAttribute('tipologia');
-				$saveTypology = true;
-			} else $typology = null;
-			
-			if (strlen($full_document->getAttribute('categoria'))>0) {
-				$category = $full_document->getAttribute('categoria');
-				$saveTypology = true;
-			} else $category = null;
-			
-			if (strlen($full_document->getAttribute('classe'))>0) {
-				$class = $full_document->getAttribute('classe');
-				$saveTypology = true;
-			} else $class = null;
-			
-			if ($saveTypology) $this->_saveTypology($typology, $category, $class);
+			/*
+			 * if user said that typology set in the MUST NOT overwrite typology found in the XML
+			 */
+			if (isset($_POST['forcetipologia']) && intval($_POST['forcetipologia'])===0) {
+				$saveTypology = false;
+				if (strlen($full_document->getAttribute('tipologia'))>0) {
+					$typology = $full_document->getAttribute('tipologia');
+					$saveTypology = true;
+				} else $typology = null;
+					
+				if (strlen($full_document->getAttribute('categoria'))>0) {
+					$category = $full_document->getAttribute('categoria');
+					$saveTypology = true;
+				} else $category = null;
+					
+				if (strlen($full_document->getAttribute('classe'))>0) {
+					$class = $full_document->getAttribute('classe');
+					$saveTypology = true;
+				} else $class = null;
+					
+				if ($saveTypology) $this->_saveTypology($typology, $category, $class);
+			}
 		}
 		
 		$documents = $XMLObj->getElementsByTagName('document');

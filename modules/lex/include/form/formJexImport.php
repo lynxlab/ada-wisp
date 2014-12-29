@@ -61,7 +61,11 @@ class FormJexImport extends FForm {
 		$sel_classe->setAttribute('class', 'dontuniform');
 		$sel_classe->withData($classesArr,reset(array_keys($classesArr)));
 		
-		$this->addFieldset('','set_tipologia')->withData(array ($sel_tipologia, $sel_categoria, $sel_classe));
+		$force_tipologia = FormControl::create(FormControl::SELECT, 'forcetipologia', translateFN('Queste scelte sovrascrivono quelle del file importato'));
+		$force_tipologia->setAttribute('class', 'dontuniform');
+		$force_tipologia->withData(array(0=>translateFN('No'),1=>translateFN('Si')),0);		
+		
+		$this->addFieldset('','set_tipologia')->withData(array ($sel_tipologia, $sel_categoria, $sel_classe, $force_tipologia));
 		
 // 		$add_tipologia = FormControl::create(FormControl::INPUT_TEXT,'nuova_tipologia','&nbsp;');
 // 		$add_tipologia->setAttribute('class', 'dontuniform');
