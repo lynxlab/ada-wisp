@@ -1,0 +1,42 @@
+<!DOCTYPE html>
+<!--
+To change this license header, choose License Headers in Project Properties.
+To change this template file, choose Tools | Templates
+and open the template in the editor.
+-->
+<html>
+    <head>
+        <title>Holis - Algoritmo di Ricerca</title>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+        <link rel="stylesheet" href="./css/index.css" type="text/css" media="screen">
+    </head>
+    <body>
+        <div id="logo">
+
+        </div> 
+        <h1 class="title">HOLIS - ALGORITMO DI RICERCA</h1>
+        <div id="mainmenu">
+            <div id="bar"></div>
+
+        </div>
+        <div id="content">
+            <p>Si prende il testo scritto dall'utente nel form di ricerca e si costruisce un array
+            di parole usando il carattere spazio come separatore.</p>
+            <p>Si chiede al categorizzatore EUROVOC di categorizzare l'intera stringa di ricerca, usando 
+            la seguente url: <strong>http://serendipity.lynxlab.com:81/services/%lt;password&gt;/search/HOLIS/</strong>,
+            questa chiamata tornerà un array di ID eurovoc ed uno di sinonimi associati alla stringa passata.<br/>
+            Nel caso in cui il categorizzatore non dovesse trovare sinonimi, verrano chiesti a MULTIWORDNET alla 
+            seguente URL: <strong>http://serendipity.lynxlab.com:81/services/%lt;password&gt;/taxonomy/MWNL/synonyms/</strong></p>
+            <p>A questo punto, è stato fatto tutto il possibile per avere un array di ID eurovoc ed uno di sinonimi o
+            comunque di termini associati alla stringa di ricerca scritta dall'utente.<br/>
+            <strong>Nota</strong>: Da questo punto in poi la stringa dell'utente non è più utilizzata e viene sostituita con i termini tornati
+            dal categorizzatore o dalla ricerca dei sinonimi. (D'ora in poi chiamati "Termini di ricerca").</p>
+            <p>Se ancora l'array degli ID eurovoc dovesse essere vuoto, si cercano degli id che corrispondano ai termini di ricerca.<br/>            
+            </p>
+            <p>Il risultato della ricerca è formato dall'unione dell' insieme degli asset associati agli ID trovati con quello degli asset trovati mendiante ricerca
+            full text sul testo dell'asset stesso usando i termini di ricerca.</p>
+        </div>
+    </body>
+</html>
