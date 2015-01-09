@@ -53,6 +53,9 @@ else {
   $mode = $_GET['mode'];
 }
 // ini_set ('display_errors','1'); error_reporting(E_ALL);
+
+if (!isset($op)) $op = null;
+
 switch ($op) {
 	case 'stats':
 	case 'student':
@@ -551,13 +554,13 @@ switch ($op) {
 $layout_dataAr['JS_filename'] = array(
 		JQUERY,
 		JQUERY_DATATABLE,
-                JQUERY_DATATABLE_DATE,
+        JQUERY_DATATABLE_DATE,
 		JQUERY_NO_CONFLICT
-	);
+);
 
 $layout_dataAr['CSS_filename']= array(
 		JQUERY_DATATABLE_CSS,
-                JQUERY_UI_CSS
+        JQUERY_UI_CSS
 	);
   $render = null;
   $options['onload_func'] = 'initDoc()';

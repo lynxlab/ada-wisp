@@ -619,13 +619,13 @@ class CommunicationModuleHtmlLib
       //$tester_info_Ar = $common_dh->get_tester_info_from_pointer($tester);
       $tester_id = $testers_data_Ar[$tester];
 
-      if (AMA_Common_DataHandler::isError($tester_info_Ar)) {
-        /*
-         * Return a ADA_Error with delayed error handling.
-         */
-        return new ADA_Error($tester_info_Ar,translateFN('Errore in ottenimento informazioni tester'),
-                              NULL,NULL,NULL,NULL,TRUE);
-      }
+//       if (AMA_Common_DataHandler::isError($tester_info_Ar)) {
+//         /*
+//          * Return a ADA_Error with delayed error handling.
+//          */
+//         return new ADA_Error($tester_info_Ar,translateFN('Errore in ottenimento informazioni tester'),
+//                               NULL,NULL,NULL,NULL,TRUE);
+//       }
 
       foreach($appointment_data_Ar as $appointment_id => $appointment_Ar) {
 
@@ -927,6 +927,7 @@ class CommunicationModuleHtmlLib
          * Otherwise it is disabled.
          */
         $delete = CDOMElement::create('checkbox',"name:form[del][$msg_id],value:$msg_id");
+        if (!isset($list_module)) $list_module = null;
         $action_link = CDOMElement::create('a', "href:$list_module?del_msg_id=$msg_id");
         $action_link->addChild($del_img);
         $read   = CDOMElement::create('checkbox', "name:form[read][$msg_id],value:$msg_id");
@@ -963,6 +964,7 @@ class CommunicationModuleHtmlLib
 
    if(count($messages_Ar) > 0) {
       $table = BaseHtmlLib::tableElement('id:sort_message',$thead_dataAr, $messages_Ar);
+      if (!isset($module)) $module='';
       $form = CDOMElement::create('form',"name:form, method:post, action:$module");
       $form->addChild($table);
       /**
@@ -1000,6 +1002,7 @@ class CommunicationModuleHtmlLib
 
     if(count($messages_Ar) > 0) {
       $table = BaseHtmlLib::tableElement('id:sortable',$thead_dataAr, $messages_Ar);
+      if (!isset($module)) $module=null;
       $form = CDOMElement::create('form',"name:form, method:post, action:$module");
       $form->addChild($table);
       $div = CDOMElement::create('div','id:buttons,class:clearfix');
@@ -1224,13 +1227,13 @@ static public function getRecipientsFromAgenda($data_Ar) {
       //$tester_info_Ar = $common_dh->get_tester_info_from_pointer($tester);
       $tester_id = $testers_dataAr[$tester];
 
-      if (AMA_Common_DataHandler::isError($tester_info_Ar)) {
-        /*
-         * Return a ADA_Error with delayed error handling.
-         */
-        return new ADA_Error($tester_info_Ar,translateFN('Errore in ottenimento informazioni tester'),
-                              NULL,NULL,NULL,NULL,TRUE);
-      }
+//       if (AMA_Common_DataHandler::isError($tester_info_Ar)) {
+//         /*
+//          * Return a ADA_Error with delayed error handling.
+//          */
+//         return new ADA_Error($tester_info_Ar,translateFN('Errore in ottenimento informazioni tester'),
+//                               NULL,NULL,NULL,NULL,TRUE);
+//       }
       $tester_TimeZone = MultiPort::getTesterTimeZone($tester);
       $offset = get_timezone_offset($tester_TimeZone,SERVER_TIMEZONE);
 
@@ -1325,7 +1328,7 @@ static public function getRecipientsFromAgenda($data_Ar) {
 
   static private function display_messages_as_form($data_Ar=array(), $message_type = ADA_MSG_SIMPLE,  $testers_dataAr=array()) {
     $common_dh = $GLOBALS['common_dh'];
-    $javascript_ok = check_javascriptFN($GLOBALS['HTTP_USER_AGENT']);
+    $javascript_ok = check_javascriptFN($_SERVER['HTTP_USER_AGENT']);
 
     $appointments_Ar = array();
 
@@ -1475,6 +1478,7 @@ static public function getRecipientsFromAgenda($data_Ar) {
           $read->setAttribute('checked','checked');
         }
 
+        if (!isset($action_link)) $action_link=null;
         $appointments_Ar[] = array($sender_username, $data_msg, $subject_link, $priority, $delete, $read, $action_link);
 
       }
@@ -1482,7 +1486,7 @@ static public function getRecipientsFromAgenda($data_Ar) {
 
     if(count($appointments_Ar) > 0) {
       $table = BaseHtmlLib::tableElement('',$thead_data, $appointments_Ar);
-
+      if (!isset($module)) $module=null;	
       $form = CDOMElement::create('form',"name:form, method:post, action:$module");
       $form->addChild($table);
       $div = CDOMElement::create('div','id:buttons');

@@ -90,8 +90,8 @@ $edit_profile_link->addChild(new CText(translateFN('Modifica profilo')));
 
 
 $content_dataAr = array(
-  'banner' => $banner,
-  'eportal' => $eportal,
+  'banner' => isset($banner) ? $banner : '',
+  'eportal' => isset($eportal) ? $eportal : '',
   'course_title' => translateFN('Modulo di traduzione'),
   'user_name' => $user_name,
   'user_type' => $user_type,
@@ -99,8 +99,7 @@ $content_dataAr = array(
   'agenda'    => $user_agenda->getHtml(),
   //'results'=>$results,
   'status'    => $status,
-  'banner'    => $banner,
-  'help'      => $help,
+  'help'      => isset($help) ? $help : '',
 //  'dati'      => $table->getHtml(),
   //'data'      => $page_content->getHtml(),
   'user_avatar'=>$avatar->getHtml(),
