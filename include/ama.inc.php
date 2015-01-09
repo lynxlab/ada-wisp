@@ -122,7 +122,7 @@ abstract class Abstract_AMA_DataHandler {
 //            ADALogger::log_db('Creating a new database connection '. $this->dsn);
             $db =& AMA_DB::connect($this->dsn);
             if(AMA_DB::isError($db)) {
-            	$retval = new AMA_Error(AMA_ERR_DB_CONNECTION);
+            	$retval = new AMA_Error(AMA_ERR_DB_CONNECTION); 
                 return $retval;
             }
             $this->db =& $db;
@@ -9599,7 +9599,7 @@ abstract class AMA_Tester_DataHandler extends Abstract_AMA_DataHandler {
         $sql = 'SELECT id_utente,id_tutor,event_token,data_ora,tipo_eguidance,ud_1,ud_2,ud_3,ud_comments,'
                 . 'pc_1,pc_2,pc_3,pc_4,pc_5,pc_6,pc_comments,ba_1,ba_2,ba_3,ba_4,ba_comments,'
                 . 't_1,t_2,t_3,t_4,t_comments,pe_1,pe_2,pe_3,pe_comments,ci_1,ci_2,ci_3,ci_4, ci_comments,'
-                . 'm_1,m_2,m_comments,other_comments, id '
+                . 'm_1,m_2,m_comments,other_comments '
                 . 'FROM sessione_eguidance WHERE id_istanza_corso = ' . $id_course_instance
                 . ' ORDER BY id DESC';
 
@@ -11356,50 +11356,6 @@ public function get_updates_nodes($userObj, $pointer)
         return $get_user_result;
     }
 
-  /**
-   * get some log data for a given tester
-   * @return  $res_ar array
-   */
-  public function tester_log_report($tester = 'default') {
-
-      /*
-	$res_ar = array();
-        $sql = array();
-	$sql['final_users'] = "SELECT COUNT(`id_utente`), `tipo` FROM `utente` WHERE `tipo` = ". AMA_TYPE_STUDENT;
-	$sql['sessions'] = "SELECT COUNT(`id_istanza_corso`), `data_inizio` FROM `istanza_corso` WHERE `data_inizio` > 0";
-	$sql['sessions_alt1'] = "SELECT COUNT(`id_utente_studente`), `status` FROM `iscrizioni` WHERE `status` > 1";
-	$sql['sessions_closed'] = "SELECT COUNT('id') FROM `sessione_eguidance`";
-	$sql['system_messages'] = "SELECT COUNT(`id_messaggio`), `tipo` FROM `messaggi` WHERE `tipo` = 'S'";
-	$sql['user_messages'] = "SELECT COUNT(`id_messaggio`), `tipo` FROM `messaggi` WHERE `tipo` = 'A'";
-	$sql['visits'] = "SELECT COUNT('id_history') FROM `history_nodi`";
-//	$sql['users_in_chatrooms'] = "SELECT * FROM utente_chatroom_log, utente WHERE utente_chatroom_log.id_utente = utente.id_utente AND utente_chatroom_log.azione = 'EN'";
-	$sql['chatrooms'] = "SELECT COUNT('id_chatroom') FROM `chatroom`";
-	$sql['videochatrooms'] = "SELECT COUNT(`id`) FROM `openmeetings_room`";
-       * 
-       */
-	$sql['final_users'] = "SELECT COUNT(`id_utente`), `tipo` FROM `utente` WHERE `tipo` = ". AMA_TYPE_STUDENT;
-	$sql['sessions'] = "SELECT COUNT(`id_istanza_corso`), `data_inizio` FROM `istanza_corso` WHERE `data_inizio` > 0";
-	$sql['sessions_started'] = "SELECT COUNT(`id_utente_studente`), `status` FROM `iscrizioni` WHERE `status` = ". ADA_STATUS_SUBSCRIBED; //1";
-	$sql['sessions_closed'] = "SELECT COUNT(`id_istanza_corso`), `data_inizio` FROM `istanza_corso` WHERE `data_fine` <= " . time();
-	$sql['system_messages'] = "SELECT COUNT(`id_messaggio`), `tipo` FROM `messaggi` WHERE `tipo` = '". ADA_MSG_SIMPLE ."'"  ;
-	$sql['agenda_confirmed'] = "SELECT COUNT(`id_messaggio`), `tipo` FROM `messaggi` WHERE `tipo` = '". ADA_MSG_AGENDA . "' AND (flags & " . ADA_EVENT_CONFIRMED .")";
-	$sql['visits'] = "SELECT COUNT('id_history') FROM `history_nodi`";
-//	$sql['users_in_chatrooms'] = "SELECT * FROM utente_chatroom_log, utente WHERE utente_chatroom_log.id_utente = utente.id_utente AND utente_chatroom_log.azione = 'EN'";
-	$sql['chatrooms'] = "SELECT COUNT('id_chatroom') FROM `chatroom`";
-	$sql['videochatrooms'] = "SELECT COUNT(`id`) FROM `openmeetings_room`";
-        
-	$db =& $this->getConnection();
-	if ( AMA_DB::isError( $db ) ) return $db;
-
-        $res_ar['provider'] = $tester;
-	foreach ($sql as $type => $query){
-	    $res =  $db->getOne($query);
-            if(!AMA_DataHandler::isError($res)) {
-                $res_ar[$type] = $res;
-            }
-	}
-	return $res_ar;
-  }
 
     /**
      * Methods accessing table `banner`
