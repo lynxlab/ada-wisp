@@ -53,7 +53,8 @@ if ($userObj instanceof ADALoggableUser) {
      */
     $user_historyObj = $userObj->getHistoryInCourseInstance($sess_id_course_instance);
     $visited_nodes_table = $user_historyObj->history_nodes_visited_FN();
-if ($op == 'list') {
+    $history = '';
+if (isset($op) && $op == 'list') {
 // Nodi visitati e numero di visite per ciascun nodo
         $history .= '<p>';
         $history .= $visited_nodes_table;
@@ -172,7 +173,7 @@ $content_dataAr = array(
     'data' => $history,
     'messages' => $user_messages->getHtml(),
     'agenda' => $user_agenda->getHtml(),
-    'chat_users' => $online_users,
+    'chat_users' => isset($online_users) ? $online_users : null,
 	'user_avatar'=>$avatar->getHtml(),
 	'edit_profile'=> $userObj->getEditProfilePage(),
 	'user_modprofilelink' => $userObj->getEditProfilePage()

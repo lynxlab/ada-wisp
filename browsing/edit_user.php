@@ -57,6 +57,7 @@ $languages = Translator::getLanguagesIdAndName();
  * Set the $editUserObj depending on logged user type
  */
 $editUserObj = null;
+$self_instruction = isset($self_instruction) ? $self_instruction : null;
 
 switch($userObj->getType()) {
 	case AMA_TYPE_STUDENT:

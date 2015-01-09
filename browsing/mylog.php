@@ -197,7 +197,7 @@ if (isset($op) && ($op=="export")){
 // $online_users_listing_mode = 2  : username and email of users
 
 $online_users_listing_mode = 2;
-$online_users = ADALoggableUser::get_online_usersFN($id_course_instance,$online_users_listing_mode);
+$online_users = ADALoggableUser::get_online_usersFN($sess_id_course_instance,$online_users_listing_mode);
 
 
 $export_log_link = "<a href=$http_root_dir/browsing/mylog.php?op=export>".translateFN("esportare")."</a>";
@@ -217,7 +217,7 @@ $node_data = array(
        'banner'=>$banner,
        'course_title'=> translateFN('Repository'),
        'today'=>$ymdhms,
-       'path'=>$node_path,
+       'path'=>isset($node_path) ? $node_path : '',
        'user_name'=>$userObj->nome,
        'user_type'=>$user_type,
        'user_level'=>$user_level,
@@ -225,11 +225,11 @@ $node_data = array(
 //                   'data'=>$log_data,
        'data'=>$log_form,
        'help'=>$help,
-       'bookmarks'=>$user_bookmarks,
+       'bookmarks'=>isset($user_bookmarks) ? $user_bookmarks : '',
        'status'=>$status,
-       'profilo'=>$profilo,
-       'myforum'=>$my_forum,
-       'title'=>$node_title,
+       'profilo'=>isset($profilo) ? $profilo : '',
+       'myforum'=>isset($my_forum) ? $my_forum : '',
+       'title'=>isset($node_title) ? $node_title : '',
        'user_avatar'=>$avatar->getHtml(),
        'user_modprofilelink' => $userObj->getEditProfilePage()		
     );

@@ -58,6 +58,10 @@ if (!isset($hide_visits)) {
  if (!isset($order)) {
   $order = 'struct'; // default
  }
+ 
+ if (!isset($op)) {
+ 	$op = null;
+ }
 
 if (!isset($expand)) {
     if($op == 'forum') {
@@ -102,7 +106,7 @@ if (is_object($userObj) && (!AMA_DataHandler::isError($userObj))) {
       /* Static mode */
      $cacheObj = New CacheManager($id_profile);
      $cacheObj->checkCache($id_profile);
-     if ($cacheObj->getCachedData){
+     if ($cacheObj->getCachedData()){
          exit();
      }
 
@@ -500,6 +504,7 @@ else {
 // $online_users_listing_mode = 1  : username of users
 // $online_users_listing_mode = 2  : username and email of users
 $online_users_listing_mode = 2;
+$id_course_instance = isset($id_course_instance) ? $id_course_instance : null;
 $online_users = ADALoggableUser::get_online_usersFN($id_course_instance,$online_users_listing_mode);
 
 /*
@@ -507,7 +512,7 @@ $online_users = ADALoggableUser::get_online_usersFN($id_course_instance,$online_
  */
 $search_data = array(
   array(
-    'label'     => $search_label,
+    'label'     => isset($search_label) ? $search_label : null,
     'type'      => 'text',
     'name'      => 's_node_name',
     'size'      => '20',
@@ -526,7 +531,7 @@ $search_data = array(
     'name'     => 'l_search',
     'size'     => '20',
     'maxlength'=> '40',
-    'value'    => $node_type
+    'value'    => isset($node_type) ? $node_type : null 
   )
 );
 $fObj = new Form();
@@ -572,10 +577,10 @@ $content_dataAr = array(
   'user_level'   => $user_level,
   'last_visit' => $last_access,
   'status'       => $status,
-  'title'        => $index_link.$index_no_visits_link,
+  'title'        => $title,
   'index'        => $node_index,
   'search_form'  => $search_form,//."<br>".$menu,
-  'forum_menu'   => $menu,
+  'forum_menu'   => isset($menu) ? $menu: '',
 //   'messages'     => $user_messages->getHtml(),
 //   'agenda'       => $user_agenda->getHtml(),
 //   'events'		 => $user_events->getHtml(),
@@ -605,4 +610,4 @@ ARE::render($layout_dataAr, $content_dataAr);
  * now managed by the class Cache Manager
  * */
 
-$cacheObj->writeCachedData($id_profile,$layout_dataAR,$content_dataAr);
+$cacheObj->writeCachedData($id_profile,$layout_dataAr,$content_dataAr);

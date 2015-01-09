@@ -70,7 +70,7 @@ include_once 'include/'.$self.'_functions.inc.php';
 // require_once ROOT_DIR.'/include/aut/login.inc.php';
 //
 
-$lang_get = $_GET['lang'];
+$lang_get = isset($_GET['lang']) ? $_GET['lang']: null;
 
 /**
  * sets language if it is not multiprovider
@@ -108,11 +108,9 @@ else $files_dir = $root_dir;
   $infofile = 'info_'.$login_page_language_code.'.txt';
   $helpfile = 'help_'.$login_page_language_code.'.txt';
 
-/*
-   $infomsg = '';
-   $newsmsg = '';
-   $hlpmsg = '';
-*/
+  $infomsg = '';
+  $newsmsg = '';
+  $hlpmsg  = '';
 
 if ($newsmsg == ''){
    $newsfile = $files_dir.'/docs/news/'.$newsfile; //  txt files in ada browsing directory
