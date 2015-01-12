@@ -34,6 +34,11 @@
 #searchForm fieldset#set_tipologia  li.form  { float:left; }
 #searchFrom p.submit.form { margin: 0; }
 
+#searchForm fieldset#set_filtro_text  li.form > label { display: inline-block; margin:0; margin-right: 10px; }
+#searchForm fieldset#set_filtro_text  li.form > select { float: left; }
+#searchForm fieldset#set_filtro_text  li.form  { float:left; }
+
+
 /**
  * end search form
  */ 

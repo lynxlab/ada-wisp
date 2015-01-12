@@ -34,7 +34,26 @@ class FormIndexSearch extends FForm {
 			$searchText->withData(htmlentities($data['searchtext'], ENT_COMPAT | ENT_HTML401, ADA_CHARSET));
 		}
 		
-		$this->addControl($searchText);
+                $searchTypeSelAr = array(
+                    HOLIS_SEARCH_FILTER=>translateFN('Filtro'),
+                    HOLIS_SEARCH_CONCEPT=>translateFN('Per concetti'),
+                    HOLIS_SEARCH_EUROVOC_CATEGORY=>translateFN('Per categorie EUROVOC'),
+                    HOLIS_SEARCH_TEXT=>translateFN('Nel testo e titolo')
+                );
+
+                $searchTypeSel = FormControl::create(FormControl::SELECT,'searchType',translateFN('Tipo di ricerca'));
+                if (isset($data['searhType'])) {
+			$searchType = $data['searchType']; 
+		} else {
+			$searchType = reset(array_keys($searchTypeSelAr));				
+                }
+                $searchTypeSel->withData($searchTypeSelAr,$searchType);
+                
+//		$this->addControl($searchTypeSel);
+//		$this->addControl($searchText);
+		$fieldSetFilter = array ($searchTypeSel, $searchText);
+                $this->addFieldset('','set_filtro_text')->withData($fieldSetFilter);
+                
 		
 		if (MODULES_LEX && isset($data['typologiesArr']) && is_array($data['typologiesArr']) && count($data['typologiesArr'])>0) {
 			

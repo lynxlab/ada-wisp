@@ -140,7 +140,7 @@ if (!isset($s) || strlen (trim($s)) <=0) {
 	 * by intersecting it with the $searchableCourseIDs array
 	 */
 	$searchableCourseIDs = $dh->get_searchable_courses_id();
-	
+	$searchCoursesIDs = array();
 	if (!is_null($searchableCourseIDs) && is_array($searchableCourseIDs)) {
 		$searchCoursesIDs = array_values(array_intersect($searchableCourseIDs, $searchCoursesIDs));
 	}
