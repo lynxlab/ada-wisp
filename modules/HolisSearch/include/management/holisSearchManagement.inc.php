@@ -58,10 +58,28 @@ class holisSearchManagement
 		/* @var $html string holds html code to be retuned */
 		$htmlObj = CDOMElement::create('div','id:searchResults');
 		/* @var $path   string  path var to render in the help message */
-		$help = translateFN('Risultati della Ricerca Holis/SESPIUS');
+		$help = translateFN('Interrogazione della base di Dati GIUR');
 		if ($this->_forceAbrogated) $help .= ' - '.translateFN('Ricerca svolta sui soli asset abrogati');
 		/* @var $status string status var to render in the breadcrumbs */
-		$title= translateFN('Ricerca');
+		$title= translateFN('SOTTOSISTEMA GIUR');
+		
+		$helpTextArray = array (
+				HOLIS_SEARCH_FILTER => 'E\' sufficiente selezionare una Tipologia, poi eventualmente una Categoria e opzionalmente una Classe, quindi premere INVIA.
+<br/>Il sistema mostra le fonti che corrispondono al filtro impostato.',
+				HOLIS_SEARCH_CONCEPT => 'Scrivere una frase.
+<br/>Il sistema cerca di individuare i concetti che sottostanno alla frase, reperisce attraverso un categorizzatore testuale i codici EUROVOC collegati a questi concetti e quindi restituisce gli asset marcati con questi codici. Qui i risultati sono volutamente i  più ampli possibile per aiutare l\'utente a trovare anche fonti meno ovvie.',
+				HOLIS_SEARCH_EUROVOC_CATEGORY => 'Scrivere un termine EUROVOC.
+<br/>Il sistema cerca tutti gli asset che sono stati marcati con quel termine.',
+				HOLIS_SEARCH_TEXT => 'Il sistema cerca esattamente quello che viene scritto dall\'utente, nell\'ordine in cui è stato scritto.'
+		);
+		
+		$helpDIV = CDOMElement::create('div','id:searchHelp');
+		foreach ($helpTextArray as $key=>$text) {
+			$textDiv = CDOMElement::create('div','class:helpText,id:helpText_'.$key);
+			$textDiv->setAttribute('style','display:none');
+			$textDiv->addChild(new CText($text));
+			$helpDIV->addChild($textDiv);
+		}
 		
 		/**
          * clean up the querystring
@@ -194,6 +212,7 @@ class holisSearchManagement
 			$htmlObj->addChild ($querySpan); // do not remove, see above
 			if (isset($tripleSpan)) $htmlObj->addChild($tripleSpan); // do not remove, see above
 			$htmlObj->addChild (new CText($searchForm->getHtml()));
+			$htmlObj->addChild($helpDIV);
 			$htmlObj->addChild ($taxonomyWaitText);
 			$htmlObj->addChild (CDOMElement::create('div','class:clearfix'));
 			$htmlObj->addChild ($resultsWrapper);
@@ -202,6 +221,7 @@ class holisSearchManagement
 			 * no serachtext, display the search form only
 			 */
 			$htmlObj->addChild (new CText($searchForm->getHtml()));
+			$htmlObj->addChild($helpDIV);
 		}
 		
 		return array(

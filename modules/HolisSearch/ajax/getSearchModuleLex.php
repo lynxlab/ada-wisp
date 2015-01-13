@@ -55,6 +55,10 @@ if (isset($_SERVER['REQUEST_METHOD']) && $_SERVER['REQUEST_METHOD'] == 'POST' &&
     (isset($searchTerms) && is_array($searchTerms) && count($searchTerms)>0) ||
     (isset($descripteurAr) && is_array($descripteurAr) && count($descripteurAr)>0)) {
 	
+    // searchType is coming from $_GET
+	if (!isset($searchType)) $searchType =  HOLIS_SEARCH_CONCEPT;
+	else $searchType = intval ($searchType);
+    	
 	if (isset($GLOBALS['dh'])) $GLOBALS['dh']->disconnect();
 	$dh = AMALexDataHandler::instance(MultiPort::getDSN(MODULES_LEX_PROVIDER_POINTER));
 	
@@ -70,8 +74,12 @@ if (isset($_SERVER['REQUEST_METHOD']) && $_SERVER['REQUEST_METHOD'] == 'POST' &&
 		if (isset($descripteurAr) && is_array($descripteurAr) && count($descripteurAr)>0) {
 			$descripteur_ids = $descripteurAr;
 		} else {
-			$descripteurAr = $dh->getEurovocDESCRIPTEURIDS(array_merge($searchTerms,array($querystring)), getLanguageCode());
-			
+			if ($searchType == HOLIS_SEARCH_EUROVOC_CATEGORY || $searchType == HOLIS_SEARCH_TEXT) {
+				$arrayToSearch =  array($querystring);
+			} else {
+				$arrayToSearch = array_merge(array($querystring), $searchTerms); 
+			}
+			$descripteurAr = $dh->getEurovocDESCRIPTEURIDS($arrayToSearch, getLanguageCode());
 			if (AMA_DB::isError($descripteurAr)) $descripteur_ids = array();
 			else {
 				foreach ($descripteurAr as $el) $descripteur_ids[] = $el['descripteur_id'];
@@ -100,32 +108,35 @@ if (isset($_SERVER['REQUEST_METHOD']) && $_SERVER['REQUEST_METHOD'] == 'POST' &&
 		
 		/**
 		 * 3. now do a fulltext search on asset associated text and merge the results
-		 *    with point 2
+		 *    with point 2 only if the search type is HOLIS_SEARCH_CONCEPT 
 		 */
-		$fulltextResults = $dh->get_asset_from_text($searchTerms, $getOnlyVerifiedAssets,$typologyID,$abrogatedStatus);
-		if (!is_null($fulltextResults)) {
-			// merge the results
-			foreach ($fulltextResults as $j=>$fulltextEl) {
-				if (!isset($searchResults[$j]) || count($searchResults)<=0) {
-					$searchResults[$j] = $fulltextEl;
-				} else {
-					// merge the data arrays if needed
-					foreach ($fulltextEl['data'] as $aFullTextDataRow)
-					{
-						$key = array_search($aFullTextDataRow[AMALexDataHandler::$PREFIX.'assets_id'],$foundAssetsID[$j]);
-						if (false===$key) {
-							array_push($searchResults[$j]['data'],$aFullTextDataRow);
-						} else {
-							if ($searchResults[$j]['data'][$key]['weight'] < $aFullTextDataRow['weight']) {
-								// if the new found weight is higher than the old one, update it
-								$searchResults[$j]['data'][$key]['weight'] = $aFullTextDataRow['weight'];
+		if ($searchType == HOLIS_SEARCH_CONCEPT || $searchType == HOLIS_SEARCH_TEXT) {
+			$fulltextResults = $dh->get_asset_from_text($arrayToSearch, $getOnlyVerifiedAssets,$typologyID,$abrogatedStatus);
+			if (!is_null($fulltextResults)) {
+				// merge the results
+				foreach ($fulltextResults as $j=>$fulltextEl) {
+					if (!isset($searchResults[$j]) || count($searchResults)<=0) {
+						$searchResults[$j] = $fulltextEl;
+					} else {
+						// merge the data arrays if needed
+						foreach ($fulltextEl['data'] as $aFullTextDataRow)
+						{
+							$key = array_search($aFullTextDataRow[AMALexDataHandler::$PREFIX.'assets_id'],$foundAssetsID[$j]);
+							if (false===$key) {
+								array_push($searchResults[$j]['data'],$aFullTextDataRow);
+							} else {
+								if ($searchResults[$j]['data'][$key]['weight'] < $aFullTextDataRow['weight']) {
+									// if the new found weight is higher than the old one, update it
+									$searchResults[$j]['data'][$key]['weight'] = $aFullTextDataRow['weight'];
+								}
 							}
+							// results sorting is handled by jQuery dataTable
 						}
-					// results sorting is handled by jQuery dataTable
 					}
 				}
 			}
 		}
+		
 		
 		/**
          * 4. build the html tables to be returned

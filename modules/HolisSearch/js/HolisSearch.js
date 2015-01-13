@@ -33,6 +33,9 @@ function initDoc() {
 				$j('#l_s, #s').show();
 			}
 			
+			$j('#searchHelp').children('div').hide();
+			$j('#searchHelp').children('#helpText_'+x).show();
+			
 		});
 		
 		$j('#searchType').trigger('change');
@@ -222,8 +225,8 @@ var HolisSearchManagement = (function() {
                                     type	:	'POST',
                                     url		:	'ajax/getSearchTerms.php',
                                     data	:	{ // searchTerms: this.searchTermsArray,
-                                                              querystring: $j('#querystring').text() 
-                                                            },
+                                    				querystring: $j('#querystring').text()
+                                                },
                                     dataType:	'json'
                     });
             } else {
@@ -249,11 +252,11 @@ var HolisSearchManagement = (function() {
                         callingURL = 'ajax/getSearchFilterAssetModuleLex.php';
                         break;
                     case HOLIS_SEARCH_TEXT:
-                        callingURL = 'ajax/getSearchFullTextAssetModuleLex.php';
-                        break;
+//                        callingURL = 'ajax/getSearchFullTextAssetModuleLex.php';
+//                        break;
                     case HOLIS_SEARCH_EUROVOC_CATEGORY:
-                        callingURL = 'ajax/getSearchAssetModuleLexByEurovocID.php';
-                        break;
+//                        callingURL = 'ajax/getSearchAssetModuleLexByEurovocID.php';
+//                        break;
                     case HOLIS_SEARCH_CONCEPT:
                     default:
                         callingURL = 'ajax/getSearchModuleLex.php';
@@ -268,7 +271,8 @@ var HolisSearchManagement = (function() {
                                           searchtext:  $j('#searchtext').text(),
                                           querystring: $j('#querystring').text(),
                                           typologyID : $j('#tripleID').text(),
-                                          abrogatedStatus:  abrogatedStatus
+                                          abrogatedStatus:  abrogatedStatus,
+                                          searchType: this.searchType
                                           },
                     dataType:	'json'
 		})

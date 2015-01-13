@@ -1000,8 +1000,9 @@ class AMALexDataHandler extends AMA_DataHandler {
 		} else {
 			$params = array($version,$lng);
 		}
-
-		return $this->getAllPrepared($sql,$params,AMA_FETCH_ASSOC);
+		
+		$retval = $this->getAllPrepared($sql,$params,AMA_FETCH_ASSOC);
+		return $retval;
 	}
         
 	/**
@@ -1045,12 +1046,20 @@ class AMALexDataHandler extends AMA_DataHandler {
 		/**
 		 * weight selection with a subquery
 		 */
-		$subquery = ' (SELECT TESTI.`'.self::$PREFIX.'testi_id`, MATCH (TESTI.`testo`) AGAINST (\''.implode(' ', $searchTerms).'\' IN NATURAL LANGUAGE MODE) as weight '.
-		            'FROM `'.self::$PREFIX.'testi` AS TESTI WHERE MATCH (TESTI.`testo`) AGAINST (\''.implode(' ', $searchTerms).'\' IN NATURAL LANGUAGE MODE)>0 ORDER BY weight DESC)'.
-		            ' AS TTESTI ';
-
+// 		$subquery = ' (SELECT TESTI.`'.self::$PREFIX.'testi_id`, MATCH (TESTI.`testo`) AGAINST (\''.implode(' ', $searchTerms).'\' IN NATURAL LANGUAGE MODE) as weight '.
+// 		            'FROM `'.self::$PREFIX.'testi` AS TESTI WHERE MATCH (TESTI.`testo`) AGAINST (\''.implode(' ', $searchTerms).'\' IN NATURAL LANGUAGE MODE)>0 ORDER BY weight DESC)'.
+// 		            ' AS TTESTI ';
+		
+		$subquery = ' (
+						(SELECT TESTI.`'.self::$PREFIX.'testi_id` '.
+							'FROM `'.self::$PREFIX.'testi` AS TESTI WHERE TESTI.`testo` LIKE \'%'.implode('%', $searchTerms).'%\')'.
+					' UNION DISTINCT
+						(SELECT ASSETS.`'.self::$PREFIX.'testi_id` '.
+							' FROM `'.self::$PREFIX.'assets` AS ASSETS WHERE ASSETS.`label` LIKE \'%'.implode('%', $searchTerms).'%\')'.
+					') AS TTESTI';
+		
 		$sql = 'SELECT FONTI.`'.self::$PREFIX.'fonti_id`, ASSETS.`'.self::$PREFIX.'assets_id`, ASSETS.`label`, '.
-			   'weight, FONTI.`titolo`, TIPOLOGIE.`descrizione`, TIPOLOGIE.`categoria`, TIPOLOGIE.`classe`, '.
+			   'FONTI.`titolo`, TIPOLOGIE.`descrizione`, TIPOLOGIE.`categoria`, TIPOLOGIE.`classe`, '.
 			   'COUNT(ABROGATI.`abrogato_da`) AS isabrogated '.
 		       'FROM `'.self::$PREFIX.'assets` AS ASSETS INNER JOIN'.$subquery.' ON TTESTI.`'.self::$PREFIX.'testi_id` = ASSETS.`'.self::$PREFIX.'testi_id` '.
 		       'JOIN `'.self::$PREFIX.'fonti` AS FONTI ON FONTI.`'.self::$PREFIX.'fonti_id` = ASSETS.`'.self::$PREFIX.'fonti_id` '.
@@ -1062,11 +1071,12 @@ class AMALexDataHandler extends AMA_DataHandler {
 		}
 		
 		// typolgy filter
-		if (intval($typologyID)>0) {
+		if (strlen($typologyID)>0) {
 			// search all typologyes implied from the passed ID
-			$typologyArr = $this->getTypologyArray($typologyID);
-			$typologyIDsToSearch = $this->getTypologiesToSearch($typologyArr['descrizione'],$typologyArr['categoria'],$typologyArr['classe']);			
-			$sql .= ' AND FONTI.`'.self::$PREFIX.'tipologie_fonti_id` IN('.implode(',', $typologyIDsToSearch).')';
+// 			$typologyArr = $this->getTypologyArray($typologyID);
+// 			$typologyIDsToSearch = $this->getTypologiesToSearch($typologyArr['descrizione'],$typologyArr['categoria'],$typologyArr['classe']);			
+// 			$sql .= ' AND FONTI.`'.self::$PREFIX.'tipologie_fonti_id` IN('.implode(',', $typologyIDsToSearch).')';
+			$sql .= ' AND FONTI.`'.self::$PREFIX.'tipologie_fonti_id` IN('.$typologyID.')';
 		}
 
 		$sql .= ' LEFT JOIN `'.self::$PREFIX.'assets_abrogati` AS ABROGATI ON ASSETS.`'.self::$PREFIX.'assets_id` = ABROGATI.`'.self::$PREFIX.'assets_id` ';
@@ -1078,8 +1088,8 @@ class AMALexDataHandler extends AMA_DataHandler {
 			$sql .= '0';
 		}
 
-		$sql .= ' ORDER BY FONTI.`'.self::$PREFIX.'fonti_id` ASC , weight DESC';
-
+		$sql .= ' ORDER BY FONTI.`'.self::$PREFIX.'fonti_id` ASC';
+	
 		$res =  $this->getAllPrepared($sql, null, AMA_FETCH_ASSOC);
 
 		if (!AMA_DB::isError($res) && count($res)>0) {
@@ -1101,6 +1111,7 @@ class AMALexDataHandler extends AMA_DataHandler {
 				unset($element['classe']);
 				// set element type to fulltext search
 				$element['type'] = FULLTEXT_SEARCHTYPE_DISPLAY;
+				if (!isset($element['weight'])) $element['weight']=0;
 				$retArray[$key]['data'][] = $element;
 			}
 			return $retArray;
@@ -1150,11 +1161,12 @@ class AMALexDataHandler extends AMA_DataHandler {
 		}
 		
 		// typolgy filter
-		if (intval($typologyID)>0) {
+		if (strlen($typologyID)>0) {
 			// search all typologyes implied from the passed ID
-			$typologyArr = $this->getTypologyArray($typologyID);
-			$typologyIDsToSearch = $this->getTypologiesToSearch($typologyArr['descrizione'],$typologyArr['categoria'],$typologyArr['classe']);
-			$sql .= ' AND FONTI.`'.self::$PREFIX.'tipologie_fonti_id` IN('.implode(',', $typologyIDsToSearch).')';
+// 			$typologyArr = $this->getTypologyArray($typologyID);
+// 			$typologyIDsToSearch = $this->getTypologiesToSearch($typologyArr['descrizione'],$typologyArr['categoria'],$typologyArr['classe']);
+// 			$sql .= ' AND FONTI.`'.self::$PREFIX.'tipologie_fonti_id` IN('.implode(',', $typologyIDsToSearch).')';
+			$sql .= ' AND FONTI.`'.self::$PREFIX.'tipologie_fonti_id` IN('.$typologyID.')';
 		}
 		
 		$sql .=' LEFT JOIN `'.self::$PREFIX.'assets_abrogati` AS ABROGATI ON ASSETS.`'.self::$PREFIX.'assets_id` = ABROGATI.`'.self::$PREFIX.'assets_id` ';		
@@ -1189,6 +1201,7 @@ class AMALexDataHandler extends AMA_DataHandler {
 				unset($element['classe']);
 				// set element type to descripteur_id match search
 				$element['type'] = ID_SEARCHTYPE_DISPLAY;
+				if (!isset($element['weight'])) $element['weight']=0;
 				$retArray[$key]['data'][] = $element;
 			}
 			return $retArray;
