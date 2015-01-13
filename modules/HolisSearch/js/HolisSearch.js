@@ -22,18 +22,17 @@ function initDoc() {
 			updateSelect('classe');
 		});		
 	}
-	
 	var hsm = new HolisSearchManagement();
-	
 	if (typeof arguments[0]!='undefined') {
 		/**
 		 * we've been asked to perform a search
 		 * arguments[0] is the courseID array
 		 * arguments[1] tells if modules lex must be searched
 		 * arguments[2] tells if the user is an author
+		 * arguments[3] tells the type of search
 		 * 
 		 */
-		hsm.doSearch(arguments[0],arguments[1],arguments[2]);
+		hsm.doSearch(arguments[0],arguments[1],arguments[2],arguments[3]);
 	}
 }
 
@@ -145,6 +144,9 @@ var HolisSearchManagement = (function() {
 		this.searchTermsArray = Array();
 		// array of descripteur id returned by the web service
 		this.descripteurIds = Array();
+		// Type of search to perform
+		this.searchType = "0";
+
 	};
 	
 	/**
@@ -158,10 +160,15 @@ var HolisSearchManagement = (function() {
 		this.progressLabel = $j( ".progress-label" );
 		
 		var thisReference = this;
+                if (typeof this.searchCoursesIDs!= 'undefined' && this.searchCoursesIDs != null) {
+                      max = this.searchCoursesIDs.length;
+                } else {
+                      max= 2; // perché 2? verificare se fare una corsa diversa
+                }
 
 		this.progressbar = this.progressbar.progressbar({
-	      value: false,
-	      max: this.searchCoursesIDs.length,
+	        value: false,
+                max: max,
 	      change: function() {
 	    	  thisReference.progressLabel.text( parseInt((thisReference.progressbar.progressbar( "value" )/thisReference.progressbar.progressbar( "option", "max" ))*100) + "%" );
 	      },
@@ -192,16 +199,18 @@ var HolisSearchManagement = (function() {
 	 * multi word net web service or the taxonomy web service
 	 */
 	var _initSearchArray = function() {
-		this.searchTermsArray = $j('#searchtext').text().split(wordSeparator);
-		
-	    return $j.ajax({
-				type	:	'POST',
-				url		:	'ajax/getSearchTerms.php',
-				data	:	{ // searchTerms: this.searchTermsArray,
-							  querystring: $j('#querystring').text() 
-							},
-				dataType:	'json'
-		});
+            this.searchTermsArray = $j('#searchtext').text().split(wordSeparator);
+            if (this.searchTermsArray.length > 0 && this.searchType === HOLIS_SEARCH_CONCEPT) {
+                
+                return $j.ajax({
+                                    type	:	'POST',
+                                    url		:	'ajax/getSearchTerms.php',
+                                    data	:	{ // searchTerms: this.searchTermsArray,
+                                                              querystring: $j('#querystring').text() 
+                                                            },
+                                    dataType:	'json'
+                    });
+            }
 	}; // ends _initSearchArray
 	
 	/**
@@ -214,17 +223,34 @@ var HolisSearchManagement = (function() {
 		 */
 		var abrogatedStatus = ($j('#abrogato').length > 0) ? $j('#abrogato').val() : 1; 
 		var isAuthor = this.isAuthor;
-    	$j.ajax({
-			type	:	'POST',
-			url		:	'ajax/getSearchModuleLex.php',
-			data	:	{ searchTerms: this.searchTermsArray,
-						  descripteurAr: this.descripteurIds,
-						  searchtext:  $j('#searchtext').text(),
-						  querystring: $j('#querystring').text(),
-						  typologyID : $j('#tripleID').text(),
-						  abrogatedStatus:  abrogatedStatus
-						  },
-			dataType:	'json'
+                var searchType = this.searchType;
+                switch(searchType) {
+                    case HOLIS_SEARCH_FILTER:
+                        callingURL = 'ajax/getSearchFilterAssetModuleLex.php';
+                        break;
+                    case HOLIS_SEARCH_TEXT:
+                        callingURL = 'ajax/getSearchFullTextAssetModuleLex.php';
+                        break;
+                    case HOLIS_SEARCH_EUROVOC_CATEGORY:
+                        callingURL = 'ajax/getSearchAssetModuleLexByEurovocID.php';
+                        break;
+                    case HOLIS_SEARCH_CONCEPT:
+                    default:
+                        callingURL = 'ajax/getSearchModuleLex.php';
+                        break;
+                }
+                
+                $j.ajax({
+                    type	:	'POST',
+                    url		:	callingURL,
+                    data	:	{ searchTerms: this.searchTermsArray,
+                                          descripteurAr: this.descripteurIds,
+                                          searchtext:  $j('#searchtext').text(),
+                                          querystring: $j('#querystring').text(),
+                                          typologyID : $j('#tripleID').text(),
+                                          abrogatedStatus:  abrogatedStatus
+                                          },
+                    dataType:	'json'
 		})
 		.done  (function (JSONObj) {
 			if (JSONObj && JSONObj.data!=null) {
@@ -269,7 +295,7 @@ var HolisSearchManagement = (function() {
 			}
 		});
 	};
-	
+   
 	/**
 	 * run the search in ADA courses main loop.
 	 * Fires an ajax request for each course id and build
@@ -369,14 +395,18 @@ var HolisSearchManagement = (function() {
  * 
  * @param searchCoursesIDs array of course ids to be searched
  * @param hasModuleLex true if module lex must be searched as well
+ * @param isAuthor true if the result of the reasearch has to show the type of research (FT = Full Text, ID = ID eurovoc association)
+ * @param searchType (HOLIS_SEARCH_FILTER=1 HOLIS_SEARCH_CONCEPT=2 HOLIS_SEARCH_EUROVOC_CATEGORY=3, HOLIS_SEARCH_TEXT=4)
  */	
-HolisSearchManagement.prototype.doSearch = function(searchCoursesIDs, hasModuleLex, isAuthor) {
+HolisSearchManagement.prototype.doSearch = function(searchCoursesIDs, hasModuleLex, isAuthor, searchType) {
 	// set courses to search
 	this.searchCoursesIDs = searchCoursesIDs;
 	// set the boolean to search the lex module
 	this.hasModuleLex = hasModuleLex;
 	// set the boolean that tells if user is an author
 	this.isAuthor = isAuthor;
+        // set the type of search to perform
+        this.searchType = searchType;
 	// reference of this to make it visible to done function
 	var thisReference = this;
 	
@@ -399,10 +429,13 @@ HolisSearchManagement.prototype.doSearch = function(searchCoursesIDs, hasModuleL
 		// and when the ajax call has finished (aka sync call)
 		$j.when(_initSearchArray.call(thisReference)).done ( function (returnedObj) {
 			// set the searchTermsArray to the returned JSON array
-			thisReference.searchTermsArray = returnedObj.searchTerms;
+                        if (typeof returnedObj.searchTerms != 'undefined') {
+                            thisReference.searchTermsArray = returnedObj.searchTerms;
+                        }
 			// set the descripteurIds to the returned JSON array
-			thisReference.descripteurIds = returnedObj.descripteurIds;
-			
+                        if (typeof returnedObj.descripteurIds != 'undefined') {
+                            thisReference.descripteurIds = returnedObj.descripteurIds;
+                        }			
 			/**
 			 * REMOVE THESE 2 LINES IN PRODUCTION
 			 */

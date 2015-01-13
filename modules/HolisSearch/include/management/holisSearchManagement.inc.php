@@ -54,7 +54,7 @@ class holisSearchManagement
 		return $this->runSearch(null);
 	}
 	
-	public function runSearch($searchtext, $searchCourseCount=0) {
+	public function runSearch($searchtext, $searchCourseCount=0,$searchType=1) {
 		/* @var $html string holds html code to be retuned */
 		$htmlObj = CDOMElement::create('div','id:searchResults');
 		/* @var $path   string  path var to render in the help message */
@@ -72,6 +72,7 @@ class holisSearchManagement
 		 * search form
 		 */
 		$formdata['searchtext'] = $searchtext;
+                $formdata['searchType'] = $searchType;
 		if (MODULES_LEX && !is_null($this->_typologiesArr)) {
 			$formdata['typologiesArr'] = $this->_typologiesArr;
 			$formdata['tipologia'] = null;

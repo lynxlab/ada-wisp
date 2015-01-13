@@ -20,3 +20,17 @@ if (MODULES_LEX) {
 } else {
 	echo 'var MODULES_LEX=false;';
 }
+
+
+if (defined('HOLIS_SEARCH_FILTER')) {
+    echo 'var HOLIS_SEARCH_FILTER='. HOLIS_SEARCH_FILTER .';';
+}
+if (defined('HOLIS_SEARCH_CONCEPT')) {
+    echo 'var HOLIS_SEARCH_CONCEPT='. HOLIS_SEARCH_CONCEPT .';';
+}
+if (defined('HOLIS_SEARCH_EUROVOC_CATEGORY')) {
+    echo 'var HOLIS_SEARCH_EUROVOC_CATEGORY='. HOLIS_SEARCH_EUROVOC_CATEGORY .';';
+}
+if (defined('HOLIS_SEARCH_TEXT')) {
+    echo 'var HOLIS_SEARCH_TEXT='. HOLIS_SEARCH_TEXT .';';
+}

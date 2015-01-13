@@ -27,7 +27,7 @@ class FormIndexSearch extends FForm {
 		
 		$label = (isset($data['searchtext']) && strlen($data['searchtext'])>0) ? translateFN('Hai cercato').': ' : translateFN('Cosa stai cercando ?') ;
 		
-		$searchText = FormControl::create(FormControl::INPUT_TEXT, 's', $label)->setValidator(FormValidator::NOT_EMPTY_STRING_VALIDATOR);
+		$searchText = FormControl::create(FormControl::INPUT_TEXT, 's', $label); //->setValidator(FormValidator::NOT_EMPTY_STRING_VALIDATOR);
 		
 		
 		if (isset($data['searchtext']) && strlen($data['searchtext'])>0) {			
@@ -42,17 +42,17 @@ class FormIndexSearch extends FForm {
                 );
 
                 $searchTypeSel = FormControl::create(FormControl::SELECT,'searchType',translateFN('Tipo di ricerca'));
-                if (isset($data['searhType'])) {
+                if (isset($data['searchType'])) {
 			$searchType = $data['searchType']; 
 		} else {
 			$searchType = reset(array_keys($searchTypeSelAr));				
                 }
                 $searchTypeSel->withData($searchTypeSelAr,$searchType);
                 
-//		$this->addControl($searchTypeSel);
-//		$this->addControl($searchText);
-		$fieldSetFilter = array ($searchTypeSel, $searchText);
-                $this->addFieldset('','set_filtro_text')->withData($fieldSetFilter);
+		$this->addControl($searchTypeSel);
+		$this->addControl($searchText);
+//		$fieldSetFilter = array ($searchTypeSel, $searchText);
+//                $this->addFieldset('','set_filtro_text')->withData($fieldSetFilter);
                 
 		
 		if (MODULES_LEX && isset($data['typologiesArr']) && is_array($data['typologiesArr']) && count($data['typologiesArr'])>0) {
@@ -71,7 +71,7 @@ class FormIndexSearch extends FForm {
 			$sel_tipologia->withData($typologiesArr,$selTypology);
 			
 			$categoriesArr = sourceTypologyManagement::getTypologyChildren($selTypology);
-			// write 'all' intead of 'none'
+			// write 'all' instead of 'none'
 			if (array_key_exists('null', $categoriesArr)) $categoriesArr['null'] = translateFN('Tutte');
 			
 			$sel_categoria = FormControl::create(FormControl::SELECT, 'categoria', translateFN('categoria'));

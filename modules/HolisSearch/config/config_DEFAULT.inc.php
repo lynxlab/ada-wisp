@@ -24,4 +24,8 @@ $GLOBALS['searchable_service_type'] = array(
     ADA_SERVICE_LEG,
     ADA_SERVICE_TEMI_RISOLTI
 );
-?>
+
+define ('HOLIS_SEARCH_FILTER',1);
+define ('HOLIS_SEARCH_CONCEPT',2);
+define ('HOLIS_SEARCH_EUROVOC_CATEGORY',3);
+define ('HOLIS_SEARCH_TEXT',4);

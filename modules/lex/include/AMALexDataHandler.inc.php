@@ -995,6 +995,24 @@ class AMALexDataHandler extends AMA_DataHandler {
 
 		return $this->getAllPrepared($sql,$params,AMA_FETCH_ASSOC);
 	}
+        
+	/**
+	 * gets the asset list associated to the passed searchTerms (or no text) matched
+         * with typology triple (array)
+	 *
+	 * @param array $searchTerm the array of terms to be matched
+	 * @param bool $verifiedOnly true if verified assets only are to be returned. defaults to false
+	 * @param number $typologyID typology ID to filter results, 0 means no filter. Defaults to 0.
+	 * @param number $abrogatedStatus filter abrogated assets: -1 is no filter, 0 is not abrogated, 1 is abrogated
+	 *
+	 * @retrun NULL|Array
+	 *
+	 * @access public
+	 */
+        
+        public function get_asset_from_text_and_typology($searchTerms, $verifiedOnly=false, $typologyID=0, $abrogatedStatus=-1) {
+            
+        }
 
 	/**
 	 * gets the asset list associated to the passed searchTerms matched
