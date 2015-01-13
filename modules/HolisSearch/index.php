@@ -66,10 +66,11 @@ if (!isset($noTypology) || $noTypology!==true) $noTypology = false;
 $holisSearch = new HolisSearchManagement($forceAbrogated, $noTypology);
 
 // $s is coming from $_GET
-if ((!isset($s) || strlen (trim($s)) <=0 ) && $searchType != HOLIS_SEARCH_FILTER) {
+//if ((!isset($s) || strlen (trim($s)) <=0 ) && $searchType != HOLIS_SEARCH_FILTER) {
+if (!isset($searchType)) {
 	$data = $holisSearch->index();
 	 
-} else if ((isset($s) && strlen (trim($s)) >0)) {
+} else if ((isset($s) && strlen (trim($s)) >0 && $searchType != HOLIS_SEARCH_FILTER)) {
 	$searchtext = trim($s);	
 	$common_dh = $GLOBALS['common_dh'];
 	$pointer = (!is_null($_SESSION['sess_selected_tester'])) ? $_SESSION['sess_selected_tester'] : MODULES_LEX_PROVIDER_POINTER;
@@ -163,17 +164,18 @@ if ((!isset($s) || strlen (trim($s)) <=0 ) && $searchType != HOLIS_SEARCH_FILTER
 	
 	$data = $holisSearch->runSearch (trim($searchtext), count($searchCoursesIDs),$searchType);
 		
-} else if ($searchType == HOLIS_SEARCH_FILTER) {
+} else {
+//    if ($searchType == HOLIS_SEARCH_FILTER) {
         $searchtext = trim($s);	
 	$data = $holisSearch->runSearch (trim($searchtext), count($searchCoursesIDs),$searchType);
     
 }
-else {
-	
-	$data['help'] = '';
-	$data['title'] = '';
-	$data['htmlObj'] = CDOMElement::create('div');
-}
+//else {
+//	
+//	$data['help'] = '';
+//	$data['title'] = '';
+//	$data['htmlObj'] = CDOMElement::create('div');
+//}
 	
 
 /**

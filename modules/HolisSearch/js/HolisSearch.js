@@ -219,7 +219,7 @@ var HolisSearchManagement = (function() {
 	 */
 	var _initSearchArray = function() {
             this.searchTermsArray = $j('#searchtext').text().split(wordSeparator);
-            if (this.searchTermsArray.length > 0 && this.searchType === HOLIS_SEARCH_CONCEPT) {
+            if (this.searchTermsArray.length > 0 && (this.searchType === HOLIS_SEARCH_CONCEPT || this.searchType === HOLIS_SEARCH_EUROVOC_CATEGORY)) {
                 
                 return $j.ajax({
                                     type	:	'POST',
@@ -250,19 +250,13 @@ var HolisSearchManagement = (function() {
                 switch(searchType) {
                     case HOLIS_SEARCH_FILTER:
                         callingURL = 'ajax/getSearchFilterAssetModuleLex.php';
-                        break;
                     case HOLIS_SEARCH_TEXT:
-//                        callingURL = 'ajax/getSearchFullTextAssetModuleLex.php';
-//                        break;
                     case HOLIS_SEARCH_EUROVOC_CATEGORY:
-//                        callingURL = 'ajax/getSearchAssetModuleLexByEurovocID.php';
-//                        break;
                     case HOLIS_SEARCH_CONCEPT:
                     default:
                         callingURL = 'ajax/getSearchModuleLex.php';
                         break;
                 }
-                
                 $j.ajax({
                     type	:	'POST',
                     url		:	callingURL,
@@ -270,54 +264,55 @@ var HolisSearchManagement = (function() {
                                           descripteurAr: this.descripteurIds,
                                           searchtext:  $j('#searchtext').text(),
                                           querystring: $j('#querystring').text(),
-                                          typologyID : $j('#tripleID').text(),
+                                          typologyID : $j('#tripleID').text(), // '11,3'
                                           abrogatedStatus:  abrogatedStatus,
-                                          searchType: this.searchType
+                                          searchType: searchType
                                           },
                     dataType:	'json'
-		})
-		.done  (function (JSONObj) {
-			if (JSONObj && JSONObj.data!=null) {
-				if (JSONObj.status=='OK') {
-					$j('#moduleLexResults').append($j('<div>'+JSONObj.data+'</div>'));
-					$j('.moduleLexResult').fadeIn();
-					
-					$j('table.moduleLexResultsTable').dataTable({
-						"aaSorting": [[ 1, "desc" ]],
-						"oLanguage": {
-				            "sUrl": HTTP_ROOT_DIR + "/js/include/jquery/dataTables/dataTablesLang.php"
-				        },
-				        "bAutoWidth": false,
-				        "aoColumns" : [
-				                       { "sWidth": "60%" },
-				                       { "sWidth": "10%" , "bVisible" : false },
-				                       { "sWidth": "10%" },
-				                       { "sWidth": "10%" , "bVisible" : isAuthor },
-				                       ],
-				        "fnInitComplete": function(settings, json) {
-				        	// reset dataTables_wrapper classes that were removed by dataTable
-				            $j(this).closest('.dataTables_wrapper').addClass('ui-accordion-content ui-helper-reset ui-widget-content ui-corner-bottom');
-				          }
-					});
-					
-					doAccordion('.moduleLexResult');
-					initToolTips('.moduleLexResult');
-				} else {
-					/**
-					 * log the error message to the conosle
-					 */
-					console.log (JSONObj.data);					
-				}
-			}
-		})
-		.always (function (JSONObj){
-			// remove progress bar
-			if ($j('#lex-progressbar').length>0) $j('#lex-progressbar').remove();
-			// show no results text if needed
-			if (!JSONObj || JSONObj.data==null || JSONObj.data=='' || JSONObj.status!='OK') {
-				$j('#noResultsmoduleLex').fadeIn();
-			}
-		});
+                })
+                .done  (function (JSONObj) {
+                        if (JSONObj && JSONObj.data!=null) {
+                                if (JSONObj.status=='OK') {
+                                        $j('#moduleLexResults').append($j('<div>'+JSONObj.data+'</div>'));
+                                        $j('.moduleLexResult').fadeIn();
+
+                                        $j('table.moduleLexResultsTable').dataTable({
+                                                "aaSorting": [[ 1, "desc" ]],
+                                                "oLanguage": {
+                                            "sUrl": HTTP_ROOT_DIR + "/js/include/jquery/dataTables/dataTablesLang.php"
+                                        },
+                                        "bAutoWidth": false,
+                                        "aoColumns" : [
+                                                       { "sWidth": "60%" },
+                                                       { "sWidth": "10%" , "bVisible" : false },
+                                                       { "sWidth": "10%" },
+//				                       { "sWidth": "10%" , "bVisible" : isAuthor },
+                                                       { "sWidth": "10%" , "bVisible" : false },
+                                                       ],
+                                        "fnInitComplete": function(settings, json) {
+                                                // reset dataTables_wrapper classes that were removed by dataTable
+                                            $j(this).closest('.dataTables_wrapper').addClass('ui-accordion-content ui-helper-reset ui-widget-content ui-corner-bottom');
+                                          }
+                                        });
+
+                                        doAccordion('.moduleLexResult');
+                                        initToolTips('.moduleLexResult');
+                                } else {
+                                        /**
+                                         * log the error message to the conosle
+                                         */
+                                        console.log (JSONObj.data);					
+                                }
+                        }
+                })
+                .always (function (JSONObj){
+                        // remove progress bar
+                        if ($j('#lex-progressbar').length>0) $j('#lex-progressbar').remove();
+                        // show no results text if needed
+                        if (!JSONObj || JSONObj.data==null || JSONObj.data=='' || JSONObj.status!='OK') {
+                                $j('#noResultsmoduleLex').fadeIn();
+                        }
+                });
 	};
    
 	/**
@@ -446,7 +441,32 @@ HolisSearchManagement.prototype.doSearch = function(searchCoursesIDs, hasModuleL
 			$j('#moduleLexResults').css('width','100%');
 		}
 	}
-
+        
+        goAjax = false;
+        switch (searchType) {
+            case HOLIS_SEARCH_FILTER:
+                if ($j('#tripleID').text().length > 0) {
+                    goAjax = true;
+                } else {
+                    $j('#noResultsmoduleLex').text('selezionare almeno una tipologia'); 
+                }
+                break;
+            case HOLIS_SEARCH_TEXT:
+            case HOLIS_SEARCH_EUROVOC_CATEGORY:
+            case HOLIS_SEARCH_CONCEPT:
+            default:
+                if ($j('#searchtext').text().length > 0) {
+                    goAjax = true;
+                } else {
+                    $j('#noResultsmoduleLex').text('scrivere almeno una parola da cercare'); 
+                }
+                break;
+        }
+        if (!goAjax) {
+            $j('#noResultsmoduleLex').fadeIn();
+            return;
+        }
+        
 	// when the progress bar has done its initialization
 	$j.when( _initProgressBar.call(this) ).done( function() {
 		// init the search array with an ajax call to the server

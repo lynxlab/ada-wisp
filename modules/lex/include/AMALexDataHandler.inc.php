@@ -1006,12 +1006,10 @@ class AMALexDataHandler extends AMA_DataHandler {
 	}
         
 	/**
-	 * gets the asset list associated to the passed searchTerms (or no text) matched
-         * with typology triple (array)
+	 * gets the asset list associated with typology triple (array)
 	 *
-	 * @param array $searchTerm the array of terms to be matched
 	 * @param bool $verifiedOnly true if verified assets only are to be returned. defaults to false
-	 * @param number $typologyID typology ID to filter results, 0 means no filter. Defaults to 0.
+	 * @param number $typologyID typology ID to filter results, 0 means no filter. Defaults to 0 .
 	 * @param number $abrogatedStatus filter abrogated assets: -1 is no filter, 0 is not abrogated, 1 is abrogated
 	 *
 	 * @retrun NULL|Array
@@ -1019,7 +1017,72 @@ class AMALexDataHandler extends AMA_DataHandler {
 	 * @access public
 	 */
         
-        public function get_asset_from_text_and_typology($searchTerms, $verifiedOnly=false, $typologyID=0, $abrogatedStatus=-1) {
+        public function get_asset_from_typology($verifiedOnly=false, $typologyID=0, $abrogatedStatus=-1) {
+
+            
+                   
+            $subquery = ' (SELECT TESTI.`'.self::$PREFIX.'testi_id`, TESTI.`testo`' .
+		            'FROM `'.self::$PREFIX.'testi` AS TESTI) AS TTESTI ';
+
+            $sql = 'SELECT FONTI.`'.self::$PREFIX.'fonti_id`, ASSETS.`'.self::$PREFIX.'assets_id`, ASSETS.`label`, '.
+                       'FONTI.`titolo`, TIPOLOGIE.`descrizione`, TIPOLOGIE.`categoria`, TIPOLOGIE.`classe`, '.
+                       'COUNT(ABROGATI.`abrogato_da`) AS isabrogated '.
+                   'FROM `'.self::$PREFIX.'assets` AS ASSETS INNER JOIN'.$subquery.' ON TTESTI.`'.self::$PREFIX.'testi_id` = ASSETS.`'.self::$PREFIX.'testi_id` '.
+                   'JOIN `'.self::$PREFIX.'fonti` AS FONTI ON FONTI.`'.self::$PREFIX.'fonti_id` = ASSETS.`'.self::$PREFIX.'fonti_id` '.
+                   'JOIN `'.self::$PREFIX.'tipologie_fonti` AS `TIPOLOGIE` ON `FONTI`.`'.self::$PREFIX.'tipologie_fonti_id` = `TIPOLOGIE`.`'.self::$PREFIX.'tipologie_fonti_id` ';		       
+
+            // gets only verified assets if requested
+            if ($verifiedOnly===true) {
+                    $sql .= ' AND ASSETS.`'.self::$PREFIX.'stati_id`='.MODULES_LEX_ASSET_STATE_VERIFIED;
+            }
+
+            // typolgy filter
+            if (strlen($typologyID)>0) {
+                    // search all typologyes implied from the passed ID
+//                    $typologyArr = $this->getTypologyArray($typologyID);
+//                    $typologyIDsToSearch = $this->getTypologiesToSearch($typologyArr['descrizione'],$typologyArr['categoria'],$typologyArr['classe']);			
+//                    $sql .= ' AND FONTI.`'.self::$PREFIX.'tipologie_fonti_id` IN('.implode(',', $typologyIDsToSearch).')';
+                    $sql .= ' AND FONTI.`'.self::$PREFIX.'tipologie_fonti_id` IN('.$typologyID.')';
+            }
+
+            $sql .= ' LEFT JOIN `'.self::$PREFIX.'assets_abrogati` AS ABROGATI ON ASSETS.`'.self::$PREFIX.'assets_id` = ABROGATI.`'.self::$PREFIX.'assets_id` ';
+            $sql .= ' GROUP BY ASSETS.`'.self::$PREFIX.'assets_id` ';
+
+            if ($abrogatedStatus>-1) {
+                    $sql .= ' HAVING isabrogated';
+                    $sql .= ($abrogatedStatus>0) ? '>' : '=';
+                    $sql .= '0';
+            }
+
+            $sql .= ' ORDER BY FONTI.`'.self::$PREFIX.'fonti_id` ASC';
+
+            $res =  $this->getAllPrepared($sql, null, AMA_FETCH_ASSOC);
+
+            if (!AMA_DB::isError($res) && count($res)>0) {
+                    $retArray = array();
+                    foreach ($res as $count=>$element) {
+                            $key = $element[self::$PREFIX.'fonti_id'];
+                            $retArray[$key]['titolo'] = $element['titolo'];
+                            $retArray[$key]['tipologia'] = translateFN('tipologia').': '.$element['descrizione'].
+                                                                                       ' '.translateFN('categoria').': ';
+                            if (!is_null($element['categoria'])) $retArray[$key]['tipologia'] .= $element['categoria'];
+                            else $retArray[$key]['tipologia'] .= translateFN('Nessuna');
+                            $retArray[$key]['tipologia'] .= ' '.translateFN('classe(fonte)').': ';
+                            if (!is_null($element['classe'])) $retArray[$key]['tipologia'] .= $element['classe'];
+                            else $retArray[$key]['tipologia'] .= translateFN('Nessuna');
+                            unset($element[self::$PREFIX.'fonti_id']);
+                            unset($element['titolo']);
+                            unset($element['tipologia']);
+                            unset($element['categoria']);
+                            unset($element['classe']);
+                            // set element type to fulltext search
+                            $element['type'] = FULLTEXT_SEARCHTYPE_DISPLAY;
+                            if (!isset($element['weight'])) $element['weight'] = 0;
+                            $retArray[$key]['data'][] = $element;
+                    }
+                    return $retArray;
+            } else return null;            
+            
             
         }
 
