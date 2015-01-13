@@ -915,8 +915,8 @@ function initEditFancyTreeObj (element) {
 						 	.removeClass('fancytree-icon').addClass('fancytree-custom-icon ui-icon ui-icon-pencil');
 						$j(data.node.span).find('> span.fancytree-title').css('opacity', 1);
 					} else {
-						data.node.extraClasses = 'fancytree-statusnode-wait';
-						$j(data.node.span).addClass(data.node.extraClasses);
+//						data.node.extraClasses = 'fancytree-statusnode-wait';
+//						$j(data.node.span).addClass(data.node.extraClasses);
 						$j(data.node.span).find('> span.fancytree-title').css('opacity', 0.2);
 					}
 				}
@@ -1019,7 +1019,11 @@ function initEditFancyTreeObj (element) {
 									data.node.data.isSaving = false;
 									data.node.render(true);
 									// sort the active branch after closing the input
-									if(data.node.parent!=null) data.node.parent.sortChildren();
+									if(data.node.parent!=null) {
+										data.node.parent.folder = true;
+										data.node.parent.data.isSaving=false;
+										data.node.parent.sortChildren();
+									}
 									clearFancyTreeFilter();
 									if(data.node!=null) data.node.makeVisible({ noAnimation: true, scrollIntoView:false }); 
 								}, 200);
@@ -1052,10 +1056,10 @@ function initEditFancyTreeObj (element) {
 			 * show menu only if node has children
 			 * and is not in the editing state
 			 */
-			if (node.hasChildren() || node.isEditing()) return false;
+			if (node.hideCheckbox || node.isEditing()) return false;
 			else {
 				returnTree.contextmenu("enableEntry", "edit", node.data.isUserDefined);
-				returnTree.contextmenu("enableEntry", "delete", node.data.isUserDefined);
+				returnTree.contextmenu("enableEntry", "delete", node.data.isUserDefined && !node.isFolder());
 			}
 		},
 		select: function(event, ui) {
@@ -1094,17 +1098,28 @@ function initEditFancyTreeObj (element) {
  * @param node the node to add to
  */
 function addNewTreeNode(node) {
-	refNode = node.appendSibling({
-		title: $j('#defaultNewNodeTitle').text(),
-		folder: false,
+	
+	node.data.isSaving=false;
+	node.folder = true;
+	node.render(true);
+	
+	nodeData = {
 		isNew: true,
 		isSaving: false,
-		isUserDefined: true
+		isUserDefined: true };
+	
+	refNode = node.addChildren({
+		title: $j('#defaultNewNodeTitle').text(),
+		folder: false,
+		data: nodeData
 	});
 	// run the filter to show new node if a filter is active
 	filterFancyTree();
 	
-	refNode.editStart();
+	$j.when(refNode.makeVisible({ noAnimation: true, scrollIntoView:false })).done(
+			function() { 
+				refNode.editStart(); 
+			});
 }
 
 /**
@@ -1184,6 +1199,10 @@ function deleteSelectedTreeNode(node, op) {
 				// display error message
 				showHideDiv('',JSONObj.msg, false);
 			} else if (JSONObj.status=='OK') {
+				if(node.parent!=null && node.parent.countChildren(false)==1) {
+					node.parent.folder = false;
+					node.parent.render(true);
+				}
 				// remove the node and display message
 				node.remove();
 				setTimeout( function(){ filterFancyTree(); }, 10);

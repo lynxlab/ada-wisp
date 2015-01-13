@@ -254,6 +254,8 @@ class eurovocManagement extends importManagement
 				$treeObj[$count]->folder= true;
 				$treeObj[$count]->hideCheckbox = true;
 				$treeObj[$count]->unselectable = true;
+				$treeObj[$count]->data['isUserDefined'] = false;
+				$treeObj[$count]->data['isNew'] = false;
 				
 				$topTermsTree = $this->getTopTermsTree($thesaurus->thesaurus_id);
 				if (!is_null($topTermsTree)) $treeObj[$count]->children = $topTermsTree;
@@ -283,6 +285,8 @@ class eurovocManagement extends importManagement
 				$treeObj[$count]->folder= false;
 				$treeObj[$count]->hideCheckbox = false;
 				$treeObj[$count]->unselectable = false;
+				$treeObj[$count]->data['isUserDefined'] = false;
+				$treeObj[$count]->data['isNew'] = false;
 				
 				$descripteurTree = $this->getDescripteurTree($topTerm->descripteur_id);
 				
