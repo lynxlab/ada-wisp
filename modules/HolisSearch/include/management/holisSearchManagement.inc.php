@@ -54,7 +54,7 @@ class holisSearchManagement
 		return $this->runSearch(null);
 	}
 	
-	public function runSearch($searchtext, $searchCourseCount=0,$searchType=1) {
+	public function runSearch($searchtext, $searchCourseCount=0,$searchType=null) {
 		/* @var $html string holds html code to be retuned */
 		$htmlObj = CDOMElement::create('div','id:searchResults');
 		/* @var $path   string  path var to render in the help message */
@@ -105,7 +105,8 @@ class holisSearchManagement
 			
 			$tripleSpan = CDOMElement::create('span','id:tripleID');
 			$tripleSpan->setAttribute('style', 'display:none');
-			$tripleSpan->addChild(new CText(intval($tripleID)));
+			$tripleSpan->addChild(new CText($tripleID));
+			
 		}
 		$searchForm = new FormIndexSearch($formdata, $this->_forceAbrogated);
 

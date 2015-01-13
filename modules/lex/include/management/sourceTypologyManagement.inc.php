@@ -53,15 +53,12 @@ class sourceTypologyManagement
 		}
 		else $result = null;		
 		
-		if (is_null($result)) $retArray['null'] = translateFN('Nessuna');
-		else {
-			// translate null value to text
-			foreach ($result as $value) {
-				if (is_null($value)) $retArray['null'] = translateFN('Nessuna');
-				else $retArray[urlencode($value)] = $value;
-			}			
+		// always have a special child for all categories/classes
+		$retArray['null'] = translateFN('Tutte');
+		foreach ($result as $value) {
+				$retArray[urlencode($value)] = $value;
 		}
-
+		
 		return $retArray;
 	}
 	

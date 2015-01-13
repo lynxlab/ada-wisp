@@ -35,8 +35,9 @@ class FormIndexSearch extends FForm {
 		}
 		
                 $searchTypeSelAr = array(
-                    HOLIS_SEARCH_FILTER=>translateFN('Filtro'),
-                    HOLIS_SEARCH_CONCEPT=>translateFN('Per concetti'),
+                	
+                	HOLIS_SEARCH_CONCEPT=>translateFN('Per concetti'),
+                		HOLIS_SEARCH_FILTER=>translateFN('Filtro'),
                     HOLIS_SEARCH_EUROVOC_CATEGORY=>translateFN('Per categorie EUROVOC'),
                     HOLIS_SEARCH_TEXT=>translateFN('Nel testo e titolo')
                 );
@@ -71,8 +72,8 @@ class FormIndexSearch extends FForm {
 			$sel_tipologia->withData($typologiesArr,$selTypology);
 			
 			$categoriesArr = sourceTypologyManagement::getTypologyChildren($selTypology);
-			// write 'all' instead of 'none'
-			if (array_key_exists('null', $categoriesArr)) $categoriesArr['null'] = translateFN('Tutte');
+			// 'all' categories
+			$categoriesArr['null'] = translateFN('Tutte');
 			
 			$sel_categoria = FormControl::create(FormControl::SELECT, 'categoria', translateFN('categoria'));
 			// $sel_categoria->setAttribute('class', 'dontuniform');
@@ -84,8 +85,8 @@ class FormIndexSearch extends FForm {
 			$sel_categoria->withData($categoriesArr,$selCategory);
 
 			$classesArr = sourceTypologyManagement::getCategoryChildren($selTypology, $selCategory);
-			// write 'all' intead of 'none'
-			if (array_key_exists('null', $classesArr)) $classesArr['null'] = translateFN('Tutte');
+			// 'all' classes
+			$classesArr['null'] = translateFN('Tutte');
 			
 			$sel_classe = FormControl::create(FormControl::SELECT, 'classe', translateFN('classe(fonte)'));
 			// $sel_classe->setAttribute('class', 'dontuniform');

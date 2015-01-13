@@ -74,7 +74,7 @@ if (isset($_SERVER['REQUEST_METHOD']) && $_SERVER['REQUEST_METHOD'] == 'GET' &&
     	
     	if (isset ($retval) && !is_null($retval)) {
     		// write 'all' intead of 'none' when in searchMode
-    		if (isset($searchMode) && (intval($searchMode)>0) && array_key_exists('null', $retval)) $retval['null'] = translateFN('Tutte');
+    		// if (isset($searchMode) && (intval($searchMode)>0) && array_key_exists('null', $retval)) $retval['null'] = translateFN('Tutte');
     		foreach ($retval as $key=>$element) {
     			$retHTML .= '<option value="'.$key.'">'.$element.'</option>';
     		}

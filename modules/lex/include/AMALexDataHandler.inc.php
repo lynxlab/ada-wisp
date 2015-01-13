@@ -92,39 +92,47 @@ class AMALexDataHandler extends AMA_DataHandler {
 	 */
 	public function getTypologyID ($descrizione, $categoria=null, $classe=null) {
 		$sql = 'SELECT `'.self::$PREFIX.'tipologie_fonti_id` FROM `'.self::$PREFIX.'tipologie_fonti`'.
-				' WHERE `descrizione`=? AND `categoria`';
+				' WHERE `descrizione`=?';
 		
 		$params = array (urldecode($descrizione));
 	
 		if (is_null($categoria) || strlen($categoria)<=0) {
-			$sql .= ' IS NULL';
+// 			$sql .= ' IS NULL';
 		} else {
-			$sql .= '=?';
+			$sql .= ' AND `categoria`=?';
 			array_push($params, urldecode($categoria));
 		}
 		
-		$sql .= ' AND `classe`';
+// 		$sql .= ' AND `classe`';
 		
 		if (is_null($classe) || strlen($classe)<=0) {
-			$sql .= ' IS NULL';
+// 			$sql .= ' IS NULL';
 		} else {
-			$sql .= '=?';
+			$sql .= ' AND `classe`=?';
 			array_push($params, urldecode($classe));
 		}
 		
-		$result = $this->getOnePrepared($sql,$params);
+		$result = $this->getAllPrepared($sql,$params);
+				
 		/**
 		 * if no row found and categoria or classe was null,
 		 * return the matching row with the lowest ID
 		 */
-		if ($result===false && (is_null($categoria) || strlen($categoria)<=0 ||
-			is_null($classe) || strlen($classe)<=0)) {
+		if ((!is_array($result) || count($result)<=0) &&
+			(is_null($categoria) || strlen($categoria)<=0 ||
+			 is_null($classe) || strlen($classe)<=0)) {
 			
 			$sql = 'SELECT `'.self::$PREFIX.'tipologie_fonti_id` FROM `'.self::$PREFIX.'tipologie_fonti`'.
 				   ' WHERE `descrizione`=? ';
 			if (strlen($categoria)>0) $sql .= 'AND `categoria`=? ';
 			$sql .= 'ORDER BY `'.self::$PREFIX.'tipologie_fonti_id` ASC';
 			$result = $this->getOnePrepared($sql,$params);
+		} else {			
+			foreach ($result as $res) {
+				if (!isset($retval)) $retval = array();
+				$retval[] = reset($res);
+			}	
+			if (isset($retval) && count($retval)>0) $result = implode(',',$retval);
 		}
 	
 		if (AMA_DB::isError($result) || $result===false || count($result)<=0) return null;

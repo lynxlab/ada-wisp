@@ -22,6 +22,22 @@ function initDoc() {
 			updateSelect('classe');
 		});		
 	}
+	
+	if ($j('#searchType').length>0) {
+		$j('#searchType').on ('change', function(){
+			var x = $j('#searchType option:selected').val();
+			
+			if (x==HOLIS_SEARCH_FILTER) {
+				$j('#l_s, #s').hide();
+			} else { 
+				$j('#l_s, #s').show();
+			}
+			
+		});
+		
+		$j('#searchType').trigger('change');
+	}	
+	
 	var hsm = new HolisSearchManagement();
 	if (typeof arguments[0]!='undefined') {
 		/**
@@ -210,6 +226,10 @@ var HolisSearchManagement = (function() {
                                                             },
                                     dataType:	'json'
                     });
+            } else {
+            	return {
+            		searchTermsArray: this.searchTermsArray            		
+            	}
             }
 	}; // ends _initSearchArray
 	
@@ -440,7 +460,7 @@ HolisSearchManagement.prototype.doSearch = function(searchCoursesIDs, hasModuleL
 			 * REMOVE THESE 2 LINES IN PRODUCTION
 			 */
 			if (IE_version==false || IE_version>8) {
-				console.log (returnedObj.searchedURI);
+				if (typeof returnedObj.searchedURI != 'undefined') console.log (returnedObj.searchedURI);
 				console.log (thisReference.searchTermsArray.length + ' terms searched:');
 				console.log (thisReference.searchTermsArray);
 				console.log (thisReference.descripteurIds.length + ' descripteur ids searched:');
