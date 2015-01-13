@@ -29,6 +29,7 @@ function initDoc() {
 			
 			if (x==HOLIS_SEARCH_FILTER) {
 				$j('#l_s, #s').hide();
+                                $j('#s').val('');
 			} else { 
 				$j('#l_s, #s').show();
 			}
