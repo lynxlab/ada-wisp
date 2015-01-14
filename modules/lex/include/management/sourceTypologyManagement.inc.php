@@ -76,6 +76,7 @@ class sourceTypologyManagement
 	 */
 	public static function getIDFromTriple ($description, $category=null, $class=null) {
 		$db = self::getDBHandler();
+		if (is_null($description)) return 0;
 		if ($category==='null') $category = null;
 		if ($class==='null') $class = null;
 		return $db->getTypologyID ($description, $category, $class);

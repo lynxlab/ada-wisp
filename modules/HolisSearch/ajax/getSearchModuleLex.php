@@ -110,7 +110,7 @@ if (isset($_SERVER['REQUEST_METHOD']) && $_SERVER['REQUEST_METHOD'] == 'POST' &&
 		 * 3. now do a fulltext search on asset associated text and merge the results
 		 *    with point 2 only if the search type is HOLIS_SEARCH_CONCEPT 
 		 */
-		if ($searchType == HOLIS_SEARCH_CONCEPT || $searchType == HOLIS_SEARCH_TEXT) {
+		if ($searchType == HOLIS_SEARCH_TEXT) {
 			$fulltextResults = $dh->get_asset_from_text($arrayToSearch, $getOnlyVerifiedAssets,$typologyID,$abrogatedStatus);
 			if (!is_null($fulltextResults)) {
 				// merge the results
