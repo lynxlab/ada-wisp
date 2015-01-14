@@ -458,7 +458,7 @@ HolisSearchManagement.prototype.doSearch = function(searchCoursesIDs, hasModuleL
             case HOLIS_SEARCH_EUROVOC_CATEGORY:
             case HOLIS_SEARCH_CONCEPT:
             default:
-                if ($j('#searchtext').text().length > 0) {
+                if ($j('#querystring').text().length > 0) {
                     goAjax = true;
                 } else {
                     $j('#noResultsmoduleLex').text('scrivere almeno una parola da cercare'); 
