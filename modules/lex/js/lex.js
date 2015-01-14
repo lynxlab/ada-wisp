@@ -1593,7 +1593,7 @@ function updateSelect(what) {
 		$j('#'+what).html('<option></option>');
 	}).always (function() {
 		$j('#'+what).removeAttr('disabled');
-		$j('#'+what).val(0);
+		$j('#'+what).val($j('#'+what+' option:first').val());
 		$j('#'+what).selectric('refresh');
 	});
 }
