@@ -74,16 +74,22 @@ if (isset($_SERVER['REQUEST_METHOD']) && $_SERVER['REQUEST_METHOD'] == 'POST' &&
 		if (isset($descripteurAr) && is_array($descripteurAr) && count($descripteurAr)>0) {
 			$descripteur_ids = $descripteurAr;
 		} else {
-			if ($searchType == HOLIS_SEARCH_EUROVOC_CATEGORY || $searchType == HOLIS_SEARCH_TEXT) {
+			if ($searchType == HOLIS_SEARCH_EUROVOC_CATEGORY) {
 				$arrayToSearch =  array($querystring);
+			} else if ($searchType == HOLIS_SEARCH_TEXT) {
+				$arrayToSearch = explode (' ',$querystring);
+				$descripteur_ids = array();
 			} else {
 				$arrayToSearch = array_merge(array($querystring), $searchTerms); 
 			}
-			$descripteurAr = $dh->getEurovocDESCRIPTEURIDS($arrayToSearch, getLanguageCode());
-			if (AMA_DB::isError($descripteurAr)) $descripteur_ids = array();
-			else {
-				foreach ($descripteurAr as $el) $descripteur_ids[] = $el['descripteur_id'];
-			}				
+			
+			if (!isset($descripteur_ids)) {
+				$descripteurAr = $dh->getEurovocDESCRIPTEURIDS($arrayToSearch, getLanguageCode());
+				if (AMA_DB::isError($descripteurAr)) $descripteur_ids = array();
+				else {
+					foreach ($descripteurAr as $el) $descripteur_ids[] = $el['descripteur_id'];
+				}
+			}
 		}
 		
 		// close the session if not needed, this is important for
