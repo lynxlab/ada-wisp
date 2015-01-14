@@ -66,15 +66,17 @@ if (isset($_SERVER['REQUEST_METHOD']) && $_SERVER['REQUEST_METHOD'] == 'GET' &&
     		$category = urldecode($category);
     	}
     	
+    	$isJexForm = isset($isJexForm);
+    	
     	if ($what==='categoria') {
-    		$retval = sourceTypologyManagement::getTypologyChildren($typology);
+    		$retval = sourceTypologyManagement::getTypologyChildren($typology, $isJexForm);
     	} else if ($what==='classe') {
-    		$retval = sourceTypologyManagement::getCategoryChildren($typology, $category);
+    		$retval = sourceTypologyManagement::getCategoryChildren($typology, $category, $isJexForm);
     	}
     	
     	if (isset ($retval) && !is_null($retval)) {
     		// write 'all' intead of 'none' when in searchMode
-    		if (isset($searchMode) && (intval($searchMode)>0) && array_key_exists('null', $retval)) $retval['null'] = translateFN('Tutte');
+    		// if (isset($searchMode) && (intval($searchMode)>0) && array_key_exists('null', $retval)) $retval['null'] = translateFN('Tutte');
     		foreach ($retval as $key=>$element) {
     			$retHTML .= '<option value="'.$key.'">'.$element.'</option>';
     		}

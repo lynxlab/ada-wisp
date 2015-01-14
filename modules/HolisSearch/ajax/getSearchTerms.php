@@ -45,7 +45,7 @@ require_once(ROOT_DIR.'/browsing/include/browsing_functions.inc.php');
 // MODULE's OWN IMPORTS
 require_once MODULES_HOLISSEARCH_PATH .'/config/config.inc.php';
 
-$retArray = null;
+$retArray = array();
 
 /**
  * terms can be searched in two ways:
@@ -126,8 +126,8 @@ if (isset($_SERVER['REQUEST_METHOD']) && $_SERVER['REQUEST_METHOD'] == 'POST' &&
 }
 
 // substitute underscores with spaces
-if (!is_null($retArray['searchTerms'])) {
+if (isset($retArray['searchTerms']) && count($retArray['searchTerms']) > 0) {
 	array_walk ($retArray['searchTerms'],function(&$value){ $value = str_replace('_', ' ', $value); });
 }
-// return the array
+// return the array)
 echo json_encode($retArray);

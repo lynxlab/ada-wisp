@@ -36,12 +36,13 @@ class sourceTypologyManagement
 	 * @param string $what 'typology' or 'category' to get children for
 	 * @param string $typology
 	 * @param string $category
+	 * @param boolean $isJexForm true to remove 'all' option from the select
 	 * 
 	 * @return Ambigous <string, unknown, string>
 	 * 
 	 * @access private
 	 */
-	private static function getChildren ($what, $typology, $category=null) {
+	private static function getChildren ($what, $typology, $category=null, $isJexForm=false) {
 		$db = self::getDBHandler();
 		
 		if ($what==='typology') {
@@ -53,15 +54,12 @@ class sourceTypologyManagement
 		}
 		else $result = null;		
 		
-		if (is_null($result)) $retArray['null'] = translateFN('Nessuna');
-		else {
-			// translate null value to text
-			foreach ($result as $value) {
-				if (is_null($value)) $retArray['null'] = translateFN('Nessuna');
-				else $retArray[urlencode($value)] = $value;
-			}			
+		// if not in the Jex import form, have a special child for all categories/classes
+		if (!$isJexForm) $retArray['null'] = translateFN('Tutte');
+		foreach ($result as $value) {
+				$retArray[urlencode($value)] = $value;
 		}
-
+		
 		return $retArray;
 	}
 	
@@ -101,13 +99,14 @@ class sourceTypologyManagement
 	 * get the categories children of a typology
 	 * 
 	 * @param string $typology
+	 * @param boolean $isJexForm true to remove 'all' option from the select 
 	 * 
 	 * @return Ambigous <string, unknown, string>
 	 * 
 	 * @access public
 	 */
-	public static function getTypologyChildren ($typology) {
-		return self::getChildren('typology', $typology);
+	public static function getTypologyChildren ($typology, $isJexForm) {
+		return self::getChildren('typology', $typology, null, $isJexForm);
 	}
 	
 	/**
@@ -115,14 +114,15 @@ class sourceTypologyManagement
 	 * 
 	 * @param string $typology
 	 * @param string $category
+	 * @param boolean $isJexForm true to remove 'all' option from the select
 	 * 
 	 * @return Ambigous <string, unknown, string>
 	 * 
 	 * @access public
 	 */
-	public static function getCategoryChildren($typology, $category) {
+	public static function getCategoryChildren($typology, $category, $isJexForm) {
 		if ($category==='null') $category = null;
-		return self::getChildren('category', $typology, $category);
+		return self::getChildren('category', $typology, $category, $isJexForm);
 	}
 
 } // class ends here

@@ -27,14 +27,34 @@ class FormIndexSearch extends FForm {
 		
 		$label = (isset($data['searchtext']) && strlen($data['searchtext'])>0) ? translateFN('Hai cercato').': ' : translateFN('Cosa stai cercando ?') ;
 		
-		$searchText = FormControl::create(FormControl::INPUT_TEXT, 's', $label)->setValidator(FormValidator::NOT_EMPTY_STRING_VALIDATOR);
+		$searchText = FormControl::create(FormControl::INPUT_TEXT, 's', $label); //->setValidator(FormValidator::NOT_EMPTY_STRING_VALIDATOR);
 		
 		
 		if (isset($data['searchtext']) && strlen($data['searchtext'])>0) {			
 			$searchText->withData(htmlentities($data['searchtext'], ENT_COMPAT | ENT_HTML401, ADA_CHARSET));
 		}
 		
+                $searchTypeSelAr = array(
+                	
+                	HOLIS_SEARCH_CONCEPT=>translateFN('Per concetti'),
+                		HOLIS_SEARCH_FILTER=>translateFN('Filtro'),
+                    HOLIS_SEARCH_EUROVOC_CATEGORY=>translateFN('Per categorie EUROVOC'),
+                    HOLIS_SEARCH_TEXT=>translateFN('Nel testo e titolo')
+                );
+
+                $searchTypeSel = FormControl::create(FormControl::SELECT,'searchType',translateFN('Tipo di ricerca'));
+                if (isset($data['searchType'])) {
+			$searchType = $data['searchType']; 
+		} else {
+			$searchType = reset(array_keys($searchTypeSelAr));				
+                }
+                $searchTypeSel->withData($searchTypeSelAr,$searchType);
+                
+		$this->addControl($searchTypeSel);
 		$this->addControl($searchText);
+//		$fieldSetFilter = array ($searchTypeSel, $searchText);
+//                $this->addFieldset('','set_filtro_text')->withData($fieldSetFilter);
+                
 		
 		if (MODULES_LEX && isset($data['typologiesArr']) && is_array($data['typologiesArr']) && count($data['typologiesArr'])>0) {
 			
@@ -52,8 +72,8 @@ class FormIndexSearch extends FForm {
 			$sel_tipologia->withData($typologiesArr,$selTypology);
 			
 			$categoriesArr = sourceTypologyManagement::getTypologyChildren($selTypology);
-			// write 'all' intead of 'none'
-			if (array_key_exists('null', $categoriesArr)) $categoriesArr['null'] = translateFN('Tutte');
+			// 'all' categories
+			$categoriesArr['null'] = translateFN('Tutte');
 			
 			$sel_categoria = FormControl::create(FormControl::SELECT, 'categoria', translateFN('categoria'));
 			// $sel_categoria->setAttribute('class', 'dontuniform');
@@ -65,8 +85,8 @@ class FormIndexSearch extends FForm {
 			$sel_categoria->withData($categoriesArr,$selCategory);
 
 			$classesArr = sourceTypologyManagement::getCategoryChildren($selTypology, $selCategory);
-			// write 'all' intead of 'none'
-			if (array_key_exists('null', $classesArr)) $classesArr['null'] = translateFN('Tutte');
+			// 'all' classes
+			$classesArr['null'] = translateFN('Tutte');
 			
 			$sel_classe = FormControl::create(FormControl::SELECT, 'classe', translateFN('classe(fonte)'));
 			// $sel_classe->setAttribute('class', 'dontuniform');

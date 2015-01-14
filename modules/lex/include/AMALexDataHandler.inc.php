@@ -92,39 +92,47 @@ class AMALexDataHandler extends AMA_DataHandler {
 	 */
 	public function getTypologyID ($descrizione, $categoria=null, $classe=null) {
 		$sql = 'SELECT `'.self::$PREFIX.'tipologie_fonti_id` FROM `'.self::$PREFIX.'tipologie_fonti`'.
-				' WHERE `descrizione`=? AND `categoria`';
+				' WHERE `descrizione`=?';
 		
 		$params = array (urldecode($descrizione));
 	
 		if (is_null($categoria) || strlen($categoria)<=0) {
-			$sql .= ' IS NULL';
+// 			$sql .= ' IS NULL';
 		} else {
-			$sql .= '=?';
+			$sql .= ' AND `categoria`=?';
 			array_push($params, urldecode($categoria));
 		}
 		
-		$sql .= ' AND `classe`';
+// 		$sql .= ' AND `classe`';
 		
 		if (is_null($classe) || strlen($classe)<=0) {
-			$sql .= ' IS NULL';
+// 			$sql .= ' IS NULL';
 		} else {
-			$sql .= '=?';
+			$sql .= ' AND `classe`=?';
 			array_push($params, urldecode($classe));
 		}
 		
-		$result = $this->getOnePrepared($sql,$params);
+		$result = $this->getAllPrepared($sql,$params);
+				
 		/**
 		 * if no row found and categoria or classe was null,
 		 * return the matching row with the lowest ID
 		 */
-		if ($result===false && (is_null($categoria) || strlen($categoria)<=0 ||
-			is_null($classe) || strlen($classe)<=0)) {
+		if ((!is_array($result) || count($result)<=0) &&
+			(is_null($categoria) || strlen($categoria)<=0 ||
+			 is_null($classe) || strlen($classe)<=0)) {
 			
 			$sql = 'SELECT `'.self::$PREFIX.'tipologie_fonti_id` FROM `'.self::$PREFIX.'tipologie_fonti`'.
 				   ' WHERE `descrizione`=? ';
 			if (strlen($categoria)>0) $sql .= 'AND `categoria`=? ';
 			$sql .= 'ORDER BY `'.self::$PREFIX.'tipologie_fonti_id` ASC';
 			$result = $this->getOnePrepared($sql,$params);
+		} else {			
+			foreach ($result as $res) {
+				if (!isset($retval)) $retval = array();
+				$retval[] = reset($res);
+			}	
+			if (isset($retval) && count($retval)>0) $result = implode(',',$retval);
 		}
 	
 		if (AMA_DB::isError($result) || $result===false || count($result)<=0) return null;
@@ -992,9 +1000,91 @@ class AMALexDataHandler extends AMA_DataHandler {
 		} else {
 			$params = array($version,$lng);
 		}
-
-		return $this->getAllPrepared($sql,$params,AMA_FETCH_ASSOC);
+		
+		$retval = $this->getAllPrepared($sql,$params,AMA_FETCH_ASSOC);
+		return $retval;
 	}
+        
+	/**
+	 * gets the asset list associated with typology triple (array)
+	 *
+	 * @param bool $verifiedOnly true if verified assets only are to be returned. defaults to false
+	 * @param number $typologyID typology ID to filter results, 0 means no filter. Defaults to 0 .
+	 * @param number $abrogatedStatus filter abrogated assets: -1 is no filter, 0 is not abrogated, 1 is abrogated
+	 *
+	 * @retrun NULL|Array
+	 *
+	 * @access public
+	 */
+        
+        public function get_asset_from_typology($verifiedOnly=false, $typologyID=0, $abrogatedStatus=-1) {
+
+            
+                   
+            $subquery = ' (SELECT TESTI.`'.self::$PREFIX.'testi_id`, TESTI.`testo`' .
+		            'FROM `'.self::$PREFIX.'testi` AS TESTI) AS TTESTI ';
+
+            $sql = 'SELECT FONTI.`'.self::$PREFIX.'fonti_id`, ASSETS.`'.self::$PREFIX.'assets_id`, ASSETS.`label`, '.
+                       'FONTI.`titolo`, TIPOLOGIE.`descrizione`, TIPOLOGIE.`categoria`, TIPOLOGIE.`classe`, '.
+                       'COUNT(ABROGATI.`abrogato_da`) AS isabrogated '.
+                   'FROM `'.self::$PREFIX.'assets` AS ASSETS INNER JOIN'.$subquery.' ON TTESTI.`'.self::$PREFIX.'testi_id` = ASSETS.`'.self::$PREFIX.'testi_id` '.
+                   'JOIN `'.self::$PREFIX.'fonti` AS FONTI ON FONTI.`'.self::$PREFIX.'fonti_id` = ASSETS.`'.self::$PREFIX.'fonti_id` '.
+                   'JOIN `'.self::$PREFIX.'tipologie_fonti` AS `TIPOLOGIE` ON `FONTI`.`'.self::$PREFIX.'tipologie_fonti_id` = `TIPOLOGIE`.`'.self::$PREFIX.'tipologie_fonti_id` ';		       
+
+            // gets only verified assets if requested
+            if ($verifiedOnly===true) {
+                    $sql .= ' AND ASSETS.`'.self::$PREFIX.'stati_id`='.MODULES_LEX_ASSET_STATE_VERIFIED;
+            }
+
+            // typolgy filter
+            if (strlen($typologyID)>0) {
+                    // search all typologyes implied from the passed ID
+//                    $typologyArr = $this->getTypologyArray($typologyID);
+//                    $typologyIDsToSearch = $this->getTypologiesToSearch($typologyArr['descrizione'],$typologyArr['categoria'],$typologyArr['classe']);			
+//                    $sql .= ' AND FONTI.`'.self::$PREFIX.'tipologie_fonti_id` IN('.implode(',', $typologyIDsToSearch).')';
+                    $sql .= ' AND FONTI.`'.self::$PREFIX.'tipologie_fonti_id` IN('.$typologyID.')';
+            }
+
+            $sql .= ' LEFT JOIN `'.self::$PREFIX.'assets_abrogati` AS ABROGATI ON ASSETS.`'.self::$PREFIX.'assets_id` = ABROGATI.`'.self::$PREFIX.'assets_id` ';
+            $sql .= ' GROUP BY ASSETS.`'.self::$PREFIX.'assets_id` ';
+
+            if ($abrogatedStatus>-1) {
+                    $sql .= ' HAVING isabrogated';
+                    $sql .= ($abrogatedStatus>0) ? '>' : '=';
+                    $sql .= '0';
+            }
+
+            $sql .= ' ORDER BY FONTI.`'.self::$PREFIX.'fonti_id` ASC';
+
+            $res =  $this->getAllPrepared($sql, null, AMA_FETCH_ASSOC);
+
+            if (!AMA_DB::isError($res) && count($res)>0) {
+                    $retArray = array();
+                    foreach ($res as $count=>$element) {
+                            $key = $element[self::$PREFIX.'fonti_id'];
+                            $retArray[$key]['titolo'] = $element['titolo'];
+                            $retArray[$key]['tipologia'] = translateFN('tipologia').': '.$element['descrizione'].
+                                                                                       ' '.translateFN('categoria').': ';
+                            if (!is_null($element['categoria'])) $retArray[$key]['tipologia'] .= $element['categoria'];
+                            else $retArray[$key]['tipologia'] .= translateFN('Nessuna');
+                            $retArray[$key]['tipologia'] .= ' '.translateFN('classe(fonte)').': ';
+                            if (!is_null($element['classe'])) $retArray[$key]['tipologia'] .= $element['classe'];
+                            else $retArray[$key]['tipologia'] .= translateFN('Nessuna');
+                            unset($element[self::$PREFIX.'fonti_id']);
+                            unset($element['titolo']);
+                            unset($element['tipologia']);
+                            unset($element['categoria']);
+                            unset($element['classe']);
+                            // set element type to fulltext search
+                            $element['type'] = FULLTEXT_SEARCHTYPE_DISPLAY;
+                            if (!isset($element['weight'])) $element['weight'] = 0;
+                            $retArray[$key]['data'][] = $element;
+                    }
+                    return $retArray;
+            } else return null;            
+            
+            
+        }
 
 	/**
 	 * gets the asset list associated to the passed searchTerms matched
@@ -1019,12 +1109,29 @@ class AMALexDataHandler extends AMA_DataHandler {
 		/**
 		 * weight selection with a subquery
 		 */
-		$subquery = ' (SELECT TESTI.`'.self::$PREFIX.'testi_id`, MATCH (TESTI.`testo`) AGAINST (\''.implode(' ', $searchTerms).'\' IN NATURAL LANGUAGE MODE) as weight '.
-		            'FROM `'.self::$PREFIX.'testi` AS TESTI WHERE MATCH (TESTI.`testo`) AGAINST (\''.implode(' ', $searchTerms).'\' IN NATURAL LANGUAGE MODE)>0 ORDER BY weight DESC)'.
-		            ' AS TTESTI ';
+// 		$subquery = ' (SELECT TESTI.`'.self::$PREFIX.'testi_id`, MATCH (TESTI.`testo`) AGAINST (\''.implode(' ', $searchTerms).'\' IN NATURAL LANGUAGE MODE) as weight '.
+// 		            'FROM `'.self::$PREFIX.'testi` AS TESTI WHERE MATCH (TESTI.`testo`) AGAINST (\''.implode(' ', $searchTerms).'\' IN NATURAL LANGUAGE MODE)>0 ORDER BY weight DESC)'.
+// 		            ' AS TTESTI ';
 
+		array_walk($searchTerms, function(&$value){ $value = trim($value); });		
+		$searchText = $this->getConnection()->quote('%'.implode('%',$searchTerms).'%');
+		
+		// replace space with underscore to search asset title
+		$titleSearchTerms = $searchTerms;
+		array_walk($titleSearchTerms, function(&$value){ $value = str_replace(' ', '_', $value); });
+		$titleSearchText = $this->getConnection()->quote('%'.implode('%',$titleSearchTerms).'%');
+		
+		$subquery = ' (
+						(SELECT TESTI.`'.self::$PREFIX.'testi_id` '.
+							'FROM `'.self::$PREFIX.'testi` AS TESTI WHERE TESTI.`testo` LIKE '.$searchText.')'.
+					' UNION DISTINCT
+						(SELECT ASSETS.`'.self::$PREFIX.'testi_id` '.
+							' FROM `'.self::$PREFIX.'assets` AS ASSETS WHERE ASSETS.`label` LIKE '.$searchText.
+							' OR ASSETS.`label` LIKE '.$titleSearchText.')'.
+					') AS TTESTI';
+		
 		$sql = 'SELECT FONTI.`'.self::$PREFIX.'fonti_id`, ASSETS.`'.self::$PREFIX.'assets_id`, ASSETS.`label`, '.
-			   'weight, FONTI.`titolo`, TIPOLOGIE.`descrizione`, TIPOLOGIE.`categoria`, TIPOLOGIE.`classe`, '.
+			   'FONTI.`titolo`, TIPOLOGIE.`descrizione`, TIPOLOGIE.`categoria`, TIPOLOGIE.`classe`, '.
 			   'COUNT(ABROGATI.`abrogato_da`) AS isabrogated '.
 		       'FROM `'.self::$PREFIX.'assets` AS ASSETS INNER JOIN'.$subquery.' ON TTESTI.`'.self::$PREFIX.'testi_id` = ASSETS.`'.self::$PREFIX.'testi_id` '.
 		       'JOIN `'.self::$PREFIX.'fonti` AS FONTI ON FONTI.`'.self::$PREFIX.'fonti_id` = ASSETS.`'.self::$PREFIX.'fonti_id` '.
@@ -1036,11 +1143,12 @@ class AMALexDataHandler extends AMA_DataHandler {
 		}
 		
 		// typolgy filter
-		if (intval($typologyID)>0) {
+		if (strlen($typologyID)>0) {
 			// search all typologyes implied from the passed ID
-			$typologyArr = $this->getTypologyArray($typologyID);
-			$typologyIDsToSearch = $this->getTypologiesToSearch($typologyArr['descrizione'],$typologyArr['categoria'],$typologyArr['classe']);			
-			$sql .= ' AND FONTI.`'.self::$PREFIX.'tipologie_fonti_id` IN('.implode(',', $typologyIDsToSearch).')';
+// 			$typologyArr = $this->getTypologyArray($typologyID);
+// 			$typologyIDsToSearch = $this->getTypologiesToSearch($typologyArr['descrizione'],$typologyArr['categoria'],$typologyArr['classe']);			
+// 			$sql .= ' AND FONTI.`'.self::$PREFIX.'tipologie_fonti_id` IN('.implode(',', $typologyIDsToSearch).')';
+			$sql .= ' AND FONTI.`'.self::$PREFIX.'tipologie_fonti_id` IN('.$typologyID.')';
 		}
 
 		$sql .= ' LEFT JOIN `'.self::$PREFIX.'assets_abrogati` AS ABROGATI ON ASSETS.`'.self::$PREFIX.'assets_id` = ABROGATI.`'.self::$PREFIX.'assets_id` ';
@@ -1052,8 +1160,8 @@ class AMALexDataHandler extends AMA_DataHandler {
 			$sql .= '0';
 		}
 
-		$sql .= ' ORDER BY FONTI.`'.self::$PREFIX.'fonti_id` ASC , weight DESC';
-
+		$sql .= ' ORDER BY FONTI.`'.self::$PREFIX.'fonti_id` ASC';
+	
 		$res =  $this->getAllPrepared($sql, null, AMA_FETCH_ASSOC);
 
 		if (!AMA_DB::isError($res) && count($res)>0) {
@@ -1075,6 +1183,7 @@ class AMALexDataHandler extends AMA_DataHandler {
 				unset($element['classe']);
 				// set element type to fulltext search
 				$element['type'] = FULLTEXT_SEARCHTYPE_DISPLAY;
+				if (!isset($element['weight'])) $element['weight']=0;
 				$retArray[$key]['data'][] = $element;
 			}
 			return $retArray;
@@ -1124,11 +1233,12 @@ class AMALexDataHandler extends AMA_DataHandler {
 		}
 		
 		// typolgy filter
-		if (intval($typologyID)>0) {
+		if (strlen($typologyID)>0) {
 			// search all typologyes implied from the passed ID
-			$typologyArr = $this->getTypologyArray($typologyID);
-			$typologyIDsToSearch = $this->getTypologiesToSearch($typologyArr['descrizione'],$typologyArr['categoria'],$typologyArr['classe']);
-			$sql .= ' AND FONTI.`'.self::$PREFIX.'tipologie_fonti_id` IN('.implode(',', $typologyIDsToSearch).')';
+// 			$typologyArr = $this->getTypologyArray($typologyID);
+// 			$typologyIDsToSearch = $this->getTypologiesToSearch($typologyArr['descrizione'],$typologyArr['categoria'],$typologyArr['classe']);
+// 			$sql .= ' AND FONTI.`'.self::$PREFIX.'tipologie_fonti_id` IN('.implode(',', $typologyIDsToSearch).')';
+			$sql .= ' AND FONTI.`'.self::$PREFIX.'tipologie_fonti_id` IN('.$typologyID.')';
 		}
 		
 		$sql .=' LEFT JOIN `'.self::$PREFIX.'assets_abrogati` AS ABROGATI ON ASSETS.`'.self::$PREFIX.'assets_id` = ABROGATI.`'.self::$PREFIX.'assets_id` ';		
@@ -1163,6 +1273,7 @@ class AMALexDataHandler extends AMA_DataHandler {
 				unset($element['classe']);
 				// set element type to descripteur_id match search
 				$element['type'] = ID_SEARCHTYPE_DISPLAY;
+				if (!isset($element['weight'])) $element['weight']=0;
 				$retArray[$key]['data'][] = $element;
 			}
 			return $retArray;

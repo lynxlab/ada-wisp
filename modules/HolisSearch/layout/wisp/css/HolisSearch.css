@@ -34,6 +34,11 @@
 #searchForm fieldset#set_tipologia  li.form  { float:left; }
 #searchFrom p.submit.form { margin: 0; }
 
+#searchForm fieldset#set_filtro_text  li.form > label { display: inline-block; margin:0; margin-right: 10px; }
+#searchForm fieldset#set_filtro_text  li.form > select { float: left; }
+#searchForm fieldset#set_filtro_text  li.form  { float:left; }
+
+
 /**
  * end search form
  */ 
@@ -42,7 +47,10 @@
 /*
  * search results page
  */
-
+ 
+#searchResults > div.fform.form { width: 77%; float:left; }
+#searchResults > #searchHelp { width:20%; float:right; }
+#searchResults > #searchHelp > .helpText { background-color: #EFEDED; border: 1px dotted lightgrey; padding: 10px; }
 #searchResults .yousearched { display: block; }
 
 #searchResults #resultsWrapper { overflow: hidden; margin-top: 10px; padding: 5px; border:1px dotted #cacaca; position: relative; z-index:100; }

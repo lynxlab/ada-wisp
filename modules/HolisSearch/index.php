@@ -54,6 +54,11 @@ require_once MODULES_HOLISSEARCH_PATH . '/include/management/holisSearchManageme
 if (!isset($forceAbrogated) || $forceAbrogated!==true) $forceAbrogated = false;
 
 /**
+ * Initialization of courses id in which search
+ */
+$searchCoursesIDs = array();
+
+/**
  * $noTypology is set by legSearch.php that is including index.php
  */
 if (!isset($noTypology) || $noTypology!==true) $noTypology = false;
@@ -61,11 +66,11 @@ if (!isset($noTypology) || $noTypology!==true) $noTypology = false;
 $holisSearch = new HolisSearchManagement($forceAbrogated, $noTypology);
 
 // $s is coming from $_GET
-if (!isset($s) || strlen (trim($s)) <=0) {
-		
+//if ((!isset($s) || strlen (trim($s)) <=0 ) && $searchType != HOLIS_SEARCH_FILTER) {
+if (!isset($searchType)) {
 	$data = $holisSearch->index();
 	 
-} else if ((isset($s) && strlen (trim($s)) >0)) {
+} else if ((isset($s) && strlen (trim($s)) >0 && $searchType != HOLIS_SEARCH_FILTER)) {
 	$searchtext = trim($s);	
 	$common_dh = $GLOBALS['common_dh'];
 	$pointer = (!is_null($_SESSION['sess_selected_tester'])) ? $_SESSION['sess_selected_tester'] : MODULES_LEX_PROVIDER_POINTER;
@@ -140,10 +145,16 @@ if (!isset($s) || strlen (trim($s)) <=0) {
 	 * by intersecting it with the $searchableCourseIDs array
 	 */
 	$searchableCourseIDs = $dh->get_searchable_courses_id();
-	
-	if (!is_null($searchableCourseIDs) && is_array($searchableCourseIDs)) {
+        
+ 	if (!is_null($searchableCourseIDs) && is_array($searchableCourseIDs)) {
 		$searchCoursesIDs = array_values(array_intersect($searchableCourseIDs, $searchCoursesIDs));
-	}
+        } else { 
+            $searchCoursesIDs = array();
+        }
+        /* 
+         *  NON CERCA NEI CORSI!
+        */
+ 	$searchCoursesIDs = array();
 		
 	/**
 	 * if searchCoursesIDs is not empty, cast all its values to integers
@@ -151,14 +162,20 @@ if (!isset($s) || strlen (trim($s)) <=0) {
 	if (count($searchCoursesIDs)>0)
 		array_walk($searchCoursesIDs, function (&$value) { $value = intval($value); });
 	
-	$data = $holisSearch->runSearch (trim($searchtext), count($searchCoursesIDs));
+	$data = $holisSearch->runSearch (trim($searchtext), count($searchCoursesIDs),$searchType);
 		
 } else {
-	
-	$data['help'] = '';
-	$data['title'] = '';
-	$data['htmlObj'] = CDOMElement::create('div');
+//    if ($searchType == HOLIS_SEARCH_FILTER) {
+        $searchtext = trim($s);	
+	$data = $holisSearch->runSearch (trim($searchtext), count($searchCoursesIDs),$searchType);
+    
 }
+//else {
+//	
+//	$data['help'] = '';
+//	$data['title'] = '';
+//	$data['htmlObj'] = CDOMElement::create('div');
+//}
 	
 
 /**
@@ -202,9 +219,10 @@ $optionsAr['onload_func'] = 'initDoc();';
  * if there are courses to be searched and MODULE_LEX is there
  * instruct javascript to do the serach accordingly
  */
-if (isset($searchtext) || count($searchCoursesIDs)>0) { 
+if (isset($searchtext) || count($searchCoursesIDs)>0 || $searchType == HOLIS_SEARCH_FILTER) { 
 	$optionsAr['onload_func'] = 'initDoc('.json_encode($searchCoursesIDs).','.(defined('MODULES_LEX') ? 'true' : 'false').
-	','.(($userObj->getType()==AMA_TYPE_AUTHOR) ? 'true' : 'false').');';
+	','.(($userObj->getType()==AMA_TYPE_AUTHOR) ? 'true' : 'false').','.$searchType.');';
+//	','.(($userObj->getType()==AMA_TYPE_AUTHOR) ? 'true' : 'false').');';
 }
 
 $avatar = CDOMElement::create('img','class:img_user_avatar,src:'.$userObj->getAvatar());

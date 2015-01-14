@@ -51,95 +51,44 @@ $getOnlyVerifiedAssets = true;
 if (isset($abrogatedStatus) && is_numeric($abrogatedStatus)) $abrogatedStatus=intval($abrogatedStatus);
 else $abrogatedStatus = -1;
 
-if (isset($_SERVER['REQUEST_METHOD']) && $_SERVER['REQUEST_METHOD'] == 'POST' &&
-    (isset($searchTerms) && is_array($searchTerms) && count($searchTerms)>0) ||
-    (isset($descripteurAr) && is_array($descripteurAr) && count($descripteurAr)>0)) {
+if (isset($_SERVER['REQUEST_METHOD']) && $_SERVER['REQUEST_METHOD'] == 'POST' && $searchType == HOLIS_SEARCH_FILTER)  {
 	
-    // searchType is coming from $_GET
-	if (!isset($searchType)) $searchType =  HOLIS_SEARCH_CONCEPT;
-	else $searchType = intval ($searchType);
-    	
 	if (isset($GLOBALS['dh'])) $GLOBALS['dh']->disconnect();
 	$dh = AMALexDataHandler::instance(MultiPort::getDSN(MODULES_LEX_PROVIDER_POINTER));
 	
 	if (!AMA_DB::isError($dh)) {
-		/**
-		 * 1. if a descripteurAr has been passed, use it since
-		 *    it's coming from the semantic search in EUROVOC
-		 *    else, try to figure out a set of descripteur_ids
-		 *    by performing a search in the databese
-		 *    
-		 *    NOTE: $querystring is passed in POST
-		 */
-		if (isset($descripteurAr) && is_array($descripteurAr) && count($descripteurAr)>0) {
-			$descripteur_ids = $descripteurAr;
-		} else {
-			if ($searchType == HOLIS_SEARCH_EUROVOC_CATEGORY || $searchType == HOLIS_SEARCH_TEXT) {
-				$arrayToSearch =  array($querystring);
-			} else {
-				$arrayToSearch = array_merge(array($querystring), $searchTerms); 
-			}
-			$descripteurAr = $dh->getEurovocDESCRIPTEURIDS($arrayToSearch, getLanguageCode());
-			if (AMA_DB::isError($descripteurAr)) $descripteur_ids = array();
-			else {
-				foreach ($descripteurAr as $el) $descripteur_ids[] = $el['descripteur_id'];
-			}				
-		}
-		
-		// close the session if not needed, this is important for
-		// the ajax call to not be block until the script ends and the session is closed
-		session_write_close();
 		
 		/**
-		 * 2. ask for the assets associated with the descripteur_ids,
-		 *    the weight and the source they belong to
+		 * 1. do a fulltext search on asset associated text and title (if a text is passed) filtered by typology ID list
+                 * 
 		 */
-		if (is_array($descripteur_ids) && count($descripteur_ids)>0) {			
-			$searchResults = $dh->get_asset_from_descripteurs($descripteur_ids, $getOnlyVerifiedAssets, $typologyID, $abrogatedStatus);			
-		} else $searchResults = array();
-		
-		if (count($searchResults)>0) {
-			$foundAssetsID = array();
-			foreach ($searchResults as $j=>$aResult) {
-				foreach ($aResult['data'] as $key=>$aDataRow)
-					$foundAssetsID[$j][$key] = $aDataRow[AMALexDataHandler::$PREFIX.'assets_id'];
-			}
-		}
-		
-		/**
-		 * 3. now do a fulltext search on asset associated text and merge the results
-		 *    with point 2 only if the search type is HOLIS_SEARCH_CONCEPT 
-		 */
-		if ($searchType == HOLIS_SEARCH_CONCEPT || $searchType == HOLIS_SEARCH_TEXT) {
-			$fulltextResults = $dh->get_asset_from_text($arrayToSearch, $getOnlyVerifiedAssets,$typologyID,$abrogatedStatus);
-			if (!is_null($fulltextResults)) {
-				// merge the results
-				foreach ($fulltextResults as $j=>$fulltextEl) {
-					if (!isset($searchResults[$j]) || count($searchResults)<=0) {
-						$searchResults[$j] = $fulltextEl;
-					} else {
-						// merge the data arrays if needed
-						foreach ($fulltextEl['data'] as $aFullTextDataRow)
-						{
-							$key = array_search($aFullTextDataRow[AMALexDataHandler::$PREFIX.'assets_id'],$foundAssetsID[$j]);
-							if (false===$key) {
-								array_push($searchResults[$j]['data'],$aFullTextDataRow);
-							} else {
-								if ($searchResults[$j]['data'][$key]['weight'] < $aFullTextDataRow['weight']) {
-									// if the new found weight is higher than the old one, update it
-									$searchResults[$j]['data'][$key]['weight'] = $aFullTextDataRow['weight'];
-								}
+		$fulltextResults = $dh->get_asset_from_typology($getOnlyVerifiedAssets,$typologyID,$abrogatedStatus);
+		if (!is_null($fulltextResults)) {
+			// merge the results
+			foreach ($fulltextResults as $j=>$fulltextEl) {
+				if (!isset($searchResults[$j]) || count($searchResults)<=0) {
+					$searchResults[$j] = $fulltextEl;
+				} else {
+					// merge the data arrays if needed
+					foreach ($fulltextEl['data'] as $aFullTextDataRow)
+					{
+						$key = array_search($aFullTextDataRow[AMALexDataHandler::$PREFIX.'assets_id'],$foundAssetsID[$j]);
+						if (false===$key) {
+							array_push($searchResults[$j]['data'],$aFullTextDataRow);
+						} else {
+							if ($searchResults[$j]['data'][$key]['weight'] < $aFullTextDataRow['weight']) {
+								// if the new found weight is higher than the old one, update it
+								$searchResults[$j]['data'][$key]['weight'] = $aFullTextDataRow['weight'];
 							}
-							// results sorting is handled by jQuery dataTable
 						}
+					// results sorting is handled by jQuery dataTable
 					}
 				}
 			}
 		}
 		
-		
 		/**
-         * 4. build the html tables to be returned
+         * 2. build the html tables to be returned
 		 */
 		$thead_data = array(translateFN('Label'), translateFN('Peso'), translateFN('Abrogato'), translateFN('Tipo'));
 		$resAr = array();

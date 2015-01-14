@@ -674,7 +674,8 @@ function initDataTables (element, canEdit) {
 												 var data = {
 														 what: colName,
 														 typology : dataRow[4], // 4 is tipologia!
-														 returnArray: true														 
+														 returnArray: true,
+														 isJexForm: true // to remove 'all' from the returned options
 												 };
 												 
 												 if (colName=='categoria') {
@@ -1565,7 +1566,8 @@ function updateSelect(what) {
 	
 	var data = {
 			what: what,
-			typology: $j('#tipologia option:selected').val()
+			typology: $j('#tipologia option:selected').val(),
+			isJexForm: true
 	};
 	
 	if (what=='categoria') {
