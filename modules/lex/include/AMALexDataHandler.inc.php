@@ -1037,7 +1037,7 @@ class AMALexDataHandler extends AMA_DataHandler {
             }
 
             // typolgy filter
-            if (strlen($typologyID)>0) {
+            if (strlen($typologyID)>0 && $typologyID!='0') {
                     // search all typologyes implied from the passed ID
 //                    $typologyArr = $this->getTypologyArray($typologyID);
 //                    $typologyIDsToSearch = $this->getTypologiesToSearch($typologyArr['descrizione'],$typologyArr['categoria'],$typologyArr['classe']);			
@@ -1112,7 +1112,6 @@ class AMALexDataHandler extends AMA_DataHandler {
 // 		$subquery = ' (SELECT TESTI.`'.self::$PREFIX.'testi_id`, MATCH (TESTI.`testo`) AGAINST (\''.implode(' ', $searchTerms).'\' IN NATURAL LANGUAGE MODE) as weight '.
 // 		            'FROM `'.self::$PREFIX.'testi` AS TESTI WHERE MATCH (TESTI.`testo`) AGAINST (\''.implode(' ', $searchTerms).'\' IN NATURAL LANGUAGE MODE)>0 ORDER BY weight DESC)'.
 // 		            ' AS TTESTI ';
-
 		array_walk($searchTerms, function(&$value){ $value = trim($value); });		
 		$searchText = $this->getConnection()->quote('%'.implode('%',$searchTerms).'%');
 		
@@ -1143,7 +1142,7 @@ class AMALexDataHandler extends AMA_DataHandler {
 		}
 		
 		// typolgy filter
-		if (strlen($typologyID)>0) {
+		if (strlen($typologyID)>0 && $typologyID!='0') {
 			// search all typologyes implied from the passed ID
 // 			$typologyArr = $this->getTypologyArray($typologyID);
 // 			$typologyIDsToSearch = $this->getTypologiesToSearch($typologyArr['descrizione'],$typologyArr['categoria'],$typologyArr['classe']);			
@@ -1161,7 +1160,7 @@ class AMALexDataHandler extends AMA_DataHandler {
 		}
 
 		$sql .= ' ORDER BY FONTI.`'.self::$PREFIX.'fonti_id` ASC';
-	
+			
 		$res =  $this->getAllPrepared($sql, null, AMA_FETCH_ASSOC);
 
 		if (!AMA_DB::isError($res) && count($res)>0) {
@@ -1233,7 +1232,7 @@ class AMALexDataHandler extends AMA_DataHandler {
 		}
 		
 		// typolgy filter
-		if (strlen($typologyID)>0) {
+		if (strlen($typologyID)>0 && $typologyID!='0') {
 			// search all typologyes implied from the passed ID
 // 			$typologyArr = $this->getTypologyArray($typologyID);
 // 			$typologyIDsToSearch = $this->getTypologiesToSearch($typologyArr['descrizione'],$typologyArr['categoria'],$typologyArr['classe']);
