@@ -48,14 +48,14 @@ class FormJexImport extends FForm {
 		$firstTipology = reset(array_keys($typologiesArr));
 		$sel_tipologia->withData($typologiesArr,$firstTipology);
 		
-		$categoriesArr = sourceTypologyManagement::getTypologyChildren($firstTipology);
+		$categoriesArr = sourceTypologyManagement::getTypologyChildren($firstTipology, true);
 
 		$sel_categoria = FormControl::create(FormControl::SELECT, 'categoria', translateFN('categoria'));
 		$sel_categoria->setAttribute('class', 'dontuniform');
 		$firstCategory = reset(array_keys($categoriesArr));
 		$sel_categoria->withData($categoriesArr,$firstCategory);
 		
-		$classesArr = sourceTypologyManagement::getCategoryChildren($firstTipology, $firstCategory);
+		$classesArr = sourceTypologyManagement::getCategoryChildren($firstTipology, $firstCategory, true);
 		
 		$sel_classe = FormControl::create(FormControl::SELECT, 'classe', translateFN('classe(fonte)'));
 		$sel_classe->setAttribute('class', 'dontuniform');

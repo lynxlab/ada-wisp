@@ -66,10 +66,12 @@ if (isset($_SERVER['REQUEST_METHOD']) && $_SERVER['REQUEST_METHOD'] == 'GET' &&
     		$category = urldecode($category);
     	}
     	
+    	$isJexForm = isset($isJexForm);
+    	
     	if ($what==='categoria') {
-    		$retval = sourceTypologyManagement::getTypologyChildren($typology);
+    		$retval = sourceTypologyManagement::getTypologyChildren($typology, $isJexForm);
     	} else if ($what==='classe') {
-    		$retval = sourceTypologyManagement::getCategoryChildren($typology, $category);
+    		$retval = sourceTypologyManagement::getCategoryChildren($typology, $category, $isJexForm);
     	}
     	
     	if (isset ($retval) && !is_null($retval)) {
