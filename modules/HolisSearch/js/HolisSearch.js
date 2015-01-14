@@ -222,7 +222,7 @@ var HolisSearchManagement = (function() {
 	 */
 	var _initSearchArray = function() {
             this.searchTermsArray = $j('#searchtext').text().split(wordSeparator);
-            if (this.searchTermsArray.length > 0 && (this.searchType === HOLIS_SEARCH_CONCEPT || this.searchType === HOLIS_SEARCH_EUROVOC_CATEGORY)) {
+            if (this.searchTermsArray.length > 0 && (this.searchType === HOLIS_SEARCH_CONCEPT)) {
                 
                 return $j.ajax({
                                     type	:	'POST',

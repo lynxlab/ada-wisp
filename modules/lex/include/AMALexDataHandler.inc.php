@@ -972,7 +972,7 @@ class AMALexDataHandler extends AMA_DataHandler {
 	 *
 	 * @access public
 	 */
-	public function getEurovocDESCRIPTEURIDS ($terms, $lng, $version=EUROVOC_VERSION) {
+	public function getEurovocDESCRIPTEURIDS ($terms, $lng, $version=EUROVOC_VERSION, $exactMatch=false) {
 
 		if (!is_array($terms)) $libelles = array ($terms);
 		else $libelles = $terms;
@@ -995,7 +995,7 @@ class AMALexDataHandler extends AMA_DataHandler {
 
 		if (strlen($wordsClause)>0) {
 			// prepend and append % to libelles value for LIKE operand
-			array_walk($libelles, function(&$value){ $value = '%'.$value.'%'; });
+			if(!$exactMatch) array_walk($libelles, function(&$value){ $value = '%'.$value.'%'; });
 			$params = array_merge(array_values($libelles),array($version,$lng));
 		} else {
 			$params = array($version,$lng);

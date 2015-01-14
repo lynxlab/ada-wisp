@@ -74,8 +74,11 @@ if (isset($_SERVER['REQUEST_METHOD']) && $_SERVER['REQUEST_METHOD'] == 'POST' &&
 		if (isset($descripteurAr) && is_array($descripteurAr) && count($descripteurAr)>0) {
 			$descripteur_ids = $descripteurAr;
 		} else {
+			$exactMatch = false;
+			
 			if ($searchType == HOLIS_SEARCH_EUROVOC_CATEGORY) {
 				$arrayToSearch =  array($querystring);
+				$exactMatch = true;
 			} else if ($searchType == HOLIS_SEARCH_TEXT) {
 				$arrayToSearch = explode (' ',$querystring);
 				$descripteur_ids = array();
@@ -84,7 +87,7 @@ if (isset($_SERVER['REQUEST_METHOD']) && $_SERVER['REQUEST_METHOD'] == 'POST' &&
 			}
 			
 			if (!isset($descripteur_ids)) {
-				$descripteurAr = $dh->getEurovocDESCRIPTEURIDS($arrayToSearch, getLanguageCode());
+				$descripteurAr = $dh->getEurovocDESCRIPTEURIDS($arrayToSearch, getLanguageCode(),EUROVOC_VERSION,$exactMatch);
 				if (AMA_DB::isError($descripteurAr)) $descripteur_ids = array();
 				else {
 					foreach ($descripteurAr as $el) $descripteur_ids[] = $el['descripteur_id'];
