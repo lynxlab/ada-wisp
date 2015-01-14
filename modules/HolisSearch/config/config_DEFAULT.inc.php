@@ -15,6 +15,16 @@ require_once MODULES_HOLISSEARCH_PATH.'/include/AMAHolisSearchDataHandler.inc.ph
 define ('MULTIWORDNET_SYNONYMS_URL','http://serendipity.lynxlab.com:81/services/DEMO2014/taxonomy/MWNL/synonyms/');
 define ('EUROVOC_SEARCH_SERVICE_URL','http://serendipity.lynxlab.com:81/services/DEMO2014/search/HOLIS/');
 
+/**
+ * See http://serendipity.lynxlab.com:81/static/doc/server.search-class.html
+ * for possible parameters:
+ *
+ * minprobratio : (float) minimum ratio among the returned categories probabilities and the highest one [default 0.1]
+ * maxnumcats : (int) maximum number of categories returned [default 10]
+ * maxnumweights : (int) maximum number of weights retrieved for each query feature [default 100]
+ */
+define ('EUROVOC_SEARCH_PARAMS', 'minprobratio=0.1&maxnumcats=5');
+
 define ('FULLTEXT_SEARCHTYPE_DISPLAY', 'FT');
 define ('ID_SEARCHTYPE_DISPLAY', 'ID');
 
