@@ -1112,13 +1112,22 @@ class AMALexDataHandler extends AMA_DataHandler {
 // 		$subquery = ' (SELECT TESTI.`'.self::$PREFIX.'testi_id`, MATCH (TESTI.`testo`) AGAINST (\''.implode(' ', $searchTerms).'\' IN NATURAL LANGUAGE MODE) as weight '.
 // 		            'FROM `'.self::$PREFIX.'testi` AS TESTI WHERE MATCH (TESTI.`testo`) AGAINST (\''.implode(' ', $searchTerms).'\' IN NATURAL LANGUAGE MODE)>0 ORDER BY weight DESC)'.
 // 		            ' AS TTESTI ';
+
+		array_walk($searchTerms, function(&$value){ $value = trim($value); });		
+		$searchText = $this->getConnection()->quote('%'.implode('%',$searchTerms).'%');
+		
+		// replace space with underscore to search asset title
+		$titleSearchTerms = $searchTerms;
+		array_walk($titleSearchTerms, function(&$value){ $value = str_replace(' ', '_', $value); });
+		$titleSearchText = $this->getConnection()->quote('%'.implode('%',$titleSearchTerms).'%');
 		
 		$subquery = ' (
 						(SELECT TESTI.`'.self::$PREFIX.'testi_id` '.
-							'FROM `'.self::$PREFIX.'testi` AS TESTI WHERE TESTI.`testo` LIKE \'%'.implode('%', $searchTerms).'%\')'.
+							'FROM `'.self::$PREFIX.'testi` AS TESTI WHERE TESTI.`testo` LIKE '.$searchText.')'.
 					' UNION DISTINCT
 						(SELECT ASSETS.`'.self::$PREFIX.'testi_id` '.
-							' FROM `'.self::$PREFIX.'assets` AS ASSETS WHERE ASSETS.`label` LIKE \'%'.implode('%', $searchTerms).'%\')'.
+							' FROM `'.self::$PREFIX.'assets` AS ASSETS WHERE ASSETS.`label` LIKE '.$searchText.
+							' OR ASSETS.`label` LIKE '.$titleSearchText.')'.
 					') AS TTESTI';
 		
 		$sql = 'SELECT FONTI.`'.self::$PREFIX.'fonti_id`, ASSETS.`'.self::$PREFIX.'assets_id`, ASSETS.`label`, '.
