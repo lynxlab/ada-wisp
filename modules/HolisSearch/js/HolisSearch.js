@@ -180,17 +180,19 @@ var HolisSearchManagement = (function() {
 		this.progressLabel = $j( ".progress-label" );
 		
 		var thisReference = this;
-                if (typeof this.searchCoursesIDs!= 'undefined' && this.searchCoursesIDs != null) {
+                if (typeof this.searchCoursesIDs!= 'undefined' && this.searchCoursesIDs != null && this.searchCoursesIDs.length>0) {
                       max = this.searchCoursesIDs.length;
                 } else {
-                      max= 2; // perché 2? verificare se fare una corsa diversa
+                      max= 0;
                 }
 
 		this.progressbar = this.progressbar.progressbar({
 	        value: false,
                 max: max,
 	      change: function() {
-	    	  thisReference.progressLabel.text( parseInt((thisReference.progressbar.progressbar( "value" )/thisReference.progressbar.progressbar( "option", "max" ))*100) + "%" );
+	    	  if (thisReference.progressbar.progressbar( "option", "max" )!=0) {
+	    		  thisReference.progressLabel.text( parseInt((thisReference.progressbar.progressbar( "value" )/thisReference.progressbar.progressbar( "option", "max" ))*100) + "%" );
+	    	  }
 	      },
 	      complete: function() {
 	    	  thisReference.progressbar.fadeOut( function(){
@@ -495,7 +497,7 @@ HolisSearchManagement.prototype.doSearch = function(searchCoursesIDs, hasModuleL
 			// start the module lex search if needed
 			if (thisReference.hasModuleLex) _runModuleLexSearch.call(thisReference);
 			
-			// and run the loop the fires an ajax call for each course
+			// and run the loop that fires an ajax call for each course
 			// and when the loop has finished show the no results div if needed
 			_runAjaxSearchLoop.call(thisReference);
 		});
