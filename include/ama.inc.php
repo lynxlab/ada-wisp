@@ -1997,28 +1997,7 @@ class AMA_Common_DataHandler extends Abstract_AMA_DataHandler {
         return $service_result;
     }
 
-  /*
-   * Get type of all services
-   *
-   * @access public
-   *
-   * @ return an array: id_type_service, type_service(=service_level), name_service,description, custom fields
-   *
-   * @return an error if something goes wrong
-   *
-   */
-    public function get_service_type() {
-        $db =& $this->getConnection();
-        if (AMA_DB::isError($db)) return $db;
-
-        $service_sql = "SELECT id_tipo_servizio, livello_servizio,nome_servizio,descrizione_servizio,custom_1,custom_2,custom_3  FROM service_type";
-        $service_result = $db->getAll($service_sql,NULL,AMA_FETCH_ASSOC);
-        if(self::isError($service_result)) {
-            return new AMA_Error(AMA_ERR_GET);
-        }
-
-        return $service_result;
-    }
+  
     /*
    * Get all services
    *
@@ -11138,6 +11117,42 @@ public function get_updates_nodes($userObj, $pointer)
         return $resultAr;
     }
 
+  /*
+   * Get type of all services
+   *
+   * @access public
+   *
+   * @ return an array: id_type_service, type_service(=service_level), name_service,description, custom fields  
+   *
+   * @return an error if something goes wrong
+   *
+   */
+    public function get_service_type($id_user=NULL) {
+        
+    $service_sql = "SELECT id_tipo_servizio, livello_servizio,nome_servizio,descrizione_servizio,custom_1,custom_2,custom_3  FROM service_type";
+    $common_dh = AMA_Common_DataHandler::instance();
+    
+    /* if isset $id_user it means that the admin is asking data for log_report.php, and he have to take data from common db */
+    if(isset($id_user)){  
+        $db=array($common_dh);
+    }else{
+        $db=array($this,$common_dh);
+    }
+
+    foreach ($db as $dbToUse) {
+        $service_result = $dbToUse->getAllPrepared($service_sql, NULL, AMA_FETCH_ASSOC);
+        if (!AMA_DB::isError($service_result) && $service_result!==false && count($service_result)>0) {
+            break;
+        }
+    }
+
+    if(AMA_DB::isError($service_result)) {
+        return new AMA_Error(AMA_ERR_GET);
+    }
+
+    return $service_result;
+    }
+    
     public function get_number_of_tutored_users($id_tutor) {
         $db =& $this->getConnection();
         if (AMA_DB::isError($db)) return $db;
