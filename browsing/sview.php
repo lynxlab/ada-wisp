@@ -48,11 +48,11 @@ require_once ROOT_DIR.'/include/Forms/addNoteForm.inc.php';
 
 /* Static mode */
 
-$cacheObj = New CacheManager($id_profile);
-$cacheObj->checkCache($id_profile);
-if ($cacheObj->getCachedData){
-	exit();
-}
+// $cacheObj = New CacheManager($id_profile);
+// $cacheObj->checkCache($id_profile);
+// if ($cacheObj->getCachedData()){
+// 	exit();
+// }
 
 
 /** DYNAMIC mode
@@ -442,4 +442,4 @@ switch ($op){
  *
  */
 
-$cacheObj->writeCachedData($id_profile,$layout_dataAR,$content_dataAr);
+// $cacheObj->writeCachedData($id_profile,$layout_dataAR,$content_dataAr);
