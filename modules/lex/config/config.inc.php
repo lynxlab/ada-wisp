@@ -83,4 +83,6 @@
 	$GLOBALS['tabNeeded'] = array (VIEW_SOURCE, EDIT_SOURCE, SEARCH_SOURCE, IMPORT_JEX, IMPEXPORT_EUROVOC, EDIT_EUROVOC);
 
 	require_once MODULES_LEX_PATH.'/include/AMALexDataHandler.inc.php';
+	
+	$ADA_MIME_TYPE["application/octet-stream"]['permission'] = _GO;
 ?>
