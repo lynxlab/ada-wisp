@@ -56,7 +56,56 @@ else {
 
 if (!isset($op)) $op = null;
 
+/**
+ * check if it's not a supertutor asking for op='tutor'
+ * then set $op to make the default action
+ */
+if (!$userObj->isSuper() && $op=='tutor') $op=null;
+
 switch ($op) {
+	case 'tutor':
+		$help = '';
+		$fieldsAr = array('nome','cognome','username');
+		$tutorsAr = $dh->get_tutors_list($fieldsAr);
+		if (!AMA_DB::isError($tutorsAr) && is_array($tutorsAr) && count($tutorsAr)>0) {
+			$tableDataAr = array();
+			$imgDetails = CDOMElement::create('img','src:'.HTTP_ROOT_DIR.'/layout/'.$_SESSION['sess_template_family'].'/img/details_open.png');
+			$imgDetails->setAttribute('title', translateFN('visualizza/nasconde i dettagli del tutor'));
+			$imgDetails->setAttribute('style', 'cursor:pointer;');
+			$imgDetails->setAttribute('class', 'tooltip');
+				
+			$mh = MessageHandler::instance(MultiPort::getDSN($_SESSION['sess_selected_tester']));
+				
+			foreach ($tutorsAr as $aTutor) {
+				// open details button
+				$imgDetails->setAttribute('onclick',"toggleTutorDetails(".$aTutor[0].",this);");
+				// received messages
+				$receivedMessages = 0;
+				$msgs_ha = $mh->get_messages($aTutor[0],ADA_MSG_SIMPLE);
+				if (!AMA_DataHandler::isError($msgs_ha)) {
+					$receivedMessages = count($msgs_ha);
+				}
+				// sent messages
+				$sentMessages = 0;
+				$msgs_ha = $mh->get_sent_messages($aTutor[0], ADA_MSG_SIMPLE);
+				if (!AMA_DataHandler::isError($msgs_ha)) {
+					$sentMessages = count($msgs_ha);
+				}
+				$tableDataAr[] = array_merge(array($imgDetails->getHtml()),$aTutor,array($receivedMessages,$sentMessages));
+			}
+		}
+		$thead = array(null,
+				translateFN('Id'),
+				translateFN('Nome'),
+				translateFN('Cognome'),
+				translateFN('username'),
+				translateFN('Msg Ric'),
+				translateFN('Msg Inv')
+		);
+		$tObj = BaseHtmlLib::tableElement('id:listTutors',$thead,$tableDataAr,null,translateFN('Elenco dei tutors'));
+		$tObj->setAttribute('class', 'default_table doDataTable');
+		$data = $tObj->getHtml();
+		break;	
 	case 'stats':
 	case 'student':
 		include_once ROOT_DIR.'/config/config_class_report.inc.php';
@@ -554,9 +603,15 @@ switch ($op) {
 $layout_dataAr['JS_filename'] = array(
 		JQUERY,
 		JQUERY_DATATABLE,
-        JQUERY_DATATABLE_DATE,
+		JQUERY_DATATABLE_DATE,
+		ROOT_DIR.'/js/include/jquery/dataTables/formattedNumberSortPlugin.js',
 		JQUERY_NO_CONFLICT
 );
+$menuOptions = array();
+if (isset($id_course))   $menuOptions['id_course'] = $id_course;
+if (isset($id_instance)) $menuOptions['id_instance'] = $id_instance;
+if (isset($id_instance)) $menuOptions['id_course_instance'] = $id_instance;
+if (isset($id_student))  $menuOptions['id_student'] =$id_student;
 
 $layout_dataAr['CSS_filename']= array(
 		JQUERY_DATATABLE_CSS,

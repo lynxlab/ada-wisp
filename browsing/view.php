@@ -24,7 +24,7 @@ $variableToClearAR = array('node', 'layout', 'course', 'user');
 /**
  * Users (types) allowed to access this module.
  */
-$allowedUsersAr = array(AMA_TYPE_VISITOR, AMA_TYPE_STUDENT, AMA_TYPE_TUTOR, AMA_TYPE_AUTHOR);
+$allowedUsersAr = array(AMA_TYPE_VISITOR, AMA_TYPE_STUDENT, AMA_TYPE_TUTOR, AMA_TYPE_AUTHOR, AMA_TYPE_SWITCHER);
 
 /**
  * Get needed objects
@@ -33,7 +33,8 @@ $neededObjAr = array(
     AMA_TYPE_VISITOR => array('node', 'layout', 'course'),
     AMA_TYPE_STUDENT => array('node', 'layout', 'tutor', 'course', 'course_instance'),
     AMA_TYPE_TUTOR => array('node', 'layout', 'course', 'course_instance'),
-    AMA_TYPE_AUTHOR => array('node', 'layout', 'course')
+    AMA_TYPE_AUTHOR => array('node', 'layout', 'course'),
+	AMA_TYPE_SWITCHER => array('node', 'layout', 'course')		
 );
 
 //FIXME: course_instance is needed by videochat BUT not for guest user
@@ -60,7 +61,7 @@ include_once 'include/cache_manager.inc.php';
  *
  */
 
-if ($userObj instanceof ADAGuest  || ($courseObj->getIsPublic() && $userObj->getType()!=AMA_TYPE_AUTHOR)) {
+if ($userObj instanceof ADAGuest) {
     $self = 'guest_view';
 } else {
     $self = whoami();
@@ -198,7 +199,8 @@ else {
 
 
 // history:
-	if ((( $id_profile == AMA_TYPE_STUDENT ) || ($id_profile == AMA_TYPE_VISITOR)
+	if ((( $id_profile == AMA_TYPE_STUDENT && !in_array($user_status, array(ADA_STATUS_COMPLETED, ADA_STATUS_TERMINATED)) ) 
+		|| ($id_profile == AMA_TYPE_VISITOR)
 		|| ($id_profile == AMA_TYPE_TUTOR)
 		)
 		/* && (!empty($sess_id_course_instance)) */
@@ -279,7 +281,7 @@ $eportal = PORTAL_NAME;
 // $banner = include_once("../include/banner.inc.php"); TO BE COMPLETED
 $banner = "";
 
-if ($id_profile == AMA_TYPE_AUTHOR) {
+if ($id_profile == AMA_TYPE_AUTHOR && $mod_enabled) {
 	
 	$edit_node = "<a href=\"$http_root_dir/services/edit_node.php?op=edit&id_node=$sess_id_node&id_course=$sess_id_course&type=$node_type\">" .
 			translateFN('modifica nodo') . "</a>";
@@ -293,18 +295,18 @@ if ($id_profile == AMA_TYPE_AUTHOR) {
         $add_node = "<a href=\"$http_root_dir/services/addnode.php?id_parent=$sess_id_node&id_course=$sess_id_course&type=LEAF\">" .
 			translateFN('aggiungi nodo') . "</a>";
 
-	$mod_enabled = TRUE;
 }
-
-if ($node_type == ADA_GROUP_TYPE)  {
-	$go_map = '<a href="map.php?id_node=' . $sess_id_node . '">'
-			. translateFN('mappa') . '</a>';
-} elseif ($node_type == ADA_GROUP_WORD_TYPE) {
-	$go_map = '<a href="map.php?id_node=' . $sess_id_node . '&map_type=lemma">'
-			. translateFN('mappa') . '</a>';
-}else {
-				$go_map = '';
-}
+if (is_array($nodeObj->children) && count($nodeObj->children)>0) {
+	if ($node_type == ADA_GROUP_TYPE)  {
+		$go_map = '<a href="map.php?id_node=' . $sess_id_node . '">'
+				. translateFN('mappa') . '</a>';
+	} elseif ($node_type == ADA_GROUP_WORD_TYPE) {
+		$go_map = '<a href="map.php?id_node=' . $sess_id_node . '&map_type=lemma">'
+				. translateFN('mappa') . '</a>';
+	}else {
+					$go_map = '';
+	}	
+} else $go_map = '';
 
 switch($id_profile) {
 	case AMA_TYPE_STUDENT:
@@ -507,6 +509,7 @@ switch ($op){
 				JQUERY,
 				JQUERY_UI,
 				JQUERY_NIVOSLIDER,
+				JQUERY_JPLAYER,
 				JQUERY_NO_CONFLICT,
 				ROOT_DIR. '/external/mediaplayer/flowplayer-5.4.3/flowplayer.js'
 		);		
@@ -528,6 +531,7 @@ switch ($op){
 		array_push ($layout_dataAR['CSS_filename'],ROOT_DIR.'/external/mediaplayer/flowplayer-5.4.3/skin/minimalist.css');
 		array_push ($layout_dataAR['CSS_filename'], JQUERY_NIVOSLIDER_CSS);
 		array_push ($layout_dataAR['CSS_filename'],ROOT_DIR.'/js/include/jquery/nivo-slider/themes/default/default.css');
+		array_push ($layout_dataAR['CSS_filename'], JQUERY_JPLAYER_CSS);
 		
 		$optionsAr['onload_func'] = 'initDoc();';
 		
@@ -550,6 +554,9 @@ switch ($op){
         $menuOptions['id_course_instance'] = $sess_id_course_instance;
         $menuOptions['id_node'] = $sess_id_node;
         $menuOptions['id_parent'] = $sess_id_node;
+        
+        // define to enable author menu items
+        define ('MODULES_TEST_MOD_ENABLED' , defined('MODULES_TEST') && MODULES_TEST && $mod_enabled);
         
         /**
          * this is modified here to test parameters passing on new menu

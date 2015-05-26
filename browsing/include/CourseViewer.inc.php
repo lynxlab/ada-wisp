@@ -384,10 +384,10 @@ class CourseViewer
     $dh = $GLOBALS['dh'];
     $node_info = $dh->get_node_info($id_toc);
     if(!AMA_DataHandler::isError($node_info)) {
-      $principale = array('id_nodo' => $id_toc, 'id_nodo_parent' => $id_toc, 'nome' => $node_info['name']/*translateFN('Principale')*/, 'tipo' => ADA_GROUP_TYPE, 'icona'=> $node_info['icon']/*'group.png'*/);
+      $principale = array('id_nodo' => $id_toc, 'id_nodo_parent' => $id_toc, 'nome' => $node_info['name']/*translateFN('Principale')*/, 'tipo' => ADA_GROUP_TYPE, 'icona'=> $node_info['icon']/*'group.png'*/, 'livello'=>$node_info['level']);
     }
     else {
-      $principale = array('id_nodo' => $id_toc, 'id_nodo_parent' => $id_toc, 'nome' => translateFN('Principale'), 'tipo' => ADA_GROUP_TYPE, 'icona'=> 'group.png');
+      $principale = array('id_nodo' => $id_toc, 'id_nodo_parent' => $id_toc, 'nome' => translateFN('Principale'), 'tipo' => ADA_GROUP_TYPE, 'icona'=> 'group.png', 'livello'=>0);
     }
 
     if (($r = self::$callback(array('node'=>$principale, 'show_hide_span' => FALSE), $callback_params)) != NULL) {
@@ -427,10 +427,10 @@ class CourseViewer
     $dh = $GLOBALS['dh'];
     $node_info = $dh->get_node_info($id_toc);
     if(!AMA_DataHandler::isError($node_info)) {
-      $principale = array('id_nodo' => $id_toc, 'id_nodo_parent' => $id_toc, 'nome' => $node_info['name']/*translateFN('Principale')*/, 'tipo' => ADA_GROUP_TYPE, 'icona'=> $node_info['icon']/*'group.png'*/,'root'=>true);
+      $principale = array('id_nodo' => $id_toc, 'id_nodo_parent' => $id_toc, 'nome' => $node_info['name']/*translateFN('Principale')*/, 'tipo' => ADA_GROUP_TYPE, 'icona'=> $node_info['icon']/*'group.png'*/,'root'=>true, 'livello'=>$node_info['level']);
     }
     else {
-      $principale = array('id_nodo' => $id_toc, 'id_nodo_parent' => $id_toc, 'nome' => translateFN('Principale'), 'tipo' => ADA_GROUP_TYPE, 'icona'=> 'group.png','root'=>true);
+      $principale = array('id_nodo' => $id_toc, 'id_nodo_parent' => $id_toc, 'nome' => translateFN('Principale'), 'tipo' => ADA_GROUP_TYPE, 'icona'=> 'group.png','root'=>true, 'livello'=>0);
     }
       // vito 13 gennaio 2009
     if (isset($lda[$id_toc]) && count($lda[$id_toc]) > 0 ) {
@@ -624,7 +624,7 @@ class CourseViewer
     if ( isset($show_visits) && $show_visits == TRUE ) {
       $visits = 0;
 
-      if ($params['node']['numero_visite'] > 0) {
+      if (isset($params['node']['numero_visite']) && $params['node']['numero_visite'] > 0) {
         $visits = $params['node']['numero_visite'];
       }
       $list_item->addChild(new CText(translateFN("Visite") . " $visits"));
@@ -803,7 +803,7 @@ class CourseViewer
 
     $show_visits   = !$GLOBALS['hide_visits'];
 
-    $css_classname = self::getClassNameForNote($params['node'], $external_params['user_id'], isset($external_params['class_tutor_id']) ? $external_params['class_tutor_id'] : null);
+    $css_classname = self::getClassNameForNote($params['node'], $external_params['user_id'], isset($external_params['class_tutors_ids']) ? $external_params['class_tutors_ids'] : null);
 
     $list_item = CDOMElement::create('span');
     $list_item->addChild(self::getDisclosureElement($params, $external_params));
@@ -819,10 +819,14 @@ class CourseViewer
     	$username = CDOMElement::create('span', 'class:username');
     	$username->addChild(new CText($params['node']['username']));
     }
-    if (isset($params['node']['nome'])) {
+    if (isset($params['node']['nome_nodo'])) {
+    	$textlink = $params['node']['nome_nodo'];
     	$link_to_note = CDOMElement::create('a',"href:$http_root_dir/browsing/view.php?id_node={$params['node']['id_nodo']}");
-    	$link_to_note->addChild(new CText($params['node']['nome']));    	
+    } else if (isset($params['node']['nome'])) {
+    	$textlink = $params['node']['nome'];
+    	$link_to_note = CDOMElement::create('span');
     }
+    if (isset($link_to_note)) $link_to_note->addChild(new CText($textlink));    
     
     if (isset($link_to_note)) $list_item->addChild($link_to_note);
     if (isset($username)) $list_item->addChild($username);

@@ -64,15 +64,18 @@ define('ADA_STATUS_PRESUBSCRIBED', 1);
 define('ADA_STATUS_SUBSCRIBED',    2);
 define('ADA_STATUS_REMOVED',       3);
 define('ADA_STATUS_VISITOR',       4);
+define('ADA_STATUS_COMPLETED',     5);
+define('ADA_STATUS_TERMINATED',    6);
 
 /**
  * ADA user service subscription status
  */
-define('ADA_SERVICE_SUBSCRIPTION_STATUS_UNDEFINED' , 0);
-define('ADA_SERVICE_SUBSCRIPTION_STATUS_REQUESTED' , 1);
-define('ADA_SERVICE_SUBSCRIPTION_STATUS_ACCEPTED'  , 2);
-define('ADA_SERVICE_SUBSCRIPTION_STATUS_SUSPENDED' , 3);
-define('ADA_SERVICE_SUBSCRIPTION_STATUS_COMPLETED' , 5);
+define('ADA_SERVICE_SUBSCRIPTION_STATUS_UNDEFINED' , ADA_STATUS_REGISTERED);
+define('ADA_SERVICE_SUBSCRIPTION_STATUS_REQUESTED' , ADA_STATUS_PRESUBSCRIBED);
+define('ADA_SERVICE_SUBSCRIPTION_STATUS_ACCEPTED'  , ADA_STATUS_SUBSCRIBED);
+define('ADA_SERVICE_SUBSCRIPTION_STATUS_SUSPENDED' , ADA_STATUS_REMOVED);
+define('ADA_SERVICE_SUBSCRIPTION_STATUS_COMPLETED' , ADA_STATUS_COMPLETED);
+define('ADA_SERVICE_SUBSCRIPTION_STATUS_TERMINATED', ADA_STATUS_TERMINATED);
 
 /**
  * ADA node 
@@ -114,6 +117,8 @@ define('ADA_SERVICE_COMMON', 1);
 define('ADA_SERVICE_COMMON_STUDENT',2);
 define('ADA_SERVICE_COMMON_TUTOR',3);
 define('ADA_SERVICE_COURSE',9);
+define('DEFAULT_SERVICE_TYPE', ADA_SERVICE_COURSE);
+define('ADA_SERVICE_TUTORCOMMUNITY', 4);
 
 /**
  * ADA token
@@ -156,6 +161,7 @@ define('AMA_TYPE_STUDENT',      3);
 define('AMA_TYPE_TUTOR',        4);
 define('AMA_TYPE_VISITOR',      5);
 define('AMA_TYPE_SWITCHER',     6);
+define('AMA_TYPE_SUPERTUTOR',   7);
 
 /**
  * Message types
@@ -271,6 +277,10 @@ define('AMA_FETCH_OBJECT', PDO::FETCH_OBJ);
  * Default fetch mode.
  */
 define ('AMA_FETCH_DEFAULT', AMA_FETCH_ORDERED);
+/**
+ * Both fetch mode.
+ */
+define ('AMA_FETCH_BOTH', PDO::FETCH_BOTH);
 
 /**
  * Success
@@ -359,3 +369,5 @@ define('SEMANTICUI_CSS',		ROOT_DIR.'/js/include/semantic/css/semantic.min.css');
 define('SEMANTICUI_JS',	 		ROOT_DIR.'/js/include/semantic/javascript/semantic.min.js');
 define('SMARTMENUS_CSS',		ROOT_DIR.'/js/include/smartmenus/css/sm-core-css.css');
 define('SMARTMENUS_JS',	 		ROOT_DIR.'/js/include/smartmenus/jquery.smartmenus.min.js');
+define('JQUERY_JPLAYER',		ROOT_DIR.'/js/include/jquery/jplayer/jquery.jplayer.min.js');
+define('JQUERY_JPLAYER_CSS',	ROOT_DIR.'/js/include/jquery/jplayer/skin/blue.monday/css/jplayer.blue.monday.min.css');
