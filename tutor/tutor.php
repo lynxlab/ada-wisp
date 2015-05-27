@@ -613,6 +613,12 @@ if (isset($id_instance)) $menuOptions['id_instance'] = $id_instance;
 if (isset($id_instance)) $menuOptions['id_course_instance'] = $id_instance;
 if (isset($id_student))  $menuOptions['id_student'] =$id_student;
 
+/**
+ * add a define for the supertutor menu item to appear
+ */
+if ($userObj instanceof ADAPractitioner && $userObj->isSuper()) define ('IS_SUPERTUTOR', true);
+else define ('NOT_SUPERTUTOR', true);
+
 $layout_dataAr['CSS_filename']= array(
 		JQUERY_DATATABLE_CSS,
         JQUERY_UI_CSS

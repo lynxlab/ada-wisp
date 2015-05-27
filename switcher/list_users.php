@@ -87,7 +87,7 @@ if(is_array($usersAr) && count($usersAr) > 0) {
     $tbody_data = array();
     $edit_img = CDOMElement::create('img', 'src:img/edit.png,alt:edit');
     $view_img = CDOMElement::create('img', 'src:img/zoom.png,alt:view');
-    $delete_img = CDOMElement::create('img', 'src:img/trash.png,alt:view');
+    $delete_img = CDOMElement::create('img', 'src:img/delete.png,alt:delete');
     
     foreach($usersAr as $user) {
         $userId = $user[0];

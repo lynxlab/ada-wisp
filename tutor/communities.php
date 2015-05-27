@@ -44,7 +44,7 @@ include_once 'include/tutor.inc.php';
 /**
  * Your inclusion here
  */
-$self = 'tutor';
+$self = whoami();
 $data = '';
 
 $courseInstances = array();
@@ -149,6 +149,10 @@ if(!AMA_DataHandler::isError($courseInstances) && is_array($courseInstances) && 
 	$data = translateFN('Non sei iscritto a nessuna comunità di tutor');
 }
 
+$imgAvatar = $userObj->getAvatar();
+$avatar = CDOMElement::create('img','src:'.$imgAvatar);
+$avatar->setAttribute('class', 'img_user_avatar');
+
 
 $content_dataAr = array(
     'course_title'=>translateFN('Elenco comunità di tutor'),
@@ -158,9 +162,11 @@ $content_dataAr = array(
     'messages'=> $user_messages->getHtml(),
     'agenda'=> $user_agenda->getHtml(),
     'help'  => translateFN('Clicca su accedi per entrare in una comunità di tutor'),
-    'dati'  => $data,
+    'data'  => $data,
     'status' => $status,
-    'chat_link' => isset($chat_link) ? $chat_link : ''
+    'chat_link' => isset($chat_link) ? $chat_link : '',
+	'user_avatar'=>$avatar->getHtml(),
+	'user_modprofilelink' => $userObj->getEditProfilePage()		
  );
 
 $layout_dataAr['CSS_filename'] = array (
