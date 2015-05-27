@@ -43,9 +43,14 @@ a:visited {text-decoration: none; }
 
 /* TABLES ------------------------------ */
 .default_table {width: 100%;color:#555;}
-.default_table A:link { color:#222; background:#b0d668; padding:1px; display:block; padding:2px; text-decoration:underline;}
+.default_table A:link { color:#222; background:none; padding:1px; display:block; padding:2px; text-decoration:underline;}
 .default_table A:hover {background:#bf236c; color:yellow; text-decoration:none;}
 
+#content table.default_table tr.even { background: #cbcbcb; }
+#content table.default_table tr.even td.sorting_1 { background: #dbdbdb; }
+#content table.default_table tr.odd  { background: #b5b5b5; }
+#content table.default_table tr.odd td.sorting_1 { background: #c5c5c5; }
+#content table.default_table tr td.actionCol a img { cursor: pointer; }
 
 /* RIGHT MENU ------------------------------ */
 .menuright_view { top: 260px; right: 20px; }
@@ -193,7 +198,6 @@ a:visited {text-decoration: none; }
 */
 #content {
     min-height: 300px;
-    margin-top: -12px;
 }
 #bottomcont {
     height:0px;
