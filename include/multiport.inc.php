@@ -233,7 +233,7 @@ class MultiPort
   	 */
   	if (!MULTIPROVIDER && isset($GLOBALS['user_provider']) && strlen($GLOBALS['user_provider'])>0) {
   		
-  		$tester_dh = AMA_Tester_DataHandler::instance(self::getDSN($GLOBALS['user_provider']));
+  		$tester_dh = AMA_DataHandler::instance(self::getDSN($GLOBALS['user_provider']));
   		if (!is_null($tester_dh)) {
   			/**
              * check if a user with the passed username
@@ -374,6 +374,7 @@ class MultiPort
               $result = $tester_dh->add_author($user_dataAr);
               break;
 
+            case AMA_TYPE_SUPERTUTOR:
             case AMA_TYPE_TUTOR:
               $result = $tester_dh->add_tutor($user_dataAr);
               break;
@@ -661,6 +662,7 @@ class MultiPort
         $return = $userObj;
         break;
 
+      case AMA_TYPE_SUPERTUTOR:
       case AMA_TYPE_TUTOR:
         $user_dataAr = $common_dh->get_tutor($id_user);
         if(AMA_Common_DataHandler::isError($user_dataAr)) {

@@ -17,36 +17,6 @@
  */
 
 /**
- * Destroy session
- */
-session_start();
-/*
- * Redirect the user to the module he/she used to login
- */
-if (isset($_SESSION['ada_access_from'])) {
-  $access_from =  $_SESSION['ada_access_from'];
-  /*
-   * Accessed from kiosk
-   * ADA_KIOSK_ACCESS = 1
-   */
-  if($access_from == 1) {
-    header('Location: kiosk.php');
-    exit();
-  }
-  /*
-   * Accessed from the reserved area
-   * ADA_RESERVED_ACCESS = 3
-   */
-  if($access_from == 3) {
-    header('Location: reserved/index.php');
-    exit();
-  }
-}
-
-session_unset();
-session_destroy();
-
-/**
  * Base config file
  */
 require_once realpath(dirname(__FILE__)).'/config_path.inc.php';
@@ -55,7 +25,7 @@ require_once realpath(dirname(__FILE__)).'/config_path.inc.php';
  * Clear node and layout variable in $_SESSION
  * $_SESSION was destroyed, so we do not need to clear data in session.
  */
-$allowedUsersAr = array(AMA_TYPE_VISITOR, AMA_TYPE_STUDENT,AMA_TYPE_TUTOR, AMA_TYPE_AUTHOR, AMA_TYPE_ADMIN);
+$allowedUsersAr = array(AMA_TYPE_VISITOR, AMA_TYPE_STUDENT,AMA_TYPE_TUTOR, AMA_TYPE_AUTHOR, AMA_TYPE_ADMIN, AMA_TYPE_SWITCHER);
 /**
  * Performs basic controls before entering this module
  */
@@ -66,7 +36,6 @@ include_once 'include/'.$self.'_functions.inc.php';
 
 // non serve più...
 // require_once ROOT_DIR.'/include/aut/login.inc.php';
-//
 
 $lang_get = isset($_GET['lang']) ? $_GET['lang']: null;
 
@@ -166,7 +135,10 @@ if(isset($p_login)) {
       	 * when a user sucessfully logs in, regenerate her session id.
       	 * this fixes a quite big problem in the 'history_nodi' table
       	 */
-      	session_regenerate_id();
+      	if (isset($p_remindme) && intval($p_remindme)>0) {
+	      	ini_set('session.cookie_lifetime', 60 * 60 * 24 * ADA_SESSION_LIFE_TIME);  // day cookie lifetime
+      	}
+      	session_regenerate_id(true);
       	
       	$user_default_tester = $userObj->getDefaultTester();
       	
@@ -264,7 +236,7 @@ $login = UserModuleHtmlLib::loginForm($form_action, $supported_languages,$login_
   	}
   } else  {
   	$testers = $_SESSION['sess_userObj']->getTesters();
-  	$testerName = $testers[0];
+  	$testerName = (!is_null($testers) && count($testers)>0) ? $testers[0] : null;
   } // end if (!MULTIPROVIDER)
 
   $forget_div  = CDOMElement::create('div');
@@ -297,6 +269,33 @@ $content_dataAr = array(
 	'message' => $message->getHtml()
 );
 
+if (isset($_SESSION['sess_userObj']) && $_SESSION['sess_userObj']-> getType() != AMA_TYPE_VISITOR) {
+    $userObj = $_SESSION['sess_userObj'];
+    $user_type = $userObj->getTypeAsString();
+    $user_name = $userObj->nome;
+    $user_full_name = $userObj->getFullName();
+	 
+    $imgAvatar = $userObj->getAvatar();
+    $avatar = CDOMElement::create('img','src:'.$imgAvatar);
+    $avatar->setAttribute('class', 'img_user_avatar');
+
+    $content_dataAr['user_modprofilelink'] = $userObj->getHomePage(); //getEditProfilePage();
+    $content_dataAr['user_avatar'] = $avatar->getHtml();	  
+    $content_dataAr['status'] = translateFN('logged in');
+    $content_dataAr['user_name'] = $user_name;
+    $content_dataAr['user_full_name'] = $user_full_name;
+    $content_dataAr['user_type'] = $user_type;
+
+    unset($content_dataAr['form']);
+    $onload_function = 'initDoc(true);';
+} else {
+    $onload_function = 'initDoc();';
+    $content_dataAr['form'] = $login->getHtml().$forget_link;
+    unset($content_dataAr['user_modprofilelink']);
+    unset($content_dataAr['user_avatar']);	  
+    unset($content_dataAr['user_name']);
+    unset($content_dataAr['user_type']);
+}
 /**
  * @author giorgio 26/set/2013
  * 
@@ -322,10 +321,16 @@ $content_dataAr = array(
 				JQUERY_NO_CONFLICT,
 				ROOT_DIR . "/js/main/index.js"
 		);
-                $layout_dataAr['CSS_filename'] = array (
-                    JQUERY_UI_CSS,
-                	JQUERY_UNIFORM_CSS
-                    );
-		$optionsAr['onload_func'] = 'initDoc();';
+/**
+ * @author giorgio 
+ * include the jQuery and uniform css for proper styling
+ */		
+		$layout_dataAr['CSS_filename'] = array (
+				JQUERY_UI_CSS,
+				JQUERY_UNIFORM_CSS
+		);
+			
+		$optionsAr['onload_func'] = $onload_function;
+		
 ARE::render($layout_dataAr, $content_dataAr, NULL, (isset($optionsAr) ? $optionsAr : NULL) );
 ?>

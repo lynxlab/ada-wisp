@@ -133,7 +133,8 @@ a:visited {text-decoration: none; }
 #status_bar {
   height: 58px;
   padding-top: 5px;
-    border-bottom:1px dotted #ddd;
+  border-bottom:1px dotted #ddd;
+  display: none;
 }
 
 

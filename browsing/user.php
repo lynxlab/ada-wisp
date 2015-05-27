@@ -37,23 +37,36 @@ require_once 'include/browsing_functions.inc.php';
 
 $courseInstances = array();
 $serviceProviders = $userObj->getTesters();
-
-$courseInstances = array();
+/**
+ * change the two below call to active to let the closed
+ * instances completely disappear from the HTML table
+ */
 if (count($serviceProviders) == 1) {
     $provider_dh = AMA_DataHandler::instance(MultiPort::getDSN($serviceProviders[0]));
-    //$courseInstances = $provider_dh->get_course_instances_active_for_this_student($userObj->getId());
-    $courseInstances = $provider_dh->get_course_instances_for_this_student($userObj->getId());
+//     $courseInstances = $provider_dh->get_course_instances_active_for_this_student($userObj->getId());
+    $courseInstances = $provider_dh->get_course_instances_for_this_student($userObj->getId(), true);
 } else {
     foreach ($serviceProviders as $Provider) {
         $provider_dh = AMA_DataHandler::instance(MultiPort::getDSN($Provider));
-        //$courseInstances_provider = $provider_dh->get_course_instances_active_for_this_student($userObj->getId());
-        $courseInstances_provider = $provider_dh->get_course_instances_for_this_student($userObj->getId());
+//         $courseInstances_provider = $provider_dh->get_course_instances_active_for_this_student($userObj->getId());
+        $courseInstances_provider = $provider_dh->get_course_instances_for_this_student($userObj->getId(), true);
         $courseInstances = array_merge($courseInstances, $courseInstances_provider);
     }
 }
 $courseInstanceCommonAreaAr = array();
 $courseInstanceHelpAr = array();
 if(!AMA_DataHandler::isError($courseInstances)) {
+	/**
+	 * @author giorgio 23/apr/2015
+	 * 
+	 *  filter course instance that are associated to a level of service having nonzero
+	 *  value in isPublic, so that all instances of public courses will not be shown here
+	 */
+	$courseInstances = array_filter($courseInstances, function($courseInstance) {
+		if (is_null($courseInstance['tipo_servizio'])) $courseInstance['tipo_servizio'] = DEFAULT_SERVICE_TYPE;
+		return (intval($_SESSION['service_level_info'][$courseInstance['tipo_servizio']]['isPublic'])===0);
+	});
+	
     $found = count($courseInstances);
 //    if ($found > 0) 
 //    {
@@ -579,25 +592,19 @@ if($last_access=='' || is_null($last_access))
 //print_r($content_dataAr);
         
 
-/**
- * Sends data to the rendering engine
- * 
- * @author giorgio 25/set/2013
- * REMEMBER!!!! If there's a widgets/main/index.xml file
- * and the index.tpl has some template_field for the widget
- * it will be AUTOMAGICALLY filled in!!
- */
-// ARE::render($layout_dataAr,$content_dataAr);
-		$layout_dataAr['JS_filename'] = array(
-				JQUERY,
-				JQUERY_UI,
-				JQUERY_NO_CONFLICT
-		);
-                $layout_dataAr['CSS_filename'] = array (
-                    JQUERY_UI_CSS,
-                    );
-//		$optionsAr['onload_func'] = '';
-		$optionsAr['onload_func'] = 'initDoc();';
-ARE::render($layout_dataAr, $content_dataAr, NULL, (isset($optionsAr) ? $optionsAr : NULL) );        
-//ARE::render($layout_dataAr,$content_dataAr);
+$layout_dataAr['CSS_filename'] = array (
+		JQUERY_UI_CSS,
+		JQUERY_DATATABLE_CSS
+);
+$layout_dataAr['JS_filename'] = array(
+		JQUERY,
+		JQUERY_UI,
+		JQUERY_DATATABLE,
+		JQUERY_DATATABLE_DATE,
+		ROOT_DIR.'/js/include/jquery/dataTables/formattedNumberSortPlugin.js',
+		JQUERY_NO_CONFLICT,
+		'user.js' // this file may use different templates, force user.js inclusion here
+);
+
+ARE::render($layout_dataAr,$content_dataAr,NULL,array('onload_func'=>'initDoc();'));
 
