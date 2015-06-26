@@ -24,6 +24,7 @@ class FormLDAP extends FForm {
 
 	public function __construct($data, $formName=null, $action=null) {
 		parent::__construct();
+		$this->doNotUniform();
 		if (!is_null($formName)) $this->setName($formName);
 		if (!is_null($action)) $this->setAction($action);
 		
