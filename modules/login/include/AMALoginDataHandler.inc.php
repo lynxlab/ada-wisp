@@ -418,6 +418,25 @@ class AMALoginDataHandler extends AMA_DataHandler {
 	}
 	
 	/**
+	 * gets the last successful login option id for the passed
+	 * userID and the passed loginProviderID
+	 * 
+	 * @param number $userID
+	 * @param number $loginProviderID null if must get the optionID regardless of the provider
+	 * 
+	 * @return number|boolean false if not found
+	 * 
+	 * @access public
+	 */
+	public function getLastSuccessfulOptionIDForUser($userID, $loginProviderID) {
+		$sql = 'SELECT `successfulOptionsID` FROM `'.self::$PREFIX.'history_login` '.
+				'WHERE `id_utente`=? AND `'.self::$PREFIX.'providers_id`=? ';
+				'ORDER BY `date` DESC  LIMIT 1';
+		$res = self::$dbToUse->getOnePrepared($sql, array($userID, $loginProviderID));
+	return ($res!==false ? intval($res) : false);
+	}
+	
+	/**
 	 * calls and sets the parent instance method, and if !MULTIPROVIDER
 	 * checks if module_login_providers table is in the provider db.
 	 * 

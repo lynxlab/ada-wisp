@@ -37,7 +37,15 @@ class FormLDAP extends FForm {
 			 ->setValidator(FormValidator::NOT_EMPTY_STRING_VALIDATOR);
 		$this->addTextInput('authdn', translateFN('DN Autenticazione'))->setRequired()
 			 ->setAttribute('maxlength', $this->maxlength)
-			 ->setValidator(FormValidator::NOT_EMPTY_STRING_VALIDATOR);		
+			 ->setValidator(FormValidator::NOT_EMPTY_STRING_VALIDATOR);
+		// UNIMC SPECIFIC
+		$this->addTextInput('authuser', translateFN('Utente Autenticazione'))->setRequired()
+		->setAttribute('maxlength', $this->maxlength)
+		->setValidator(FormValidator::NOT_EMPTY_STRING_VALIDATOR);
+		$this->addPasswordInput('authpwd', translateFN('Password Autenticazione'))->setRequired()
+		->setAttribute('maxlength', $this->maxlength)
+		->setValidator(FormValidator::NOT_EMPTY_STRING_VALIDATOR);
+		// END UNIMC SPECIFIC
 		$this->addTextInput('basedn', translateFN('DN Ricerca'))->setRequired()
 			 ->setAttribute('maxlength', $this->maxlength)
 			 ->setValidator(FormValidator::NOT_EMPTY_STRING_VALIDATOR);		

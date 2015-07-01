@@ -20,6 +20,9 @@ class ldapManagement
 	public $basedn;
 	public $filter;
 	public $usertype;
+	// UNIMC SPECIFIC
+	public $authuser;
+	public $authpwd;
 
 	/**
      * name constructor

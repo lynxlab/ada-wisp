@@ -198,22 +198,25 @@ abstract class abstractLogin implements iLogin
 		/**
 		 * build user object
 		 */
+		if (isset($userArr['id_utente']) && strlen($userArr['id_utente'])>0) $userArr['id'] = $userArr['id_utente'];
 		$userObj = new ADAUser($userArr);
-		$userObj->setLayout('');
+		
 		$userObj->setType(isset($userArr['tipo']) ? $userArr['tipo']: AMA_TYPE_STUDENT);
-		$userObj->setStatus(ADA_STATUS_REGISTERED);
-		$userObj->setPassword(sha1(time())); // force unguessable password
 		
-		/**
-		 * save the user in the appropriate provider
-		 */
-		if (!MULTIPROVIDER && isset ($GLOBALS['user_provider'])) {
-			$regProvider = array ($GLOBALS['user_provider']);
-		} else {
-			$regProvider = array (ADA_PUBLIC_TESTER);
-		}
-		
-		$id_user = Multiport::addUser($userObj,$regProvider);
+		if (intval($userObj->getId())<=0) {
+			$userObj->setLayout('');
+			$userObj->setStatus(ADA_STATUS_REGISTERED);
+			$userObj->setPassword(sha1(time())); // force unguessable password
+			/**
+			 * save the user in the appropriate provider
+			 */
+			if (!MULTIPROVIDER && isset ($GLOBALS['user_provider'])) {
+				$regProvider = array ($GLOBALS['user_provider']);
+			} else {
+				$regProvider = array (ADA_PUBLIC_TESTER);
+			}
+			$id_user = Multiport::addUser($userObj,$regProvider);
+		} else $id_user = MultiPort::setUser($userObj,array(),true);	
 		
 		if($id_user < 0) {
 			if (!is_null($errorCallback)) call_user_func($errorCallback);
@@ -298,6 +301,20 @@ abstract class abstractLogin implements iLogin
 		} else {
 			return null;
 		}		
+	}
+	
+	/**
+	 * gets the last successful login option id for the passed
+	 * userID and the current loginProviderID
+	 * 
+	 * @param number $userID
+	 * 
+	 * @return number|boolean false if not found
+	 * 
+	 * @access public
+	 */
+	public function getLastSuccessfulOptionIDForUser($userID) {
+		return $this->dataHandler->getLastSuccessfulOptionIDForUser($userID,$this->id);
 	}
 	
 	/**
