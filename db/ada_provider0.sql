@@ -1216,3 +1216,23 @@ CREATE TABLE IF NOT EXISTS `utente_messaggio_log` (
 /*!40101 SET CHARACTER_SET_CLIENT=@OLD_CHARACTER_SET_CLIENT */;
 /*!40101 SET CHARACTER_SET_RESULTS=@OLD_CHARACTER_SET_RESULTS */;
 /*!40101 SET COLLATION_CONNECTION=@OLD_COLLATION_CONNECTION */;
+
+-- --------------------------------------------------------
+
+--
+-- Struttura della tabella `tutor_student_preassigned`
+--
+
+CREATE TABLE IF NOT EXISTS `tutor_student_preassigned` (
+  `id_tutor` int(10) unsigned NOT NULL,
+  `id_student` int(10) unsigned NOT NULL,
+  `id_course` int(10) unsigned DEFAULT NULL
+) ENGINE=MyISAM DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
+
+
+
+--
+-- Indexes for table `tutor_student_preassigned`
+--
+ALTER TABLE `tutor_student_preassigned`
+ ADD UNIQUE KEY `student_course` (`id_student`,`id_course`);

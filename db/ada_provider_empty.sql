@@ -711,6 +711,18 @@ CREATE TABLE IF NOT EXISTS `utente_messaggio_log` (
   `flags` int(10) unsigned NOT NULL DEFAULT '0'
 ) ENGINE=MyISAM DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci ;
 
+-- --------------------------------------------------------
+
+--
+-- Struttura della tabella `tutor_student_preassigned`
+--
+
+CREATE TABLE IF NOT EXISTS `tutor_student_preassigned` (
+  `id_tutor` int(10) unsigned NOT NULL,
+  `id_student` int(10) unsigned NOT NULL,
+  `id_course` int(10) unsigned DEFAULT NULL
+) ENGINE=MyISAM DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
+
 --
 -- Indexes for dumped tables
 --
@@ -936,6 +948,12 @@ ALTER TABLE `utente_log`
 --
 ALTER TABLE `utente_messaggio_log`
  ADD PRIMARY KEY (`tempo`,`id_mittente`,`testo`), ADD UNIQUE KEY `utente_messaggio_log_id` (`id`);
+ 
+--
+-- Indexes for table `tutor_student_preassigned`
+--
+ALTER TABLE `tutor_student_preassigned`
+ ADD UNIQUE KEY `student_course` (`id_student`,`id_course`); 
 
 --
 -- AUTO_INCREMENT for dumped tables
