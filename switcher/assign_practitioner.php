@@ -24,15 +24,17 @@ $variableToClearAR = array('node', 'layout', 'course', 'course_instance');
 /**
  * Users (types) allowed to access this module.
  */
-$allowedUsersAr = array(AMA_TYPE_SWITCHER);
+$allowedUsersAr = array(AMA_TYPE_SWITCHER, AMA_TYPE_STUDENT);
 
 /**
  * Performs basic controls before entering this module
  */
 $neededObjAr = array(
-    AMA_TYPE_SWITCHER => array('layout', 'course', 'course_instance')
+    AMA_TYPE_SWITCHER => array('layout', 'course', 'course_instance'),
+	AMA_TYPE_STUDENT  => array('layout', 'course', 'course_instance')
 );
 
+if (isset($_SERVER['REQUEST_METHOD']) && $_SERVER['REQUEST_METHOD'] == 'POST') $trackPageToNavigationHistory = false;
 require_once ROOT_DIR . '/include/module_init.inc.php';
 $self = whoami();
 //$self =  'switcher';  // = switcher!
@@ -300,6 +302,13 @@ if (isset($_SERVER['REQUEST_METHOD']) && $_SERVER['REQUEST_METHOD'] == 'POST'
         }
     }
     
+    // the student shall call this script with a POST-CURL request
+    // from ask_service.php prepare the output for it
+    if ($userObj->getType()==AMA_TYPE_STUDENT) {
+    	if (is_null($errorPhase)) die ('OK');
+    	else die (translateFN('Qualcosa è andato storto in') . ' ' .$errorPhase);
+    }
+    
         $dialog_div = CDOMElement::create('DIV', 'id:dialog-message');
         $dialog_div->setAttribute('style', 'text-align:center');
         if ($errorPhase != null) {
@@ -318,7 +327,8 @@ if (isset($_SERVER['REQUEST_METHOD']) && $_SERVER['REQUEST_METHOD'] == 'POST'
 //    header('Location: switcher.php?id_course=' . $courseId);
 //    header('Location: list_instances.php?id_course=' . $courseId);
 //    exit();
-} else {
+} else if ($userObj->getType() == AMA_TYPE_SWITCHER) {
+	// only the switcher can make non-post request to this script
     if ($courseInstanceObj instanceof Course_instance && $courseInstanceObj->isFull()) {
 
 //         $courseId = DataValidator::is_uinteger($id_corso);
@@ -525,7 +535,7 @@ if (isset($_SERVER['REQUEST_METHOD']) && $_SERVER['REQUEST_METHOD'] == 'POST'
     $dataDiv->addChild($formDiv);
     $dataDiv->addChild($info_div);
 
-}
+} else if ($userObj->getType()==AMA_TYPE_STUDENT) redirect($userObj->getHomePage());
 
 $title = translateFN('Assegna il consulente alla richiesta dell\'utente');
 $help = translateFN('Qui puoi assegnare un Consulente al servizio richiesto dall\'utente');
