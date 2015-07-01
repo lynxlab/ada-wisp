@@ -10241,6 +10241,34 @@ abstract class AMA_Tester_DataHandler extends Abstract_AMA_DataHandler {
 			return $tutors;
 		}
     }
+    
+    /**
+     * @author giorgio 01/lug/2015
+     * 
+     * On WISP/UNIMC only:
+     * 
+     * gets the preassigned tutor id for a student in a course.
+     * 
+     * A row in the DB having id_course=null means to assign that tutor
+     * to the student for every possible course.
+     * A row in the DB having a not null id_course means to assign that
+     * tutor to the student for that course only.
+     * If both rows are found in the DB, the tutor id with matching
+     * id_course is preferred and returned.
+     * 
+     * @param number $id_student id of the student
+     * @param number $id_course  id of the course, or null to mean all courses 
+     * 
+     * @return Ambigous <number|AMA_Error>
+     * 
+     * @access public
+     */
+    function &get_tutor_preassigned_to_student_for_course($id_student, $id_course=null) {
+    	$sql = 'SELECT `id_tutor` FROM `tutor_student_preassigned` WHERE '.
+      		   '`id_student`=? AND (`id_course` IS NULL OR `id_course`=?) ORDER BY `id_course` DESC';
+    	$res = $this->getOnePrepared($sql,array($id_student, $id_course),AMA_FETCH_ASSOC);    	
+    	return (!AMA_DB::isError($res) ? intval($res) : $res);
+    }
 
     /**
      * Get all informations about tutor
