@@ -10243,6 +10243,118 @@ abstract class AMA_Tester_DataHandler extends Abstract_AMA_DataHandler {
     }
     
     /**
+     * @author giorgio 03/lug/2015
+     * 
+     * On WISP/UNIMC only:
+     * 
+     * Gets the list of students preassigned to a tutor for a course
+     *  
+     * @param number $tutor_id
+     * @param number $course_id
+     * 
+     * @return array!AMA_Error
+     * 
+     * @access public
+     */
+    public function &get_preassigned_students_for_tutor ($tutor_id, $course_id=null) {
+    	$sql = 'SELECT U.`id_utente` FROM `utente` U '.
+      		   'JOIN `tutor_student_preassigned` PRE ON U.`id_utente`=PRE.`id_student` '.
+      		   'WHERE PRE.`id_tutor`=? AND PRE.`id_course`'.
+      		   (is_null($course_id) ? ' IS NULL' : '='.intval($course_id)).' AND  '.
+      		   'U.`tipo`=? AND PRE.`id_student` IS NOT NULL';
+    	
+    	return $this->getColPrepared($sql, array($tutor_id, AMA_TYPE_STUDENT),AMA_FETCH_ASSOC);    	
+    }
+    
+    /**
+     * @author giorgio 03/lug/2015
+     * 
+     * On WISP/UNIMC only:
+     * 
+     * Saves preassignment of student(s) to a tutor
+     * 
+     * @param number|array $student_ids id or array of ids of students to be preassigned
+     * @param number $tutor_id id of tutor to preassign students to
+     * @param number $course_id id of course to preassign. null means all courses
+     *  
+     * @return AMA_Error|boolean
+     * 
+     * @access public
+     */
+    public function preassign_students_to_tutor ($student_ids, $tutor_id, $course_id=null) {
+    	if (!is_array($student_ids)) $student_ids = array ($student_ids);
+    	
+    	$sql = 'INSERT INTO `tutor_student_preassigned` VALUES ';
+    	foreach ($student_ids as $student_id) {
+    		$sql .= '(?,?,?),';
+    		$values[] = $tutor_id;
+    		$values[] = $student_id;
+    		$values[] = $course_id;
+    	}
+    	$sql = rtrim ($sql, ',');
+    	$retval = $this->queryPrepared($sql,$values); 
+    	if (AMA_DB::isError($retval)) return new AMA_Error(AMA_ERR_ADD);
+    	else return true;
+    }
+    
+    /**
+     * @author giorgio 03/lug/2015
+     * 
+     * On WISP/UNIMC only:
+     * 
+     * Removes preassignment of students to a tutor in a course
+     * 
+     * @param number|array $student_ids
+     * @param number $tutor_id
+     * @param number $course_id
+     * 
+     * @return AMA_Error|boolean
+     * 
+     * @access public
+     */
+    public function remove_preassign_students_to_tutor ($student_ids, $tutor_id, $course_id=null) {
+    	if (!is_array($student_ids)) $student_ids = array ($student_ids);
+    	$values = array();
+    	
+    	$sql = 'DELETE FROM `tutor_student_preassigned` WHERE `id_tutor`=:id_tutor AND '.
+    		   '`id_student`=:id_student AND `id_course`';
+    	
+    	if (is_null($course_id)) $sql .= ' IS NULL';
+    	else { 
+    		$sql .= '=:id_course';
+    		$values['id_course'] = $course_id;
+    	}
+    	
+    	$values['id_tutor'] = intval($tutor_id);
+    	
+    	foreach ($student_ids as $student_id) {
+    		$values['id_student'] = $student_id;
+    		$res = $this->queryPrepared($sql,$values);
+    		if (AMA_DB::isError($res)) return $res;
+    	}
+    	return true;
+    }
+    
+    /**
+     * @author giorgio 02/lug/2015
+     * 
+     * On WISP/UNIMC only:
+     * 
+     * gets the ids of all students that don't have an associated
+     * row in the `tutor_student_preassigned` table
+     * 
+     * @return array|AMA_Error
+     * 
+     * @access public
+     */
+    public function &get_non_preassigned_student_ids() {
+    	$sql = 'SELECT U.`id_utente` FROM `utente` U '.
+    		   'LEFT JOIN `tutor_student_preassigned` PRE ON U.`id_utente`=PRE.`id_student` '.
+    		   'WHERE U.`tipo`=? AND PRE.`id_student` IS NULL';
+    	return $this->getColPrepared($sql, AMA_TYPE_STUDENT);
+    }
+    
+    /**
      * @author giorgio 01/lug/2015
      * 
      * On WISP/UNIMC only:
@@ -10263,7 +10375,7 @@ abstract class AMA_Tester_DataHandler extends Abstract_AMA_DataHandler {
      * 
      * @access public
      */
-    function &get_tutor_preassigned_to_student_for_course($id_student, $id_course=null) {
+    public function &get_tutor_preassigned_to_student_for_course($id_student, $id_course=null) {
     	$sql = 'SELECT `id_tutor` FROM `tutor_student_preassigned` WHERE '.
       		   '`id_student`=? AND (`id_course` IS NULL OR `id_course`=?) ORDER BY `id_course` DESC';
     	$res = $this->getOnePrepared($sql,array($id_student, $id_course),AMA_FETCH_ASSOC);    	
