@@ -60,6 +60,10 @@ function initDoc(maxSize,userId) {
 		}
 	});
 	
+	//UNIMC only: disable all the edit_user forms at once
+	$j('body').find('input, textarea, button, select').attr('disabled','disabled');
+	$j('body').find('div[id^="uniform-submit"], input[type="submit"]').hide();
+	$j('body').find('#password,#passwordcheck,#avatarfile,#layout,#lingua').parents('li.form').hide();
 }
 
 function showImage(file,userId) {

@@ -8,8 +8,9 @@
     margin-top: 0.5em;
 }
 #tabs  li a.ui-tabs-anchor  {
-	padding: .5em 1em .5em .1em;
-	outline-color: transparent;	
+	padding: .5em 1em .5em 0;
+	outline-color: transparent;
+	font-size: 0.9em;	
 }
 
 .extraRowsContainer form {

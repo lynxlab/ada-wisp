@@ -133,6 +133,7 @@ if (!is_null($editUserObj) && isset($_SERVER['REQUEST_METHOD']) && $_SERVER['REQ
     $user_dataAr['email'] = $user_dataAr['e_mail'];
     unset($user_dataAr['e_mail']);
     $form->fillWithArrayData($user_dataAr);   
+    $form->doNotUniform();
     
     if (!$editUserObj->hasExtra()) {
     	// user has no extra, let's display it
@@ -144,6 +145,32 @@ if (!is_null($editUserObj) && isset($_SERVER['REQUEST_METHOD']) && $_SERVER['REQ
     	require_once ROOT_DIR . '/include/Forms/UserExtraForm.inc.php';
     	$extraForm = new UserExtraForm ($languages);
     	$extraForm->fillWithArrayData ($user_dataAr);
+    	$extraForm->doNotUniform();
+    	// UNIMC Only: CorsoStudio Form
+    	require_once ROOT_DIR . '/include/Forms/UserCorsoStudioForm.inc.php';
+    	$corsoStudioForm = new UserCorsoStudioForm ($languages);
+    	$corsoStudioForm->fillWithArrayData ($user_dataAr);
+    	$corsoStudioForm->doNotUniform();
+    	// UNIMC Only: TipoIscrizione Form
+    	require_once ROOT_DIR . '/include/Forms/UserTipoIscrizioneForm.inc.php';
+    	$tipoIscrizioneForm = new UserTipoIscrizioneForm ($languages);
+    	$tipoIscrizioneForm->fillWithArrayData ($user_dataAr);
+    	$tipoIscrizioneForm->doNotUniform();
+    	// UNIMC Only: SituazioneOccupazionale Form
+    	require_once ROOT_DIR . '/include/Forms/UserSituazioneOccupazionaleForm.inc.php';
+    	$situazioneOccupazionaleForm = new UserSituazioneOccupazionaleForm ($languages);
+    	$situazioneOccupazionaleForm->fillWithArrayData ($user_dataAr);
+    	$situazioneOccupazionaleForm->doNotUniform();
+    	// UNIMC Only: Disabilità Form
+    	require_once ROOT_DIR . '/include/Forms/UserDisabilitaForm.inc.php';
+    	$disabilitaForm = new UserDisabilitaForm ($languages);
+    	$disabilitaForm->fillWithArrayData ($user_dataAr);
+    	$disabilitaForm->doNotUniform();
+    	// UNIMC Only: Titolo studio Form
+    	require_once ROOT_DIR . '/include/Forms/UserTitoloStudioForm.inc.php';
+    	$titoloStudioForm = new UserTitoloStudioForm ($languages);
+    	$titoloStudioForm->fillWithArrayData ($user_dataAr);
+    	$titoloStudioForm->doNotUniform();
     	
 		$tabContents = array ();
 		
@@ -153,11 +180,16 @@ if (!is_null($editUserObj) && isset($_SERVER['REQUEST_METHOD']) && $_SERVER['REQ
 		 * jQuery tabs to be used for user extra data and tables
 		 */
 		
-// 		$tabsArray = array (
-// 				array (translateFN ("Anagrafica"), $form),
-// 				array (translateFN ("Sample Extra 1:1"), $extraForm),
+		$tabsArray = array (
+				array (translateFN ("Anagrafica"), $form, 'withExtra'=>true),
+// 				array (translateFN ("Anagrafica Estesa"), $extraForm),
+				array (translateFN ("Corso di Studio"), $corsoStudioForm),
+				array (translateFN ("Tipo di Iscrizione"), $tipoIscrizioneForm),
+				array (translateFN ("Situazione Occupazionale"), $situazioneOccupazionaleForm),
+				array (translateFN ("Eventuali disabilità"), $disabilitaForm),
+				array (translateFN ("Titolo di studio superiore"), $titoloStudioForm)
 // 				array (translateFN ("Sample Extra 1:n"), 'oneToManyDataSample'), 
-// 		);
+		);
 		
 		$data = "";
 		$linkedTablesInADAUser = !is_null(ADAUser::getLinkedTables()) ? ADAUser::getLinkedTables() : array();
@@ -165,12 +197,12 @@ if (!is_null($editUserObj) && isset($_SERVER['REQUEST_METHOD']) && $_SERVER['REQ
 			
 			// if is a subclass of FForm the it's a multirow element
 			$doMultiRowTab = !is_subclass_of($tabsArray[$currTab][1], 'FForm');
-			
+				
 			if ($doMultiRowTab === true)
 			{
 				$extraTableName = $tabsArray[$currTab][1];
 				$extraTableFormClass = "User" . ucfirst ($extraTableName) . "Form";
-				
+			
 				/*
 				 * if extraTableName is not in the linked tables array or there's
 				 * no form classes for the extraTableName skip to the next iteration
@@ -268,6 +300,11 @@ if (!is_null($editUserObj) && isset($_SERVER['REQUEST_METHOD']) && $_SERVER['REQ
 					// add the container to the current tab
 					$tabContents [$currTab]->addChild ($container);
 				} else if (isset ($currentForm)) {
+					// if form of current tab wants the UserExtraForm fields embedded, obey it
+					if (isset($tabsArray[$currTab]['withExtra']) && $tabsArray[$currTab]['withExtra']===true) {
+						UserExtraForm::addExtraControls($currentForm);
+						$currentForm->fillWithArrayData($user_dataAr);						
+					}
 					$tabContents [$currTab]->addChild (new CText ($currentForm->render()));
 					unset ($currentForm);				
 				}			

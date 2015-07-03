@@ -1,26 +1,17 @@
 <?php
 /**
- * UserSkillsForm file
+ * UserSituazioneOccupazionaleForm file
  *
  * PHP version 5
  *
  * @package   Default
  * @author    giorgio <g.consorti@lynxlab.com>
- * @copyright Copyright (c) 2010-2010, Lynx s.r.l.
+ * @copyright Copyright (c) 2015, Lynx s.r.l.
  * @license   http://opensource.org/licenses/gpl-2.0.php GNU Public License
  */
 require_once 'lib/classes/FForm.inc.php';
 
-
-/**
- * Description of UserSkillsForm
- *
- * @package   Default
- * @author    giorgio <g.consorti@lynxlab.com>
- * @copyright Copyright (c) 2010-2010, Lynx s.r.l.
- * @license   http://opensource.org/licenses/gpl-2.0.php GNU Public License
- */
-class UserExtraForm extends FForm
+class UserSituazioneOccupazionaleForm extends FForm
 {
     public function  __construct($action=NULL) {
         parent::__construct();
@@ -42,8 +33,8 @@ class UserExtraForm extends FForm
     
     public static function addExtraControls (FForm $theForm)
     {
-    	$theForm->addTextInput('privateEmail', translateFN('E-mail (privata)'))
-    	->setValidator(FormValidator::EMAIL_VALIDATOR);
+    	$theForm->addTextInput('Sta_Occup_Decode', translateFN('Sta_Occup_Decode'))
+    	->setValidator(FormValidator::DEFAULT_VALIDATOR);
 
     	// add an extra field if we're embedding the controls
     	// in the standard edit_user form

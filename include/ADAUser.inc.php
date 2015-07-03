@@ -72,7 +72,19 @@ class ADAUser extends ADAAbstractUser
 	 * PLS set the list of properties you want the extra user to have, and the class code
 	 * should take care of the rest. If no extra properites are needed, delete them all!
 	 */
-// 	public $samplefield;
+	public $privateEmail;
+	public $Tipo_Corso_Des;
+	public $CDS_DESC;
+	public $PDSORD_DESC;
+	public $Tipo_Did_Desc;
+	public $PT_FLG;
+	public $Sta_Occup_Decode;
+	public $Tipo_Hand_Des;
+	public $Perc_Hand;
+	public $Tipo_Titolo_Sup_Desc;
+	public $Voto;
+	public $Voto_Max;
+	
 	
 	/**
 	 * boolean to tell if the class is for a customization
