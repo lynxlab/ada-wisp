@@ -25,11 +25,15 @@ function initDoc(op){
 	
 	if (op=='edit') {
 		$j('#selTutor').change(function() {
-			var pos = document.location.href.indexOf('?');
-			var newurl = (pos>-1) ? document.location.href.substr(0,pos) : document.location.href;
-			document.location.href = newurl+'?practitioner_id='+$j(this).val();
+			reloadWithPractitioner($j(this).val());
 		});
 	}
+}
+
+function reloadWithPractitioner(id) {
+	var pos = document.location.href.indexOf('?');
+	var newurl = (pos>-1) ? document.location.href.substr(0,pos) : document.location.href;
+	document.location.href = newurl+'?practitioner_id='+id;
 }
 
 function createDataTable() {
@@ -78,6 +82,12 @@ function checkEditPreassignForm(selectATutorMSG, selectAStudentMSG, question) {
 	var retval = false;
 	if (checkPreassignForm(selectATutorMSG, selectAStudentMSG)) retval = confirm(question);
 	return retval;	
+}
+
+function goToEdit(selectATutorMSG) {
+	if ($j('select[name=selTutor]').val()==0) {
+		alert (selectATutorMSG);
+	} else reloadWithPractitioner($j('select[name=selTutor]').val());
 }
 
 function  initToolTips() {

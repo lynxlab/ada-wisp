@@ -30,5 +30,6 @@ form[name=preassing_students] button[type=submit] {
 }
 
 form[name=preassing_students] button[type=submit] { padding: 0 10px 0 10px; }
-#selTutor_container { margin: 5px; }
+#selTutor_container { margin: 5px; width: 80%; float:left; }
+#editButton_container { margin: 5px; float: right; }
 #selTutor_container > label { width: auto; vertical-align: initial; }

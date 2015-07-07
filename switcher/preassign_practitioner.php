@@ -120,6 +120,15 @@ if (!AMA_DB::isError($tutors_ar) && is_array($tutors_ar) && count($tutors_ar)>0)
 	// select tutor select object
 	$selTutorDIV->addChild(BaseHtmlLib::selectElement2('id:selTutor,name:selTutor',$tutorSelect,$selectedTutorID));
 	
+	if ($op==='preassign') {
+		$editButtonDIV = CDOMElement::create('div','id:editButton_container');
+		$editButton = CDOMElement::create('button','type:button,class:editButton');
+		$editButton->setAttribute('onclick', 'goToEdit(\''.$selectATutorMSG.'\');');
+		$editButton->addChild(new CText(translateFN('Modifica preassegnazioni')));
+		$editButtonDIV->addChild($editButton);
+		$theForm->addChild($editButtonDIV);
+	}
+	
 	if (!AMA_DB::isError($listStudentIds) && is_array($listStudentIds) && count($listStudentIds)>0) {
 		// onsubmit check form with javascript
 		$theForm->setAttribute('onsubmit', $onsubmit);
