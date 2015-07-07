@@ -279,7 +279,7 @@ switch ($op) {
 		//	$onclick = "openMessenger('$url',800,600);";
 		/* mod: 28/06 zoom utente */
 		// dettagli utente:
-		    $href = 'zoom_user.php?id='.$user_data['id_utente'];
+		    $href = 'edit_user.php?id='.$user_data['id_utente'];
 		    // $user_link = CDOMElement::create('a');
 		     $user_link = CDOMElement::create('a', "href:$href");
 		/* end mod */    

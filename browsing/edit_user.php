@@ -62,9 +62,9 @@ $self_instruction = isset($self_instruction) ? $self_instruction : null;
 switch($userObj->getType()) {
 	case AMA_TYPE_STUDENT:
 	case AMA_TYPE_AUTHOR:
-        case AMA_TYPE_TUTOR:
 		$editUserObj = clone $userObj;
 		break;
+    case AMA_TYPE_TUTOR: // UNIMC only: tutor can view/edit user profile
 	case AMA_TYPE_SWITCHER:
 		$userId = DataValidator::is_uinteger($_GET['id_user']);
 		if ($userId !== false) {
@@ -121,8 +121,14 @@ if (!is_null($editUserObj) && isset($_SERVER['REQUEST_METHOD']) && $_SERVER['REQ
      */
     $allowEditConfirm= ($userObj->getType()==AMA_TYPE_SWITCHER);
     $user_dataAr = $editUserObj->toArray();
-    if($userObj->getType()==AMA_TYPE_AUTHOR || $userObj->getType()==AMA_TYPE_TUTOR)
+    if($userObj->getType()==AMA_TYPE_AUTHOR)
     {
+	    /**
+	     * UNIMC only: tutor can view/edit user profile
+	     * removed: || $userObj->getType()==AMA_TYPE_TUTOR
+	     * from the above if condition
+	     * 
+	     */
         header('Location: ' .$userObj->getEditProfilePage() );
         exit();
     }
@@ -409,7 +415,9 @@ $content_dataAr = array(
 
 /**
  * If it's a switcher the renderer is called by switcher/edit_user.php
+ * UNIMC Only:
+ * If it's a tutor the renderer is called by tutor/edit_user.php
  */
-if ($userObj->getType() != AMA_TYPE_SWITCHER) {
+if ($userObj->getType() != AMA_TYPE_SWITCHER && $userObj->getType() != AMA_TYPE_TUTOR) {
 	ARE::render($layout_dataAr, $content_dataAr,NULL, $optionsAr);
 }
