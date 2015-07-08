@@ -33,13 +33,25 @@ class UserTitoloStudioForm extends FForm
     
     public static function addExtraControls (FForm $theForm)
     {
-    	$theForm->addTextInput('Tipo_Titolo_Sup_Desc', translateFN('Tipo_Titolo_Sup_Desc'))
+    	$theForm->addTextInput('TIPO_TITOLO_DESC', translateFN('Tipo titolo di studio'))
     	->setValidator(FormValidator::DEFAULT_VALIDATOR);
     	
-    	$theForm->addTextInput('Voto', translateFN('Voto'))
+    	$theForm->addTextInput('VOTO', translateFN('Voto'))
     	->setValidator(FormValidator::DEFAULT_VALIDATOR);
     	
-    	$theForm->addTextInput('Voto_Max', translateFN('Voto_Max'))
+    	$theForm->addTextInput('VOTO_MAX', translateFN('Voto massimo'))
+    	->setValidator(FormValidator::DEFAULT_VALIDATOR);
+    	
+    	$theForm->addTextInput('ANNO_MATURITA', translateFN('Anno di conseguimento'))
+    	->setValidator(FormValidator::DEFAULT_VALIDATOR);
+    	
+    	$theForm->addTextInput('SCUOLA_DESC', translateFN('Scuola'))
+    	->setValidator(FormValidator::DEFAULT_VALIDATOR);
+    	
+    	$theForm->addTextInput('PROVINCIA_SCUOLA_DESC', translateFN('Provincia scuola'))
+    	->setValidator(FormValidator::DEFAULT_VALIDATOR);
+    	
+    	$theForm->addTextInput('REGIONE_SCUOLA_DESC', translateFN('Regione scuola'))
     	->setValidator(FormValidator::DEFAULT_VALIDATOR);
 
     	// add an extra field if we're embedding the controls

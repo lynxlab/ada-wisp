@@ -33,10 +33,10 @@ class UserDisabilitaForm extends FForm
     
     public static function addExtraControls (FForm $theForm)
     {
-    	$theForm->addTextInput('Tipo_Hand_Des', translateFN('Tipo_Hand_Des'))
+    	$theForm->addTextInput('TIPO_HAND_DES', translateFN('Tipo disabilità'))
     	->setValidator(FormValidator::DEFAULT_VALIDATOR);
     	
-    	$theForm->addTextInput('Perc_Hand', translateFN('Perc_Hand'))
+    	$theForm->addTextInput('PERC_HAND', translateFN('Percentuale'))
     	->setValidator(FormValidator::DEFAULT_VALIDATOR);
 
     	// add an extra field if we're embedding the controls

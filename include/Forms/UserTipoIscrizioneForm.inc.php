@@ -33,10 +33,28 @@ class UserTipoIscrizioneForm extends FForm
     
     public static function addExtraControls (FForm $theForm)
     {
-    	$theForm->addTextInput('Tipo_Did_Desc', translateFN('Tipo_Did_Desc'))
+    	$theForm->addTextInput('DATA_ISCR', translateFN('Data Iscrizione'))
     	->setValidator(FormValidator::DEFAULT_VALIDATOR);
     	
-    	$theForm->addTextInput('PT_FLG', translateFN('PT_FLG'))
+    	$theForm->addTextInput('ANNO_CORSO', translateFN('Anno di Corso'))
+    	->setValidator(FormValidator::DEFAULT_VALIDATOR);
+    	
+    	$theForm->addTextInput('AA_ISCR_DESC', translateFN('A.A. di iscrizione'))
+    	->setValidator(FormValidator::DEFAULT_VALIDATOR);
+    	
+    	$theForm->addTextInput('TASSE_IN_REGOLA_OGGI', translateFN('Tasse in regola'))
+    	->setValidator(FormValidator::DEFAULT_VALIDATOR);
+    	
+    	$theForm->addTextInput('TIPO_ISCR_DESC', translateFN('Tipo Iscrizione'))
+    	->setValidator(FormValidator::DEFAULT_VALIDATOR);
+    	
+    	$theForm->addTextInput('PT_DESC', translateFN('Tempo'))
+    	->setValidator(FormValidator::DEFAULT_VALIDATOR);
+    	
+    	$theForm->addTextInput('TIPO_DID_DECODE', translateFN('Tipo didattica'))
+    	->setValidator(FormValidator::DEFAULT_VALIDATOR);
+    	
+    	$theForm->addTextInput('STA_OCCUP_DECODE', translateFN('Situazione occupazionale'))
     	->setValidator(FormValidator::DEFAULT_VALIDATOR);
 
     	// add an extra field if we're embedding the controls

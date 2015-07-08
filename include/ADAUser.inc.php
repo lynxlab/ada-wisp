@@ -73,17 +73,30 @@ class ADAUser extends ADAAbstractUser
 	 * should take care of the rest. If no extra properites are needed, delete them all!
 	 */
 	public $privateEmail;
-	public $Tipo_Corso_Des;
+	public $TEL_DOM;
+	public $TEL_RES;
+	public $FACOLTA_COD;	
+	public $TIPO_CORSO_DES;
 	public $CDS_DESC;
+	public $CDSORD_DESC;
 	public $PDSORD_DESC;
-	public $Tipo_Did_Desc;
-	public $PT_FLG;
-	public $Sta_Occup_Decode;
-	public $Tipo_Hand_Des;
-	public $Perc_Hand;
-	public $Tipo_Titolo_Sup_Desc;
-	public $Voto;
-	public $Voto_Max;
+	public $DATA_ISCR;
+	public $ANNO_CORSO;
+	public $AA_ISCR_DESC;
+	public $TASSE_IN_REGOLA_OGGI;
+	public $TIPO_ISCR_DESC;
+	public $TIPO_DID_DECODE;
+	public $PT_DESC;
+	public $STA_OCCUP_DECODE;
+	public $TIPO_HAND_DES;
+	public $PERC_HAND;
+	public $TIPO_TITOLO_DESC;
+	public $VOTO;
+	public $VOTO_MAX;
+	public $ANNO_MATURITA;
+	public $SCUOLA_DESC;
+	public $PROVINCIA_SCUOLA_DESC;
+	public $REGIONE_SCUOLA_DESC;
 	
 	
 	/**

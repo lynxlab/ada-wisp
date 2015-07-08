@@ -44,6 +44,9 @@ class UserExtraForm extends FForm
     {
     	$theForm->addTextInput('privateEmail', translateFN('E-mail (privata)'))
     	->setValidator(FormValidator::EMAIL_VALIDATOR);
+    	
+    	$theForm->addTextInput('TEL_DOM', translateFN('Telefono').' #1');
+    	$theForm->addTextInput('TEL_RES', translateFN('Telefono').' #2');
 
     	// add an extra field if we're embedding the controls
     	// in the standard edit_user form

@@ -33,13 +33,19 @@ class UserCorsoStudioForm extends FForm
     
     public static function addExtraControls (FForm $theForm)
     {
-    	$theForm->addTextInput('Tipo_Corso_Des', translateFN('Tipo Corso'))
+    	$theForm->addTextInput('FACOLTA_COD', translateFN('Codice Facoltà'))
     	->setValidator(FormValidator::DEFAULT_VALIDATOR);
     	
-    	$theForm->addTextInput('CDS_DESC', translateFN('CDS_DESC'))
+    	$theForm->addTextInput('TIPO_CORSO_DES', translateFN('Tipo Corso'))
     	->setValidator(FormValidator::DEFAULT_VALIDATOR);
     	
-    	$theForm->addTextInput('PDSORD_DESC', translateFN('PDSORD_DESC'))
+    	$theForm->addTextInput('CDS_DESC', translateFN('Corso di studi'))
+    	->setValidator(FormValidator::DEFAULT_VALIDATOR);
+    	
+    	$theForm->addTextInput('CDSORD_DESC', translateFN('Ordinamento'))
+    	->setValidator(FormValidator::DEFAULT_VALIDATOR);
+    	
+    	$theForm->addTextInput('PDSORD_DESC', translateFN('Percorso'))
     	->setValidator(FormValidator::DEFAULT_VALIDATOR);
 
     	// add an extra field if we're embedding the controls

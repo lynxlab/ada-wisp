@@ -162,11 +162,6 @@ if (!is_null($editUserObj) && isset($_SERVER['REQUEST_METHOD']) && $_SERVER['REQ
     	$tipoIscrizioneForm = new UserTipoIscrizioneForm ($languages);
     	$tipoIscrizioneForm->fillWithArrayData ($user_dataAr);
     	$tipoIscrizioneForm->doNotUniform();
-    	// UNIMC Only: SituazioneOccupazionale Form
-    	require_once ROOT_DIR . '/include/Forms/UserSituazioneOccupazionaleForm.inc.php';
-    	$situazioneOccupazionaleForm = new UserSituazioneOccupazionaleForm ($languages);
-    	$situazioneOccupazionaleForm->fillWithArrayData ($user_dataAr);
-    	$situazioneOccupazionaleForm->doNotUniform();
     	// UNIMC Only: Disabilità Form
     	require_once ROOT_DIR . '/include/Forms/UserDisabilitaForm.inc.php';
     	$disabilitaForm = new UserDisabilitaForm ($languages);
@@ -191,7 +186,6 @@ if (!is_null($editUserObj) && isset($_SERVER['REQUEST_METHOD']) && $_SERVER['REQ
 // 				array (translateFN ("Anagrafica Estesa"), $extraForm),
 				array (translateFN ("Corso di Studio"), $corsoStudioForm),
 				array (translateFN ("Tipo di Iscrizione"), $tipoIscrizioneForm),
-				array (translateFN ("Situazione Occupazionale"), $situazioneOccupazionaleForm),
 				array (translateFN ("Eventuali disabilità"), $disabilitaForm),
 				array (translateFN ("Titolo di studio superiore"), $titoloStudioForm)
 // 				array (translateFN ("Sample Extra 1:n"), 'oneToManyDataSample'), 

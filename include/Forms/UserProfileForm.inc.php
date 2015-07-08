@@ -60,7 +60,7 @@ class UserProfileForm extends UserRegistrationForm {
         $telefono = FormControl::create(FormControl::INPUT_TEXT, 'telefono', translateFN('Telefono'));
         $cap = FormControl::create(FormControl::INPUT_TEXT, 'cap', translateFN('cap'));
         $citta = FormControl::create(FormControl::INPUT_TEXT, 'citta', translateFN('Città'));
-        $indirizzo = FormControl::create(FormControl::INPUT_TEXT, 'indirizzo', translateFN('Indirizzo'));
+        $indirizzo = FormControl::create(FormControl::INPUT_TEXT, 'indirizzo', translateFN('Regione'));
         $provincia = FormControl::create(FormControl::INPUT_TEXT, 'provincia', translateFN('Provincia'));
         $countries = countriesList::getCountriesList($_SESSION['sess_user_language']);
         $nazione = FormControl::create(FormControl::SELECT,'nazione',translateFN('Nazione'));
