@@ -13,6 +13,22 @@
 var oTable = null;
 
 function initDoc(op){
+	/**
+	 * to sort by 'voto maturità' (67/100, 38/60, 98/100....)
+	 * evaluate the division of the passed grade (0.67, 0.6333, 0.98...)
+	 */
+	$j.extend( $j.fn.dataTableExt.oSort, {
+	    "mathexpr-num-pre": function (a) {
+	        return parseFloat((a === "-" || a === "") ? 0 : eval(a));
+	    },
+	    "mathexpr-num-asc": function (a, b) {
+	        return a - b;
+	    },
+	    "mathexpr-num-desc": function (a, b) {
+	        return b - a;
+	    }
+	});
+	
 	createDataTable();
 	initToolTips();
 	
@@ -37,21 +53,30 @@ function reloadWithPractitioner(id) {
 }
 
 function createDataTable() {
+	if ($j("#table_preassignment").length<=0) return;
+	
+	// fix table footer span before initializing the datatable
+	var numCols = $j("#table_preassignment").find('tr')[0].cells.length;
+	$j('#table_preassignment tfoot tr th').attr('colspan', numCols.toString());
+	
 	oTable = $j('#table_preassignment').dataTable({
 		"bJQueryUI": true,
 		"bFilter": true,
 		"bInfo": true,
 		"bSort": true,
-		"bAutoWidth": true,
-		"aaSorting": [[ 1, "asc" ]],
+		"aaSorting": [[ 2, "asc" ]],
 		"iDisplayLength": 50,
-        "aoColumns": [
-                      { "bSearchable": false, "bSortable": false, "sClass":"centerAlign", "sWidth": "4%"},
-                      { "sWidth": "4%", "sClass":"centerAlign" },
-                      { "sWidth": "28%"},
-                      { "sWidth": "28%"},
-                      { "sWidth": "28%"}
-                      ],
+		'aoColumnDefs': [{ "sWidth" : "4%",
+						   "sClass" : "centerAlign",
+						   "aTargets" : [0,1] },
+						 { "bSortable": false, 
+						   "bSearchable":false,
+						   "sWidth" : "1%",
+						   "aTargets": [0] },
+						 { "bSortable": false, "sType" : "html", "aTargets":[6] },
+						 { "sWidth": "9%", "aTargets":[7] },
+						 { "sType" : "mathexpr-num", "aTargets":[8] }
+						],
 		"oLanguage": {
 			"sUrl": HTTP_ROOT_DIR + "/js/include/jquery/dataTables/dataTablesLang.php"
 		},
@@ -92,8 +117,10 @@ function goToEdit(selectATutorMSG) {
 
 function  initToolTips() {
   $j('.tooltip').tooltip({
-       
-       show :     {
+       content : function () {
+    	   return $j(this).prop('title');
+       },
+       show : {
                effect : "slideDown",
                delay : 300,
                duration : 100

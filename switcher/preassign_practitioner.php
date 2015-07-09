@@ -133,17 +133,17 @@ if (!AMA_DB::isError($tutors_ar) && is_array($tutors_ar) && count($tutors_ar)>0)
 		// onsubmit check form with javascript
 		$theForm->setAttribute('onsubmit', $onsubmit);
 		// table header
-		$tableHead = array (null,'id','nome','cognome','email');
+		$tableHead = array (null,'id',translateFN('cognome'), translateFN('nome'),
+				translateFN('provincia'), translateFN('corso di studi'),
+				translateFN('tipo iscrizione'), translateFN('disabilità'),
+				translateFN('voto maturità'));
 		// invert selection button for footer
 		$checkAllBtn = CDOMElement::create('button','type:button,name:selectAll');
 		$checkAllBtn->addChild(new CText('Inverti Selezione'));
-		$tableFoot = array ($checkAllBtn->getHtml());
-		// make footer same size of header
-		foreach ($tableHead as $key=>$val) if ($key>0) $tableFoot[$key] = null;
 		// add submit button to footer
 		$submitBtn = CDOMElement::create('button','type:submit');
-		$submitBtn->addChild(new CText('Salva'));
-		$tableFoot[count($tableHead)-1] = $submitBtn->getHtml();
+		$submitBtn->addChild(new CText('Salva'));		
+		$tableFoot = array ($checkAllBtn->getHtml().$submitBtn->getHtml());
 		// table body array
 		$tableBody = array();
 		
@@ -153,9 +153,60 @@ if (!AMA_DB::isError($tutors_ar) && is_array($tutors_ar) && count($tutors_ar)>0)
 			if (is_object($userObj) && $userObj instanceof ADAUser) {
 				// checkbox for first cell
 				$checkBox = CDOMElement::create('checkbox','name:student_ids[],value:'.$userObj->getId());
+				// CDS_DESC field, with tooltips
+				$cds_desc = CDOMElement::create('span','class:tooltip');
+				if (strlen($userObj->CDS_DESC)>0) $spanTitle[] = $userObj->CDSORD_DESC;
+				if (strlen($userObj->PDSORD_DESC)>0) $spanTitle[] = $userObj->PDSORD_DESC;
+				if (isset($spanTitle)) {
+					$cds_desc->setAttribute('title', implode('<br/>', $spanTitle));
+					unset($spanTitle);
+				}
+				$cds_desc->addChild(new CText($userObj->CDS_DESC));
+				
+				// Hack for dataTable filter: add an hidden span containing all of the titles text
+				$hiddenHackSpan = CDOMElement::create('span');
+				$hiddenHackSpan->setAttribute('style', 'display:none');
+				$hiddenContents = array();
+				// PT_DESC field
+				$pt_desc = CDOMElement::create('span','class:tooltip');
+				$pt_desc->setAttribute('title', $userObj->PT_DESC);
+				$pt_desc->addChild(new CText(substr($userObj->PT_DESC, 0, 1)));
+				if (!in_array($userObj->PT_DESC, $hiddenContents)) $hiddenContents[] = $userObj->PT_DESC;
+				// TIPO_DID_DECODE field
+				$tipo_did_decode = CDOMElement::create('span','class:tooltip');
+				$tipo_did_decode->setAttribute('title', $userObj->TIPO_DID_DECODE);
+				$tipo_did_decode->addChild(new CText(substr($userObj->TIPO_DID_DECODE, 0, 1)));
+				if (!in_array($userObj->TIPO_DID_DECODE, $hiddenContents)) $hiddenContents[] = $userObj->TIPO_DID_DECODE;
+				// STA_OCCUP_DECODE field
+				$sta_occup_decode = CDOMElement::create('span','class:tooltip');
+				$sta_occup_decode->setAttribute('title', $userObj->STA_OCCUP_DECODE);
+				$sta_occup_decode->addChild(new CText(substr($userObj->STA_OCCUP_DECODE, 0, 1)));
+				if (!in_array($userObj->STA_OCCUP_DECODE, $hiddenContents)) $hiddenContents[] = $userObj->STA_OCCUP_DECODE;
+				$hiddenHackSpan->addChild(new CText(implode(' ', $hiddenContents)));
+				
+				// TIPO_HAND_DES field
+				$tipo_hand_des = CDOMElement::create('span','class:tooltip');
+				if (strlen($userObj->TIPO_HAND_DES)>0) {
+					$tipo_hand_des->addChild(new CText($userObj->TIPO_HAND_DES));
+					if (strlen($userObj->PERC_HAND)>0) {
+						$tipo_hand_des->setAttribute('title', $userObj->PERC_HAND);
+					}
+				} else {
+					$tipo_hand_des->addChild(new CText('N/A'));
+				}
+				// VOTO field
+				if (strlen($userObj->VOTO)>0) {
+					$voto = $userObj->VOTO;
+					if (strlen($userObj->VOTO_MAX)>0) $voto .= '/'.$userObj->VOTO_MAX;
+				} else $voto = null;
+				
 				// table body row, according to header
-				$tableBody[] = array ( $checkBox->getHtml(), $userObj->getId(), $userObj->getFirstName(),
-						$userObj->getLastName(), $userObj->getEmail());
+				$tableBody[] = array ( $checkBox->getHtml(), $userObj->getId(), $userObj->getLastName(),
+						$userObj->getFirstName(), $userObj->getProvincia(),$cds_desc->getHtml(),
+						$pt_desc->getHtml().'&nbsp'.$tipo_did_decode->getHtml().'&nbsp;'.
+						$sta_occup_decode->getHtml().$hiddenHackSpan->getHtml(),
+						$tipo_hand_des->getHtml(), $voto
+				);
 			}
 		}
 		// add table to main form
@@ -163,7 +214,11 @@ if (!AMA_DB::isError($tutors_ar) && is_array($tutors_ar) && count($tutors_ar)>0)
 				$tableHead, $tableBody, $tableFoot, $tableCaption));
 		
 	} else {
-		if (isset($addChildOnError) && $addChildOnError) $data->addChild(new CText($noStudentsError));
+		if (isset($addChildOnError) && $addChildOnError) {
+			$errorSPAN = CDOMElement::create('span','class:preassign_error');
+			$errorSPAN->addChild(new CText($noStudentsError));
+			$data->addChild($errorSPAN);
+		}
 		else $data = new CText($noStudentsError);
 	}
 } else $data = new CText(translateFN('Nessun orientatore trovato'));

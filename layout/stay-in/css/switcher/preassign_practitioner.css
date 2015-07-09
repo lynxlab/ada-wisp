@@ -19,17 +19,21 @@
 .dataTables_wrapper tfoot > tr > th.default_th { border-right: none; border-left: none; }
 .dataTables_wrapper tfoot > tr > th:last-child { text-align: right; }
 
+form[name=preassing_students] button[name=selectAll] { float:left; }
 form[name=preassing_students] button[name=selectAll],
 form[name=preassing_students] button[type=submit] {
   font-size: 0.9em;
   text-align: center;
-  padding: 0;
+  padding: 0.5em;
   margin: 0;	
   min-height: 100%;
   cursor: pointer;
 }
-
 form[name=preassing_students] button[type=submit] { padding: 0 10px 0 10px; }
+#table_preassignment { width: 100% !important; }
 #selTutor_container { margin: 5px; width: 80%; float:left; }
 #editButton_container { margin: 5px; float: right; }
 #selTutor_container > label { width: auto; vertical-align: initial; }
+span.tooltip { border:none; background: none; color: inherit; padding:0; }
+span.preassign_error { clear: both; display: block; margin: 5px; }
+body .ui-tooltip { padding: 10px; border-radius: 5px; border: 1px solid white; } 
