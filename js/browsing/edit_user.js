@@ -14,22 +14,25 @@ var lastSubmit = -1;
  */
 function initDoc(maxSize,userId) {
 	initDateField(); // initialization of maskedDate
-        $j('#avatar').closest('li').css('border','none');
-        
-        FileNameField = $j('input[type=file]').attr('id');
-        /*
-         * initialization of avatar preview
-         */
-        if ($j('#avatar').val() != '') {
-            var avatarValue = $j('#avatar').val();
-            var avatarImgUserId = userId + '/';
-        } else {
-            var avatarValue = ADA_DEFAULT_AVATAR;
-            var avatarImgUserId = '';
-        }
-        var imgSrcAvatar = $j('<img>').attr('src',HTTP_UPLOAD_PATH+avatarImgUserId+avatarValue).attr('id','imgAvatar');
-        $j('#l_avatarfile').append($j('<div></div>').attr('id', 'avatar_preview'));
-         $j('#avatar_preview').append(imgSrcAvatar);
+    $j('#avatar').closest('li').css('border','none');
+    
+    FileNameField = $j('input[type=file]').attr('id');
+    /*
+     * initialization of avatar preview
+     */
+    if ($j('#avatar').val() != '') {
+        var avatarValue = $j('#avatar').val();
+        var avatarImgUserId = userId + '/';
+    } else {
+        var avatarValue = ADA_DEFAULT_AVATAR;
+        var avatarImgUserId = '';
+    }
+    
+    if ($j('#imgAvatar').length>0) {
+    	var imgSrcAvatar = $j('<img>').attr('src',HTTP_UPLOAD_PATH+avatarImgUserId+avatarValue).attr('id','imgAvatar');
+    	$j('#l_avatarfile').append($j('<div></div>').attr('id', 'avatar_preview'));
+    	$j('#avatar_preview').append(imgSrcAvatar);
+    }
         
 	$j("#avatarfile").pekeUpload({
 		// onSubmit: true,

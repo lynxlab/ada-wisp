@@ -152,6 +152,11 @@ if (!is_null($editUserObj) && isset($_SERVER['REQUEST_METHOD']) && $_SERVER['REQ
     	$extraForm = new UserExtraForm ($languages);
     	$extraForm->fillWithArrayData ($user_dataAr);
     	$extraForm->doNotUniform();
+    	
+    	array_walk ($user_dataAr, function (&$value) {
+    		if(is_string($value)) $value = htmlentities ($value, ENT_QUOTES, ADA_CHARSET);
+    	});
+    	
     	// UNIMC Only: CorsoStudio Form
     	require_once ROOT_DIR . '/include/Forms/UserCorsoStudioForm.inc.php';
     	$corsoStudioForm = new UserCorsoStudioForm ($languages);
