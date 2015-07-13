@@ -159,24 +159,41 @@ if (!is_null($editUserObj) && isset($_SERVER['REQUEST_METHOD']) && $_SERVER['REQ
     	
     	// UNIMC Only: CorsoStudio Form
     	require_once ROOT_DIR . '/include/Forms/UserCorsoStudioForm.inc.php';
-    	$corsoStudioForm = new UserCorsoStudioForm ($languages);
+    	$corsoStudioForm = new UserCorsoStudioForm ();
     	$corsoStudioForm->fillWithArrayData ($user_dataAr);
     	$corsoStudioForm->doNotUniform();
     	// UNIMC Only: TipoIscrizione Form
     	require_once ROOT_DIR . '/include/Forms/UserTipoIscrizioneForm.inc.php';
-    	$tipoIscrizioneForm = new UserTipoIscrizioneForm ($languages);
+    	$tipoIscrizioneForm = new UserTipoIscrizioneForm ();
     	$tipoIscrizioneForm->fillWithArrayData ($user_dataAr);
     	$tipoIscrizioneForm->doNotUniform();
     	// UNIMC Only: Disabilità Form
     	require_once ROOT_DIR . '/include/Forms/UserDisabilitaForm.inc.php';
-    	$disabilitaForm = new UserDisabilitaForm ($languages);
+    	$disabilitaForm = new UserDisabilitaForm ();
     	$disabilitaForm->fillWithArrayData ($user_dataAr);
     	$disabilitaForm->doNotUniform();
     	// UNIMC Only: Titolo studio Form
     	require_once ROOT_DIR . '/include/Forms/UserTitoloStudioForm.inc.php';
-    	$titoloStudioForm = new UserTitoloStudioForm ($languages);
+    	$titoloStudioForm = new UserTitoloStudioForm ();
     	$titoloStudioForm->fillWithArrayData ($user_dataAr);
     	$titoloStudioForm->doNotUniform();
+    	// UNIMC Only: Esami is not going to be an actual form, just a
+    	// loading div and a result div to be populated by an ajax call
+    	$carrieraDIV = CDOMElement::create('div','id:carriera_container');    	
+    	$carrieraLoad = CDOMElement::create('div','id:carriera_load');
+    	$carrieraLoad->addChild(CDOMElement::create('img','src:'.HTTP_ROOT_DIR.'/js/include/jquery/ui/images/ui-anim_basic_16x16.gif'));
+    	$carrieraLoadSpan = CDOMElement::create('span');
+    	$carrieraLoadSpan->addChild(new CText('Caricamento in corso...'));
+    	$carrieraLoad->addChild($carrieraLoadSpan);    	
+    	$carrieraResult = CDOMElement::create('div','id:carriera_results');
+    	$carrieraError = CDOMElement::create('div','id:carriera_error');
+    	$carrieraErrorSpan = CDOMElement::create('span');
+    	$carrieraErrorSpan->addChild(new CText('Errore sconosciuto'));
+    	$carrieraError->addChild($carrieraErrorSpan);
+    	
+    	$carrieraDIV->addChild($carrieraLoad);
+    	$carrieraDIV->addChild($carrieraResult);
+    	$carrieraDIV->addChild($carrieraError);
     	
 		$tabContents = array ();
 		
@@ -192,7 +209,11 @@ if (!is_null($editUserObj) && isset($_SERVER['REQUEST_METHOD']) && $_SERVER['REQ
 				array (translateFN ("Corso di Studio"), $corsoStudioForm),
 				array (translateFN ("Tipo di Iscrizione"), $tipoIscrizioneForm),
 				array (translateFN ("Eventuali disabilità"), $disabilitaForm),
-				array (translateFN ("Titolo di studio superiore"), $titoloStudioForm)
+				array (translateFN ("Titolo di studio superiore"), $titoloStudioForm),
+				array (translateFN ("Carriera"), $carrieraDIV,'onclick'=>'javascript:loadCareer(\''.
+						$carrieraResult->getAttribute('id').'\',\''.
+						$carrieraLoad->getAttribute('id').'\',\''.
+						$carrieraError->getAttribute('id').'\');')
 // 				array (translateFN ("Sample Extra 1:n"), 'oneToManyDataSample'), 
 		);
 		
@@ -201,8 +222,8 @@ if (!is_null($editUserObj) && isset($_SERVER['REQUEST_METHOD']) && $_SERVER['REQ
 		for($currTab = 0; $currTab < count ($tabsArray); $currTab ++) {
 			
 			// if is a subclass of FForm the it's a multirow element
-			$doMultiRowTab = !is_subclass_of($tabsArray[$currTab][1], 'FForm');
-				
+			$doMultiRowTab = !(is_subclass_of($tabsArray[$currTab][1], 'FForm') || 
+							   is_a($tabsArray[$currTab][1], 'CDiv'));
 			if ($doMultiRowTab === true)
 			{
 				$extraTableName = $tabsArray[$currTab][1];
@@ -297,7 +318,11 @@ if (!is_null($editUserObj) && isset($_SERVER['REQUEST_METHOD']) && $_SERVER['REQ
 				// add the save icon to the link
 				$tabsLI->addChild (CDOMElement::create ('span', 'class:ui-icon ui-icon-disk,id:tabSaveIcon' . $currTab));
 				// add a link to the div that holds tab content
-				$tabsLI->addChild (BaseHtmlLib::link ('#divTab' . $currTab, $tabsArray [$currTab][0]));
+				$tabLink = BaseHtmlLib::link ('#divTab' . $currTab, $tabsArray [$currTab][0]);
+				if (isset($tabsArray[$currTab]['onclick'])) {
+					$tabLink->setAttribute('onclick', $tabsArray[$currTab]['onclick']);					
+				}
+				$tabsLI->addChild ($tabLink);
 				$tabsUL->addChild ($tabsLI);
 				$tabContents [$currTab] = CDOMElement::create ('div', 'id:divTab' . $currTab);
 				
@@ -310,7 +335,7 @@ if (!is_null($editUserObj) && isset($_SERVER['REQUEST_METHOD']) && $_SERVER['REQ
 						UserExtraForm::addExtraControls($currentForm);
 						$currentForm->fillWithArrayData($user_dataAr);						
 					}
-					$tabContents [$currTab]->addChild (new CText ($currentForm->render()));
+					$tabContents [$currTab]->addChild (new CText ($currentForm->getHtml()));
 					unset ($currentForm);				
 				}			
 				$tabsContainer->addChild ($tabContents [$currTab]);
@@ -345,6 +370,8 @@ $help = translateFN('Modifica dati utente');
 $layout_dataAr['JS_filename'] = array(
 		JQUERY,
 		JQUERY_UI,
+		JQUERY_DATATABLE,
+		JQUERY_DATATABLE_DATE,
 		JQUERY_MASKEDINPUT,
 		JQUERY_NO_CONFLICT,
 		ROOT_DIR.'/js/include/jquery/pekeUpload/pekeUpload.js'
@@ -352,6 +379,7 @@ $layout_dataAr['JS_filename'] = array(
 
 $layout_dataAr['CSS_filename'] = array(
 		JQUERY_UI_CSS,
+		JQUERY_DATATABLE_CSS,
 		ROOT_DIR.'/js/include/jquery/pekeUpload/pekeUpload.css'
 );
 

@@ -485,6 +485,76 @@ function deleteExtra ( extraTableName, extraID )
 }
 
 /**
+ * UNIMC Only:
+ * loads and display the carrier of a student based on his/her CF
+ */
+var careerLoaded = false;
+function loadCareer(targetDIVid, loadingDIVid, errorDIVid) {
+	if (!careerLoaded) {
+		var cf = '';
+		targetDIVid = '#' + targetDIVid;
+		loadingDIVid = '#' + loadingDIVid;
+		errorDIVid = '#' + errorDIVid;
+		
+		if ($j('#codice_fiscale').val().length>0) {
+			cf = $j('#codice_fiscale').val();
+		}
+		
+		$j.ajax({
+			type	:	'GET',
+			url		:	HTTP_ROOT_DIR + '/browsing/ajax/getCareer.php',
+			data	:	{ cf: cf },
+			dataType:	'json',
+			beforeSend : function() {
+				$j(errorDIVid).hide();
+				$j(targetDIVid).html('');
+				if (!$j(loadingDIVid).is(':visible')) {
+					$j(targetDIVid).fadeOut(function(){  $j(loadingDIVid).fadeIn(); });
+				}
+			}
+		}).always (function() {
+			if ($j(loadingDIVid).is(':visible')) {
+				$j(loadingDIVid).fadeOut(function(){  $j(targetDIVid).fadeIn(); });
+			}
+		}).error (function(){
+			$j(loadingDIVid+','+targetDIVid).stop(true).hide();
+			$j(errorDIVid).fadeIn();
+		}).done (function(JSONObj){
+			if ('undefined' != typeof JSONObj) {
+				if ('undefined' != typeof JSONObj.msg) {
+					$j(targetDIVid).html(JSONObj.msg);
+					careerLoaded = JSONObj.status==1;
+					if (careerLoaded) {
+						$j(targetDIVid+' table').dataTable({
+							"bJQueryUI": true,
+							"bFilter": true,
+							"bInfo": false,
+							"bPaginate": false,
+							"aaSorting": [[ 9, "desc" ]],
+							'aoColumnDefs': [{ "bSortable" : false, "aTargets": [0,1,2,3,4,5,6,7,8] },
+							                 { "sType": "date-eu", "aTargets" : [9] } ],
+							"oLanguage": {
+								"sUrl": HTTP_ROOT_DIR + "/js/include/jquery/dataTables/dataTablesLang.php"
+							},
+							"fnDrawCallback":
+								function () {
+									// put the sort icon outside of the DataTables_sort_wrapper div
+									// for better display styling with CSS
+									$j(this).find("thead th div.DataTables_sort_wrapper").each(function(){
+										sortIcon = $j(this).find('span').clone();
+										$j(this).find('span').remove();
+										$j(this).parents('th').append(sortIcon);
+									});
+								}
+						});
+					}
+				}
+			}
+		});		
+	}	
+}
+
+/**
  * shows and after 500ms removes the div to give feedback to the user about
  * the status of the executed operation (if it's been saved, delete or who knows what..)
  * 

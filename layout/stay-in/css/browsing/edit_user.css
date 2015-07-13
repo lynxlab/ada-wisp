@@ -93,3 +93,23 @@ div.fform form input[type=password],
 div.fform form select { width: 45%; border: 1px dotted gray; padding: 5px; }
 div.fform form fieldset fieldset { border: 1px dotted grey; margin-bottom: 10px; }
 div.fform form fieldset fieldset label { margin-left:0; width: 45%; display: inline-block; }
+
+/**
+ * DataTables styles
+ */
+.dataTables_wrapper { width: 100% !important; font-size: 0.85em !important; }
+.dataTables_wrapper caption { width: 20%; margin: -25px auto 0 auto; position: relative; top: -10px; font-weight: bold;   color: #fff; }
+.dataTables_wrapper tbody td { height: 2.5em; border:none; vertical-align: middle; }
+.dataTables_wrapper thead th { padding-right: 5px; }
+.dataTables_wrapper .DataTables_sort_wrapper { padding: 5px 0 5px 0; width:100%; text-overflow: ellipsis; white-space: nowrap; overflow: hidden; }
+.dataTables_wrapper th:nth-last-child(1) .DataTables_sort_wrapper { width: 90%; }
+.dataTables_wrapper .DataTables_sort_icon { float: right; margin-top: -20px; }
+.dataTables_wrapper .dataTables_paginate > a { margin:0; padding: 3px; }
+.dataTables_wrapper .dataTables_length,
+.dataTables_wrapper .dataTables_filter,
+.dataTables_wrapper .dataTables_paginate { padding: 5px; }
+.dataTables_wrapper .dataTables_info { padding: 8px 0 0 5px; }
+
+.dataTables_wrapper td.centerAlign { text-align: center; }
+.dataTables_wrapper tfoot > tr > th.default_th { border-right: none; border-left: none; }
+.dataTables_wrapper tfoot > tr > th:last-child { text-align: right; }
