@@ -34,6 +34,20 @@ if (!MULTIPROVIDER)
 }
 
 /**
+ * Import user API endpoint configuration
+ */
+define ('USERIMPORT_API_URL',	''); // USER IMPORT API endpoint here
+define ('USERIMPORT_API_USER',	''); // USER IMPORT API endpoint login username
+define ('USERIMPORT_API_PASSWD',''); // USER IMPORT API endpoint login password
+
+/**
+ * ESSE3 API endpoint configuration
+ */
+define ('ESSE3_URL',			''); // ESSE3 API endpoint
+define ('ESSE3_LOGIN',			''); // ESSE3 API login username
+define ('ESSE3_PASSWD',			''); // ESSE3 API login password
+
+/**
  * Provider holidays feed, to be show on fullcalendar. Sample is italian holidays feed
  */
 define ('GCAL_HOLIDAYS_FEED','http://www.google.com/calendar/feeds/e327d6lm6r2kb555ce82ll4sbs@group.calendar.google.com/public/basic');	
