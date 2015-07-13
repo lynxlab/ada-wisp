@@ -91,19 +91,18 @@ if ($_SERVER['REQUEST_METHOD']=='POST' && isset($_POST['file']) && strlen(trim($
 		unlink($file);
 	}
 	
-	require_once ROOT_DIR. '/switcher/include/config_user_import.inc.php';
-	if (defined('UNIMC_IMPORT_URL') && defined('UNIMC_IMPORT_USER') && defined ('UNIMC_IMPORT_PASSWD') &&
-		strlen(UNIMC_IMPORT_URL)>0 && strlen(UNIMC_IMPORT_USER)>0 && strlen(UNIMC_IMPORT_PASSWD)>0) {
+	if (defined('USERIMPORT_API_URL') && defined('USERIMPORT_API_USER') && defined ('USERIMPORT_API_PASSWD') &&
+		strlen(USERIMPORT_API_URL)>0 && strlen(USERIMPORT_API_USER)>0 && strlen(USERIMPORT_API_PASSWD)>0) {
 			
 		$cookie_file = tempnam(ADA_UPLOAD_PATH, 'unimc-cookie');
 		
 		$c = curl_init();
-		curl_setopt($c, CURLOPT_URL, UNIMC_IMPORT_URL );
+		curl_setopt($c, CURLOPT_URL, USERIMPORT_API_URL );
 		curl_setopt($c, CURLOPT_RETURNTRANSFER, true);
 		curl_setopt($c, CURLOPT_CONNECTTIMEOUT, 10);
 		curl_setopt($c, CURLOPT_TIMEOUT,       60);
 		curl_setopt($c, CURLOPT_HTTPAUTH, CURLAUTH_ANY);
-		curl_setopt($c, CURLOPT_USERPWD, UNIMC_IMPORT_USER.":".UNIMC_IMPORT_PASSWD);
+		curl_setopt($c, CURLOPT_USERPWD, USERIMPORT_API_USER.":".USERIMPORT_API_PASSWD);
 		curl_setopt($c, CURLOPT_COOKIEJAR, $cookie_file);
 		
 		$response = curl_exec($c);
