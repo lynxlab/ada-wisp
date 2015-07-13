@@ -19,7 +19,10 @@ function initDoc(op){
 	 */
 	$j.extend( $j.fn.dataTableExt.oSort, {
 	    "mathexpr-num-pre": function (a) {
-	        return parseFloat((a === "-" || a === "") ? 0 : eval(a));
+	    	var expr = />{1}([0-9]{1,3}\/{1}[0-9]{1,3})<{1}/g;
+	    	var n = expr.exec(a);
+	    	if (n==null || n.length<2) return 0;
+	    	else return parseFloat(eval(n[1]));
 	    },
 	    "mathexpr-num-asc": function (a, b) {
 	        return a - b;
@@ -75,7 +78,7 @@ function createDataTable() {
 						   "aTargets": [0] },
 						 { "bSortable": false, "sType" : "html", "aTargets":[6] },
 						 { "sWidth": "9%", "aTargets":[7] },
-						 { "sType" : "mathexpr-num", "aTargets":[8] }
+						 { "sType" : "mathexpr-num", "aTargets":[9] }
 						],
 		"oLanguage": {
 			"sUrl": HTTP_ROOT_DIR + "/js/include/jquery/dataTables/dataTablesLang.php"

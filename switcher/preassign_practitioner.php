@@ -135,8 +135,8 @@ if (!AMA_DB::isError($tutors_ar) && is_array($tutors_ar) && count($tutors_ar)>0)
 		// table header
 		$tableHead = array (null,'id',translateFN('cognome'), translateFN('nome'),
 				translateFN('provincia'), translateFN('corso di studi'),
-				translateFN('tipo iscrizione'), translateFN('disabilità'),
-				translateFN('voto maturità'));
+				translateFN('tipo iscrizione'),translateFN('stato iscrizione'),
+				translateFN('disabilità'), translateFN('voto maturità'));
 		// invert selection button for footer
 		$checkAllBtn = CDOMElement::create('button','type:button,name:selectAll');
 		$checkAllBtn->addChild(new CText('Inverti Selezione'));
@@ -153,6 +153,7 @@ if (!AMA_DB::isError($tutors_ar) && is_array($tutors_ar) && count($tutors_ar)>0)
 			if (is_object($userObj) && $userObj instanceof ADAUser) {
 				// checkbox for first cell
 				$checkBox = CDOMElement::create('checkbox','name:student_ids[],value:'.$userObj->getId());
+				
 				// CDS_DESC field, with tooltips
 				$cds_desc = CDOMElement::create('span','class:tooltip');
 				if (strlen($userObj->CDS_DESC)>0) $spanTitle[] = $userObj->CDSORD_DESC;
@@ -169,20 +170,63 @@ if (!AMA_DB::isError($tutors_ar) && is_array($tutors_ar) && count($tutors_ar)>0)
 				$hiddenContents = array();
 				// PT_DESC field
 				$pt_desc = CDOMElement::create('span','class:tooltip');
-				$pt_desc->setAttribute('title', $userObj->PT_DESC);
-				$pt_desc->addChild(new CText(substr($userObj->PT_DESC, 0, 1)));
-				if (!in_array($userObj->PT_DESC, $hiddenContents)) $hiddenContents[] = $userObj->PT_DESC;
+				if (!is_null($userObj->PT_DESC)) {
+					$pt_desc->setAttribute('title', $userObj->PT_DESC);
+					$words = preg_split('/[\s-]+/', $userObj->PT_DESC);
+					// if one word, extract 2 chars
+					$maxLen = (count($words) > 1) ? 1 :2;					
+					for ($w = reset($words), $pt_desc_str = ''; current($words); $w = next($words)) {
+						$pt_desc_str .= substr($w, 0, $maxLen); 
+					}
+					$pt_desc->addChild(new CText(strtoupper($pt_desc_str)));					
+					if (!in_array($userObj->PT_DESC, $hiddenContents)) $hiddenContents[] = $userObj->PT_DESC;
+				}
+				
 				// TIPO_DID_DECODE field
 				$tipo_did_decode = CDOMElement::create('span','class:tooltip');
-				$tipo_did_decode->setAttribute('title', $userObj->TIPO_DID_DECODE);
-				$tipo_did_decode->addChild(new CText(substr($userObj->TIPO_DID_DECODE, 0, 1)));
-				if (!in_array($userObj->TIPO_DID_DECODE, $hiddenContents)) $hiddenContents[] = $userObj->TIPO_DID_DECODE;
+				if (!is_null($userObj->TIPO_DID_DECODE)) {					
+					$tipo_did_decode->setAttribute('title', $userObj->TIPO_DID_DECODE);
+					if (strcasecmp($userObj->TIPO_DID_DECODE, 'teledidattica')===0) {
+						$tipo_did_decode->addChild(new CText('TD'));
+					} else if (strcasecmp($userObj->TIPO_DID_DECODE, 'teleconferenza')===0) {
+						$tipo_did_decode->addChild(new CText('TC'));
+					} else $tipo_did_decode->addChild(new CText(strtoupper(substr($userObj->TIPO_DID_DECODE, 0, 2))));
+					if (!in_array($userObj->TIPO_DID_DECODE, $hiddenContents)) $hiddenContents[] = $userObj->TIPO_DID_DECODE;
+				}
+				
 				// STA_OCCUP_DECODE field
 				$sta_occup_decode = CDOMElement::create('span','class:tooltip');
-				$sta_occup_decode->setAttribute('title', $userObj->STA_OCCUP_DECODE);
-				$sta_occup_decode->addChild(new CText(substr($userObj->STA_OCCUP_DECODE, 0, 1)));
-				if (!in_array($userObj->STA_OCCUP_DECODE, $hiddenContents)) $hiddenContents[] = $userObj->STA_OCCUP_DECODE;
+				if (!is_null($userObj->STA_OCCUP_DECODE)) {
+					// Change 'Non lavoratore' to 'Inoccupato'
+					if (strcasecmp($userObj->STA_OCCUP_DECODE, 'Non lavoratore')===0) {
+						$userObj->STA_OCCUP_DECODE = 'Inoccupato';
+					}					
+					$sta_occup_decode->setAttribute('title', $userObj->STA_OCCUP_DECODE);
+					if (strcasecmp($userObj->STA_OCCUP_DECODE, 'N/D')===0) {
+						$sta_occup_decode->addChild(new CText(strtoupper($userObj->STA_OCCUP_DECODE)));
+					} else {
+						$words = preg_split('/[\s-]+/', $userObj->STA_OCCUP_DECODE);
+						// if one word, extract 2 chars
+						$maxLen = (count($words) > 1) ? 1 :2;
+						for ($w = reset($words), $sta_occup_str = ''; current($words); $w = next($words)) {
+							$sta_occup_str .= substr($w, 0, $maxLen);
+						}
+						$sta_occup_decode->addChild(new CText(strtoupper($sta_occup_str)));
+					}
+					if (!in_array($userObj->STA_OCCUP_DECODE, $hiddenContents)) $hiddenContents[] = $userObj->STA_OCCUP_DECODE;
+				}
 				$hiddenHackSpan->addChild(new CText(implode(' ', $hiddenContents)));
+				
+				// 'stato iscrizione field
+				$stato_iscr_des = CDOMElement::create('span');
+				$stato_iscr_str = '';
+				if (!is_null($userObj->AA_ISCR_DESC)) $stato_iscr_str .= $userObj->AA_ISCR_DESC;
+				if (!is_null($userObj->ANNO_CORSO)) $stato_iscr_str .= '('.$userObj->ANNO_CORSO.')';
+				if (!is_null($userObj->TASSE_IN_REGOLA_OGGI)) {
+					if (strcasecmp($userObj->TASSE_IN_REGOLA_OGGI, 'no')) $stato_iscr_str .= ',NR';
+					else $stato_iscr_str .= ',IR';
+				}
+				if (strlen($stato_iscr_str)>0) $stato_iscr_des->addChild(new CText($stato_iscr_str));
 				
 				// TIPO_HAND_DES field
 				$tipo_hand_des = CDOMElement::create('span','class:tooltip');
@@ -200,12 +244,23 @@ if (!AMA_DB::isError($tutors_ar) && is_array($tutors_ar) && count($tutors_ar)>0)
 					if (strlen($userObj->VOTO_MAX)>0) $voto .= '/'.$userObj->VOTO_MAX;
 				} else $voto = null;
 				
+				$voto_des = CDOMElement::create('span','class:tooltip');
+				if (!is_null($voto)) {
+					$voto_tooltip = array();
+					if (!is_null($userObj->TIPO_TITOLO_DESC)) $voto_tooltip[] = htmlentities($userObj->TIPO_TITOLO_DESC,ENT_QUOTES,ADA_CHARSET);
+					if (!is_null($userObj->PROVINCIA_SCUOLA_DESC)) $voto_tooltip[] = htmlentities($userObj->PROVINCIA_SCUOLA_DESC,ENT_QUOTES,ADA_CHARSET);
+					if (count($voto_tooltip)>0) {
+						$voto_des->setAttribute('title', implode('<br/>', $voto_tooltip));						
+					}
+					$voto_des->addChild(new CText($voto));
+				}
+				
 				// table body row, according to header
 				$tableBody[] = array ( $checkBox->getHtml(), $userObj->getId(), $userObj->getLastName(),
 						$userObj->getFirstName(), $userObj->getProvincia(),$cds_desc->getHtml(),
 						$pt_desc->getHtml().'&nbsp'.$tipo_did_decode->getHtml().'&nbsp;'.
 						$sta_occup_decode->getHtml().$hiddenHackSpan->getHtml(),
-						$tipo_hand_des->getHtml(), $voto
+						$stato_iscr_des->getHtml(), $tipo_hand_des->getHtml(), $voto_des->getHtml()
 				);
 			}
 		}
