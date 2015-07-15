@@ -42,7 +42,7 @@ include_once 'include/switcher_functions.inc.php';
 /*
  * YOUR CODE HERE
  */
-$coursesAr = $dh->get_courses_list(array('nome', 'titolo', 'descrizione'));
+$coursesAr = $dh->get_courses_list(array('nome', 'titolo', 'descrizione','tipo_servizio'));
 if(is_array($coursesAr) && count($coursesAr) > 0) {
     $thead_data = array(
        translateFN('id'),
@@ -60,36 +60,22 @@ if(is_array($coursesAr) && count($coursesAr) > 0) {
 
     foreach($coursesAr as $course) {
         $courseId = $course[0];
-        if ($courseId == PUBLIC_COURSE_ID_FOR_NEWS) continue;
+        // if ($courseId == PUBLIC_COURSE_ID_FOR_NEWS) continue;
         
         $serviceInfo = $common_dh->get_service_info_from_course($courseId);
 		$isServiceCommonLevel = false;
         if (!AMA_DB::isError($serviceInfo))
         {
-            switch ($serviceInfo[3])
-            {
-                case ADA_SERVICE_HELP:
-                        $serviceLevelTxt = translateFN('Help per studente');
-                        break;
-                case ADA_SERVICE_COMMON:
-                        $serviceLevelTxt = translateFN('Area di interazione per utenti registrati');
-                        $isServiceCommonLevel = true;
-                        break;
-                case ADA_SERVICE_COMMON_STUDENT:
-                        $serviceLevelTxt = translateFN('Area comune per studenti');
-                        $isServiceCommonLevel = true;
-                        break;
-                case ADA_SERVICE_COMMON_TUTOR:
-                        $serviceLevelTxt = translateFN('Area riservata ai tutor');
-                        $isServiceCommonLevel = true;
-                        break;
-                default:
-                        $serviceLevelTxt = translateFN("N/A");
-                        break;
-            }
-            
+        	$commonLevelArr = array (ADA_SERVICE_COMMON, ADA_SERVICE_COMMON_STUDENT, ADA_SERVICE_COMMON_TUTOR);
+        	$isServiceCommonLevel = in_array($serviceInfo[3], $commonLevelArr);
         }
-        else $serviceLevelTxt = translateFN("N/A");
+        
+        $serviceLevelTxt=null;
+        /* if isset $_SESSION['service_level'] it means that the istallation supports course type */
+        if(isset($_SESSION['service_level'][$course[4]])){
+        	$serviceLevelTxt=$_SESSION['service_level'][$course[4]];
+        }
+        if(!isset($serviceLevelTxt)){$serviceLevelTxt=DEFAULT_SERVICE_TYPE_NAME;}
         
         if ($isServiceCommonLevel && $dh->course_has_instances($courseId))
         {
