@@ -90,6 +90,7 @@ if (!AMA_DB::isError($tutors_ar) && is_array($tutors_ar) && count($tutors_ar)>0)
 		$tableCaption = translateFN('Studenti da preassegnare');
 		$noStudentsError = translateFN('Tutti gli studenti sono già preassegnati a qualche orientatore');
 		$help = translateFN('Da qui il provider admin può preassegnare gli studenti a un orientatore');
+		$saveButtonText = translateFN('Salva');
 		$addChildOnError = false;
 	} else if ($op==='edit') {
 		$listStudentIds = $GLOBALS['dh']->get_preassigned_students_for_tutor($selectedTutorID);
@@ -102,6 +103,7 @@ if (!AMA_DB::isError($tutors_ar) && is_array($tutors_ar) && count($tutors_ar)>0)
 		$tableCaption = translateFN('Studenti preassegnati');
 		$noStudentsError = translateFN('Nessuno studente trovato');
 		$help = translateFN('Da qui il provider admin può rimuovere la preassegnazione degli studenti a un orientatore');
+		$saveButtonText = translateFN('Rimuovi');
 		$addChildOnError = true;
 	}
 	
@@ -142,7 +144,7 @@ if (!AMA_DB::isError($tutors_ar) && is_array($tutors_ar) && count($tutors_ar)>0)
 		$checkAllBtn->addChild(new CText('Inverti Selezione'));
 		// add submit button to footer
 		$submitBtn = CDOMElement::create('button','type:submit');
-		$submitBtn->addChild(new CText('Salva'));		
+		$submitBtn->addChild(new CText($saveButtonText));		
 		$tableFoot = array ($checkAllBtn->getHtml().$submitBtn->getHtml());
 		// table body array
 		$tableBody = array();

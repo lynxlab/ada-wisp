@@ -6356,7 +6356,7 @@ abstract class AMA_Tester_DataHandler extends Abstract_AMA_DataHandler {
         $id_lingua = $this->sql_prepared($course_ha['id_lingua']);
         $crediti =  $this->or_zero($course_ha['crediti']);
         $duration_hours = $this->or_zero($course_ha['duration_hours']);
-        $service_type = $this->or_null($course_ha['service_level']);
+        $service_type = $this->or_zero($course_ha['service_level']);
 
         // verify key uniqueness (index)
         $id =  $db->getOne("select id_corso from modello_corso where nome = $nome");
@@ -6846,7 +6846,7 @@ abstract class AMA_Tester_DataHandler extends Abstract_AMA_DataHandler {
         $id_lingua = $this->or_zero($course_ha['id_lingua']);
         $crediti = $this->or_zero($course_ha['crediti']);
         $duration_hours = $this->or_zero($course_ha['duration_hours']);
-        $service_type = $this->or_null($course_ha['service_level']);
+        $service_type = $this->or_zero($course_ha['service_level']);
         /*
      modifica 25/07/01 : non devono essere 0 ma ci devono essere
      $id_nodo_iniziale = $this->or_zero($this->sql_prepared($course_ha['id_nodo_toc']));
