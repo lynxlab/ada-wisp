@@ -123,11 +123,18 @@ if (isset($_REQUEST['mode']) && strlen($_REQUEST['mode'])>0) {
       $user_status = ADA_STATUS_VISITOR;
       break;
     case AMA_TYPE_ADMIN:
+      $user_level = ADA_MAX_USER_LEVEL;
+      $user_score = "";
+      $user_status = ADA_STATUS_VISITOR;
+      break;
+        /*
       $homepage = HTTP_ROOT_DIR .'/admin/admin.php';
       $msg =   urlencode(translateFN('Redirezionamento automatico'));
       header("Location: $homepage?err_msg=$msg");
       exit();
       break;
+         * 
+         */
     default:
       $user_messages = "";
       $user_agenda =  "";
@@ -331,9 +338,10 @@ $log_enabled = true; // links to history enabled
 $mod_enabled = true; // links to modify nodes  enabled
 $com_enabled = true;  // links to comunicate among users  enabled
 
-if ($user_status == ADA_STATUS_VISITOR) {
+if ($id_profile == AMA_TYPE_STUDENT && (
+	$user_status == ADA_STATUS_VISITOR || $user_status == ADA_STATUS_TERMINATED || $user_status == ADA_STATUS_COMPLETED)) {
   $reg_enabled = false; // links to bookmarks disabled
-  $log_enabled = false; // links to history disabled
+  $log_enabled = ($user_status != ADA_STATUS_VISITOR); // links to history disabled
   $mod_enabled = false; // links to modify nodes  disabled
   $com_enabled = false;  // links to comunicate among users  disabled
 }
@@ -418,6 +426,12 @@ if ($id_profile == AMA_TYPE_STUDENT && defined('MODULES_SERVICECOMPLETE') && MOD
  * end service completeness
  */
 
+/**
+ * Authors can edit public courses assigned to themselves
+ */
+if ($id_profile == AMA_TYPE_AUTHOR && $courseObj instanceof Course && $courseObj->getIsPublic()) {
+	$mod_enabled = ($userObj->getId() == $courseObj->getAuthorId());
+}
 
 /**
  * Template Family

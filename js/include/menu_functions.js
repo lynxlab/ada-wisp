@@ -88,7 +88,7 @@ document.observe('dom:loaded', function() {
 		// $j('.mobile.menu .dropdown').dropdown({ on: 'click' });
 
 		// enable menu items (non dropdown) active class
-		var menuItem = $j('.menu li.item, .menu .link.item').not('.closepanel');
+		var menuItem = $j('.computer.ada > .menu > li.item').not('.closepanel');
 		menuItem.on('click', function() {
 		    if(!$j(this).hasClass('dropdown')) {
 		          $j(this).toggleClass('active').closest('.ui.menu')
@@ -104,7 +104,7 @@ document.observe('dom:loaded', function() {
 			    html: $j('#status_bar').html(),
 			    on: 'click',
 			    onHide: function() {
-		    		$j('a.item.active').removeClass('active');
+		    		$j('.ada.menu .item.active').removeClass('active');
 			    }
 			  });
 		}

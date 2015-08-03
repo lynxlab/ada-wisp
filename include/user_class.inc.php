@@ -107,7 +107,7 @@ abstract class ADAGenericUser {
             case AMA_TYPE_AUTHOR:
                 return translateFN('Autore');
             case AMA_TYPE_TUTOR:
-                return translateFN('Tutor');
+                return ($this->isSuper) ? translateFN('Super Tutor') : translateFN('Tutor');
             case AMA_TYPE_STUDENT:
                 return translateFN('Studente');
             default:
@@ -450,6 +450,7 @@ abstract class ADAGenericUser {
         );
 
 
+        if ($this instanceof ADAPractitioner && $this->isSuper) $user_dataAr['tipo'] = AMA_TYPE_SUPERTUTOR;
 
         return $user_dataAr;
     }
@@ -476,14 +477,12 @@ abstract class ADAGenericUser {
                 break;
 
             case AMA_TYPE_TUTOR:
-            case AMA_TYPE_TUTOR:
                 $user_type = translateFN('tutor');
                 break;
             case AMA_TYPE_SWITCHER:
                 $user_type = translateFN('switcher');
                 break;
 
-            case AMA_TYPE_STUDENT:
             case AMA_TYPE_STUDENT:
             default:
             // FIXME: trovare dove controlliamo $user_type == 'studente' e sostituire con $user_type == 'utente'
@@ -737,7 +736,7 @@ abstract class ADALoggableUser extends ADAGenericUser {
                                         $id_profile = $userObj->getType(); //$userObj->tipo;
                                         if ($id_profile == AMA_TYPE_TUTOR) {
                                             $online_usersAr[]= $userObj->username. " |<a href=\"$http_root_dir/comunica/send_message.php?destinatari=". $userObj->username."\"  target=\"_blank\">".translateFN("scrivi un messaggio")."</a> |"
-                                                . " <a href=\"view.php?id_node=$sess_id_node&guide_user_id=".$userObj->id."\"> ".translateFN("segui")."</a> |";
+                                                . " <a href=\"view.php?id_node=$sess_id_node&guide_user_id=".$userObj->getId()."\"> ".translateFN("segui")."</a> |";
                                             //$online_usersAr[$user_id]['user']= "<img src=\"img/_tutor.png\" border=\"0\"> ".$userObj->username. " |<a href=\"$http_root_dir/comunica/send_message.php?destinatari=". $userObj->username."\"  target=\"_blank\">".translateFN("scrivi un messaggio")."</a> |";
                                             //$online_usersAr[$user_id]['user'].= " <a href=\"view.php?id_node=$sess_id_node&guide_user_id=".$userObj->id."\"> ".translateFN("segui")."</a> |";
                                         } else {    // STUDENT
@@ -1111,6 +1110,73 @@ abstract class ADALoggableUser extends ADAGenericUser {
     	}
     	return $retval;
     }
+    
+    /**
+     * sets the proper $_SESSION var of userObj and redirects to user home page
+     * 
+     * @param ADALoggableUser $userObj user object to be used to set $_SESSION vars
+     * @param boolean $remindMe true if remindme check box has been checked
+     * @param string $language lang selection at login form: language to be set
+     * @param Object $loginProviderObj login provider class used, null if none used 
+     */
+    public static function setSessionAndRedirect($userObj, $remindMe, $language, $loginProviderObj = null) {
+    	if ($userObj->getStatus() == ADA_STATUS_REGISTERED)
+    	{
+    		/**
+    		 * @author giorgio 12/dic/2013
+    		 * when a user sucessfully logs in, regenerate her session id.
+    		 * this fixes a quite big problem in the 'history_nodi' table
+    		 */
+    		if (isset($remindMe) && intval($remindMe)>0) {
+    			ini_set('session.cookie_lifetime', 60 * 60 * 24 * ADA_SESSION_LIFE_TIME);  // day cookie lifetime
+    		}
+    		session_regenerate_id(true);
+    		 
+    		$user_default_tester = $userObj->getDefaultTester();
+    		 
+    		if (!MULTIPROVIDER && $userObj->getType()!=AMA_TYPE_ADMIN)
+    		{
+    			if ($user_default_tester!=$GLOBALS['user_provider'])
+    			{
+    				// if the user is trying to login in a provider
+    				// that is not his/her own,
+    				// redirect to his/her own provider home page
+    				$redirectURL = preg_replace("/(http[s]?:\/\/)(\w+)[.]{1}(\w+)/", "$1".$user_default_tester.".$3", $userObj->getHomePage());
+    				header('Location:'.$redirectURL);
+    				exit();
+    			}
+    		}
+    		 
+    		// user is a ADAuser with status set to 0 OR
+    		// user is admin, author or switcher whose status is by default = 0
+    		$_SESSION['sess_user_language'] = $language;
+    		$_SESSION['sess_id_user'] = $userObj->getId();
+    		$GLOBALS['sess_id_user']  = $userObj->getId();
+    		$_SESSION['sess_id_user_type'] = $userObj->getType();
+    		$GLOBALS['sess_id_user_type']  = $userObj->getType();
+    		$_SESSION['sess_userObj'] = $userObj;
+    	
+    		/* unset $_SESSION['service_level'] to allow the correct label translatation according to user language */
+    		unset($_SESSION['service_level']);
+    	
+    		if($user_default_tester !== NULL) {
+    			$_SESSION ['sess_selected_tester'] = $user_default_tester;
+    			// sets var for non multiprovider environment
+    			$GLOBALS ['user_provider'] = $user_default_tester;
+    		}
+    		
+    		if (!is_null($loginProviderObj)) {
+    			$_SESSION['sess_loginProviderArr']['className'] = get_class($loginProviderObj);
+    			$_SESSION['sess_loginProviderArr']['id'] = $loginProviderObj->getID();
+    			$loginProviderObj->addLoginToHistory($userObj->getId());
+    		}    		
+    		$redirectURL = $userObj->getHomePage();
+    		header('Location:'.$redirectURL);
+    		exit();
+    	}
+    	
+    	return false;
+    }
 }
 
 /**
@@ -1414,19 +1480,15 @@ abstract class ADAAbstractUser extends ADALoggableUser {
 		return $res;
 	} //end history_ex_done_FN
         
-        
-        
-       /*
-        * this function fix user certificate. 
-        *       
-        * @return boolean
-        */
-        
-        public function Check_Requirements_Certificate()
-        {
-           /* be implemented according to the use cases */
-            return 'true';
-        }
+	/**
+	 * this function fix user certificate. 
+	 *       
+	 * @return boolean
+	 */	 
+	 public function Check_Requirements_Certificate() {
+	 	/* be implemented according to the use cases */
+	 	return true;
+	 }
 }
 
 /**
@@ -1436,16 +1498,33 @@ abstract class ADAAbstractUser extends ADALoggableUser {
 class ADAPractitioner extends ADALoggableUser {
     protected $tariffa;
     protected $profilo;
+    protected $isSuper;
 
     public function __construct($user_dataAr=array()) {
         parent::__construct($user_dataAr);
 
         $this->tariffa = isset($user_dataAr['tariffa']) ? $user_dataAr['tariffa'] : null;
         $this->profilo = isset($user_dataAr['profilo']) ? $user_dataAr['profilo'] : null;
-
+        $this->isSuper = isset($user_dataAr['tipo']) && $user_dataAr['tipo']==AMA_TYPE_SUPERTUTOR;
+        /**
+         * @author giorgio 10/apr/2015
+         * 
+         * a supertutor is a tutor with the isSuper property set to true
+         */
+        if ($this->isSuper && $this->tipo==AMA_TYPE_SUPERTUTOR) $this->tipo = AMA_TYPE_TUTOR;
         $this->setHomePage(HTTP_ROOT_DIR.'/tutor/tutor.php');
         $this->setEditProfilePage('tutor/edit_tutor.php');
     }
+    
+    /**
+     * converts the Practitioner to an ADAUser
+     * 
+     * @return ADAUser
+     */
+    public function toStudent() {
+    	return new ADAUser(array_merge(array('id'=>$this->getId()),$this->toArray()));
+    }
+    
     /*
    * getters
     */
@@ -1455,6 +1534,10 @@ class ADAPractitioner extends ADALoggableUser {
 
     public function getProfile() {
         return $this->profilo;
+    }
+    
+    public function isSuper() {
+    	return (bool) $this->isSuper;
     }
 
     /*

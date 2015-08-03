@@ -242,9 +242,23 @@ class Menu
 	    		}
 	    	} else {
 	    		/**
-	    		 * item has children, it's a dropdown
+	    		 * item has children, it's a dropdown if one of its children is enabled
 	    		 */
-	    		$DOMitem = $this->buildDropDownItem($item, $firstLevel);
+	    		$isDropDown = false;
+	    		if (is_array($item['children']) && count($item['children'])>0) {
+	    			foreach ($item['children'] as $index=>$child) {
+	    				if (!$this->_isEnabled($child)) {
+	    					$isDropDown = $isDropDown || false;
+	    					// unset disabled children for proper rendering
+	    					unset ($item['children'][$index]);
+	    				} else {
+	    					$isDropDown = $isDropDown || true;
+	    				}
+	    			}
+	    		}
+	    		 
+	    		if ($isDropDown) $DOMitem = $this->buildDropDownItem($item, $firstLevel);
+	    		else $DOMitem = $this->buildHREFItem($item);
 	    	}
 	    	
 	    	if (isset($DOMitem)) $container->addChild($DOMitem);
@@ -454,6 +468,7 @@ class Menu
     private function buildHREFItem($item) {
     	
     	$DOMitem = CDOMElement::create('a');
+    	$hasOnClick = false;
     	
     	// set href prefix
     	if (!is_null($item['href_prefix'])) {
@@ -478,14 +493,19 @@ class Menu
     		$properties = json_decode($item['href_properties'],true);
     		if (is_array($properties) && count($properties)>0) {
 	    		foreach ($properties as $name=>$value) {
+	    			if (stripos($name, 'onclick') !== false) $hasOnClick = true;
 	    			$DOMitem->setAttribute($name,$this->constSubstitute($value));
 	    		}
     		}
     	}
     	
     	// do not send out without an href
-    	if (strlen($DOMitem->getAttribute('href'))<=0 && strlen($DOMitem->getAttribute('onclick'))<=0) {
-    		$DOMitem->setAttribute('href','#');
+    	if (strlen($DOMitem->getAttribute('href'))<=0) {
+    		$DOMitem->setAttribute('href','javascript:void(0);');
+    		// if element has no link and no children, add disabled class
+    		if (!$item['specialItem'] && !$hasOnClick && (is_null($item['children']) || !isset($item['children']) || count($item['children'])<=0)) {
+    			$item['extraClass'] .= ' disabled';
+    		}
     	}
     	
     	// build common elements
@@ -493,7 +513,7 @@ class Menu
     	
     	$LIitem = CDOMElement::create('li');
     	// set class attribute
-    	$LIitem->setAttribute('class', trim('item '.$item['extraClass']));
+    	$LIitem->setAttribute('class', trim('item '.trim($item['extraClass'])));
     	$LIitem->addChild($DOMitem);
     	
     	if (!is_null($item['extraHTML'])) $LIitem->addChild(new CText($item['extraHTML']));
@@ -524,6 +544,10 @@ class Menu
      * check if a menu item is enabled by looking at the enabledON field:
      * - if it's always enabled, return true
      * - if it's never  enabled, return false
+     * - if the field starts with a dollar sign, checks if a global exists with the given
+     *   index and return its boolval, or return true if it does not. 
+     *   e.g.
+     *   	enabledON = '$com_enabled' checks for $GLOBALS['com_enabled']
      * - else checks if the constant enclosed in the percent signs is defined and true
      * 
      * @param array $item array item to check
@@ -535,7 +559,22 @@ class Menu
     private function _isEnabled($item) {
     	if ($item['enabledON']===self::ALWAYS_ENABLED) return true;
     	else if ($item['enabledON']===self::NEVER_ENABLED) return false;
-    	else {
+    	else if ($item['enabledON']{0}==='$') {
+    		/**
+    		 * 01. remove the dollar sign at first position of string
+    		 */
+    		$globalToCheck = substr($item['enabledON'], 1);
+    		/**
+    		 * 02. check if it's a valid php variable name using the regexp found at:
+    		 * http://php.net/manual/en/language.variables.basics.php
+    		 */
+    		if (preg_match('/^[a-zA-Z_\x7f-\xff][a-zA-Z0-9_\x7f-\xff]*$/', $globalToCheck)) {
+    			/**
+    			 * 03. check if a global by the $globalToCheck name exists,return its boolval
+    			 */
+    			return (isset($GLOBALS[$globalToCheck]) ? (bool)($GLOBALS[$globalToCheck]) : true);
+    		} else return true;
+    	} else {
     		/**
     		 * must put into a var because of a limitation with PHP<5.5
     		 * see Note at http://php.net/manual/en/function.empty.php

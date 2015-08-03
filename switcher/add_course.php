@@ -172,5 +172,12 @@ $content_dataAr = array(
     'user_avatar'=>$avatar->getHtml(),
 	'user_modprofilelink' => $userObj->getEditProfilePage()
 );
+$layout_dataAr['JS_filename'] = array(
+		JQUERY,
+		JQUERY_MASKEDINPUT,
+		JQUERY_NO_CONFLICT
+);
 
-ARE::render($layout_dataAr, $content_dataAr);
+$optionsAr['onload_func'] = 'initDateField();';
+
+ARE::render($layout_dataAr, $content_dataAr, null, $optionsAr);

@@ -22,28 +22,36 @@ div.ui.menu.ada {
 .ui.menu.ada > ul.menu > li.item.searchItem { margin-right: .95em; }
 .ui.menu.ada > ul.menu > li.item.searchItem.active { background: none; }
 .ui.menu.ada > ul.menu > li.item.searchItem > div.search,
-.ui.menu.ada > ul.menu > li.item > a { padding: .83em .95em .83em .95em; display: inline-block; }
-.ui.menu.ada > ul.menu > li.item.dropdown > a { padding-right:0; }
+.ui.menu.ada > ul.menu > li.item > a { padding: .83em .95em .83em .95em; display: inline-block; outline:0; }
+.ui.menu.ada > ul.menu > li.item.dropdown > a { padding-right:0;  outline:0; }
 .ui.menu.ada > ul.menu > li.item.dropdown > .dropdown.icon { padding-right: .95em; }
 
-.ui.menu.ada > ul.menu > li.item.dropdown > ul.menu { margin-top: 0px !important; /* match .ui.menu.ada border-bottom */ }
+.ui.menu.ada > ul.menu > li.item.dropdown > ul.menu { margin-top: 1px !important; z-index:999; /* match .ui.menu.ada border-bottom */ }
 .ui.menu.ada > ul.menu > li.item.dropdown > ul.menu > li.item { padding:0 !important; }
-.ui.menu.ada > ul.menu > li.item.dropdown > ul.menu > li.item > a { width: 100%; padding: .85em; display: inline-block; }
+.ui.menu.ada > ul.menu > li.item.dropdown > ul.menu > li.item > a { width: 100%;  display: inline-block; }
+.ui.menu.ada > ul.menu > li.item.dropdown > ul.menu > li.item > a .icon { margin-left: .85em; margin-right:0; }
+.ui.menu.ada > ul.menu > li.item.dropdown > ul.menu > li.item > a .menulabel { padding: .85em; display: inline-block; }
+.ui.menu.ada > ul.menu > li.item.dropdown > ul.menu > li.item.menuseparator > a .menulabel { font-weight: bold; background-color: lightgray; }
 
-.ui.menu.ada  a,
-.ui.menu.ada  a.item,
-.ui.menu.ada .dropdown.item,
-.ui.menu.ada .dropdown.item a.item,
-.ui.mobile.ada.menu  .dropdown {
-    text-transform: capitalize;
-    text-decoration: none;
-    cursor: pointer;
+div.ui.menu.ada  a .menulabel,
+div.ui.menu.ada  a i.icon,
+div.ui.menu.ada  a,
+div.ui.menu.ada  a.item,
+div.ui.menu.ada .dropdown.item,
+div.ui.menu.ada .dropdown.item a.item,
+div.ui.mobile.ada.menu  .dropdown {
+	text-transform: capitalize;
+	text-decoration: none;
+	cursor: pointer;
 }
 
 .ui.menu.ada .dropdown.item li.item:hover,
 .ui.menu.ada .dropdown.item a.item:hover {
     background-color: #F5F5F5;
 }
+
+.ui.menu.ada .dropdown.item li.item.menuseparator:hover,
+.ui.menu.ada .dropdown.item li.item.menuseparator a:hover { background-color: inherit; cursor: default;}
 
 .ui.menu.ada div.ui.search.input,
 .ui.menu.ada i.search.link.icon { background-color: transparent;  }
@@ -116,8 +124,13 @@ div.right.sidebar .close.icon { background-image: none; padding:0; }
 div.right.sidebar .accordion .content.field #show_index { padding: 10px; }
 div.right.sidebar .accordion .content.field #show_index #structIndex ul { padding:0; }
 div.right.sidebar .accordion .content.field #show_index #structIndex ul>li>ul { padding-left:20px; }
-div.right.sidebar .accordion .content.field #show_index #structIndex ul>li>ul>li a { line-height: 30px; }
-div.right.sidebar .accordion .content.field #show_index #structIndex ul>li>ul>li>span.ADA_LEAF_TYPE { background-position-x: -3px; }
+/* div.right.sidebar .accordion .content.field #show_index #structIndex ul>li>ul>li a { line-height: 30px; } */
+div.right.sidebar .accordion .content.field #show_index #structIndex ul>li>ul>li>span.ADA_LEAF_TYPE { background-position-x: -3px; line-height: 35px; }
+div.right.sidebar .accordion .content.field #show_index #structIndex>ul>li>ul>li>span.ADA_EXERCISE { line-height: 35px; }
+div.right.sidebar .accordion .content.field #show_index #structIndex ul>li>ul>li>span.ADA_GROUP_TYPE { display: inline-block; padding-bottom: 0;padding-top: 0;line-height: 35px; }
+div.right.sidebar .accordion .content.field #show_index #structIndex ul>li>ul>li>ul>li>span.ADA_EXERCISE { display: inline-block; padding: 2px 0 12px 35px; }
+div.right.sidebar .accordion .content.field #show_index #structIndex ul>li>ul>li>span>span.viewNodeChildren,
+div.right.sidebar .accordion .content.field #show_index #structIndex ul>li>ul>li>span>span.hideNodeChildren { display: block; float: left; padding:0; }
 div.right.sidebar .accordion .loader-wrapper { text-align: center; }
 div.right.sidebar .accordion .icon { float: right; }
 div.right.sidebar .accordion .title,
@@ -133,7 +146,7 @@ div.right.sidebar .accordion .content.field>a {
     background: transparent;
  }
 div.right.sidebar .accordion .content.field table tbody td { vertical-align: middle; }
-div.right.sidebar .accordion .content.field table.default_table tbody td div { padding: 0 0 0 30px; } 
+div.right.sidebar .accordion .content.field table.default_table tbody td div { padding: 0 0 0 30px; line-height: 50px; } 
 div.right.sidebar .accordion .content.field table tbody td a {
     background: transparent;
     line-height: 50px; 

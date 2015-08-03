@@ -452,7 +452,12 @@ class  Generic_Html extends Output
       $tpl = $this->include_microtemplates();
     }
     // $tpl = $this->include_microtemplates_tree();
-
+    /**
+     * @author giorgio 08/mag/2015
+     * added HTTP_ROOT_DIR as template_field 'constant'
+     */
+	$dataHa['HTTP_ROOT_DIR'] = HTTP_ROOT_DIR;
+	
     foreach ($dataHa as $field=>$data){
 
       $ereg = str_replace('%field_name%',$field,$this->replace_field_code);
@@ -1297,6 +1302,9 @@ EOT;
   	$retArray = array();
   	
   	foreach ( $widgets as $widget ) {
+  		// if widget is not active skip the current iteration
+  		if ((isset($widget['active']) && intval($widget['active'])===0) ||
+  			(isset($widget[$widget['id']]) && intval($widget[$widget['id']['isActive']])===0)) continue;
   		$wobj = new Widget ( $widget );
   		/**
 		 * if there are some params passed in, tell it to the widget

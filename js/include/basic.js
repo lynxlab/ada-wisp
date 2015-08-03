@@ -58,7 +58,10 @@ function close_page(message) {
 }
 
 function initDateField() {
+    if ($j("#birthdate").length>0)
 	$j("#birthdate").mask("99/99/9999");
+    if ($j("#data_pubblicazione").length>0)
+	$j("#data_pubblicazione").mask("99/99/9999");
 }
 
 function validateContent(elements, regexps, formName) {
@@ -137,3 +140,40 @@ function validateContent(elements, regexps, formName) {
 
 	return !error_found;
 }
+
+/**
+ * @author giorgio 08/mag/2015
+ * 
+ * cookie-policy banner management, in plain javascript
+ */
+function checkCookie() {
+
+	elem = document.getElementById("cookies");
+	
+	if (readCookie("ada_comply_cookie") == null) {
+		document.getElementById("cookies").style.display = 'block';
+		document.getElementById("cookie-accept").onclick = function(e) {
+			  days = 365; //number of days to keep the cookie
+			  myDate = new Date();
+			  myDate.setTime(myDate.getTime()+(days*24*60*60*1000));
+			  document.cookie = "ada_comply_cookie = comply_yes; expires = " + myDate.toGMTString(); //creates the cookie: name|value|expiry
+			  if (elem != null) elem.parentNode.removeChild(elem);
+		}
+	}
+	else if (elem != null) elem.parentNode.removeChild(elem);
+}
+
+function readCookie(name) {
+    var nameEQ = name + "=";
+    var ca = document.cookie.split(';');
+    for (var i = 0; i < ca.length; i++) {
+        var c = ca[i];
+        while (c.charAt(0) == ' ') c = c.substring(1, c.length);
+        if (c.indexOf(nameEQ) == 0) return c.substring(nameEQ.length, c.length);
+    }
+    return null;
+}
+
+if (window.attachEvent) {window.attachEvent('onload', checkCookie);}
+else if (window.addEventListener) {window.addEventListener('load', checkCookie, false);}
+else {document.addEventListener('load', checkCookie, false);}

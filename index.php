@@ -16,35 +16,6 @@
  * @version		0.1
  */
 
-/**
- * Destroy session
- */
-session_start();
-/*
- * Redirect the user to the module he/she used to login
- */
-if (isset($_SESSION['ada_access_from'])) {
-  $access_from =  $_SESSION['ada_access_from'];
-  /*
-   * Accessed from kiosk
-   * ADA_KIOSK_ACCESS = 1
-   */
-  if($access_from == 1) {
-    header('Location: kiosk.php');
-    exit();
-  }
-  /*
-   * Accessed from the reserved area
-   * ADA_RESERVED_ACCESS = 3
-   */
-  if($access_from == 3) {
-    header('Location: reserved/index.php');
-    exit();
-  }
-}
-
-session_unset();
-session_destroy();
 // redirect to the home page section
 header('Location: hp/portal.php');
 
@@ -57,7 +28,7 @@ require_once realpath(dirname(__FILE__)).'/config_path.inc.php';
  * Clear node and layout variable in $_SESSION
  * $_SESSION was destroyed, so we do not need to clear data in session.
  */
-$allowedUsersAr = array(AMA_TYPE_VISITOR, AMA_TYPE_STUDENT,AMA_TYPE_TUTOR, AMA_TYPE_AUTHOR, AMA_TYPE_ADMIN);
+$allowedUsersAr = array(AMA_TYPE_VISITOR, AMA_TYPE_STUDENT,AMA_TYPE_TUTOR, AMA_TYPE_AUTHOR, AMA_TYPE_ADMIN, AMA_TYPE_SWITCHER);
 /**
  * Performs basic controls before entering this module
  */
@@ -68,7 +39,6 @@ include_once 'include/'.$self.'_functions.inc.php';
 
 // non serve più...
 // require_once ROOT_DIR.'/include/aut/login.inc.php';
-//
 
 $lang_get = isset($_GET['lang']) ? $_GET['lang']: null;
 
@@ -150,90 +120,58 @@ $login_error_message = '';
 /**
  * Perform login
  */
-if(isset($p_login)) {
-  $username = DataValidator::validate_username($p_username);
-  $password = DataValidator::validate_password($p_password, $p_password);
+if(isset($p_login) || (isset($selectedLoginProvider) && strlen($selectedLoginProvider)>0)) {
 
-  if($username !== FALSE && $password !== FALSE) {
-    //User has correctly inserted un & pw
+  if (isset($p_login)) {
+  	$username = DataValidator::validate_username($p_username);
+  	$password = DataValidator::validate_password($p_password, $p_password);
+  } else {
+  	$username = DataValidator::validate_not_empty_string($p_username);
+  	$password = DataValidator::validate_not_empty_string($p_password);
+  }
+  
+  if (!isset($p_remindme)) $p_remindme = false;
 
-    $userObj = MultiPort::loginUser($username, $password);
+  	if (isset($p_login)) {
+  		if($username !== FALSE && $password !== FALSE) {
+  			//User has correctly inserted un & pw
+	    	$userObj = MultiPort::loginUser($username, $password);
+	    	$loginObj = null;
+  		} else {
+		    // Utente non loggato perche' informazioni in username e password non valide
+		    // es. campi vuoti o contenenti caratteri non consentiti.
+			$login_error_message = translateFN("Username  e/o password non valide");
+  		}
+  	} else if (defined('MODULES_LOGIN') && MODULES_LOGIN && 
+  			   isset($selectedLoginProvider) && strlen($selectedLoginProvider)>0) {
+  		include_once  MODULES_LOGIN_PATH . '/include/'.$selectedLoginProvider.'.class.inc.php';
+  		if (class_exists($selectedLoginProvider)) {
+  			$loginProviderID = isset($selectedLoginProviderID) ? $selectedLoginProviderID : null;
+  			$loginObj = new $selectedLoginProvider($selectedLoginProviderID);
+  			$userObj = $loginObj->doLogin($username, $password, $p_remindme, $p_selected_language);
+  			if ((is_object($userObj)) && ($userObj instanceof Exception)) {
+  				// try the adalogin before giving up the login process
+  				$lastTry = MultiPort::loginUser($username, $password);
+  				if ((is_object($lastTry)) && ($lastTry instanceof ADALoggableUser)) {
+	  				$loginObj = null;
+  					$userObj = $lastTry;
+  				}
+  			}
+  		}
+  	}
     
-    if ((is_object($userObj)) && ($userObj instanceof ADALoggableUser)){
-      $status = $userObj->getStatus();
-	  if ($status == ADA_STATUS_REGISTERED)
-      {
-      	/**
-      	 * @author giorgio 12/dic/2013
-      	 * when a user sucessfully logs in, regenerate her session id.
-      	 * this fixes a quite big problem in the 'history_nodi' table
-      	 */
-      	session_regenerate_id();
-      	
-      	$user_default_tester = $userObj->getDefaultTester();
-      	
-      	if (!MULTIPROVIDER && $userObj->getType()!=AMA_TYPE_ADMIN) 
-      	{
-      		if ($user_default_tester!=$GLOBALS['user_provider'])
-      		{
-      			// if the user is trying to login in a provider
-      			// that is not his/her own,
-      			// redirect to his/her own provider home page      			
-      			$redirectURL = preg_replace("/(http[s]?:\/\/)(\w+)[.]{1}(\w+)/", "$1".$user_default_tester.".$3", $userObj->getHomePage());
-      			header('Location:'.$redirectURL);
-		  		exit();
-      		}      		       		
-      	}
-      	
-        // user is a ADAuser with status set to 0 OR
-        // user is admin, author or switcher whose status is by default = 0
-    	$_SESSION['sess_user_language'] = $p_selected_language;
-		$_SESSION['sess_id_user'] = $userObj->getId();
-		$GLOBALS['sess_id_user']  = $userObj->getId();
-		$_SESSION['sess_id_user_type'] = $userObj->getType();
-		$GLOBALS['sess_id_user_type']  = $userObj->getType();
-	    $_SESSION['sess_userObj'] = $userObj;
-            
-            /* unset $_SESSION['service_level'] to allow the correct label translatation according to user language */
-            unset($_SESSION['service_level']);
-            
-		if($user_default_tester !== NULL) {
-					$_SESSION ['sess_selected_tester'] = $user_default_tester;
-					// sets var for non multiprovider environment
-					$GLOBALS ['user_provider'] = $user_default_tester;		    
-		  }
-		  
-		  if ($userObj->getType()==AMA_TYPE_STUDENT && isset($p_redirect) && strlen(trim($p_redirect))>0) {
-		  	if ($p_redirect{0}!=='/') $p_redirect = '/' . $p_redirect;
-		  	// get the filename to redirect to
-		  	list ($filename) = explode('?', $p_redirect);
-		  	// if the file exists, redirect else go to user homepage
-		  	if (is_file (ROOT_DIR . $filename) || is_dir(ROOT_DIR . $filename)) {
-		  		$redirectURL = HTTP_ROOT_DIR . $p_redirect;
-		  	} else {
-		  		$redirectURL = $userObj->getHomePage();
-		  	}
-		  } else {
-		  	$redirectURL = $userObj->getHomePage();
-		  }
-		  
-		  header('Location:'.$redirectURL);
-		  exit();
-		}
-		else {
+    if ((is_object($userObj)) && ($userObj instanceof ADALoggableUser)) {
+		if(!ADALoggableUser::setSessionAndRedirect($userObj, $p_remindme, $p_selected_language, $loginObj)) {
             //  Utente non loggato perché stato <> ADA_STATUS_REGISTERED
 	        $login_error_message = translateFN("Utente non abilitato");
 	    }
-      } else {
-        // Utente non loggato perché coppia username password non corretta
-		$login_error_message = translateFN("Username  e/o password non valide");
-      }
-  }
-  else {
-    // Utente non loggato perche' informazioni in username e password non valide
-    // es. campi vuoti o contenenti caratteri non consentiti.
+    } else if ((is_object($userObj)) && ($userObj instanceof Exception)) {
+    	$login_error_message = $userObj->getMessage();
+    	if ($userObj->getCode()!==0) $login_error_message .= ' ('.$userObj->getCode().')';
+    } else {
+      // Utente non loggato perché coppia username password non corretta
 	$login_error_message = translateFN("Username  e/o password non valide");
-  }
+    }
 }
 
 /**
@@ -280,7 +218,7 @@ $login = UserModuleHtmlLib::loginForm($form_action, $supported_languages,$login_
   	}
   } else  {
   	$testers = $_SESSION['sess_userObj']->getTesters();
-  	$testerName = $testers[0];
+  	$testerName = (!is_null($testers) && count($testers)>0) ? $testers[0] : null;
   } // end if (!MULTIPROVIDER)
 
   $forget_div  = CDOMElement::create('div');
@@ -313,6 +251,33 @@ $content_dataAr = array(
 	'message' => $message->getHtml()
 );
 
+if (isset($_SESSION['sess_userObj']) && $_SESSION['sess_userObj']-> getType() != AMA_TYPE_VISITOR) {
+    $userObj = $_SESSION['sess_userObj'];
+    $user_type = $userObj->getTypeAsString();
+    $user_name = $userObj->nome;
+    $user_full_name = $userObj->getFullName();
+	 
+    $imgAvatar = $userObj->getAvatar();
+    $avatar = CDOMElement::create('img','src:'.$imgAvatar);
+    $avatar->setAttribute('class', 'img_user_avatar');
+
+    $content_dataAr['user_modprofilelink'] = $userObj->getHomePage(); //getEditProfilePage();
+    $content_dataAr['user_avatar'] = $avatar->getHtml();	  
+    $content_dataAr['status'] = translateFN('logged in');
+    $content_dataAr['user_name'] = $user_name;
+    $content_dataAr['user_full_name'] = $user_full_name;
+    $content_dataAr['user_type'] = $user_type;
+
+    unset($content_dataAr['form']);
+    $onload_function = 'initDoc(true);';
+} else {
+    $onload_function = 'initDoc();';
+    $content_dataAr['form'] = $login->getHtml().$forget_link;
+    unset($content_dataAr['user_modprofilelink']);
+    unset($content_dataAr['user_avatar']);	  
+    unset($content_dataAr['user_name']);
+    unset($content_dataAr['user_type']);
+}
 /**
  * @author giorgio 26/set/2013
  * 
@@ -338,10 +303,23 @@ $content_dataAr = array(
 				JQUERY_NO_CONFLICT,
 				ROOT_DIR . "/js/main/index.js"
 		);
-                $layout_dataAr['CSS_filename'] = array (
-                    JQUERY_UI_CSS,
-                	JQUERY_UNIFORM_CSS
-                    );
-		$optionsAr['onload_func'] = 'initDoc();';
+/**
+ * @author giorgio 
+ * include the jQuery and uniform css for proper styling
+ */		
+		$layout_dataAr['CSS_filename'] = array (
+				JQUERY_UI_CSS,
+				JQUERY_UNIFORM_CSS
+		);
+if (defined('MODULES_LOGIN') && MODULES_LOGIN) {
+	
+	$layout_dataAr['CSS_filename'] = array_merge($layout_dataAr['CSS_filename'], 
+		array (
+			MODULES_LOGIN_PATH . '/layout/support/login-form.css'
+	));
+}
+			
+		$optionsAr['onload_func'] = $onload_function;
+		
 ARE::render($layout_dataAr, $content_dataAr, NULL, (isset($optionsAr) ? $optionsAr : NULL) );
 ?>

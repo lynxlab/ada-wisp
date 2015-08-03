@@ -84,6 +84,15 @@ switch($op){
 
 if (($id_profile!=AMA_TYPE_AUTHOR) && ($id_profile!=AMA_TYPE_STUDENT) && ($id_profile!=AMA_TYPE_TUTOR)) {
   $errObj = new ADA_Error(NULL, translateFN('Utente non autorizzato, impossibile proseguire.'));
+} else if ($id_profile==AMA_TYPE_STUDENT && isset($id_course_instance) && intval($id_course_instance)>0 && 
+		$userObj->get_student_status($userObj->getId(),$id_course_instance)==ADA_STATUS_TERMINATED) {
+	/**
+	 * @author giorgio 03/apr/2015
+	 * 
+	 * if user has the terminated status for the course instance, redirect to view
+	 */
+	redirect(HTTP_ROOT_DIR . '/browsing/view.php?id_node='.$parent_id.'&id_course='.$id_course.
+			'&id_course_instance='.$id_course_instance);
 }
 
 $help = translateFN("Da qui l'autore può aggiungere un nuovo nodo al corso");
@@ -108,8 +117,9 @@ if ( $op == 'add_node' ) {
   }
   $body_onload = "switchToFCKeditor('$template_family');";
 
-  if ( isset($id_course) && isset($id_parent) && isset($type) )
+  if (isset($id_course) && isset($type))
   {
+  	if (!(isset($id_parent) && strlen($id_parent) > 0)) $id_parent = $id_course.'_'.$courseObj->getRootNodeId();
     $node_type = Utilities::getAdaNodeTypeFromString($type);
 
     $nodeObj = read_node_from_DB($id_parent);

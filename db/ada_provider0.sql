@@ -262,6 +262,7 @@ CREATE TABLE IF NOT EXISTS `istanza_corso` (
   `duration_subscription` int(3) NOT NULL,
   `open_subscription` tinyint(1) NOT NULL,
   `duration_hours` int unsigned NOT NULL DEFAULT '0',
+  `tipo_servizio` TINYINT(3) UNSIGNED NULL DEFAULT NULL,
   PRIMARY KEY (`id_istanza_corso`),
   KEY `id_istanza_corso` (`id_istanza_corso`,`id_corso`),
   KEY `id_corso` (`id_corso`)
@@ -416,8 +417,8 @@ CREATE TABLE IF NOT EXISTS `modello_corso` (
 -- Dump dei dati per la tabella `modello_corso`
 --
 
-INSERT INTO `modello_corso` (`id_corso`, `id_utente_autore`, `id_layout`, `nome`, `titolo`, `data_creazione`, `data_pubblicazione`, `descrizione`, `id_nodo_iniziale`, `id_nodo_toc`, `media_path`, `static_mode`, `id_lingua`, `crediti`, `id_servizio`) VALUES
-(1, 3, 0, 'pub-01', 'Manuale  ADA', NULL, NULL, NULL, '0', '0', NULL, 0, 1, 1, 0);
+INSERT INTO `modello_corso` (`id_corso`, `id_utente_autore`, `id_layout`, `nome`, `titolo`, `data_creazione`, `data_pubblicazione`, `descrizione`, `id_nodo_iniziale`, `id_nodo_toc`, `media_path`, `static_mode`, `id_lingua`, `crediti`, `duration_hours`, `tipo_servizio`) VALUES
+(1, 3, 0, 'pub-01', 'Manuale  ADA', NULL, NULL, NULL, '0', '0', NULL, 0, 1, 1, 0, 99);
 
 -- --------------------------------------------------------
 

@@ -34,6 +34,11 @@ define('ADA_DEFAULT_TESTER_DB_NAME',  'ada2.0_provider0');
 define('ADA_DEFAULT_TESTER_DB_USER',  'root');
 define('ADA_DEFAULT_TESTER_DB_PASS',  '');
 define('ADA_DEFAULT_TESTER_DB_HOST',  'localhost');
+/*
+ * Session Cookie Lifetime in days
+ * If 0 the session end when the browser is closed
+ */
+define('ADA_SESSION_LIFE_TIME',0);
 
 if (MULTIPROVIDER) {
 	/**
@@ -370,6 +375,7 @@ $ADA_MIME_TYPE["image/png"]['permission'] = _GO;
 $ADA_MIME_TYPE["image/x-png"]['permission'] = _GO;
 $ADA_MIME_TYPE["text/html"]['permission'] = _GO;
 $ADA_MIME_TYPE["text/css"]['permission'] = _GO;
+$ADA_MIME_TYPE["text/csv"]['permission'] = _GO;
 $ADA_MIME_TYPE["text/plain"]['permission'] = _GO;
 $ADA_MIME_TYPE["text/richtext"]['permission'] = _GO;
 $ADA_MIME_TYPE["application/rtf"]['permission'] = _GO;
@@ -452,6 +458,7 @@ $ADA_MIME_TYPE["image/png"]['type'] = _IMAGE;
 $ADA_MIME_TYPE["image/x-png"]['type'] = _IMAGE;
 $ADA_MIME_TYPE["text/html"]['type'] = _LINK;
 $ADA_MIME_TYPE["text/css"]['type'] = _LINK;
+$ADA_MIME_TYPE["text/csv"]['type'] = _DOC;
 $ADA_MIME_TYPE["text/plain"]['type'] = _DOC;
 $ADA_MIME_TYPE["text/richtext"]['type'] = _DOC;
 $ADA_MIME_TYPE["application/rtf"]['type'] = _DOC;

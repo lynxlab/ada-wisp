@@ -48,6 +48,17 @@ class UserModuleHtmlLib {
     $div_password->addChild($span_label_pwd);
     $div_password->addChild($span_password);
 
+    $div_remindme = CDOMElement::create('div','id:remindme');
+    $span_label_remindme = CDOMElement::create('span','id:label_remindme, class:page_text');
+    $label_remindme = CDOMElement::create('label','for:p_remindme');
+    $label_remindme->addChild(new CText(translateFN('Resta collegato')));
+    $span_label_remindme->addChild($label_remindme);
+    $span_remindme = CDOMElement::create('span','id:span_remindme, class:page_input');
+    $remindme_input = CDOMElement::create('checkbox','id:p_remindme,name:p_remindme,value:1');
+    $span_remindme->addChild($remindme_input);
+    $div_remindme->addChild($span_remindme);
+    $div_remindme->addChild($span_label_remindme);
+
     $div_select = CDOMElement::create('div','id:language_selection');
     $select = CDOMElement::create('select','id:p_selected_language, name:p_selected_language');
     foreach($supported_languages as $language)
@@ -63,13 +74,44 @@ class UserModuleHtmlLib {
     $div_select->addChild($select);
 
     $div_submit = CDOMElement::create('div','id:login_button');
-    $value      = translateFN('Accedi');
-    $submit     = CDOMElement::create('submit',"id:p_login, name:p_login");
-    $submit->setAttribute('value' ,$value);
+    if (defined('MODULES_LOGIN') && MODULES_LOGIN) {
+    	// load login providers
+    	require_once MODULES_LOGIN_PATH . '/include/abstractLogin.class.inc.php';
+    	$loginProviders = abstractLogin::getLoginProviders();
+    } else $loginProviders = null;
+
+    if (!AMA_DB::isError($loginProviders) && is_array($loginProviders) && count($loginProviders)>0) {
+    	$submit = CDOMElement::create('div','id:loginProviders');
+    	$form->addChild(CDOMElement::create('hidden','id:selectedLoginProvider, name:selectedLoginProvider'));
+    	$form->addChild(CDOMElement::create('hidden','id:selectedLoginProviderID, name:selectedLoginProviderID'));
+    	// add a DOM element (or html) foreach loginProvider
+    	foreach ($loginProviders as $providerID=>$loginProvider) {
+    		include_once  MODULES_LOGIN_PATH . '/include/'.$loginProvider.'.class.inc.php';
+    		if (class_exists($loginProvider)) {
+    			$loginObject = new $loginProvider($providerID);
+    			$CDOMElement = $loginObject->getCDOMElement();
+    			if (!is_null($CDOMElement)) {
+    				$submit->addChild($CDOMElement);
+    			} else {
+ 					$htmlString  = $loginObject->getHtml();
+ 					if (!is_null($htmlString)) {
+ 						$submit->addChild(new CText($htmlString));
+ 					}
+    			}
+    		}
+    	}
+    } else {
+    	// standard submit button if no MODULES_LOGIN
+    	$value      = translateFN('Accedi');
+    	$submit     = CDOMElement::create('submit',"id:p_login, name:p_login");
+    	$submit->setAttribute('value' ,$value);
+    }
+    
     $div_submit->addChild($submit);
 
     $form->addChild($div_username);
     $form->addChild($div_password);
+    $form->addChild($div_remindme);
     $form->addChild($div_select);
 
     if ($login_error_message != '') {

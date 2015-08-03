@@ -43,9 +43,11 @@ class CourseModelForm extends FForm {
              ->setRequired()
              ->setValidator(FormValidator::NOT_EMPTY_STRING_VALIDATOR);
 
+        $this->addHidden('data_creazione');
         //$this->addTextInput('data_creazione', translateFN('Data creazione'));
 
-        //$this->addTextInput('data_pubblicazione', translateFN('Data pubblicazione'));
+        $this->addTextInput('data_pubblicazione', translateFN('Data pubblicazione'));
+//             ->setValidator(FormValidator::DATE_VALIDATOR);
 
         $this->addTextarea('descrizione', translateFN('Descrizione'))
              ->setValidator(FormValidator::MULTILINE_TEXT_VALIDATOR);
@@ -74,8 +76,27 @@ class CourseModelForm extends FForm {
         /* if isset $_SESSION['service_level'] it means that the istallation supports course type */
        
         if(isset($_SESSION['service_level'])){
+        	/**
+        	 * @author giorgio 23/apr/2015
+        	 * 
+        	 * switcher can add public courses only if:
+        	 * - it's a multiprovider having session tester equals to PUBLIC tester
+        	 * - it's not multiprovider
+        	 */
+        	$shownServiceTypes = array();        	
+        	foreach ($_SESSION['service_level'] as $key=>$val) {
+        		if ((bool)$_SESSION['service_level_info'][$key]['isPublic']) {
+        			// this coud have been an OR, but looks more readable this way
+        			if (MULTIPROVIDER && $_SESSION['sess_selected_tester']==ADA_PUBLIC_TESTER) {
+        				$shownServiceTypes[$key]=$val;
+        			} else if (!MULTIPROVIDER) {
+        				$shownServiceTypes[$key]=$val;
+        			}
+        		} else $shownServiceTypes[$key]=$val;
+        	}
+        	
             $desc = translateFN('Tipo di corso').':';
-            $this->addSelect('service_level',$desc,$_SESSION['service_level'],reset($_SESSION['service_level']))
+            $this->addSelect('service_level',$desc,$shownServiceTypes,reset($shownServiceTypes))
             ->setRequired();  
         }
 
