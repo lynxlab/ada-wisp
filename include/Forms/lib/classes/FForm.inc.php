@@ -78,7 +78,7 @@ abstract class FForm
   					{  							
   							if (typeof myJQuery == "undefined") myJQuery = jQuery.noConflict(true);
   							if (!appliedUniform) {
-  							 myJQuery("select, input, a.button, button, textarea").not(":file").uniform();
+  							 myJQuery("select, input, a.button, button, textarea").not(":file").not(".dontuniform").uniform();
   							 appliedUniform = true;
   							}
   					}
@@ -458,6 +458,10 @@ abstract class FForm
     public final function getHtml() {
         return $this->render();
     }
+    
+    public function doNotUniform() {
+    	$this->_doUniform = false;
+    }
 
     /**
      * Adds the javascript form uniform jQuery plugin
@@ -465,7 +469,7 @@ abstract class FForm
      * @return string the needed javascript 
      */
     private function addUniformJavascript() {
-    	if (!is_null($this->_uniformJavascript)) {
+    	if ($this->_doUniform && !is_null($this->_uniformJavascript)) {
     		return '<script type="text/javascript">
 				'.$this->_uniformJavascript.'
 			</script>';
@@ -708,4 +712,9 @@ abstract class FForm
      * @var string
      */
     private $_uniformJavascript = null;
+    /**
+     * 
+     * @var boolean
+     */    
+    private $_doUniform = true;
 }
