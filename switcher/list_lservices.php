@@ -106,6 +106,11 @@ if(is_array($coursesAr) && count($coursesAr) > 0) {
                 case ADA_SERVICE_COURSE:
                         $serviceLevelTxt = translateFN('Course');
                         $isServiceCommonLevel = true;
+                        break;
+                default:
+                	    $serviceLevelTxt = translateFN("N/A");
+                        break;
+            }
         }
         
         $serviceLevelTxt=null;
