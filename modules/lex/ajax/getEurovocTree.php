@@ -50,6 +50,7 @@ if (isset($_SERVER['REQUEST_METHOD']) && $_SERVER['REQUEST_METHOD'] == 'GET') {
 	$languageId = getLanguageCode();
 	
 	$eurovocObj = new eurovocManagement($languageId);
+	header('Content-Type: application/json');
 	echo json_encode($eurovocObj->getEurovocTree());
 	die();
 }
