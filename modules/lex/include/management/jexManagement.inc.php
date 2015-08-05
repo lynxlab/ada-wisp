@@ -517,7 +517,7 @@ class jexManagement extends importManagement
      * @access public
      */
 	public static function getImportForm() {
-		
+		if (isset($GLOBALS['dh'])) $GLOBALS['dh']->disconnect();
 		$dh = AMALexDataHandler::instance(MultiPort::getDSN($_SESSION['sess_selected_tester']));
 		
 		$typologiesArr = $dh->getTypologies();
@@ -548,7 +548,7 @@ class jexManagement extends importManagement
 		$htmlObj->addChild(new CText($form->getHtml()));
 		$htmlObj->addChild($iFrame);
 		$htmlObj->addChild($add_btn);
-		
+		$dh->disconnect();
 		return $htmlObj;
 	}
 } // class ends here
