@@ -11,7 +11,7 @@
         </div> <!-- / testata -->
         <!-- menu -->
             <template_field class="microtemplate_field" name="adamenu">adamenu</template_field>  
-        <!-- / menu -->  
+        <!-- / menu --> 
         <!-- contenitore -->
         <div id="container">
             <!-- PERCORSO -->
@@ -63,7 +63,7 @@
                     </div> 
                     
                     <div id="data">
-					<div id="data_ask">
+                    <div id="data_ask">
                         <template_field class="template_field" name="data">data</template_field>
                       </div>
 						<!--div id="data_ask_img"></div-->
@@ -90,7 +90,7 @@
             <template_field class="microtemplate_field" name="footer">footer</template_field>
         </div>
         <!-- / piede -->
-		
-		
+        
+        
     </body>
 </html>
