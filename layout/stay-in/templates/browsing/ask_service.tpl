@@ -48,12 +48,12 @@
                         <template_field class="template_field" name="help">help</template_field>
                     </div>
                     <div id="data">
-					<div id="data_ask">
+                    <div id="data_ask">
                         <template_field class="template_field" name="data">data</template_field>
-						</div>
-						<div id="data_ask_img"></div>
+                        </div>
+                        <div id="data_ask_img"></div>
                     
-					</div>                     
+                    </div>                     
                 </div>
                 <div id="bottomcont">
                 </div>
@@ -69,12 +69,12 @@
             </div> <!-- /com_tools -->
         </div> <!-- / contenitore -->
         
-		<!-- PIEDE -->
+        <!-- PIEDE -->
         <div id="footer_ask">
             <template_field class="microtemplate_field" name="footer">footer</template_field>
         </div>
         <!-- / piede -->
-		
-		
+        
+        
     </body>
 </html>

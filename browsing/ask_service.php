@@ -408,7 +408,7 @@ switch ($op) {
                             $currentTester = '';
                             $provider_dh = null;
                             foreach($coursesAr as $courseData) {
-                                if (defined ('PUBLIC_COURSE_ID_FOR_NEWS') && intval(PUBLIC_COURSE_ID_FOR_NEWS)>0 && PUBLIC_COURSE_ID_FOR_NEWS!=$courseData['id_corso']) {
+                                if (defined ('PUBLIC_COURSE_ID_FOR_NEWS') && PUBLIC_COURSE_ID_FOR_NEWS!=$courseData['id_corso']) {
                                     $newTesterId = $courseData['id_tester'];
                                     $courseId = $newTesterId . '_' . $courseData['id_corso'];
                                     $serviceToSubscribeAr[$courseId] = $serviceName;
