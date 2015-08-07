@@ -139,6 +139,7 @@ if (isset($_SERVER['REQUEST_METHOD']) && $_SERVER['REQUEST_METHOD'] == 'POST') {
     $registration_action = HTTP_ROOT_DIR . '/browsing/registration.php';
     $cod = FALSE;
     $registration_data = new UserRegistrationForm($cod, $registration_action);
+    $registration_data->doNotUniform();
 //    $form = new UserRegistrationForm();
 //    $data = $form->render();
 } 
