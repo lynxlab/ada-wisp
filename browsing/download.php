@@ -61,7 +61,7 @@ $help = translateFN('Area di condivisione di documenti');
  */
 if (!isset($id_node)) $id_node = $_SESSION['sess_id_node'];
 if (!isset($id_course)) $id_course = $_SESSION['sess_id_course'];
-if (!isset($id_course_instance)) $id_course_instance =  $_SESSION['sess_id_course_instance'];
+if (!isset($id_course_instance)) $id_course_instance =  isset($_SESSION['sess_id_course_instance']) ? $_SESSION['sess_id_course_instance'] : null;
 
 // ******************************************************
 // get user object
@@ -204,7 +204,7 @@ if (isset($_GET['file'])){
                             		 * fix the corresponding vars for the below if to work as intended
                             		 */
                             		$course = $course_instance;
-                            		$course_instance = null;
+                            		$course_instance = -1;
                                 case   AMA_TYPE_STUDENT:
                                 case   AMA_TYPE_TUTOR:
                                       $user_name_sender =  $sender_array['username'];
