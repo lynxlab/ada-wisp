@@ -138,7 +138,7 @@ if (!AMA_DB::isError($tutors_ar) && is_array($tutors_ar) && count($tutors_ar)>0)
 		$tableHead = array (null,'id',translateFN('cognome'), translateFN('nome'),
 				translateFN('provincia'), translateFN('corso di studi'),
 				translateFN('tipo iscrizione'),translateFN('stato iscrizione'),
-				translateFN('disabilità'), translateFN('voto maturità'));
+				translateFN('disabilit&agrave;'), translateFN('voto maturità'));
 		// invert selection button for footer
 		$checkAllBtn = CDOMElement::create('button','type:button,name:selectAll');
 		$checkAllBtn->addChild(new CText('Inverti Selezione'));
@@ -225,7 +225,7 @@ if (!AMA_DB::isError($tutors_ar) && is_array($tutors_ar) && count($tutors_ar)>0)
 				if (!is_null($userObj->AA_ISCR_DESC)) $stato_iscr_str .= $userObj->AA_ISCR_DESC;
 				if (!is_null($userObj->ANNO_CORSO)) $stato_iscr_str .= '('.$userObj->ANNO_CORSO.')';
 				if (!is_null($userObj->TASSE_IN_REGOLA_OGGI)) {
-					if (strcasecmp($userObj->TASSE_IN_REGOLA_OGGI, 'no')) $stato_iscr_str .= ',NR';
+					if (strcasecmp($userObj->TASSE_IN_REGOLA_OGGI, 'no')===0) $stato_iscr_str .= ',NR';
 					else $stato_iscr_str .= ',IR';
 				}
 				if (strlen($stato_iscr_str)>0) $stato_iscr_des->addChild(new CText($stato_iscr_str));
