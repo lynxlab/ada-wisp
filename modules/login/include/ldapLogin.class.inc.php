@@ -106,6 +106,7 @@ class ldapLogin extends AbstractLogin
 			ldap_set_option($handle, LDAP_OPT_PROTOCOL_VERSION, 3 );
 			ldap_set_option($handle, LDAP_OPT_REFERRALS, 0);
 			ldap_set_option($handle, LDAP_OPT_NETWORK_TIMEOUT,  30); /* 30 second timeout */
+			ldap_set_option($handle, LDAP_OPT_DEREF, LDAP_DEREF_ALWAYS);
 			
 			/**
 			 * UNIMC specific code:
@@ -117,12 +118,12 @@ class ldapLogin extends AbstractLogin
 			$bind = ldap_bind($handle, 'uid='.$options['authuser'].','.$options['authdn'], $options['authpwd']);			
 			$result = ldap_search($handle, $options['basedn'], "uid=".$name);
 			if ($result!==false) {
-				// if something has been found, check that it's an alias
+				// if something has been found, get its dn to be used for authentication
 				$entries = ldap_get_entries($handle, $result);
-				$lookfor = 'aliasedobjectname';
+				$lookfor = 'dn';
 				foreach ($entries[0] as $key=>$entry) {
-					if ($key===$lookfor && $entries[0][$lookfor]['count']===1) {
-						$foundDN = $entries[0][$key][0];
+					if ($key===$lookfor && strlen($entries[0][$lookfor])>0) {
+						$foundDN = $entries[0][$key];
 					}
 				}
 			}
