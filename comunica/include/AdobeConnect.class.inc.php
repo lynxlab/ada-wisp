@@ -313,18 +313,18 @@ class AdobeConnect extends videoroom implements IVideoRoom {
      * 
      * @todo error management
      */
-    public function roomAccess($username,$nome,$cognome,$user_email,$sess_id_user,$id_profile,$selected_provider) {
+    public function roomAccess($username,$nome,$cognome,$user_email,$sess_id_user,$id_profile,$selected_provider=ADA_PUBLIC_TESTER) {
         $dh = $GLOBALS['dh'];
         $ACroom_id = $this->id_room;
         $room_id = $this->id;
         $ACMeetingInfo = $this->getRoom($ACroom_id);
         if ($ACMeetingInfo == false) {
             $deletedRoom = $dh->delete_videoroom($ACroom_id);
-            $room_name = translateFN('meeting rigenerato') . ' ' .translateFN('Tutor') .': '. $username;;
+            $room_name = translateFN('meeting rigenerato') . ' ' .translateFN('User') .': '. $username;
             $comment = translateFN('inserimento automatico via').' '. PORTAL_NAME;
             $numUserPerRoom = 4;
             $sess_id_course_instance = $this->id_istanza_corso;
-            $course_title = translateFN('meeting creato in emergenza');
+            $course_title = translateFN('meeting rigenerato');
             
             $ACroom_id = $this->addRoom($room_name, $sess_id_course_instance, $sess_id_user, $comment, $numUserPerRoom, $course_title, $selected_provider);
             if ($ACroom_id == false) return false;

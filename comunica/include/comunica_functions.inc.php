@@ -263,7 +263,7 @@ if (in_array('videoroom',$thisUserNeededObjAr)) {
         if ($videoroomObj->full) {
           $videoroomObj->serverLogin();
           if ($videoroomObj->login >=0) {
-            $videoroomObj->roomAccess($user_uname,$user_name,$user_surname,$user_mail,$sess_id_user,$id_profile);
+            $videoroomObj->roomAccess($user_uname,$user_name,$user_surname,$user_mail,$sess_id_user,$id_profile, $sess_selected_tester);
 //            $videoroomObj->list_rooms();
           }
         }else
@@ -290,7 +290,7 @@ if (in_array('videoroom',$thisUserNeededObjAr)) {
                 $numUserPerRoom = 4;
 	        $id_room = $videoroomObj->addRoom($room_name, $sess_id_course_instance, $sess_id_user, $comment, $numUserPerRoom, $course_title, $sess_selected_tester);
 	        if ($videoroomObj->login >=0 && ($id_room != false)) {
-	          $videoroomObj->roomAccess($user_uname,$user_name,$user_surname,$user_mail,$sess_id_user,$id_profile);
+	          $videoroomObj->roomAccess($user_uname,$user_name,$user_surname,$user_mail,$sess_id_user,$id_profile,$sess_selected_tester);
 	      	}
         }
 

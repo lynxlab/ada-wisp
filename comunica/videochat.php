@@ -84,7 +84,8 @@ if (strlen($videoroomObj->link_to_room)>0) {
 }
 else 
 {
-    $status = addslashes(translateFN("ops, there was a problem!"));
+//    $status = addslashes(translateFN("ops, there was a problem!"));
+    $status = addslashes(translateFN("Il tuo meeting non è ancora stato creato. Contatta il tuo docente!").' ' . $videoroomObj->link_to_room);
     $options_Ar = array('onload_func' => "close_page('$status');");
 }
 
