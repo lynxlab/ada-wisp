@@ -1489,8 +1489,12 @@ class ADAPractitioner extends ADALoggableUser {
          * 
          * a supertutor is a tutor with the isSuper property set to true
          */
-        if ($this->isSuper && $this->tipo==AMA_TYPE_SUPERTUTOR) $this->tipo = AMA_TYPE_TUTOR;
-        $this->setHomePage(HTTP_ROOT_DIR.'/tutor/tutor.php');
+        if ($this->isSuper && $this->tipo==AMA_TYPE_SUPERTUTOR) {
+        	$this->tipo = AMA_TYPE_TUTOR;
+        	$this->setHomePage(HTTP_ROOT_DIR.'/tutor/tutor.php?op=tutor');
+        } else {
+	        $this->setHomePage(HTTP_ROOT_DIR.'/tutor/tutor.php');
+        }
         $this->setEditProfilePage('tutor/edit_tutor.php');
     }
     
