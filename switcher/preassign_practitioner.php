@@ -91,7 +91,7 @@ if (!AMA_DB::isError($tutors_ar) && is_array($tutors_ar) && count($tutors_ar)>0)
 		$noStudentsError = translateFN('Tutti gli studenti sono già preassegnati a qualche orientatore');
 		$help = translateFN('Da qui il provider admin può preassegnare gli studenti a un orientatore');
 		$saveButtonText = translateFN('Salva');
-		$addChildOnError = false;
+		$addChildOnError = true;
 	} else if ($op==='edit') {
 		$listStudentIds = $GLOBALS['dh']->get_preassigned_students_for_tutor($selectedTutorID);
 		$question = translateFN('Confermi l\'operazione?');		
