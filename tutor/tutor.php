@@ -64,6 +64,7 @@ if (!$userObj->isSuper() && $op=='tutor') $op=null;
 
 switch ($op) {
 	case 'tutor':
+		$self = 'supertutor';
 		$help = '';
 		$fieldsAr = array('nome','cognome','username');
 		$tutorsAr = $dh->get_tutors_list($fieldsAr);
