@@ -133,49 +133,8 @@ switch ($op) {
             if ((AMA_DataHandler::isError($res_presub)) && ($res_presub->code != AMA_ERR_UNIQUE_KEY)){
                 $message = urlencode(translateFN("Errore nella richiesta di servizio:"). ' '. $res_presub->code);
                 $errorObj = new ADA_Error($res_inst_add,$message,NULL,NULL,NULL,$error_page.'?message='.$message);
-            } else if (!AMA_DB::isError($res_presub)) {
-            	/**
-            	 * UNIMC code:
-            	 * if user has a preassigned tutor, do the tutor/student assignment
-            	 */
-            	$tutorID = $provider_dh->get_tutor_preassigned_to_student_for_course($id_user, $id_course);
-            	if (!AMA_DB::isError($tutorID) && $tutorID>0) {
-            		$postURL = HTTP_ROOT_DIR .'/switcher/assign_practitioner.php';
-            		$postDATA = array (
-            				'id_tutor_old' => "no",
-            				'id_course_instance' => $id_instance,
-            				'id_course' => $id_course,
-            				'id_student' => $id_user,
-            				'id_tutor_new' => $tutorID
-            		);
-            		$postString = '';
-            		//create name value pairs seperated by &
-            		foreach($postDATA as $k=>$v) $postString .= $k.'='.$v.'&';
-            		rtrim($postString, '&');
-            		 
-            		$sessionName = session_name();
-            		$strCookie = $sessionName.'=' . $_COOKIE[$sessionName] . '; path=/';
-            		 
-            		// make a POST request to assign_practitioner using cURL
-            		$ch = curl_init();
-            		curl_setopt($ch, CURLOPT_URL, $postURL);
-            		curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
-            		curl_setopt($ch, CURLOPT_COOKIE, $strCookie );
-            		curl_setopt($ch, CURLOPT_POST, count($postString));
-            		curl_setopt($ch, CURLOPT_POSTFIELDS, $postString);
-            		// session is no longer needed here, must close it before making the cURL exec
-            		session_write_close();
-            		$output=curl_exec($ch);
-            		curl_close($ch);
-            		// cURL call will  return 'OK' if all went ok
-            		if ($output!=='OK') {
-            			$errorObj = new ADA_Error($res_inst_add,$output,NULL,NULL,NULL,$error_page.'?message='.$output);
-            		} else {
-            			// restart the session, just in case...
-            			session_start();
-            		}
-            	} // if (!AMA_DB::isError($tutorID) && intval($tutorID)>0)
-            } // else if (!AMA_DB::isError($res_presub)) 
+            }
+
       } else {
         $message = urlencode(translateFN("Errore nella richiesta di servizio: 1"));
         $errorObj = new ADA_Error($res_inst_add,$message,NULL,NULL,NULL,$error_page.'?message='.$message);
@@ -346,6 +305,49 @@ switch ($op) {
         }
         unset ($mh);
         
+        if (!AMA_DB::isError($res_presub)) {
+        	/**
+        	 * UNIMC code:
+        	 * if user has a preassigned tutor, do the tutor/student assignment
+        	 */
+        	$tutorID = $provider_dh->get_tutor_preassigned_to_student_for_course($id_user, $id_course);
+        	if (!AMA_DB::isError($tutorID) && $tutorID>0) {
+        		$postURL = HTTP_ROOT_DIR .'/switcher/assign_practitioner.php';
+        		$postDATA = array (
+        				'id_tutor_old' => "no",
+        				'id_course_instance' => $id_instance,
+        				'id_course' => $id_course,
+        				'id_student' => $id_user,
+        				'id_tutor_new' => $tutorID
+        		);
+        		$postString = '';
+        		//create name value pairs seperated by &
+        		foreach($postDATA as $k=>$v) $postString .= $k.'='.$v.'&';
+        		rtrim($postString, '&');
+        		 
+        		$sessionName = session_name();
+        		$strCookie = $sessionName.'=' . $_COOKIE[$sessionName] . '; path=/';
+        		 
+        		// make a POST request to assign_practitioner using cURL
+        		$ch = curl_init();
+        		curl_setopt($ch, CURLOPT_URL, $postURL);
+        		curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
+        		curl_setopt($ch, CURLOPT_COOKIE, $strCookie );
+        		curl_setopt($ch, CURLOPT_POST, count($postString));
+        		curl_setopt($ch, CURLOPT_POSTFIELDS, $postString);
+        		// session is no longer needed here, must close it before making the cURL exec
+        		session_write_close();
+        		$output=curl_exec($ch);
+        		curl_close($ch);
+        		// cURL call will  return 'OK' if all went ok
+        		if ($output!=='OK') {
+        			$errorObj = new ADA_Error($res_inst_add,$output,NULL,NULL,NULL,$error_page.'?message='.$output);
+        		} else {
+        			// restart the session, just in case...
+        			session_start();
+        		}
+        	} // if (!AMA_DB::isError($tutorID) && intval($tutorID)>0)
+        } // else if (!AMA_DB::isError($res_presub))
 
         
         
