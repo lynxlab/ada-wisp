@@ -1,5 +1,7 @@
 @CHARSET "UTF-8";
 
+#helpForm { display: block; text-align:center; }
+
 #import_users_steptwo {
   text-align: center;
   line-height: 40px;

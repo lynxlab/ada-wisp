@@ -22,6 +22,10 @@ class FormImportUsers extends FForm {
 	public function __construct( $formName ) {
 		parent::__construct();
 		$this->setName($formName);
+		$this->addSelect('import_user_type', translateFN('Importa come').': ',
+				array (AMA_TYPE_STUDENT => translateFN('Studente'),
+						AMA_TYPE_TUTOR => translateFN('Tutor')
+				) , AMA_TYPE_STUDENT);
 		$this->addFileInput('importfile', translateFN ('Seleziona un file .csv da importare'));
 	}
 }

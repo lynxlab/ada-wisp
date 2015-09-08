@@ -14,6 +14,7 @@ function initDoc(maxSize) {
 }
 
 function importStepTwo(file) {
+	$j('#helpForm').hide();
 	$j('form[name=import_users]').parents('div.fform.form').fadeOut(
 			function() { $j('#import_users_steptwo').fadeIn(); }
 	);
@@ -21,7 +22,7 @@ function importStepTwo(file) {
 	$j.ajax({
 		type	:	'POST',
 		url		:	'ajax/doImportUsers.php',
-		data	:	{ file: file.name },
+		data	:	{ file: file.name, import_user_type : $j('#import_user_type').val() },
 		dataType:	'json'
 	}).done (function(JSONObj){
 		if (JSONObj) {

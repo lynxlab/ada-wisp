@@ -43,6 +43,9 @@ require_once(ROOT_DIR.'/include/Forms/ImportUsersForm.inc.php');
 $theForm = new FormImportUsers('import_users');
 $theForm->doNotUniform();
 $data->addChild(new CText($theForm->getHtml()));
+$spanHelpForm = CDOMElement::create('span','id:helpForm');
+$spanHelpForm->addChild(new CText(translateFN('Impostare prima il tipo di utente da usare per importare, e poi caricare il file')));
+$data->addChild($spanHelpForm);
 
 $importDIV = CDOMElement::create('div','id:import_users_steptwo');
 $importDIV->addChild(CDOMElement::create('img','src:'.HTTP_ROOT_DIR.'/js/include/jquery/ui/images/ui-anim_basic_16x16.gif'));

@@ -66,24 +66,32 @@ $data = null;
 if ($_SERVER['REQUEST_METHOD']=='POST' && isset($_POST['file']) && strlen(trim($_POST['file']))>0) {
  	$file = ADA_UPLOAD_PATH.trim($_POST['file']);
 	
+ 	if (!isset($_POST['import_user_type'])) $import_user_type = AMA_TYPE_STUDENT;
+ 	else $import_user_type = intval($_POST['import_user_type']);
+ 	
 	if (is_file($file) && is_readable($file)) {
 		$delimiter=',';
 		$header = NULL;
 		$filterArray = array();
+		$data = array();
 		if (($handle = fopen($file, 'r')) !== false) {
 			
 			if (defined('UNIMC_IMPORT_USE_AS_PRIMARY_KEY')) {
 				$fieldToUseAsFilter = UNIMC_IMPORT_USE_AS_PRIMARY_KEY;
 			}
 			
-			while (($row = fgetcsv($handle, 1000, $delimiter)) !== false) {
+			while (($row = fgetcsv($handle, 0, $delimiter)) !== false) {
 				if(!$header) {
 					$header = $row;
 					if (!isset($fieldToUseAsFilter)) $fieldToUseAsFilter = reset($header);
 				}
 				else {
 					$combined = array_combine($header, $row);
-					$filterArray[] = $combined[$fieldToUseAsFilter];
+					if ($import_user_type == AMA_TYPE_STUDENT) {
+						$filterArray[] = $combined[$fieldToUseAsFilter];
+					} else {
+						array_push ($data, $combined);
+					}
 				}
 			}
 			fclose($handle);
@@ -91,7 +99,8 @@ if ($_SERVER['REQUEST_METHOD']=='POST' && isset($_POST['file']) && strlen(trim($
 		unlink($file);
 	}
 	
-	if (defined('USERIMPORT_API_URL') && defined('USERIMPORT_API_USER') && defined ('USERIMPORT_API_PASSWD') &&
+	if ($import_user_type == AMA_TYPE_STUDENT && isset($filterArray) && is_array($filterArray) && count($filterArray) >0 &&
+		defined('USERIMPORT_API_URL') && defined('USERIMPORT_API_USER') && defined ('USERIMPORT_API_PASSWD') &&
 		strlen(USERIMPORT_API_URL)>0 && strlen(USERIMPORT_API_USER)>0 && strlen(USERIMPORT_API_PASSWD)>0) {
 			
 		$cookie_file = tempnam(ADA_UPLOAD_PATH, 'unimc-cookie');
@@ -144,6 +153,10 @@ if ($_SERVER['REQUEST_METHOD']=='POST' && isset($_POST['file']) && strlen(trim($
 			'CELLULARE' => 'telefono'
 	);
 	
+	if ($import_user_type == AMA_TYPE_TUTOR) {
+		$mainADAFieldsMap['USERNAME'] = 'username';
+	}
+	
 	/**
 	 * $data must contain all the data to be imported
 	 */
@@ -155,12 +168,14 @@ if ($_SERVER['REQUEST_METHOD']=='POST' && isset($_POST['file']) && strlen(trim($
 		$importCount=0;
 		$updateCount=0;
 		foreach ($data as $number=>$userData) {
+			$newuserData = array();
 			foreach ($userData as $key=>$userDetail) {
 				if (strtolower($userDetail)==='null' || strtolower($userDetail)==='none') $userDetail = null;
 				$userDetail = trim($userDetail);
 				
 				if (array_key_exists($key, $mainADAFieldsMap)) {
-					if ($mainADAFieldsMap[$key]=='email') {
+					if ($mainADAFieldsMap[$key]=='email' && !isset($newuserData['username'])) {
+						// if a username was not passed/found, build it from the email
 						$newuserData['username'] = substr($userDetail, 0, strpos($userDetail, '@'));
 					}
 					// convert field formats if needed
@@ -199,6 +214,10 @@ if ($_SERVER['REQUEST_METHOD']=='POST' && isset($_POST['file']) && strlen(trim($
 			// set not nullable db fields to empty
 			$newuserData['cap'] = '';
 			$newuserData['avatar'] = '';
+			if ($import_user_type == AMA_TYPE_TUTOR) {
+				$newuserData['matricola'] = '';
+				$newuserData['birthcity'] = '';
+			}
 			
 			$ADAuser = MultiPort::findUserByUsername($newuserData['username']);
 			if (is_object($ADAuser) && $ADAuser instanceof ADALoggableUser) {
@@ -208,7 +227,7 @@ if ($_SERVER['REQUEST_METHOD']=='POST' && isset($_POST['file']) && strlen(trim($
 			} else {
 				// this is a new user
 				$newUserObj = new ADAUser($newuserData);
-				$newUserObj->setType(AMA_TYPE_STUDENT);
+				$newUserObj->setType($import_user_type);
 				$newUserObj->setLayout('');
 				$newUserObj->setStatus(ADA_STATUS_REGISTERED);
 				$newUserObj->setPassword(sha1(time())); // force unguessable password				
@@ -219,6 +238,9 @@ if ($_SERVER['REQUEST_METHOD']=='POST' && isset($_POST['file']) && strlen(trim($
 					$regProvider = array ($GLOBALS['user_provider']);
 				} else {
 					$regProvider = array (ADA_PUBLIC_TESTER);
+					if ($import_user_type == AMA_TYPE_TUTOR) {
+						array_push($regProvider, $_SESSION['sess_selected_tester']);
+					}
 				}				
 				$id_user = Multiport::addUser($newUserObj,$regProvider);				
 			}
@@ -227,12 +249,15 @@ if ($_SERVER['REQUEST_METHOD']=='POST' && isset($_POST['file']) && strlen(trim($
 				// abort import and return error message
 				break;
 			} else {
-				// reload the user just to be double sure
-				$editUserObj = MultiPort::findUserByUsername($newuserData['username']);
-				// set extra data
-				$editUserObj->setExtras($extraData);
-				// save
-				$result = MultiPort::setUser($editUserObj, array(), true, ADAUser::getExtraTableName());
+				if ($import_user_type == AMA_TYPE_STUDENT) {
+					// reload the user just to be double sure
+					$editUserObj = MultiPort::findUserByUsername($newuserData['username']);
+					// set extra data
+					$editUserObj->setExtras($extraData);
+					// save
+					$result = MultiPort::setUser($editUserObj, array(), true, ADAUser::getExtraTableName());					
+				} else $result = true;
+				
 				if (AMA_DB::isError($result)) {
 					// abort import and return error message
 					break;
@@ -244,8 +269,10 @@ if ($_SERVER['REQUEST_METHOD']=='POST' && isset($_POST['file']) && strlen(trim($
 		}
 	}
 	
-	if (isset($importCount) && $importCount>0) $retArr[] = $importCount.' '.translateFN('studenti importati');
-	if (isset($updateCount) && $updateCount>0) $retArr[] = $updateCount.' '.translateFN('studenti aggiornati');
+	$userTypeStr = ($import_user_type==AMA_TYPE_STUDENT) ? 'studenti' : 'tutor';
+	
+	if (isset($importCount) && $importCount>0) $retArr[] = $importCount.' '.translateFN($userTypeStr.' importati');
+	if (isset($updateCount) && $updateCount>0) $retArr[] = $updateCount.' '.translateFN($userTypeStr.' aggiornati');
 	if (isset($retArr)) { $result=true; $retVal = implode('<br/>', $retArr); }
 }
 
