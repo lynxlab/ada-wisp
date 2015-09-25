@@ -180,12 +180,13 @@ class AdobeConnect extends videoroom implements IVideoRoom {
      * @return bolean false if any errors occurs
      */
     
-    public function addUser($userObj) {
+    public function addUser($userObj,$usernameTutor=NULL) {
         $common_dh = $GLOBALS['common_dh'];
         $userPwd = substr($common_dh->_get_user_pwd($userObj->getId()),0,31);
         
         $principalData = array();
         $principalData['login'] = $userObj->getUserName();
+        if (isset($usernameTutor) && $usernameTutor != NULL) $principalData['login'] = $usernameTutor;
         $principalData['first-name'] = $userObj->getFirstName();
         $principalData['last-name'] = $userObj->getLastName();
         $principalData['password'] = $userPwd; 
@@ -333,9 +334,10 @@ class AdobeConnect extends videoroom implements IVideoRoom {
         }    
         $ACMeetingPath = (string)$ACMeetingInfo['sco']->{'url-path'};
         if ($id_profile == AMA_TYPE_TUTOR ) {
-            $ACUserId = $this->SearchUser($username);
+            $usernameTutor = $username.'-icare';
+            $ACUserId = $this->SearchUser($usernameTutor);
             if ($ACUserId == false || is_null($ACUserId)) {
-                $ACUserId = $this->addUser($GLOBALS['userObj']);
+                $ACUserId = $this->addUser($GLOBALS['userObj'],$usernameTutor);
                 if ($ACUserId == false) return false;
             }
             $setPermission = $this->setPermissionHost($ACUserId);
@@ -349,7 +351,7 @@ class AdobeConnect extends videoroom implements IVideoRoom {
             $common_dh = $GLOBALS['common_dh'];
             $userObj = $GLOBALS['userObj'];
             $userPwd = substr($common_dh->_get_user_pwd($sess_id_user),0,31);
-            $userName = $userObj->getUserName();            
+            $userName = $usernameTutor; //$userObj->getUserName();
             $this->apiClientToEnter = $this->makeApiClient($userName,$userPwd); 
             
             $cookieVal = $this->apiClientToEnter->getConnection()->getCookie();
