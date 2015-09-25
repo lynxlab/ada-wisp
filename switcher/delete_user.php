@@ -44,15 +44,22 @@ if (isset($_SERVER['REQUEST_METHOD']) && $_SERVER['REQUEST_METHOD'] == 'POST') {
     if($userId !== false && isset($_POST['delete']) && intval($_POST['delete'])===1) {
         $userToDeleteObj = MultiPort::findUser($userId);
         if($userToDeleteObj instanceof ADALoggableUser) {
-            $userToDeleteObj->setStatus(ADA_STATUS_PRESUBSCRIBED);
+        	if ($userToDeleteObj->getStatus()==ADA_STATUS_PRESUBSCRIBED) {
+        		$newStatus = ADA_STATUS_REGISTERED;
+        		$newStatusStr = 'abilitato';
+        	} else {
+        		$newStatus = ADA_STATUS_PRESUBSCRIBED;
+        		$newStatusStr = 'disabilitato';
+        	}
+            $userToDeleteObj->setStatus($newStatus);
             MultiPort::setUser($userToDeleteObj,array(), true);
-            $data = new CText(sprintf(translateFN("L'utente \"%s\" è stato disabilitato."),
+            $data = new CText(sprintf(translateFN("L'utente \"%s\" è stato $newStatusStr."),
                               $userToDeleteObj->getFullName()));
         } else {
             $data = new CText(translateFN('Utente non trovato') . '(3)');
         }
     } else {
-        $data = new CText(translateFN('Utente non disabilitato.'));
+        $data = new CText(translateFN('Operazione annullata.'));
     }
 } else {
     $userId = DataValidator::is_uinteger($_GET['id_user']);
@@ -64,7 +71,7 @@ if (isset($_SERVER['REQUEST_METHOD']) && $_SERVER['REQUEST_METHOD'] == 'POST') {
             $formData = array(
               'id_user' => $userId  
             );
-            $data = new UserRemovalForm();
+            $data = new UserRemovalForm($userToDeleteObj->getStatus());
             $data->fillWithArrayData($formData);
         } else {
             $data = new CText(translateFN('Utente non trovato') . '(2)');
@@ -72,8 +79,8 @@ if (isset($_SERVER['REQUEST_METHOD']) && $_SERVER['REQUEST_METHOD'] == 'POST') {
     }
 }
 
-$label = translateFN('Cancellazione utente');
-$help = translateFN('Da qui il provider admin può disabilitare un utente esistente');
+$label = translateFN('Abilitazione/Disabilitazione utente');
+$help = translateFN('Da qui il provider admin può abilitare o disabilitare un utente esistente');
 
 $imgAvatar = $userObj->getAvatar();
 $avatar = CDOMElement::create('img','src:'.$imgAvatar);

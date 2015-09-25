@@ -82,12 +82,11 @@ if(is_array($usersAr) && count($usersAr) > 0) {
      * if we're listing students, let's add the stato field as well
      */
     
-    if ($type!='authors' && $type!='tutors') array_push ($thead_data, translateFN('Confermato'));
+    if ($type!='authors' && $type!='tutors') array_push ($thead_data, translateFN('Abilitato'));
     
     $tbody_data = array();
     $edit_img = CDOMElement::create('img', 'src:img/edit.png,alt:edit');
     $view_img = CDOMElement::create('img', 'src:img/zoom.png,alt:view');
-    $delete_img = CDOMElement::create('img', 'src:img/delete.png,alt:delete');
     
     foreach($usersAr as $user) {
         $userId = $user[0];
@@ -124,9 +123,17 @@ if(is_array($usersAr) && count($usersAr) > 0) {
         $view_link->setAttribute('class', 'tooltip');
         $view_link->setAttribute('title', translateFN('Visualizza dati utente'));
         
+        if ($user[5] == ADA_STATUS_REGISTERED) {
+        	$title = 'Disabilita utente';
+        	$delete_img = CDOMElement::create('img', 'src:img/delete.png,alt:delete');
+        } else {
+        	$title = 'Abilita utente';
+        	$delete_img = CDOMElement::create('img', 'src:img/user.png,alt:delete');
+        }
+        
         $delete_link = BaseHtmlLib::link("delete_user.php?id_user=$userId",$delete_img->getHtml());
         $delete_link->setAttribute('class', 'tooltip');
-        $delete_link->setAttribute('title', translateFN('Cancella utente'));
+        $delete_link->setAttribute('title', translateFN($title));
         
         $actions = BaseHtmlLib::plainListElement('class:inline_menu',array($edit_link, $view_link, $delete_link));
         /**

@@ -14,11 +14,13 @@ require_once 'lib/classes/FForm.inc.php';
  * 
  */
 class UserRemovalForm extends FForm {
-    public function  __construct() {
+    public function  __construct($userStatus) {
         parent::__construct();
+        if ($userStatus==ADA_STATUS_REGISTERED) $str = 'disabilitare';
+        else $str = 'abilitare';
         $this->addRadios(
                 'delete',
-                translateFN("Vuoi davvero disabilitare l'utente selezionato?"),
+                translateFN("Vuoi davvero $str l'utente selezionato?"),
                 array(0 => translateFN('No'), 1 => translateFN('Si')),
                 0);
         $this->addHidden('id_user');
