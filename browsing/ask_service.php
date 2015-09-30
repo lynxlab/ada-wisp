@@ -318,7 +318,8 @@ switch ($op) {
         				'id_course_instance' => $id_instance,
         				'id_course' => $id_course,
         				'id_student' => $id_user,
-        				'id_tutor_new' => $tutorID
+        				'id_tutor_new' => $tutorID,
+        				'comeFromAskService'=>1
         		);
         		$postString = '';
         		//create name value pairs seperated by &

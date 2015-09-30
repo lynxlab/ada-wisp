@@ -229,39 +229,66 @@ if (isset($_SERVER['REQUEST_METHOD']) && $_SERVER['REQUEST_METHOD'] == 'POST'
                  * Variable names are kept for compatibility and to not rewrite all
                  * the involved below code.
                  */
-                $switcher_uname = $userObj->getUserName();
-                $switcher['nome'] = $userObj->getFirstName();
-                $switcher['cognome'] = $userObj->getLastName();
+                if (isset($comeFromAskService) && $comeFromAskService != 1) {
+                    
+                    $switcher_uname = $userObj->getUserName();
+                    $switcher['nome'] = $userObj->getFirstName();
+                    $switcher['cognome'] = $userObj->getLastName();
 
-/*
-                $destinatari = array();
-                $switcherList = $dh->get_users_by_type(array(AMA_TYPE_SWITCHER), true);
-				if (! AMA_DataHandler::isError ( $switcherList )) {
-					foreach ( $switcherList as $switcher ) {
-						$switcher_uname = $switcher ['username'];
-						$destinatari [] = $switcher_uname;
-*/
+    /*
+                    $destinatari = array();
+                    $switcherList = $dh->get_users_by_type(array(AMA_TYPE_SWITCHER), true);
+                                    if (! AMA_DataHandler::isError ( $switcherList )) {
+                                            foreach ( $switcherList as $switcher ) {
+                                                    $switcher_uname = $switcher ['username'];
+                                                    $destinatari [] = $switcher_uname;
+    */
 
-						$message_text = sprintf ( translateFN ( 'Caro %s %s, hai assegnato con successo l\'utente %s all\'orientatore %s.' ),
-								$switcher['nome'], $switcher['cognome'],
-								$tutoredUserObj->getFullName(),
-								$tutorObj->getFullName() );
-						
-						$message_ha = array (
-								'tipo' => ADA_MSG_MAIL,
-								'data_ora' => 'now',
-								'mittente' => $userObj->getUserName (),
-								// 'destinatari' => array($userObj->getUserName()),
-								'destinatari' => array ($switcher_uname),
-								'titolo' => PORTAL_NAME . ': ' . translateFN ( 'a new user has been assigned by you.' ),
-								'testo' => $message_text 
-						);
-						
-						$mh = MessageHandler::instance ( MultiPort::getDSN ( $sess_selected_tester ) );
-						$result = $mh->send_message ( $message_ha );
-						if (AMA_DataHandler::isError ( $result )) {
-							// FIXME: gestire errore
-						}
+                    $message_text = sprintf ( translateFN ( 'Caro %s %s, hai assegnato con successo l\'utente %s all\'orientatore %s.' ),
+                                    $switcher['nome'], $switcher['cognome'],
+                                    $tutoredUserObj->getFullName(),
+                                    $tutorObj->getFullName() );
+
+                    $message_ha = array (
+                                    'tipo' => ADA_MSG_MAIL,
+                                    'data_ora' => 'now',
+                                    'mittente' => $userObj->getUserName (),
+                                    // 'destinatari' => array($userObj->getUserName()),
+                                    'destinatari' => array ($switcher_uname),
+                                    'titolo' => PORTAL_NAME . ': ' . translateFN ( 'a new user has been assigned by you.' ),
+                                    'testo' => $message_text 
+                    );
+                } else {
+
+    /*
+                    $destinatari = array();
+                    $switcherList = $dh->get_users_by_type(array(AMA_TYPE_SWITCHER), true);
+                                    if (! AMA_DataHandler::isError ( $switcherList )) {
+                                            foreach ( $switcherList as $switcher ) {
+                                                    $switcher_uname = $switcher ['username'];
+                                                    $destinatari [] = $switcher_uname;
+    */
+
+                    $message_text = sprintf ( translateFN ( 'Caro %s %s, la tua richiesta è stata assegnata all\'orientatore %s.' ),
+                                    $tutoredUserObj->getFirstName(), $tutoredUserObj->getLastName(),
+                                    $tutorObj->getFullName() );
+
+                    $message_ha = array (
+                                    'tipo' => ADA_MSG_MAIL,
+                                    'data_ora' => 'now',
+                                    'mittente' => $tutorObj->getUserName (),
+                                    // 'destinatari' => array($userObj->getUserName()),
+                                    'destinatari' => array ($tutoredUserObj->getUserName()),
+                                    'titolo' => PORTAL_NAME . ': ' . translateFN ( 'a new user has been assigned by you.' ),
+                                    'testo' => $message_text 
+                    );                    
+                }
+
+                $mh = MessageHandler::instance ( MultiPort::getDSN ( $sess_selected_tester ) );
+                $result = $mh->send_message ( $message_ha );
+                if (AMA_DataHandler::isError ( $result )) {
+                        // FIXME: gestire errore
+                }
 					
 /*						
 					} // foreach
