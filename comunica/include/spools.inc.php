@@ -681,7 +681,12 @@ class Spool extends Abstract_AMA_DataHandler
       $res_ar = $db->getAssoc($sql);
     }
     else {
-      $res_ar = $db->getCol($sql);
+        $res_ar = $db->getCol($sql);
+	if (AMA_DB::isError($res_ar)) {
+	  return new AMA_Error(AMA_ERR_GET);
+	}
+	$res_ar = array_flip($res_ar);
+      
     }
     //  }
 
@@ -690,18 +695,18 @@ class Spool extends Abstract_AMA_DataHandler
     }
 
     // logger("query succeeded", 4);
-    
     if(is_array($res_ar) && !empty($res_ar)) {
     	foreach ($res_ar as $key => $value) {
     		$id_mes = $key;
     		$sql = 'SELECT U.id_utente, U.nome, U.cognome, DM.id_utente, DM.id_messaggio
                 FROM utente AS U, destinatari_messaggi AS DM
-                WHERE DM.id_messaggio =  ' . $key .
+                WHERE DM.id_messaggio =  ' . $key . //$value .
                     ' AND DM.id_utente = U.id_utente';
     		$recipients_Ha = $db->getAssoc($sql);
     		//        var_dump($recipients_Ha);
     
-    		if (!AMA_DB::isError($recipients_Ha)) {
+    		if (!AMA_DB::isError($recipients_Ha) && count($recipients_Ha)>0) {
+//			array_push($res_ar[$key], $recipients_Ha);
     			$res_ar[$key][] = $recipients_Ha;
     		}
     		//$recipients = self::get_recipients($id_mes, $mh);
