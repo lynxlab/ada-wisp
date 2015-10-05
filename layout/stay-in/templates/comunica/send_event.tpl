@@ -19,6 +19,9 @@
     <span>
         <i18n>agenda</i18n>
     </span>
+    <span>
+        > <template_field class="template_field" name="status">status</template_field>
+    </span>
 </div> 
 <!-- / percorso -->
 <!-- contenitore -->
@@ -27,17 +30,18 @@
 <div id="user_wrap">
 <!-- label -->
 <div id="label">
-		 <div class="topleft">
-         <div class="topright">
+	<div class="topleft">
+          <div class="topright">
             <div class="bottomleft">
                <div class="bottomright">
                   <div class="contentlabel">
-                		  <h1><i18n>nuovo appuntamento</i18n></h1>
-									</div>
-							</div>
-						</div>
-					</div>
-			</div>		
+                		  <h1><i18n>nuovo appuntamento</i18n></h1> 
+
+                  </div>
+                </div>
+            </div>
+	  </div>
+	</div>		
 </div>
 <!-- /label -->
 <div id="status_bar">
