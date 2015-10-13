@@ -306,6 +306,12 @@ class AMALoginDataHandler extends AMA_DataHandler {
 	 * @access public
 	 */
 	public function addLoginToHistory ($userID, $time, $loginProviderID, $successfulOptionsID) {
+		
+		$sql = 'SELECT MAX(`loginCount`) FROM `'.self::$PREFIX.'history_login` WHERE `id_utente`=?';
+		$loginCount = $this->getOnePrepared($sql,$userID);
+		if (AMA_DB::isError($loginCount)) $loginCount = 0;
+		else $loginCount++;
+		
 		$sql = 'SELECT COUNT(`date`) FROM `'.self::$PREFIX.'history_login` WHERE '.
 			   '`id_utente`=? AND `'.self::$PREFIX.'providers_id`=?';
 		$rowCount = self::$dbToUse->getOnePrepared($sql,array($userID, $loginProviderID));
@@ -317,8 +323,8 @@ class AMALoginDataHandler extends AMA_DataHandler {
 		}
 		
 		$sql = 'INSERT INTO `'.self::$PREFIX.'history_login` (`id_utente`,`date`,`'.
-				self::$PREFIX.'providers_id`,`successfulOptionsID`) VALUES (?,?,?,?)';
-		return self::$dbToUse->queryPrepared($sql, array($userID, $time, $loginProviderID, $successfulOptionsID));
+				self::$PREFIX.'providers_id`,`successfulOptionsID`,`loginCount`) VALUES (?,?,?,?,?)';
+		return self::$dbToUse->queryPrepared($sql, array($userID, $time, $loginProviderID, $successfulOptionsID, $loginCount));
 	}
 	
 	/**

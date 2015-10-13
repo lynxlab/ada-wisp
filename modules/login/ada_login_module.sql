@@ -20,7 +20,8 @@ CREATE TABLE IF NOT EXISTS `module_login_history_login` (
   `id_utente` int(10) unsigned NOT NULL,
   `date` int(11) NOT NULL,
   `module_login_providers_id` int(5) unsigned NOT NULL,
-  `successfulOptionsID` int(5) unsigned NOT NULL
+  `successfulOptionsID` int(5) unsigned NOT NULL,
+  `loginCount` int(10) unsigned NOT NULL DEFAULT '0'
 ) ENGINE=MyISAM DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
 
 -- --------------------------------------------------------
