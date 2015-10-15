@@ -37,6 +37,7 @@ $neededObjAr = array(
 
 require_once ROOT_DIR.'/include/module_init.inc.php';
 
+  $self = whoami();
 $sess_navigationHistory = $_SESSION['sess_navigation_history'];
 if($sess_navigationHistory->callerModuleWas('quitChatroom')
    || $sess_navigationHistory->callerModuleWas('close_videochat')
@@ -48,12 +49,13 @@ if($sess_navigationHistory->callerModuleWas('quitChatroom')
 }
 else {
   // $self =  'tutor';
-  $self = 'default';
+//  $self = 'default';
   $is_popup = FALSE;
 }
 
 include_once 'include/tutor_functions.inc.php';
 include_once 'include/eguidance_tutor_form_functions.inc.php';
+include_once HTTP_ROOT_DIR.'/include/CourseInstance.php';
 
 /*
  * YOUR CODE HERE
@@ -99,69 +101,9 @@ include_once ROOT_DIR.'/comunica/include/ADAEventProposal.inc.php';
     }
   }
   $id_course_instance = $eguidance_dataAr['id_istanza_corso'];
-  if ($eguidance_dataAr['status_service'] != $eguidance_dataAr['previous_instance_status']) {
-      $instanceInfoAr = $dh->course_instance_get($id_course_instance);
-      if(!AMA_DataHandler::isError($instanceInfoAr)) {
-          if ($eguidance_dataAr['status_service'] == $status_closed) {
-              $instanceInfoAr['data_fine'] = time();
-              /**
-               * @author giorgio 15/apr/2014
-               * 
-               * If session has not been started by assigning a tutor,
-               * let's start it by setting data_inizio = data_fine
-               */
-              if ($instanceInfoAr['data_inizio']==0) $instanceInfoAr['data_inizio'] = $instanceInfoAr['data_fine']; 
-          }
-          elseif ($eguidance_dataAr['status_service'] == $status_opened) {
-              $instanceInfoAr['data_fine'] = NULL;
-          }
-      }
-      $updateInstance = $dh->course_instance_set($id_course_instance,$instanceInfoAr);
-      
-      if($updateInstance && ($eguidance_dataAr['status_service'] == $status_closed)){
-       /*
-        *  change user status 
-        */
-        $result = $dh->course_instance_students_presubscribe_get_list($id_course_instance);
-        if(AMA_DataHandler::isError($result)) {
-            $errObj = new ADA_Error($result, translateFN('Errore in ottenimento stato iscrizione utente'));
-        }
-        // In WISP we have only one user subscribed to a course instance
-        $id_student = $result[0]['id_utente_studente'];
-        $result = $dh->course_instance_student_subscribe($id_course_instance, $id_student, ADA_SERVICE_SUBSCRIPTION_STATUS_COMPLETED);
-        if(AMA_DataHandler::isError($result)) {
-            $errObj = new ADA_Error($result, translateFN('Errore in aggiornamento stato iscrizione utente'));
-        }
-      }
-      elseif($updateInstance && ($eguidance_dataAr['status_service'] == $status_opened)){
-       /*
-        *  change user status 
-        */
-        $result = $dh->course_instance_students_presubscribe_get_list($id_course_instance);
-        if(AMA_DataHandler::isError($result)) {
-            $errObj = new ADA_Error($result, translateFN('Errore in ottenimento stato iscrizione utente'));
-        }
-        // In WISP we have only one user subscribed to a course instance
-        $id_student = $result[0]['id_utente_studente'];
-        $tutorAssigned= $dh->course_instance_tutor_get($id_course_instance,1); 
-        if($tutorAssigned){
-            $result = $dh->course_instance_student_subscribe($id_course_instance, $id_student, ADA_STATUS_SUBSCRIBED);
-            if(AMA_DataHandler::isError($result)) {
-                $errObj = new ADA_Error($result, translateFN('Errore in aggiornamento stato iscrizione utente'));
-            }
-        }else{
-            $result = $dh->course_instance_student_subscribe($id_course_instance, $id_student, ADA_STATUS_PRESUBSCRIBED);
-            if(AMA_DataHandler::isError($result)) {
-                $errObj = new ADA_Error($result, translateFN('Errore in aggiornamento stato iscrizione utente'));
-            }
-          }
-      }
-}
  
   //createCSVFileToDownload($_POST);
 
-  //$text = translateFN('The eguidance session data were correctly saved.');
-  //$form = CommunicationModuleHtmlLib::getOperationWasSuccessfullView($text);
   /*
    * Redirect the practitioner to user service detail
    */
@@ -194,17 +136,6 @@ else {
                          NULL, NULL, NULL, $userObj->getHomePage());
   }
 
-  /*
-   * Get service info
-   */
-  /*
-  $id_course = $dh->get_course_id_for_course_instance($id_course_instance);
-  if(AMA_DataHandler::isError($id_course)) {
-    $errObj = new ADA_Error(NULL,translateFN("Errore nell'ottenimento dell'id del servzio"),
-                             NULL,NULL,NULL,$userObj->getHomePage());
-  }
-   * 
-   */
   $instanceInfoAr = $dh->course_instance_get($id_course_instance);
   if(AMA_DataHandler::isError($instanceInfoAr)) {
     $errObj = new ADA_Error(NULL,translateFN("Errore nell'ottenimento dell'id del servzio"),
@@ -224,7 +155,9 @@ else {
                              NULL,NULL,NULL,$userObj->getHomePage());
   }
 
-
+  $service_info_statusAr = Course_instance::getInstanceStatus($instanceInfoAr);
+  $service_infoAr['instance_status'] = $service_info_statusAr['status_instance'];
+  $service_infoAr['instance_status_value'] = $service_info_statusAr['status_instance_value'];
   /*
    * Get tutored user info
    */
@@ -242,36 +175,6 @@ else {
   $service_infoAr['event_token']      = $event_token;
   
   /*
-   * data chiusura e apertura istanza
-   */
-  $status_opened_label     = translateFN('In corso');
-  $status_closed_label     = translateFN('Terminato');
-  $status_instance = $status_closed_label;  
-  $status_instance_value = 1;
-  $current_timestamp = time();
-  
-  if($instanceInfoAr['data_inizio'] > 0 && $instanceInfoAr['data_fine'] > 0
-   && $current_timestamp > $instanceInfoAr['data_inizio']
-   && $current_timestamp < $instanceInfoAr['data_fine']) {
-      $status_instance = $status_opened_label;
-      $status_instance_value = 0;
-  } else if ($instanceInfoAr['data_inizio']==0) {
-  	  $status_instance_value = 0;
-  }
-
-  $service_infoAr['instance_status']      = $status_instance;
-  $service_infoAr['instance_status_previous'] = $status_instance;
-  $service_infoAr['instance_status_value']      = $status_instance_value;
-  
-  /*
-  $service_infoAr['status_opened_label']      = $status_opened_label;
-  $service_infoAr['status_closed_label']      = $status_closed_label;
-   * 
-   */
-  $service_infoAr['avalaible_status']      = array($status_opened_label,$status_closed_label);
-  $service_infoAr['instance'] = $instanceInfoAr;
-
-  /*
    * Check if an eguidance session with this event_token exists. In this case,
    * use this data to fill the form.
    */
@@ -285,6 +188,7 @@ else {
     if($is_popup) {
       $eguidance_session_dataAr['is_popup'] = true;
     }
+    
     $form = TutorModuleHtmlLib::getEditEguidanceDataForm($tutoredUserObj, $service_infoAr, $eguidance_session_dataAr);
   }
   else {

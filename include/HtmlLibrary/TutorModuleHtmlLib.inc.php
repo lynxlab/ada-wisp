@@ -19,6 +19,82 @@ require_once ROOT_DIR.'/include/HtmlLibrary/FormElementCreator.inc.php';
 class TutorModuleHtmlLib
 {
 
+  static public function getServiceStatusForm(ADALoggableUser $tutoredUserObj, $service_infoAr = array()) {
+    $form = CDOMElement::create('form','id:user_service_detai, name: user_service_detai, action:user_service_detail.php, method:post');
+      
+    
+   /*
+     * Hidden user data
+     */
+    $user_fullname = $tutoredUserObj->nome . ' ' . $tutoredUserObj->cognome;
+    $user_country = $tutoredUserObj->getCountry();
+    $user_birthdate = $tutoredUserObj->getBirthDate();
+    $user_birthcity = $tutoredUserObj->getBirthCity();
+    $user_birthprovince = $tutoredUserObj->getBirthProvince();    
+    $user_gender = $tutoredUserObj->getGender();
+    $user_foreign_culture = 'FOREIGN CULTURE';
+
+    if(($id = DataValidator::is_uinteger($form_dataAr['id'])) !== FALSE) {
+      $hidden_id_eguidance_session  = CDOMElement::create('hidden','id:id_eguidance_session, name:id_eguidance_session');
+      $hidden_id_eguidance_session->setAttribute('value', $id);
+      $form->addChild($hidden_id_eguidance_session);
+    }
+
+    $hidden_id_utente  = CDOMElement::create('hidden','id:id_utente, name:id_utente');
+    $hidden_id_utente->setAttribute('value', $tutoredUserObj->getId());
+
+    $hidden_id_istanza_corso = CDOMElement::create('hidden','id:id_istanza_corso, name:id_istanza_corso');
+    $hidden_id_istanza_corso->setAttribute('value', $service_infoAr['id_istanza_corso']);
+
+    $hidden_event_token = CDOMElement::create('hidden','id:event_token, name:event_token');
+    $hidden_event_token->setAttribute('value', $service_infoAr['event_token']);
+
+    $hidden_user_fullname = CDOMElement::create('hidden', 'id:user_fullname, name: user_fullname');
+    $hidden_user_fullname->setAttribute('value', $user_fullname);
+
+    $hidden_previous_instance_status = CDOMElement::create('hidden', 'id:previous_instance_status, name: previous_instance_status');
+    $hidden_previous_instance_status->setAttribute('value', $service_infoAr['instance_status_previous']);
+   
+    $hidden_user_country = CDOMElement::create('hidden', 'id:user_country, name:user_country');
+    $hidden_user_country->setAttribute('value', $user_country);
+    $hidden_service_duration = CDOMElement::create('hidden','id:service_duration, name:service_duration');
+    $hidden_service_duration->setAttribute('value', 10);
+    $hidden_user_birthdate = CDOMElement::create('hidden', 'id:ud_1, name:ud_1');
+    $hidden_user_birthdate->setAttribute('value', $user_birthdate);
+    $hidden_user_gender = CDOMElement::create('hidden', 'id:ud_2, name:ud_2');
+    $hidden_user_gender->setAttribute('value', $user_gender);
+    $hidden_user_foreign_culture = CDOMElement::create('hidden', 'id:ud_3, name:ud_3');
+    $hidden_user_foreign_culture->setAttribute('value', $user_foreign_culture);
+    $hidden_user_birthcity = CDOMElement::create('hidden', 'id:ud_4, name:ud_4');
+    $hidden_user_birthcity->setAttribute('value', $user_birthcity);
+    $hidden_user_birthprovince = CDOMElement::create('hidden', 'id:ud_5, name:ud_5');
+    $hidden_user_birthprovince->setAttribute('value', $user_birthprovince);
+
+    $form->addChild($hidden_id_utente);
+    $form->addChild($hidden_id_istanza_corso);
+    $form->addChild($hidden_event_token);
+    $form->addChild($hidden_user_fullname);
+    $form->addChild($hidden_user_country);
+    $form->addChild($hidden_service_duration);
+    $form->addChild($hidden_user_birthdate);
+    $form->addChild($hidden_user_birthcity);
+    $form->addChild($hidden_user_birthprovince);
+    $form->addChild($hidden_user_gender);
+    $form->addChild($hidden_user_foreign_culture);
+    $form->addChild($hidden_previous_instance_status);
+    
+    $toe_thead = '';
+    $instance_status = $service_infoAr['instance_status_value'];
+    $avalaibleStatusAr = array($status_opened_label,$status_closed_label); 
+    $more_attributes['onchange'] = 'saveStatus(this)';
+    $toe_tbody = array(
+      array(BaseHtmlLib::selectElement2('id:status_service, name:status_service',$service_infoAr['avalaible_status'],$instance_status,$more_attributes))
+    );
+    $toe_table = BaseHtmlLib::tableElement('', $toe_thead, $toe_tbody);
+    $form->addChild($toe_table);
+    return $form;
+  }   
+    
   /*
    * methods used to display forms and data for the eguidance session
    */
@@ -44,6 +120,23 @@ class TutorModuleHtmlLib
     return BaseHtmlLib::tableElement('', $thead, $tbody);
   }
 
+  /*
+   * methods used to display forms and data for the eguidance session
+   */
+  // MARK: methods used to display forms and data for the eguidance session
+
+static public function getServiceDataTableForTutor($service_dataAr) {
+      
+    $thead = array(translateFN('Service data'),'');
+    $tbody = array(
+	array(translateFN('Name'), $service_dataAr[1]),
+	array(translateFN('Description'), $service_dataAr[2]),
+	array(translateFN('Level'), $service_dataAr['level_name']),
+	array(translateFN('status'), $service_dataAr['status'])
+    );
+    return BaseHtmlLib::tableElement('', $thead, $tbody);
+  }
+  
   static public function getSubscribedUsersList($user_dataAr, $id_course, $id_course_instance) {
 
       $form = CDOMElement::create('form','id:pe_subscribed, method:post, action:course_instance_subscribe.php');
@@ -429,241 +522,49 @@ class TutorModuleHtmlLib
     $ufc_table = self::getEguidanceSessionUserDataTable($tutoredUserObj);
     $form->addChild($ufc_table);
 
-    /*
-     * Type of e-guidance action
-     */
-//    print_r($service_infoAr);
-    if(is_array($service_infoAr) && isset($service_infoAr[3])) {
-      $service_level = $service_infoAr[3];
-    }
-    if($service_level == 2) {
-      $typeAr = array(
-        1 => EguidanceSession::textLabelForField('sl_1'),
-        2 => EguidanceSession::textLabelForField('sl_2'),
-      );
-    }
-    else if ($service_level == 3) {
-      $typeAr =  array(
-        3 => EguidanceSession::textLabelForField('sl_3'),
-        4 => EguidanceSession::textLabelForField('sl_4'),
-      );
-    }
-    else if ($service_level == 4) {
-      $typeAr =  array(
-        5 => EguidanceSession::textLabelForField('sl_5'),
-        6 => EguidanceSession::textLabelForField('sl_6'),
-        7 => EguidanceSession::textLabelForField('sl_7')
-      );
-    }
-    else if ($service_level == 0) {
-      $typeAr =  array(
-        0 => EguidanceSession::textLabelForField('sl_0')
-      );    
-    }
-    else {
-      $typeAr = array();
-    }
 
 
     //FIXME: qui passo $form_dataAr['tipo_eguidance'], ma dovrei passare $form_dataAr['type_of_guidance']
+    /**
+     * SERVICE TYPE
+     */
     $toe_thead = array(EguidanceSession::textLabelForField('toe_title'));
+//   
+//    $toe_tbody = array(
+////      array(BaseHtmlLib::selectElement2('id:type_of_guidance, name:type_of_guidance',$typeAr,$form_dataAr['tipo_eguidance']))
+//      array($_SESSION['service_level'][$form_dataAr['tipo_eguidance']])
+//    );
+//    $toe_table = BaseHtmlLib::tableElement('', $toe_thead, $toe_tbody);
+//    $form->addChild($toe_table);
+//    
+//    //FIXME: qui passo $form_dataAr['tipo_eguidance'], ma dovrei passare $form_dataAr['type_of_guidance']
+    $toe_thead = array(translateFN('Service data'),'');
+    $instance_status_value = $service_infoAr['instance_status_value'];
+    $instance_status = $service_infoAr['instance_status'];
+
+    /*
+     * Patto formativo
+     */
+    $pattoFormativoOptionsAr = array(translateFN('Standard'),translateFN('Personalizzato'));
+    $pattoSelected = 0;
+    $more_attributes['onchange'] = 'toggleVisiblePersonal(this)';	    
+    $pattoFormativoSelect = BaseHtmlLib::selectElement2('id:patto_formativo, name:patto_formativo',$pattoFormativoOptionsAr,$pattoSelected,$more_attributes);
+    
     $toe_tbody = array(
-      array(BaseHtmlLib::selectElement2('id:type_of_guidance, name:type_of_guidance',$typeAr,$form_dataAr['tipo_eguidance']))
+	array(translateFN('tipo').': '.$_SESSION['service_level'][$form_dataAr['tipo_eguidance']]),
+	array(translateFN('status').': '.$instance_status),
+	array(translateFN('Patto formativo').': '.$pattoFormativoSelect->getHtml())
     );
+
     $toe_table = BaseHtmlLib::tableElement('', $toe_thead, $toe_tbody);
     $form->addChild($toe_table);
     
-    //FIXME: qui passo $form_dataAr['tipo_eguidance'], ma dovrei passare $form_dataAr['type_of_guidance']
-//    print_r($service_infoAr);
-    $toe_thead = '';
-    $instance_status = $service_infoAr['instance_status_value'];
-    $avalaibleStatusAr = array($status_opened_label,$status_closed_label); 
-    $toe_tbody = array(
-      array(BaseHtmlLib::selectElement2('id:status_service, name:status_service',$service_infoAr['avalaible_status'],$instance_status))
-    );
-    $toe_table = BaseHtmlLib::tableElement('', $toe_thead, $toe_tbody);
-    $form->addChild($toe_table);
-
+    
     $scoresAr = EguidanceSession::scoresArray();
-
-    //$textarea_default_text = translateFN('Inserire i vostri commenti');
-
-   /*
-    * User's features
-    */
-    // Critical socio anagraphic data
-
-/*    
-    $ud_1_select = BaseHtmlLib::selectElement2('id:ud_1, name:ud_1',$scoresAr, $form_dataAr['ud_1']);
-    $ud_2_select = BaseHtmlLib::selectElement2('id:ud_2, name:ud_2',$scoresAr, $form_dataAr['ud_2']);
-    $ud_3_select = BaseHtmlLib::selectElement2('id:ud_3, name:ud_3',$scoresAr, $form_dataAr['ud_3']);
-    $ud_4_select = BaseHtmlLib::selectElement2('id:ud_4, name:ud_4',$scoresAr, $form_dataAr['ud_4']);
-    $ud_5_select = BaseHtmlLib::selectElement2('id:ud_5, name:ud_5',$scoresAr, $form_dataAr['ud_5']);
-
-    $csa_thead = array(EguidanceSession::textLabelForField('ud_title'),''// translateFN('Select a score'));
-
-    $csa_tbody = array(
-      array(EguidanceSession::textLabelForField('ud_1'), $ud_1_select), //$user_birthdate),
-      array(EguidanceSession::textLabelForField('ud_4'), $ud_4_select), //$user_birthcity),
-      array(EguidanceSession::textLabelForField('ud_5'), $ud_5_select), //$user_birthprovince),
-      array(EguidanceSession::textLabelForField('ud_2'), $ud_2_select), //$user_gender),
-      array(EguidanceSession::textLabelForField('ud_3'), $ud_3_select) //$user_foreign_culture),
-    );
-    $csa_table = BaseHtmlLib::tableElement('', $csa_thead, $csa_tbody);
-    $form->addChild($csa_table);
- * 
- */
 
     $label = EguidanceSession::textLabelForField('ud_comments');
     $form->addChild(self::displayTextAreaForTutorComments('ud_comments', $label, $form_dataAr, $fill_textareas));
 
-/*
-    // Personal critical items
-    $pcitems_1_select = BaseHtmlLib::selectElement2('id:pc_1, name:pc_1',$scoresAr, $form_dataAr['pc_1']);
-    $pcitems_2_select = BaseHtmlLib::selectElement2('id:pc_2, name:pc_2',$scoresAr, $form_dataAr['pc_2']);
-    $pcitems_3_select = BaseHtmlLib::selectElement2('id:pc_3, name:pc_3',$scoresAr, $form_dataAr['pc_3']);
-    $pcitems_4_select = BaseHtmlLib::selectElement2('id:pc_4, name:pc_4',$scoresAr, $form_dataAr['pc_4']);
-    $pcitems_5_select = BaseHtmlLib::selectElement2('id:pc_5, name:pc_5',$scoresAr, $form_dataAr['pc_5']);
-    $pcitems_6_select = BaseHtmlLib::selectElement2('id:pc_6, name:pc_6',$scoresAr, $form_dataAr['pc_6']);
-
-    $pcitems_thead = array(EguidanceSession::textLabelForField('pc_title'),translateFN('Select a score'));
-    $pcitems_tbody = array(
-      array(EguidanceSession::textLabelForField('pc_1'), $pcitems_1_select),
-      array(EguidanceSession::textLabelForField('pc_2'), $pcitems_2_select),
-      array(EguidanceSession::textLabelForField('pc_3'), $pcitems_3_select),
-      array(EguidanceSession::textLabelForField('pc_4'), $pcitems_4_select),
-      array(EguidanceSession::textLabelForField('pc_5'), $pcitems_5_select),
-      array(EguidanceSession::textLabelForField('pc_6'), $pcitems_6_select),
-    );
-    $pcitems_table = BaseHtmlLib::tableElement('', $pcitems_thead, $pcitems_tbody);
-    $form->addChild($pcitems_table);
-
-    $label = EguidanceSession::textLabelForField('pc_comments');
-    $form->addChild(self::displayTextAreaForTutorComments('pc_comments', $label, $form_dataAr, $fill_textareas));
-
-
-    $area_of_the_job = CDOMElement::create('div');
-    $area_of_the_job->addChild(new CText(EguidanceSession::textLabelForField('area_pp')));
-    $form->addChild($area_of_the_job);
- * 
- */
-
-    /*
-     * Bonds/availability
-     */
-/*    
-    $ba_1_select = BaseHtmlLib::selectElement2('id:ba_1, name:ba_1',$scoresAr, $form_dataAr['ba_1']);
-    $ba_2_select = BaseHtmlLib::selectElement2('id:ba_2, name:ba_2',$scoresAr, $form_dataAr['ba_2']);
-    $ba_3_select = BaseHtmlLib::selectElement2('id:ba_3, name:ba_3',$scoresAr, $form_dataAr['ba_3']);
-    $ba_4_select = BaseHtmlLib::selectElement2('id:ba_4, name:ba_4',$scoresAr, $form_dataAr['ba_4']);
-
-    $ba_thead = array(EguidanceSession::textLabelForField('ba_title'),translateFN('Select a score'));
-    $ba_tbody = array(
-      array(EguidanceSession::textLabelForField('ba_1'),$ba_1_select),
-      array(EguidanceSession::textLabelForField('ba_2'),$ba_2_select),
-      array(EguidanceSession::textLabelForField('ba_3'),$ba_3_select),
-      array(EguidanceSession::textLabelForField('ba_4'),$ba_4_select),
-    );
-    $ba_table = BaseHtmlLib::tableElement('', $ba_thead, $ba_tbody);
-    $form->addChild($ba_table);
-
-    $label = EguidanceSession::textLabelForField('ba_comments');
-    $form->addChild(self::displayTextAreaForTutorComments('ba_comments', $label, $form_dataAr, $fill_textareas));
- * 
- */
-
-    /*
-     * Training
-     */
-/*
-    $t_1_select = BaseHtmlLib::selectElement2('id:t_1, name:t_1',$scoresAr, $form_dataAr['t_1']);
-    $t_2_select = BaseHtmlLib::selectElement2('id:t_2, name:t_2',$scoresAr, $form_dataAr['t_2']);
-    $t_3_select = BaseHtmlLib::selectElement2('id:t_3, name:t_3',$scoresAr, $form_dataAr['t_3']);
-    $t_4_select = BaseHtmlLib::selectElement2('id:t_4, name:t_4',$scoresAr, $form_dataAr['t_4']);
-
-    $t_thead = array(EguidanceSession::textLabelForField('t_title'),translateFN('Select a score'));
-    $t_tbody = array(
-      array(EguidanceSession::textLabelForField('t_1'),$t_1_select),
-      array(EguidanceSession::textLabelForField('t_2'),$t_2_select),
-      array(EguidanceSession::textLabelForField('t_3'),$t_3_select),
-      array(EguidanceSession::textLabelForField('t_4'),$t_4_select),
-    );
-    $t_table = BaseHtmlLib::tableElement('', $t_thead, $t_tbody);
-    $form->addChild($t_table);
-
-    $label = EguidanceSession::textLabelForField('t_comments');
-    $form->addChild(self::displayTextAreaForTutorComments('t_comments', $label, $form_dataAr, $fill_textareas));
- * 
- */
-
-    /*
-     * Professional experiences
-     */
-/*    
-    $pe_1_select = BaseHtmlLib::selectElement2('id:pe_1, name:pe_1',$scoresAr, $form_dataAr['pe_1']);
-    $pe_2_select = BaseHtmlLib::selectElement2('id:pe_2, name:pe_2',$scoresAr, $form_dataAr['pe_2']);
-    $pe_3_select = BaseHtmlLib::selectElement2('id:pe_3, name:pe_3',$scoresAr, $form_dataAr['pe_3']);
-
-    $pe_thead = array(EguidanceSession::textLabelForField('pe_title'),translateFN('Select a score'));
-    $pe_tbody = array(
-      array(EguidanceSession::textLabelForField('pe_1'),$pe_1_select),
-      array(EguidanceSession::textLabelForField('pe_2'),$pe_2_select),
-      array(EguidanceSession::textLabelForField('pe_3'),$pe_3_select),
-    );
-    $pe_table = BaseHtmlLib::tableElement('', $pe_thead, $pe_tbody);
-    $form->addChild($pe_table);
-
-    $label = EguidanceSession::textLabelForField('pe_comments');
-    $form->addChild(self::displayTextAreaForTutorComments('pe_comments', $label, $form_dataAr, $fill_textareas));
- * 
- */
-
-    /*
-     * Critical issues ...
-     */
-/*    
-    $ci_1_select = BaseHtmlLib::selectElement2('id:ci_1, name:ci_1',$scoresAr, $form_dataAr['ci_1']);
-    $ci_2_select = BaseHtmlLib::selectElement2('id:ci_2, name:ci_2',$scoresAr, $form_dataAr['ci_2']);
-    $ci_3_select = BaseHtmlLib::selectElement2('id:ci_3, name:ci_3',$scoresAr, $form_dataAr['ci_3']);
-    $ci_4_select = BaseHtmlLib::selectElement2('id:ci_4, name:ci_4',$scoresAr, $form_dataAr['ci_4']);
-
-    $ci_thead = array(EguidanceSession::textLabelForField('ci_title'),translateFN('Select a score'));
-    $ci_tbody = array(
-      array(EguidanceSession::textLabelForField('ci_1'),$ci_1_select),
-      array(EguidanceSession::textLabelForField('ci_2'),$ci_2_select),
-      array(EguidanceSession::textLabelForField('ci_3'),$ci_3_select),
-      array(EguidanceSession::textLabelForField('ci_4'),$ci_4_select),
-    );
-    $ci_table = BaseHtmlLib::tableElement('', $ci_thead, $ci_tbody);
-    $form->addChild($ci_table);
-
-    $label = EguidanceSession::textLabelForField('ci_comments');
-    $form->addChild(self::displayTextAreaForTutorComments('ci_comments', $label, $form_dataAr, $fill_textareas));
- * 
- */
-
-    /*
-     * Motivazione + Other particular comments
-     */
-/*    
-    $m_1_select = BaseHtmlLib::selectElement2('id:m_1, name:m_1',$scoresAr, $form_dataAr['m_1']);
-    $m_2_select = BaseHtmlLib::selectElement2('id:m_2, name:m_2',$scoresAr, $form_dataAr['m_2']);
-
-    $m_thead = array(EguidanceSession::textLabelForField('m_title'),translateFN('Select a score'));
-    $m_tbody = array(
-      array(EguidanceSession::textLabelForField('m_1'),$m_1_select),
-      array(EguidanceSession::textLabelForField('m_2'),$m_2_select),
-    );
-    $m_table = BaseHtmlLib::tableElement('', $m_thead, $m_tbody);
-    $form->addChild($m_table);
-
-    $label = EguidanceSession::textLabelForField('m_comments');
-    $form->addChild(self::displayTextAreaForTutorComments('m_comments', $label, $form_dataAr, $fill_textareas));
-
-    $label = EguidanceSession::textLabelForField('other_comments');
-    $form->addChild(self::displayTextAreaForTutorComments('other_comments', $label, $form_dataAr, $fill_textareas));
- * 
- */
 
    /*
 	 * Form buttons

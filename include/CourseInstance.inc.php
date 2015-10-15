@@ -139,6 +139,28 @@ class Course_instance extends Course_instance_Old
             // add chatroom_ha to the database
             $chatroom = Chatroom::add_chatroomFN($chatroom_ha);
             return $chatroom;
-        }        
-    
+    }
+	
+    static public function getInstanceStatus ($instanceInfoAr) {
+      /*
+       * data chiusura e apertura istanza
+       */
+	$status_opened_label     = translateFN('In corso');
+	$status_closed_label     = translateFN('Terminato');
+	$status_instance = $status_closed_label;  
+	$status_instance_value = 1; // 1 = instance Close 0 = instance open
+	$current_timestamp = time();
+
+	if($instanceInfoAr['data_inizio'] > 0 && $instanceInfoAr['data_fine'] > 0
+	&& $current_timestamp > $instanceInfoAr['data_inizio']
+	&& $current_timestamp < $instanceInfoAr['data_fine']) {
+	  $status_instance = $status_opened_label;
+	  $status_instance_value = 0;
+	} else if ($instanceInfoAr['data_inizio']==0) {
+	      $status_instance_value = 0;
+	}
+	$instanceStatusInfo['status_instance'] = $status_instance;
+	$instanceStatusInfo['status_instance_value'] = $status_instance_value;
+	return 	$instanceStatusInfo;
+    } 
 }

@@ -35,8 +35,13 @@ class BaseHtmlLib {
     return $select;
   }
   
-  public static function selectElement2($element_attributes='', $data = array(), $selected=NULL) {
+  public static function selectElement2($element_attributes='', $data = array(), $selected=NULL,$more_attributes=array()) {
     $select = CDOMElement::create('select', $element_attributes);
+    if (count($more_attributes)>0) {
+	foreach ($more_attributes as $attribute => $value) {
+		$select->setAttribute($attribute,$value);
+	}
+    }
     foreach($data as $value => $text) {
       $option = CDOMElement::create('option',"value:$value");
       if($selected != NULL && $selected == $value) {
