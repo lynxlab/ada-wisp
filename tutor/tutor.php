@@ -524,12 +524,16 @@ switch ($op) {
 					translateFN('num. richieste'), translateFN('ultima richiesta'),
 					translateFN('azioni'));
 			$tableBody = array();
+			
 			$helpCourses = array();
+			$helpCoursesRES = $dh->find_courses_list(array('titolo'),'`tipo_servizio`='.ADA_SERVICE_HELP);
+			if (!AMA_DB::isError($helpCoursesRES)) {
+				foreach ($helpCoursesRES as $anHelpCourse) $helpCourses[$anHelpCourse['id_corso']] = $anHelpCourse['titolo'];
+			}
 			
 			$appointment_link = CDOMElement::create('a');
-			$appointment_link->setAttribute('href','#');
+			$appointment_link->setAttribute('href','javascript:void(0);');
 			$appointment_link->addChild(new CText($appointment_link_label));
-			
 			
 			foreach ($listStudentIds as $student_id) {
 				// load the user from the db
@@ -543,18 +547,16 @@ switch ($op) {
 						foreach ($instancesRES as $anInstance) {
 							// count only instances having a course with ADA_SERVICE_HELP as tipo_servizio
 							if ($anInstance['tipo_servizio']==ADA_SERVICE_HELP) {
-								$helpCourses[$anInstance['id_corso']] = $anInstance['titolo'];
 								$countInstances++;
 								$lastRequestTime = max(array($anInstance['data_iscrizione'],$lastRequestTime));
 							}
 						}
 					}
-
 					$onclick = 'javascript:sendEventProposal('.$studentObj->getId().');';
 					$appointment_link->setAttribute('onclick',$onclick);					
 					$tableBody[] = array(
 							$studentObj->getLastName().' '.$studentObj->getFirstName(),
-							count($instancesRES),
+							$countInstances,
 							($lastRequestTime > 0) ? AMA_Common_DataHandler::ts_to_date($lastRequestTime) : $lastRequestTime,
 							$appointment_link->getHtml()
 					);
@@ -579,11 +581,16 @@ switch ($op) {
 				$hiddenElement->addChild($selectMSG);
 				$hiddenElement->addChild(CDOMElement::create('div','class:clearfix'));
 				$hiddenElement->addChild($selectElement);
+			} else if (count($helpCourses)==0) {
+				$hiddenElement = CDOMElement::create('span','id:noHelpServiceMSG');
+				$hiddenElement->setAttribute('style', 'display:none;');
+				$hiddenElement->addChild(new CText(translateFN('Nessun servizio di tipo').
+						' '.$_SESSION['service_level'][ADA_SERVICE_HELP]));
 			}
 			
-			$box_dataAr['dati6'] = $hiddenElement->getHtml() .
+			$box_dataAr['dati6'] = ((isset($hiddenElement)) ? $hiddenElement->getHtml() : '').
 			                       BaseHtmlLib::tableElement('id:table_preassigned_students',
-			                       		$tableHead, $tableBody)->getHtml();			
+			                       		$tableHead, $tableBody)->getHtml();
 		} else {
 			$box_dataAr['dati6'] = translateFN('Non hai studenti assegnati');
 		}

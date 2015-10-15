@@ -106,17 +106,23 @@ function initDoc() {
 var appWindow;
 function sendEventProposal (userID) {
 	$j.when(getHelpServiceID()).done(function(helpServiceID) {
-		appWindow.location = HTTP_ROOT_DIR +
-		'/comunica/send_event_proposal.php?id_user='+ userID +
-		'&id_course='+parseInt(helpServiceID);
-	});
+		if (helpServiceID>0) {
+			appWindow.location = HTTP_ROOT_DIR +
+			'/comunica/send_event_proposal.php?id_user='+ userID +
+			'&id_course='+parseInt(helpServiceID);
+		}
+	})
+	.fail(function() { alert( $j('#noHelpServiceMSG').text() ); } );
 }
 
 function getHelpServiceID() {
 	var d = $j.Deferred();
 	
-	if ($j('#helpServiceID').length>0) d.resolve(parseInt($j('#helpServiceID').val()));
-	else {
+	if ($j('#helpServiceID').length<=0 && $j('#selectServiceDialog').length<=0) d.reject();
+	else if ($j('#helpServiceID').length>0) { 
+		appWindow = openMessenger('',800,600);
+		d.resolve(parseInt($j('#helpServiceID').val()));
+	} else {
 		// prepare and show the dialog to select a helpServiceID
 		var dialog_buttons = {};
 		
@@ -140,7 +146,7 @@ function getHelpServiceID() {
 			var firstVal = $j('#selectHelpService option:first').val();
 			$j('#selectHelpService [value='+firstVal+']').attr('selected','selected');
 			$j('#selectHelpService').val(firstVal);
-			d.reject();
+			d.resolve(-1);
 			$j(this).dialog('close');
 		};
 		
