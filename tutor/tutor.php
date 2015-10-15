@@ -524,7 +524,7 @@ switch ($op) {
 					translateFN('num. richieste'), translateFN('ultima richiesta'),
 					translateFN('azioni'));
 			$tableBody = array();
-			$helpCourses = array(123=>'fake 123');
+			$helpCourses = array();
 			
 			$appointment_link = CDOMElement::create('a');
 			$appointment_link->setAttribute('href','#');
