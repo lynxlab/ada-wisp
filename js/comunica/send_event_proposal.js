@@ -342,14 +342,43 @@ function initDoc(initDatas, inputProposalNames, max_proposal_count) {
 	    		});    	
 	    } );
 	    
-	    $j('input:submit').button();
-	    $j('input:submit').closest('form').submit( function ( event ) {
+	    var sendButtonHandler = function ( event ) {
 	    	if (appointments.currAppointment<=0)
 	    	{
 	    		event.preventDefault();
 	    		showDialogByID('#alertDialog', appointments.alertTitle,'#oneProposalAtLeast');
-	    	}    	
-	    } );
+	    	} else if ($j('#id_course').length>0 && $j('#id_course').val().trim()!='') {
+	    		event.preventDefault();
+	    		// must create an instance for the selected course, subscribe the
+	    		// the student and blablabla.... before saving appointment (aka form submit)
+	    		$j.ajax({
+	    			type	:	'POST',
+	    			url		:	HTTP_ROOT_DIR + '/tutor/ajax/generateInstance.php',
+	    			data	:	{ courseID : $j('#id_course').val(),
+	    						  studentID: $j('input[name="id_user"]').val()
+	    						},
+	    			dataType:	'json'
+	    		})
+	    		.done  (function (JSONObj) {
+	    			if (JSONObj) {
+	    				if (JSONObj.status=='OK' && JSONObj.instanceID) {
+	    					$j('#id_course_instance').val(JSONObj.instanceID);
+	    					$j('#id_course').remove();
+    						$j('button#sendButton').closest('form').submit();
+	    				} else {
+	    					if (JSONObj.msg) alert (JSONObj.msg);
+	    					else alert ('Unknow error');
+	    				}
+	    			}
+	    		})
+	    		.fail (function() { alert ('Unknow error'); });	    		
+	    	} else {
+	    		$j('button#sendButton').closest('form').submit();
+	    	}
+	    }; // end sendButtonHandler
+	    
+	    $j('button#sendButton').button();
+	    $j('button#sendButton').on('click', sendButtonHandler);
 	}   
 }
 

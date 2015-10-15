@@ -10,7 +10,7 @@ function newWindow(nomefile,x,y)
 
 function openMessenger(nomefile,x,y)
 {
-        openNewWindow(nomefile,x,y,'Messaggeria',true,true);
+        return openNewWindow(nomefile,x,y,'Messaggeria',true,true);
 }
 
 function openNewWindow(nomefile,x,y,title,resizable,forceFocus) {
@@ -18,6 +18,7 @@ function openNewWindow(nomefile,x,y,title,resizable,forceFocus) {
 	prop = ('width='+x+',height='+y+', toolbar=no, location=no, status=no, menubar=no, scrollbars=yes, resizable='+((resizable) ? 'yes' : 'no'));
     win2=window.open(nomefile,title,prop);
     if (forceFocus) win2.focus();
+    return win2;
 }
 
 function window_scroll(howmuch)

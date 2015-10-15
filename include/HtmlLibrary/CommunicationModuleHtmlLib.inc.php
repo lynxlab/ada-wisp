@@ -143,9 +143,13 @@ class CommunicationModuleHtmlLib
     if($modify) {
       $idcourseinstance->setAttribute('value', $course_instance);
     }
-    else {
+    else if (!$modify && isset($_GET['id_course_instance'])) {
       $idcourseinstance->setAttribute('value', $_GET['id_course_instance']);
     }
+    else if (!$modify && isset($_GET['id_course'])) {
+      $form->addChild(CDOMElement::create('hidden','id:id_course,name:id_course,value:'.intval($_GET['id_course'])));
+    }
+    
 
     $form->addChild($idcourseinstance);
     
@@ -373,7 +377,8 @@ class CommunicationModuleHtmlLib
     $user_id = CDOMElement::create('hidden', 'name:id_user, value:'.$id_user);
 
     $buttons = CDOMElement::create('div','id:buttons');
-    $submit  = CDOMElement::create('submit','id:submit,name:submit, value:'.translateFN('Invia'));
+    $submit  = CDOMElement::create('button','type:button,id:sendButton, value:'.translateFN('Invia'));
+    $submit->addChild(new CText(translateFN('Invia')));
     $reset   = CDOMElement::create('reset');
     $buttons->addChild($submit);
     $buttons->addChild($reset);

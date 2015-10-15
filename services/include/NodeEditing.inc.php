@@ -216,8 +216,9 @@ class NodeEditing {
      * vito, 8 ottobre 2008: se voglio modificare una nota
      * devo passare anche l'id istanza corso
         */
-        if ($node_data['type']    == ADA_NOTE_TYPE
-                || $node_data['type'] == ADA_PRIVATE_NOTE_TYPE) {
+        if (!isset($node_data['id_instance']) && 
+        		($node_data['type']    == ADA_NOTE_TYPE
+                || $node_data['type'] == ADA_PRIVATE_NOTE_TYPE)) {
             $node_data['id_instance'] = $_SESSION['sess_id_course_instance'];
         }
 
@@ -296,8 +297,8 @@ class NodeEditing {
      * vito, 8 ottobre 2008: se voglio inserire una nota
      * devo passare anche l'id istanza corso
         */
-        if ($node_data['type']    == ADA_NOTE_TYPE
-                || $node_data['type'] == ADA_PRIVATE_NOTE_TYPE) {
+        if (!isset($node_data['id_instance']) && ($node_data['type']    == ADA_NOTE_TYPE
+                || $node_data['type'] == ADA_PRIVATE_NOTE_TYPE)) {
             $node_data['id_instance'] = $_SESSION['sess_id_course_instance'];
         }
 

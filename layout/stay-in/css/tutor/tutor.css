@@ -15,7 +15,8 @@ position: relative;
 }
 
 #blocco_uno,
-#blocco_tre {
+#blocco_tre,
+#blocco_sei {
 /*    
 background-color: #D3D6FF;
 border-radius: 10px;
@@ -34,6 +35,7 @@ float: left;
 #bloccoUnoTitoloContenitore,
 #bloccoTreTitoloContenitore,
 #bloccoQuattroTitoloContenitore,
+#bloccoSeiTitoloContenitore,
  {
     background-color: #D3D6FF;
     border-radius: 10px;
@@ -65,7 +67,8 @@ float: right;
 
 #content_blocco_uno,
 #content_blocco_tre,
-#content_blocco_quattro {
+#content_blocco_quattro,
+#content_blocco_sei {
     margin-bottom: 20px;
     position: relative;
 }
@@ -111,7 +114,8 @@ padding:4px;
 }
 
 #blocco_uno,
-#blocco_tre {
+#blocco_tre,
+#blocco_sei {
 /*    
 background-color: #D3D6FF;
 border-radius: 10px;
@@ -141,7 +145,8 @@ padding: 10px;
 
 #bloccoUnoTitoloContenitore,
 #bloccoTreTitoloContenitore,
-#bloccoQuattroTitoloContenitore {
+#bloccoQuattroTitoloContenitore,
+#bloccoSeiTitoloContenitore {
     border-radius: 5px;
     background: url("../../img/ui-bg_gloss-wave_55_5c9ccc_500x100.png") repeat-x scroll 50% 50% #005281;
     border: 1px solid #4297D7;
@@ -193,9 +198,13 @@ padding: 10px;
     margin-bottom:10px;
 }
 /** fine da user **/
-#blocco_tre, #blocco_quattro { min-height: 0; }
+#blocco_tre, #blocco_quattro, #blocco_sei { min-height: 0; }
 div.tutorServiceBlock { margin-bottom: 10px; }
 #boxone, #boxtwo { width: 47%; }
 #boxone { float:left; }
 #boxtwo { float: right; }
 .tutorStatsLink { float: right; }
+
+/** select helpServiceID dialog **/
+div#selectServiceDialog { text-align: center; }
+div#selectServiceDialog > span.selectServiceMSG { text-align: center; display: inline-block; margin-bottom: 10px; }

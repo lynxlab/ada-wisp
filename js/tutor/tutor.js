@@ -11,6 +11,9 @@ function initDoc() {
 				"bSort":         true,
 				"bAutoWidth":    true,
 				"bDeferRender":  true,
+                "oLanguage": {
+                	"sUrl": HTTP_ROOT_DIR + "/js/include/jquery/dataTables/dataTablesLang.php"
+                },				
 				"aoColumns": [
 				              { "sType": "date-euro" },
 				              null,
@@ -27,6 +30,9 @@ function initDoc() {
 			"bSort":         true,
 			"bAutoWidth":    true,
 			"bDeferRender":  true,
+            "oLanguage": {
+            	"sUrl": HTTP_ROOT_DIR + "/js/include/jquery/dataTables/dataTablesLang.php"
+            },			
 			"aoColumnDefs": [
 			                 { "bSortable": false,
 			                	"aTargets": [ 1 ] } 
@@ -37,6 +43,28 @@ function initDoc() {
 			              null,
 			              null,
 			              { 'sType': "date-eu" }
+			             ]
+		}).show();
+		
+		$j("#table_preassigned_students").dataTable( {
+			"bLengthChange": false,
+			"bFilter":       true,
+			"bInfo":         false,
+			'bPaginate':     true,
+			"bSort":         true,
+			"bAutoWidth":    true,
+            "oLanguage": {
+            	"sUrl": HTTP_ROOT_DIR + "/js/include/jquery/dataTables/dataTablesLang.php"
+            },			
+			"aoColumnDefs": [
+			                 { "bSortable": false,
+			                	"aTargets": [ 3 ] } 
+			                ],
+			"aoColumns": [
+			              null,
+			              null,
+			              { 'sType': "date-eu" },
+			              null
 			             ]
 		}).show();
 
@@ -74,4 +102,61 @@ function initDoc() {
 //      .show();
 
 	});
+}
+var appWindow;
+function sendEventProposal (userID) {
+	$j.when(getHelpServiceID()).done(function(helpServiceID) {
+		appWindow.location = HTTP_ROOT_DIR +
+		'/comunica/send_event_proposal.php?id_user='+ userID +
+		'&id_course='+parseInt(helpServiceID);
+	});
+}
+
+function getHelpServiceID() {
+	var d = $j.Deferred();
+	
+	if ($j('#helpServiceID').length>0) d.resolve(parseInt($j('#helpServiceID').val()));
+	else {
+		// prepare and show the dialog to select a helpServiceID
+		var dialog_buttons = {};
+		
+		dialog_buttons[i18n['confirm']] = function() {			
+			var helpServiceID = parseInt($j('#selectHelpService option:selected').val());
+			if (helpServiceID>0) {
+				/**
+				 * window must be opened here, and then its location set
+				 * because here it's where the user has clicked and not
+				 * inside the ajax.done callback where opening a new window
+				 * will trigger the browser popup blocker.
+				 */	
+				appWindow = openMessenger('',800,600);
+				d.resolve(helpServiceID);
+			}
+			$j(this).dialog('close');
+			
+		};
+		
+		dialog_buttons[i18n['cancel']] = function() {
+			var firstVal = $j('#selectHelpService option:first').val();
+			$j('#selectHelpService [value='+firstVal+']').attr('selected','selected');
+			$j('#selectHelpService').val(firstVal);
+			d.reject();
+			$j(this).dialog('close');
+		};
+		
+		$j('#selectServiceDialog').dialog({
+			show: {
+				effect: "fade",
+				duration: 200
+			},
+			draggable: false,
+			resizable: false,
+			autoOpen: true,
+			width: 400,
+			modal: true,
+			buttons: dialog_buttons,
+			close: dialog_buttons[i18n['cancel']]
+		});
+	}
+	return d.promise();
 }

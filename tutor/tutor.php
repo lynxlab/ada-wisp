@@ -514,6 +514,80 @@ switch ($op) {
 				if ($boxnum == 'dati4') $box_dataAr[$boxnum] = translateFN("Non ci sono comunit&agrave; di pratica");
 			}
 		}
+		
+		/**
+		 * dati6: pre-assigned students box
+		 */
+		$listStudentIds = $dh->get_preassigned_students_for_tutor($userObj->getId());
+		if (!AMA_DB::isError($listStudentIds) && is_array($listStudentIds) && count($listStudentIds)>0) {
+			$tableHead = array (translateFN('cognome e nome'),
+					translateFN('num. richieste'), translateFN('ultima richiesta'),
+					translateFN('azioni'));
+			$tableBody = array();
+			$helpCourses = array(123=>'fake 123');
+			
+			$appointment_link = CDOMElement::create('a');
+			$appointment_link->setAttribute('href','#');
+			$appointment_link->addChild(new CText($appointment_link_label));
+			
+			
+			foreach ($listStudentIds as $student_id) {
+				// load the user from the db
+				$studentObj = MultiPort::findUser($student_id);
+				if (is_object($studentObj) && $studentObj instanceof ADAUser && $studentObj->getStatus()!=ADA_STATUS_REMOVED) {
+					$getInstancesData = true;
+					$instancesRES = $dh->get_course_instances_for_this_student($studentObj->getId(), $getInstancesData);
+					$countInstances = 0;
+					$lastRequestTime = 0;
+					if (!AMA_DB::isError($instancesRES)) {
+						foreach ($instancesRES as $anInstance) {
+							// count only instances having a course with ADA_SERVICE_HELP as tipo_servizio
+							if ($anInstance['tipo_servizio']==ADA_SERVICE_HELP) {
+								$helpCourses[$anInstance['id_corso']] = $anInstance['titolo'];
+								$countInstances++;
+								$lastRequestTime = max(array($anInstance['data_iscrizione'],$lastRequestTime));
+							}
+						}
+					}
+
+					$onclick = 'javascript:sendEventProposal('.$studentObj->getId().');';
+					$appointment_link->setAttribute('onclick',$onclick);					
+					$tableBody[] = array(
+							$studentObj->getLastName().' '.$studentObj->getFirstName(),
+							count($instancesRES),
+							($lastRequestTime > 0) ? AMA_Common_DataHandler::ts_to_date($lastRequestTime) : $lastRequestTime,
+							$appointment_link->getHtml()
+					);
+				}			
+			}
+			
+			/**
+			 * Prepare hidden div or hidden input field to be used
+			 * when tutor wants to propose an appointment to student
+			 */
+			reset($helpCourses);
+			if (count($helpCourses)==1) {
+				// if there's only one course of type ADA_SERVICE_HELP, set up an hidden field
+				$hiddenElement = CDOMElement::create('hidden','id:helpServiceID');
+				$hiddenElement->setAttribute('value', key($helpCourses));
+			} else if (count($helpCourses)>1) {
+				$hiddenElement = CDOMElement::create('div','id:selectServiceDialog,title:'.translateFN('Selezionare un servizio'));
+				$hiddenElement->setAttribute('style', 'display:none;');
+				$selectMSG = CDOMElement::create('span','class:selectServiceMSG');
+				$selectMSG->addChild(new CText('Selezionare il servizio da associare alla proposta d\'appuntamento'));
+				$selectElement = BaseHtmlLib::selectElement2('id:selectHelpService',$helpCourses,key($helpCourses));
+				$hiddenElement->addChild($selectMSG);
+				$hiddenElement->addChild(CDOMElement::create('div','class:clearfix'));
+				$hiddenElement->addChild($selectElement);
+			}
+			
+			$box_dataAr['dati6'] = $hiddenElement->getHtml() .
+			                       BaseHtmlLib::tableElement('id:table_preassigned_students',
+			                       		$tableHead, $tableBody)->getHtml();			
+		} else {
+			$box_dataAr['dati6'] = translateFN('Non hai studenti assegnati');
+		}
+		
 		break; // for default case
 		
 	} // end switch $op		
@@ -559,6 +633,7 @@ switch ($op) {
 		$bloccoDueTitolo = '<h2>'.translateFN('Interazioni').'</h2>';
 		$bloccoTreTitolo = '<h2>'.translateFN('gruppi che seguo').'</h2>';
 		$bloccoQuattroTitolo = '<h2>'.translateFN('Comunit&agrave; di pratica').'</h2>';
+		$bloccoSeiTitolo = '<h2>'.translateFN('Utenti che mi sono assegnati').'</h2>';
 		
 		$content_dataAr = array(
 		  'banner'          => $banner,
@@ -566,6 +641,7 @@ switch ($op) {
 		  'bloccoDueTitolo'  => $bloccoDueTitolo,
 		  'bloccoTreTitolo'  => $bloccoTreTitolo,
 		  'bloccoQuattroTitolo'  => $bloccoQuattroTitolo,
+		  'bloccoSeiTitolo'  => $bloccoSeiTitolo,
 		  'user_name'       => $user_name,
 		  'user_type'       => $user_type,
 		  'level'           => $user_level,
@@ -603,6 +679,7 @@ switch ($op) {
 
 $layout_dataAr['JS_filename'] = array(
 		JQUERY,
+		JQUERY_UI,
 		JQUERY_DATATABLE,
 		JQUERY_DATATABLE_DATE,
 		ROOT_DIR.'/js/include/jquery/dataTables/formattedNumberSortPlugin.js',

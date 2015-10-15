@@ -63,6 +63,17 @@
 									</div>
 				<!-- blocco3 end -->
 				
+				<div id="blocco_sei">					
+					<div id="bloccoSeiTitoloContenitore">
+                                          <template_field class="template_field" name="bloccoSeiTitolo">bloccoSeiTitolo</template_field>
+                            </div>
+ 					<div id="content_blocco_sei">
+                                                <template_field class="template_field" name="dati6">dati6</template_field>
+ 
+					</div>
+				</div>
+				<!-- blocco6: pre-assigned students end -->
+				
 				</div> <!--  boxone end -->
 				<div id="boxtwo">
 				
