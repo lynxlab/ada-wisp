@@ -44,10 +44,16 @@ if (isset($_SERVER['REQUEST_METHOD']) && $_SERVER['REQUEST_METHOD'] == 'GET' &&
 	$id_tutor = intval($_GET['id_tutor']);
 	$caption = translateFN('Dettagli tutor');
 	$thead_data = array(
-		translateFN('Corso'),
-		translateFN('Edizione'),
-		translateFN('N° iscritti'),
-		translateFN('Autoistruzione'),
+		translateFN('Servizio'),
+		translateFN('Studente'),
+		translateFN('Rich. Aiuto'),
+		translateFN('Proposte'),
+		translateFN('Confermati'),
+		translateFN('Effettuati'),
+		translateFN('No. Login'),
+		translateFN('Ultimo Login'),
+		translateFN('Patto Form.'),
+		translateFN('Person.'),
 		translateFN('Note Scri'),
 		translateFN('Note Let'),
 		translateFN('File Inviati'),
@@ -63,38 +69,19 @@ if (isset($_SERVER['REQUEST_METHOD']) && $_SERVER['REQUEST_METHOD'] == 'GET' &&
 	
 	if(!AMA_DB::isError($DetailsAr) && is_array($DetailsAr) && count($DetailsAr)>0) {
 		
-		$totalSubscribedStudents = 0;
-		$totalSelfInstrucionCourses = 0;
-		$totalAddedNotes = 0;
-		$totalReadNotes = 0;
-		$totalChatlines = 0;
-		$totalUploadedFiles = 0;
+		$helpInstances = array();
 		
 		foreach($DetailsAr as $course){
-			// count number of subscribed users to instance
-			$subscribedStudents=0;
-			if(isset($course['id_istanza_corso'])){
-				$studentsAr = $dh->get_students_for_course_instance($course['id_istanza_corso']);
-				foreach ($studentsAr as $student){
-					if((strpos($student['status'],ADA_STATUS_SUBSCRIBED) == 0) ||
-					   (strpos($student['status'],ADA_SERVICE_SUBSCRIPTION_STATUS_COMPLETED) == 0)){
-						$subscribedStudents++;
-					}
-				}
-			}
-			$totalSubscribedStudents += $subscribedStudents;
-						
-			// self instruction
-			if (isset($course['self_instruction']) && intval($course['self_instruction'])>0) {
-				$totalSelfInstrucionCourses++;
-				$isSelfInstruction = translateFN('Sì');
-			} else {
-				$isSelfInstruction = translateFN('No');
+			
+			if (!is_null($course['tipo_servizio']) && $course['tipo_servizio']==ADA_SERVICE_HELP) {
+				// all instances of service level ADA_SERVICE_HELP will be processed afterwards
+				$helpInstances[] = $course;
+				// must keep calculation of nodes, notes, etc. that will be aggregated afterwards
 			}
 			
 			$added_nodes_count = 0;
 			$read_notes_count = 0;
-			$chatlines_count = 0;
+			$chatlines_count = 0;			
 			if (isset($course['id_corso']) && isset($course['id_istanza_corso'])) {
 				
 				$out_fields_ar = array();
@@ -163,39 +150,161 @@ if (isset($_SERVER['REQUEST_METHOD']) && $_SERVER['REQUEST_METHOD'] == 'GET' &&
 				}
 					
 			}
-			$totalAddedNotes += $added_nodes_count;
-			$totalReadNotes += $read_notes_count;
-			$totalChatlines += $chatlines_count;
-			$totalUploadedFiles += $uploadedFiles;
 			
-			$detailsResults[] = array( 
-				$course['titolo'],
-				$course['title'],
-				$subscribedStudents,
-				$isSelfInstruction,
-				$added_nodes_count,
-				$read_notes_count,
-				$uploadedFiles,
-				$chatlines_count);
+			$detailsResults[$course['id_istanza_corso']] = array( 
+				'title'=>$course['titolo'],
+				'student'=>'&nbsp;',
+				'helprequests'=>0,
+				'appproposals'=>0,
+				'appconfirmed'=>0,
+				'apprealized'=>0,
+				'logincount'=>0,
+				'lastlogin'=>'&nbsp;',
+				'patto'=>'&nbsp;',
+				'personalpatto'=>'&nbsp;',
+				'addednodes'=>$added_nodes_count,
+				'readnodes'=>$read_notes_count,
+				'uploadedfiles'=>$uploadedFiles,
+				'chatlines'=>$chatlines_count);
 		}
 		
+		/**
+		 * now processing instances having a service level of ADA_SERVICE_HELP
+		 */
+		$processedCourseIDs = array();
+		$studentSummary = array();
+		$loginCounts = array();
+		
+		$mh = MessageHandler::instance(MultiPort::getDSN($sess_selected_tester));
+		$clause = '`titolo` LIKE \'%d\_%d\_%d%%\' AND `id_mittente`=%d AND (`flags` & %d)';
+		
+		foreach ($helpInstances as $helpInstance) {
+			/**
+			 * must aggregate by student and course:
+			 * every row is the sum of all instances of the
+			 * current course, each row representing a student
+			 */
+			if (!in_array($helpInstance['id_corso'], $processedCourseIDs)) {
+				$processedCourseIDs[] = $helpInstance['id_corso'];
+				$instancesToLoop = $dh->get_tutors_assigned_course_instance($id_tutor, $helpInstance['id_corso']);
+				if (!AMA_DB::isError($instancesToLoop) && is_array($instancesToLoop[$id_tutor]) && count($instancesToLoop[$id_tutor])>0) {
+					// now instancesToLoop contains all instances of the course to which tutor is assigned
+					foreach ($instancesToLoop[$id_tutor] as $anInstance) {
+						$students = $dh->get_students_for_course_instance($anInstance['id_istanza_corso']);
+						if (!AMA_DB::isError($students) && is_array($students) && count($students)>0) {
+							foreach ($students as $aStudent) {
+								// msgs having ADA_EVENT_PROPOSED
+								$msgsProp = $mh->find_messages($aStudent['id_utente'],ADA_MSG_AGENDA,array('titolo'),
+										sprintf($clause, $aStudent['id_utente'], $id_tutor,
+												$anInstance['id_istanza_corso'], $id_tutor, ADA_EVENT_PROPOSED));
+								$appProposals = 0;
+								if (!AMA_DB::isError($msgsProp)) $appProposals = count($msgsProp);
+								else $msgsProp = array();
+								
+								// msgs having ADA_EVENT_CONFIRMED
+								$msgsConf = $mh->find_messages($aStudent['id_utente'],ADA_MSG_AGENDA,array('titolo'),
+										sprintf($clause, $aStudent['id_utente'], $id_tutor,
+												$anInstance['id_istanza_corso'], $aStudent['id_utente'], ADA_EVENT_CONFIRMED));
+								$appConfirmed = 0;
+								if (!AMA_DB::isError($msgsConf)) $appConfirmed = count($msgsConf);
+								else $msgsConf = array();
+								
+								// event having an event_token=message_event_token in sessione_eguidance table are realized								
+								$appRealized = 0;
+								foreach (array_merge($msgsProp, $msgsConf) as $aMessage) {
+									$token = ADAEventProposal::extractEventToken($aMessage);
+									$eguidRES = $dh->get_eguidance_session_with_event_token($token);
+									if (!AMA_DB::isError($eguidRES) && is_array($eguidRES) && count($eguidRES)>0) {
+										if (!isset($tipoPatto) && isset($eguidRES['tipo_patto_formativo'])) $tipoPatto = $pattoFormativoAr[$eguidRES['tipo_patto_formativo']];
+										if (!isset($personalPatto) && isset($eguidRES['tipo_personalizzazione'])) $personalPatto = $tipoPersonalPattoAr[$eguidRES['tipo_personalizzazione']];
+										$appRealized++;
+									}
+								}
+								
+								// login counts
+								$loginInfo = abstractLogin::getUserLoginInfo($aStudent['id_utente']);
+								$loginCounts[$aStudent['id_utente']] = (AMA_DB::isError($loginInfo)) ? '0' : $loginInfo['loginCount'];
+								
+								if (!isset($studentSummary[$aStudent['id_utente']][$anInstance['id_corso']])) {
+									// prepare student summary row
+									$studentSummary[$aStudent['id_utente']][$anInstance['id_corso']] = array(
+											'title'=>$anInstance['titolo'],
+											'student'=>$aStudent['cognome'].' '.$aStudent['nome'],
+											'helprequests'=>1,
+											'appproposals'=>$appProposals,
+											'appconfirmed'=>$appConfirmed,
+											'apprealized'=>$appRealized,
+											'logincount'=>$loginCounts[$aStudent['id_utente']],
+											'lastlogin'=>(AMA_DB::isError($loginInfo)) ? '&nbsp;' : AMA_DataHandler::ts_to_date($loginInfo['date']),
+											'patto'=>isset($tipoPatto) ? $tipoPatto : '&nbsp;',
+											'personalpatto'=>isset($personalPatto) ? $personalPatto : '&nbsp;',
+											'addednodes'=>0,
+											'readnodes'=>0,
+											'uploadedfiles'=>0,
+											'chatlines'=>0
+									);
+									unset($tipoPatto);
+									unset($personalPatto);
+								} else {
+									// update student summary row
+									$studentSummary[$aStudent['id_utente']][$anInstance['id_corso']]['helprequests']++;
+									$studentSummary[$aStudent['id_utente']][$anInstance['id_corso']]['appproposals'] += $appProposals;
+									$studentSummary[$aStudent['id_utente']][$anInstance['id_corso']]['appconfirmed'] += $appConfirmed;
+									$studentSummary[$aStudent['id_utente']][$anInstance['id_corso']]['apprealized']  += $appRealized;
+								}
+								
+								// PREVIOUSLY LOADED DATA AGGREATION: add results to current student and course
+								if (isset($detailsResults[$anInstance['id_istanza_corso']])) {
+									$studentSummary[$aStudent['id_utente']][$anInstance['id_corso']]['addednodes'] += $detailsResults[$anInstance['id_istanza_corso']]['addednodes'];
+									$studentSummary[$aStudent['id_utente']][$anInstance['id_corso']]['readnodes'] += $detailsResults[$anInstance['id_istanza_corso']]['readnodes'];
+									$studentSummary[$aStudent['id_utente']][$anInstance['id_corso']]['uploadedfiles'] += $detailsResults[$anInstance['id_istanza_corso']]['uploadedfiles'];
+									$studentSummary[$aStudent['id_utente']][$anInstance['id_corso']]['chatlines'] += $detailsResults[$anInstance['id_istanza_corso']]['chatlines'];
+									unset ($detailsResults[$anInstance['id_istanza_corso']]);
+								}								
+							} // end foreach $students
+						} // if !isError($students)
+					} // end foreach $instancesToLoop
+				} // if !isError $instancesToLoop
+			} // if !in_array $helpInstance['id_corso']
+		} // end foreach $helpInstances
+		
+		// done! add studentsummary results to output table
+		if (count($studentSummary)>0 && is_array($studentSummary)) {
+			foreach ($studentSummary as $aSummary) {
+				if (count($aSummary)>0 && is_array($aSummary)) {
+					foreach ($aSummary as $k=>$row) array_push($detailsResults, $row); 
+				}
+			}
+		}
+		
+		
 		$tfoot_data = array (
-				count($DetailsAr).' '.translateFN('Corsi totali'),
+				count($detailsResults).' '.translateFN('Servizi totali'),
 				'&nbsp;',
-				$totalSubscribedStudents,
-				$totalSelfInstrucionCourses,
-				$totalAddedNotes,
-				$totalReadNotes,
-				$totalUploadedFiles,
-				$totalChatlines
+				array_sum(array_column($detailsResults, 'helprequests')),
+				array_sum(array_column($detailsResults, 'appproposals')),
+				array_sum(array_column($detailsResults, 'appconfirmed')),
+				array_sum(array_column($detailsResults, 'apprealized')),
+				array_sum($loginCounts),
+				'&nbsp;',
+				'&nbsp;',
+				'&nbsp;',
+				array_sum(array_column($detailsResults, 'addednodes')),
+				array_sum(array_column($detailsResults, 'readnodes')),
+				array_sum(array_column($detailsResults, 'uploadedfiles')),
+				array_sum(array_column($detailsResults, 'chatlines'))
 		);
 		
 		$result_table = BaseHtmlLib::tableElement('class:tutor_table', $thead_data, $detailsResults,$tfoot_data,$caption);
 		$result=$result_table->getHtml();
 		$retArray['columnDefs'][] = array(
 				'sClass'=>'centerAlign',
-				'aTargets'=>[2,3,4,5,6,7]
-		);		
+				'aTargets'=>[2,3,4,5,6,7,8,9,10,11,12,13]
+		);
+		$retArray['columnDefs'][] = array(
+				'sType'=>'date-eu',
+				'aTargets'=>[7]
+		);
 		$retArray['status']='OK';
 		$retArray['html']=$result;
 	} else {

@@ -351,6 +351,28 @@ abstract class abstractLogin implements iLogin
 	}
 	
 	/**
+	 * gets numbers of login and last login timestamp for the passed user
+	 *
+	 * @param number $userID
+	 *
+	 * @return array('date','loginCount')|AMA_Error
+	 *
+	 * @access public
+	 */
+	public static function getUserLoginInfo ($userID) {
+		/**
+		 * If not multiprovider, the AMALoginDataHandler must check
+		 * if module's own tables are in the user_provider DB and use them
+		 * or the ones in the common db if they're not found in the provider DB
+		 */
+		if (!MULTIPROVIDER && isset($GLOBALS['user_provider']) && !empty($GLOBALS['user_provider'])) {
+			$dsn = MultiPort::getDSN($GLOBALS['user_provider']);
+		} else $dsn = null;
+		
+		return AMALoginDataHandler::instance($dsn)->getUserLoginInfo ($userID);
+	}
+	
+	/**
 	 * gets the login button as an ADA CDOMElement object
 	 * 
 	 * (non-PHPdoc)

@@ -722,6 +722,25 @@ class AMALoginDataHandler extends AMA_DataHandler {
 	}
 	
 	/**
+	 * gets numbers of login and last login timestamp for the passed user
+	 * 
+	 * @param number $userID
+	 * 
+	 * @return array('date','loginCount')|AMA_Error
+	 * 
+	 * @access public
+	 */
+	public function getUserLoginInfo ($userID) {
+		$retVal = new AMA_Error(AMA_ERR_TOO_FEW_ARGS);
+		if (intval($userID)>0) {
+			$sql = 'SELECT `date`,`loginCount` FROM `'.self::$PREFIX.'history_login` '.
+				   'WHERE `id_utente`=? ORDER BY `loginCount` DESC';
+			return self::$dbToUse->getRowPrepared($sql, $userID, AMA_FETCH_ASSOC);
+		}
+		return $retVal;
+	}
+	
+	/**
 	 * calls and sets the parent instance method, and if !MULTIPROVIDER
 	 * checks if module_login_providers table is in the provider db.
 	 * 
