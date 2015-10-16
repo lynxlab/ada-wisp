@@ -555,7 +555,7 @@ switch ($op) {
 					$onclick = 'javascript:sendEventProposal('.$studentObj->getId().');';
 					$appointment_link->setAttribute('onclick',$onclick);					
 					$tableBody[] = array(
-							$studentObj->getLastName().' '.$studentObj->getFirstName(),
+							BaseHtmlLib::link('edit_user.php?id='.$studentObj->getId(), $studentObj->getLastName().' '.$studentObj->getFirstName())->getHtml(),
 							$countInstances,
 							($lastRequestTime > 0) ? AMA_Common_DataHandler::ts_to_date($lastRequestTime) : $lastRequestTime,
 							$appointment_link->getHtml()
