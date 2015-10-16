@@ -125,6 +125,7 @@ else {
                          NULL, NULL, NULL, $userObj->getHomePage());
     }
     $id_course_instance = ADAEventProposal::extractCourseInstanceIdFromThisToken($event_token);
+    $appointmentTime = ADAEventProposal::extractTimeFromThisToken($event_token);
   }
   else if (isset($_GET['id_course_instance']))
   {
@@ -158,6 +159,7 @@ else {
   $service_info_statusAr = Course_instance::getInstanceStatus($instanceInfoAr);
   $service_infoAr['instance_status'] = $service_info_statusAr['status_instance'];
   $service_infoAr['instance_status_value'] = $service_info_statusAr['status_instance_value'];
+  
   /*
    * Get tutored user info
    */
@@ -174,6 +176,9 @@ else {
   $service_infoAr['id_istanza_corso'] = $id_course_instance;
   $service_infoAr['event_token']      = $event_token;
   
+  $service_infoAr['tipo_patto_formativo'] = $pattoFormativoAr; // $pattoFormativoAr read from config_main.inc.php
+  $service_infoAr['tipo_patto_personal'] = $tipoPersonalPattoAr; // $tipoPersonalPattoAr read from config_main.inc.php
+  
   /*
    * Check if an eguidance session with this event_token exists. In this case,
    * use this data to fill the form.
@@ -188,7 +193,7 @@ else {
     if($is_popup) {
       $eguidance_session_dataAr['is_popup'] = true;
     }
-    
+    $eguidance_session_dataAr['data_ora'] = ADAEventProposal::extractTimeFromThisToken($event_token);
     $form = TutorModuleHtmlLib::getEditEguidanceDataForm($tutoredUserObj, $service_infoAr, $eguidance_session_dataAr);
   }
   else {

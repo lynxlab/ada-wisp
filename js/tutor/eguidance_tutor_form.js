@@ -3,27 +3,12 @@ function toggleVisiblePersonal(select)
     var status = select.value;
     var idUser = $j("#id_utente").val();
     var idInstance = $j("#id_istanza_corso").val();
-    
-    alert (status);
+    if (status == 1) {
+        $j('.personal_patto').show();
+    } else {
+        $j('.personal_patto').hide();
+    }
            
-//    var data = {
-//        'status' : select.value,
-//        'id_user': idUser,
-//        'id_instance': idInstance
-//    }
-//     $j.ajax({
-//       type	: 'POST',
-//       url	: HTTP_ROOT_DIR+ '/switcher/ajax/updateServiceStatus.php',
-//       data	: data,
-//       dataType :'json'
-//       })
-//       .done   (function( JSONObj )
-//       {
-//           showHideDiv(JSONObj.title,JSONObj.msg);
-//       })
-//       .fail   (function() { 
-//            console.log("ajax call has failed"); 
-//	} );
     
 }
 

@@ -256,15 +256,17 @@ else {
    * Eguidance sessions data to display
    */
   $eguidance_sessionsAr = $dh->get_eguidance_sessions($id_course_instance);
+  $thead_data = array(translateFN('Eguidance sessions conducted'), '', '','');
+  $tbody_data = array();
   if(AMA_DataHandler::isError($eguidance_sessionsAr) || count($eguidance_sessionsAr) == 0) {
-    $eguidance_data = new CText('');
+      $tbody_data[] = array(new CText(translateFN('Nessuna Sessione effettuata')));
+//      $eguidance_data = new CText('');
   }
   else {
-    $thead_data = array(translateFN('Eguidance sessions conducted'), '', '','');
-    $tbody_data = array();
     foreach($eguidance_sessionsAr as $eguidance_sessionAr) {
 	if ($eguidance_sessionAr['event_token'] != '') {
-	    $eguidance_date = ts2dFN($eguidance_sessionAr['data_ora']);
+//	    $eguidance_date = ts2dFN($eguidance_sessionAr['data_ora']);
+	    $eguidance_date = Abstract_AMA_DataHandler::ts_to_date(ADAEventProposal::extractTimeFromThisToken($eguidance_sessionAr['event_token']), ADA_DATE_FORMAT.' - %R');
 	    $eguidance_type = EguidanceSession::textForEguidanceType($eguidance_sessionAr['tipo_eguidance']);
 	    $href = 'eguidance_tutor_form.php?event_token=' . $eguidance_sessionAr['event_token'].$href_suffix;
 	    $eguidance_form = CDOMElement::create('a', "href:$href");
@@ -277,8 +279,12 @@ else {
 	    $tbody_data[] = array($eguidance_date, $eguidance_type, $eguidance_form, $download_csv);
 	}
     }
-    $eguidance_data = BaseHtmlLib::tableElement('',$thead_data,$tbody_data);
+//    $eguidance_data = BaseHtmlLib::tableElement('',$thead_data,$tbody_data);
   }
+    if (count($tbody_data) == 0) {
+	$tbody_data[] = array(new CText(translateFN('Nessuna Sessione effettuata (o non è stato compilato il modulo di valutazione, o la sessione è stata fatta senza un appuntamento)')));
+    }
+    $eguidance_data = BaseHtmlLib::tableElement('',$thead_data,$tbody_data);
   
   /*
    * Future appointments with this user

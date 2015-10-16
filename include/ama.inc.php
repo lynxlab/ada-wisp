@@ -9533,8 +9533,8 @@ abstract class AMA_Tester_DataHandler extends Abstract_AMA_DataHandler {
         $sql = 'INSERT INTO sessione_eguidance(id_utente,id_tutor,id_istanza_corso,event_token,data_ora,tipo_eguidance,ud_1,ud_2,ud_3,ud_comments,'
                 . 'pc_1,pc_2,pc_3,pc_4,pc_5,pc_6,pc_comments,ba_1,ba_2,ba_3,ba_4,ba_comments,'
                 . 't_1,t_2,t_3,t_4,t_comments,pe_1,pe_2,pe_3,pe_comments,ci_1,ci_2,ci_3,ci_4, ci_comments,'
-                . 'm_1,m_2,m_comments,other_comments) '
-                . 'VALUES(?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)';
+                . 'm_1,m_2,m_comments,other_comments, tipo_patto_formativo, tipo_personalizzazione) '
+                . 'VALUES(?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)';
         $dataAr = array(
                 $eguidance_dataAr['id_utente'],
                 $eguidance_dataAr['id_tutor'],
@@ -9575,7 +9575,9 @@ abstract class AMA_Tester_DataHandler extends Abstract_AMA_DataHandler {
                 $eguidance_dataAr['m_1'],
                 $eguidance_dataAr['m_2'],
                 $eguidance_dataAr['m_comments'],
-                $eguidance_dataAr['other_comments']
+                $eguidance_dataAr['other_comments'],
+		$eguidance_dataAr['tipo_patto_formativo'],
+		$eguidance_dataAr['tipo_personalizzazione']
         );
 
         $result = $this->queryPrepared($sql, $dataAr);
@@ -9590,7 +9592,7 @@ abstract class AMA_Tester_DataHandler extends Abstract_AMA_DataHandler {
                 . 'SET tipo_eguidance = ?,ud_1 = ?,ud_2 = ?,ud_3 = ?,ud_comments = ?,'
                 . 'pc_1 = ?,pc_2 = ?,pc_3 = ?,pc_4 = ?,pc_5 = ?,pc_6 = ?,pc_comments = ?,ba_1 = ?,ba_2 = ?,ba_3 = ?,ba_4 = ?,ba_comments = ?,'
                 . 't_1 = ?,t_2 = ?,t_3 = ?,t_4 = ?,t_comments = ?,pe_1 = ?,pe_2 = ?,pe_3 = ?,pe_comments = ?,ci_1 = ?,ci_2 = ?,ci_3 = ?,ci_4 = ?, ci_comments = ?,'
-                . 'm_1 = ?,m_2 = ?,m_comments = ?,other_comments = ? '
+                . 'm_1 = ?,m_2 = ?,m_comments = ?,other_comments = ?, tipo_patto_formativo = ?, tipo_personalizzazione = ? '
                 . 'WHERE id = ?';
 
         $dataAr = array(
@@ -9629,7 +9631,9 @@ abstract class AMA_Tester_DataHandler extends Abstract_AMA_DataHandler {
                 $eguidance_dataAr['m_2'],
                 $eguidance_dataAr['m_comments'],
                 $eguidance_dataAr['other_comments'],
-                $eguidance_dataAr['id_eguidance_session']
+		$eguidance_dataAr['tipo_patto_formativo'],
+		$eguidance_dataAr['tipo_personalizzazione'],
+                $eguidance_dataAr['id_eguidance_session'],
         );
 
         $result = $this->queryPrepared($sql, $dataAr);
@@ -9647,7 +9651,7 @@ abstract class AMA_Tester_DataHandler extends Abstract_AMA_DataHandler {
         $sql = 'SELECT id, id_utente,id_tutor,data_ora,tipo_eguidance,ud_1,ud_2,ud_3,ud_comments,'
                 . 'pc_1,pc_2,pc_3,pc_4,pc_5,pc_6,pc_comments,ba_1,ba_2,ba_3,ba_4,ba_comments,'
                 . 't_1,t_2,t_3,t_4,t_comments,pe_1,pe_2,pe_3,pe_comments,ci_1,ci_2,ci_3,ci_4, ci_comments,'
-                . 'm_1,m_2,m_comments,other_comments '
+                . 'm_1,m_2,m_comments,other_comments, tipo_patto_formativo, tipo_personalizzazione '
                 . "FROM sessione_eguidance WHERE event_token = '$event_token'";
 
         $result = $db->getRow($sql, NULL, AMA_FETCH_ASSOC);
@@ -9671,7 +9675,7 @@ abstract class AMA_Tester_DataHandler extends Abstract_AMA_DataHandler {
         $sql = 'SELECT id_utente,id_tutor,event_token,data_ora,tipo_eguidance,ud_1,ud_2,ud_3,ud_comments,'
                 . 'pc_1,pc_2,pc_3,pc_4,pc_5,pc_6,pc_comments,ba_1,ba_2,ba_3,ba_4,ba_comments,'
                 . 't_1,t_2,t_3,t_4,t_comments,pe_1,pe_2,pe_3,pe_comments,ci_1,ci_2,ci_3,ci_4, ci_comments,'
-                . 'm_1,m_2,m_comments,other_comments '
+                . 'm_1,m_2,m_comments,other_comments, tipo_patto_formativo, tipo_personalizzazione '
                 . 'FROM sessione_eguidance WHERE id_istanza_corso = ' . $id_course_instance
                 . ' ORDER BY id DESC';
 
@@ -9712,7 +9716,7 @@ abstract class AMA_Tester_DataHandler extends Abstract_AMA_DataHandler {
         $sql = 'SELECT id_utente,id_tutor,data_ora,tipo_eguidance,ud_1,ud_2,ud_3,ud_comments,'
                 . 'pc_1,pc_2,pc_3,pc_4,pc_5,pc_6,pc_comments,ba_1,ba_2,ba_3,ba_4,ba_comments,'
                 . 't_1,t_2,t_3,t_4,t_comments,pe_1,pe_2,pe_3,pe_comments,ci_1,ci_2,ci_3,ci_4, ci_comments,'
-                . 'm_1,m_2,m_comments,other_comments '
+                . 'm_1,m_2,m_comments,other_comments, tipo_patto_formativo, tipo_personalizzazione '
                 . 'FROM sessione_eguidance WHERE id_istanza_corso = ' . $id_course_instance
                 . ' LIMIT ' . $row .',1';
         $result = $db->getRow($sql, NULL, AMA_FETCH_ASSOC);

@@ -522,13 +522,19 @@ static public function getServiceDataTableForTutor($service_dataAr) {
     $ufc_table = self::getEguidanceSessionUserDataTable($tutoredUserObj);
     $form->addChild($ufc_table);
 
-
+/*
+ * Type of guidance (= service type)
+ */
+    $hidden_type_of_guidance  = CDOMElement::create('hidden','id:type_of_guidance, name:type_of_guidance');
+    $hidden_type_of_guidance->setAttribute('value', $form_dataAr['tipo_eguidance']);
+    $form->addChild($hidden_type_of_guidance);
+    
 
     //FIXME: qui passo $form_dataAr['tipo_eguidance'], ma dovrei passare $form_dataAr['type_of_guidance']
     /**
      * SERVICE TYPE
      */
-    $toe_thead = array(EguidanceSession::textLabelForField('toe_title'));
+//    $toe_thead = array(EguidanceSession::textLabelForField('toe_title'));
 //   
 //    $toe_tbody = array(
 ////      array(BaseHtmlLib::selectElement2('id:type_of_guidance, name:type_of_guidance',$typeAr,$form_dataAr['tipo_eguidance']))
@@ -544,16 +550,40 @@ static public function getServiceDataTableForTutor($service_dataAr) {
 
     /*
      * Patto formativo
+     * $pattoFormativoAr read from config_main.inc.php
      */
-    $pattoFormativoOptionsAr = array(translateFN('Standard'),translateFN('Personalizzato'));
-    $pattoSelected = 0;
+    $pattoFormativoAr = $service_infoAr['tipo_patto_formativo'];
+    $pattoFormativoOptionsAr = array();
+    foreach ($pattoFormativoAr as $tipoPatto => $tipoPattoDesc) {
+	$pattoFormativoOptionsAr[]=  translateFN($tipoPattoDesc);
+    }
+    $pattoSelected = $form_dataAr['tipo_patto_formativo'];
     $more_attributes['onchange'] = 'toggleVisiblePersonal(this)';	    
-    $pattoFormativoSelect = BaseHtmlLib::selectElement2('id:patto_formativo, name:patto_formativo',$pattoFormativoOptionsAr,$pattoSelected,$more_attributes);
+    $pattoFormativoSelect = BaseHtmlLib::selectElement2('id:tipo_patto_formativo, name:tipo_patto_formativo',$pattoFormativoOptionsAr,$pattoSelected,$more_attributes);
+    
+    /*
+     * Patto formativo personalizzato
+     * $tipoPersonalPattoAr read from config_main.inc.php
+     */
+    $pattoFormativoPersonalAr = $service_infoAr['tipo_patto_personal'];
+    $pattoFormativoPersonalOptionsAr = array();
+    foreach ($pattoFormativoPersonalAr as $tipoPersonal => $tipoPersonalDesc) {
+	$pattoFormativoPersonalOptionsAr[]=  translateFN($tipoPersonalDesc);
+    }
+    $pattoPersonalSelected = $form_dataAr['tipo_personalizzazione'];
+    $more_attributes['onchange'] = 'toggleVisiblePersonal(this)';
+    $pattoPersonalSelect = BaseHtmlLib::selectElement2('id:tipo_personalizzazione, name:tipo_personalizzazione',$pattoFormativoPersonalOptionsAr,$pattoPersonalSelected);
+    $spanPersonalPatto = CDOMElement::create('span','class:personal_patto');
+    
+    if ($pattoSelected == 0) {
+	$spanPersonalPatto->setAttribute('style','display:none;');
+    }
+    $spanPersonalPatto->addChild($pattoPersonalSelect);
     
     $toe_tbody = array(
 	array(translateFN('tipo').': '.$_SESSION['service_level'][$form_dataAr['tipo_eguidance']]),
 	array(translateFN('status').': '.$instance_status),
-	array(translateFN('Patto formativo').': '.$pattoFormativoSelect->getHtml())
+	array(translateFN('Patto formativo').': '.$pattoFormativoSelect->getHtml().$spanPersonalPatto->getHtml())
     );
 
     $toe_table = BaseHtmlLib::tableElement('', $toe_thead, $toe_tbody);
@@ -563,6 +593,8 @@ static public function getServiceDataTableForTutor($service_dataAr) {
     $scoresAr = EguidanceSession::scoresArray();
 
     $label = EguidanceSession::textLabelForField('ud_comments');
+    $label .= ' '.translateFN('del') .' ' . Abstract_AMA_DataHandler::ts_to_date($form_dataAr['data_ora']); //, ADA_DATE_FORMAT.' - %R');
+//    var_dump($form_dataAr);
     $form->addChild(self::displayTextAreaForTutorComments('ud_comments', $label, $form_dataAr, $fill_textareas));
 
 

@@ -367,3 +367,25 @@ define('SMARTMENUS_CSS',		  ROOT_DIR.'/js/include/smartmenus/css/sm-core-css.css
 define('SMARTMENUS_JS',	 		  ROOT_DIR.'/js/include/smartmenus/jquery.smartmenus.min.js');
 define('JQUERY_JPLAYER',		  ROOT_DIR.'/js/include/jquery/jplayer/jquery.jplayer.min.js');
 define('JQUERY_JPLAYER_CSS',	  ROOT_DIR.'/js/include/jquery/jplayer/skin/blue.monday/css/jplayer.blue.monday.min.css');
+
+/**
+ * UNIVERSITÀ  DI MACERATA 
+ * PROPRIETÀ SPECIFICHE
+ * 
+ */
+
+define('MC_PATTO_FORMATIVO_STANDARD',0);
+define('MC_PATTO_FORMATIVO_PERSONALIZZATO',1);
+$pattoFormativoAr = array(
+    'standard',
+    'personalizzato'
+);
+
+$tipoPersonalPattoAr = array (
+    'numero esami',
+    'tempistica esami',
+    'suggerito corso propedeutico',
+    'suggerita consulenza orientativa',
+    'altro'
+);
+

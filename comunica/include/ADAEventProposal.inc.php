@@ -76,6 +76,28 @@ class ADAEventProposal
   }
 
   /**
+   * Returns the tutor id from a given event token
+   * 
+   * @param string $event_token
+   * @return int
+   */  
+  static public function extractTimeFromThisToken($event_token) {
+  	
+    /*
+  	 * first match: tutored user id (not loaded in $matches, because of the ?: )
+  	 * second match: tutor id (not loaded in $matches, because of the ?: )
+  	 * third match: course instance id (not loaded in $matches, because of the ?: )
+  	 * fourth match: timestamp 
+  	 */
+  	$pattern = '/(?:[1-9][0-9]*)_(?:[1-9][0-9]*)_(?:[1-9][0-9]*)_([1-9][0-9]+)/';
+  	$matches = array();
+  	if(preg_match($pattern, $event_token, $matches) == 1) {
+  		return $matches[1];
+  	}
+  	return FALSE;  	
+  }
+  
+  /**
    * Inspects a string to see if it has an event token prefixed.
    *
    * @param  string $string
