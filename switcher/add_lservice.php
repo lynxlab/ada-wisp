@@ -134,7 +134,9 @@ if (isset($_SERVER['REQUEST_METHOD']) && $_SERVER['REQUEST_METHOD'] == 'POST') {
                             'title' => $_POST['titolo'],
                             'duration_subscription' => '730', //$_POST['duration_subscription'],
                             'start_level_student' => '99', //$_POST['start_level_student'],
-                            'open_subscription' => '1' // $_POST['open_subscription']
+                            'open_subscription' => '1', // $_POST['open_subscription']
+			    'service_level' => $_POST['service_level']			    
+
                         );
                         $id_instance_course = Course_instance::add_instance($id_course, $course_instanceAr);
                         if(!AMA_DataHandler::isError($result)) {
