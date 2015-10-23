@@ -1,0 +1,18 @@
+/* 
+    Created on : 22-ott-2015, 13.37.30
+    Author     : graffio
+*/
+
+#ud_comments {
+    color: #555;
+    border-bottom: 1px solid #ECECEA;
+    
+}
+
+#label_ud_comments {
+    font-weight: bold;
+}
+
+.ud_commnents_container {
+    margin-top: 1%;
+}
