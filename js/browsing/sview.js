@@ -53,39 +53,52 @@ function initForum() {
 
 function initMessages() {
 	var datatable = $j('.sortable_A').dataTable( {
-//		'sScrollX': '100%',
                 'bLengthChange': false,
-		//'bScrollCollapse': true,
-//		'iDisplayLength': 50,
                 "bFilter": false,
-                "bInfo": false,
+                "bInfo": true,
                 "bSort": true,
                 "bAutoWidth": true,
-//		'bProcessing': true,
 		'bDeferRender': true,
-         
+                 "bJQueryUI": true,
                 
                 'aoColumns': [
                                 { 'sType': "date-euro" },
                                 null,
+                                null,
                                 null
                             ],
          
-                'bPaginate': false
-//		'sPaginationType': 'full_numbers'
+                'bPaginate': true,
+                "aaSorting": [[ 0, "desc" ]],
+//                "aaSorting": [[ 0, "desc" ]],
+                
+                "oLanguage": 
+                 {
+                    "sUrl": HTTP_ROOT_DIR + "/js/include/jquery/dataTables/dataTablesLang.php"
+                 },
+                 "fnDrawCallback":
+                    function () {
+                        // put the sort icon outside of the DataTables_sort_wrapper div
+                        // for better display styling with CSS
+                        $j(this).find("thead th div.DataTables_sort_wrapper").each(function(){
+                                sortIcon = $j(this).find('span').clone();
+                                $j(this).find('span').remove();
+                                $j(this).parents('th').append(sortIcon);
+                                });
+                    } 
+
 	}).show();
 
 	var datatable = $j('.sortable_S').dataTable( {
-//		'sScrollX': '100%',
                 'bLengthChange': false,
-		//'bScrollCollapse': true,
-//		'iDisplayLength': 50,
                 "bFilter": false,
-                "bInfo": false,
+                "bInfo": true,
                 "bSort": true,
                 "bAutoWidth": true,
-//		'bProcessing': true,
 		'bDeferRender': true,
+                "bJQueryUI": true,
+                "bPaginate" : true,
+                
          
                 
                 'aoColumns': [
@@ -94,8 +107,23 @@ function initMessages() {
                                 null
                             ],
          
-                'bPaginate': false
-//		'sPaginationType': 'full_numbers'
+                "aaSorting": [[ 0, "desc" ]],
+                
+                "oLanguage": 
+                 {
+                    "sUrl": HTTP_ROOT_DIR + "/js/include/jquery/dataTables/dataTablesLang.php"
+                 },
+                 "fnDrawCallback":
+                    function () {
+                        // put the sort icon outside of the DataTables_sort_wrapper div
+                        // for better display styling with CSS
+                        $j(this).find("thead th div.DataTables_sort_wrapper").each(function(){
+                                sortIcon = $j(this).find('span').clone();
+                                $j(this).find('span').remove();
+                                $j(this).parents('th').append(sortIcon);
+                                });
+                    } 
+
 	}).show();
     
 }

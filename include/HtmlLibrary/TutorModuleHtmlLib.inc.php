@@ -424,7 +424,7 @@ static public function getServiceDataTableForTutor($service_dataAr) {
   }
 
 
-  static public function getEguidanceTutorForm(ADALoggableUser $tutoredUserObj, $service_infoAr = array(), $form_dataAr=array(), $fill_textareas=FALSE) {
+  static public function getEguidanceTutorForm(ADALoggableUser $tutoredUserObj, $service_infoAr = array(), $form_dataAr=array(), $fill_textareas=FALSE, $readOnly = false) {
     $form = CDOMElement::create('form','id:eguidance_tutor_form, name: eguidance_tutor_form, action:eguidance_tutor_form.php, method:post');
 
 /*    
@@ -469,6 +469,10 @@ static public function getServiceDataTableForTutor($service_dataAr) {
       $form->addChild($hidden_id_eguidance_session);
     }
 
+    $appointmentDate = $form_dataAr['data_ora'];
+    $hiddenAppointmentDate  = CDOMElement::create('hidden','id:data_ora, name:data_ora');
+    $hiddenAppointmentDate->setAttribute('value', $appointmentDate);
+    
     $hidden_id_utente  = CDOMElement::create('hidden','id:id_utente, name:id_utente');
     $hidden_id_utente->setAttribute('value', $tutoredUserObj->getId());
 
@@ -498,7 +502,9 @@ static public function getServiceDataTableForTutor($service_dataAr) {
     $hidden_user_birthcity->setAttribute('value', $user_birthcity);
     $hidden_user_birthprovince = CDOMElement::create('hidden', 'id:ud_5, name:ud_5');
     $hidden_user_birthprovince->setAttribute('value', $user_birthprovince);
+    
 
+    $form->addChild($hiddenAppointmentDate);
     $form->addChild($hidden_id_utente);
     $form->addChild($hidden_id_istanza_corso);
     $form->addChild($hidden_event_token);
@@ -610,6 +616,105 @@ static public function getServiceDataTableForTutor($service_dataAr) {
     $form->addChild($buttons);
 
     return $form;
+  }
+//}
+
+  static public function getEguidanceTutorShow(ADALoggableUser $tutoredUserObj, $service_infoAr = array(), $form_dataAr=array(), $fill_textareas=FALSE, $readOnly = false) {
+    $div = CDOMElement::create('div','id:eguidance_tutor_form, name: eguidance_tutor_form');
+
+    /*
+     * Serial Number
+     */
+    $user_serial_number = $tutoredUserObj->getSerialNumber();
+    
+    /*
+     * Hidden user data
+     */
+    $user_fullname = $tutoredUserObj->nome . ' ' . $tutoredUserObj->cognome;
+    $user_country = $tutoredUserObj->getCountry();
+    $user_birthdate = $tutoredUserObj->getBirthDate();
+    $user_birthcity = $tutoredUserObj->getBirthCity();
+    $user_birthprovince = $tutoredUserObj->getBirthProvince();    
+    $user_gender = $tutoredUserObj->getGender();
+    $user_foreign_culture = 'FOREIGN CULTURE';
+
+    if(($id = DataValidator::is_uinteger($form_dataAr['id'])) !== FALSE) {
+      $hidden_id_eguidance_session  = CDOMElement::create('hidden','id:id_eguidance_session, name:id_eguidance_session');
+      $hidden_id_eguidance_session->setAttribute('value', $id);
+      $div->addChild($hidden_id_eguidance_session);
+    }
+
+    $hidden_id_utente  = CDOMElement::create('hidden','id:id_utente, name:id_utente');
+    $hidden_id_utente->setAttribute('value', $tutoredUserObj->getId());
+
+    $hidden_id_istanza_corso = CDOMElement::create('hidden','id:id_istanza_corso, name:id_istanza_corso');
+    $hidden_id_istanza_corso->setAttribute('value', $service_infoAr['id_istanza_corso']);
+
+    $hidden_event_token = CDOMElement::create('hidden','id:event_token, name:event_token');
+    $hidden_event_token->setAttribute('value', $service_infoAr['event_token']);
+
+
+    $div->addChild($hidden_id_utente);
+    $div->addChild($hidden_id_istanza_corso);
+    $div->addChild($hidden_event_token);
+
+    $ufc_table = self::getEguidanceSessionUserDataTable($tutoredUserObj);
+    $div->addChild($ufc_table);
+    
+    $toe_thead = array(translateFN('Service data'),'');
+    $instance_status_value = $service_infoAr['instance_status_value'];
+    $instance_status = $service_infoAr['instance_status'];
+
+    /*
+     * Patto formativo
+     * $pattoFormativoAr read from config_main.inc.php
+     */
+    CDOMElement::create('span','class:personal_patto');
+    $pattoFormativoSpan = CDOMElement::create('span','class:patto_formativo'); 
+    
+    $pattoFormativoAr = $service_infoAr['tipo_patto_formativo'];
+    $pattoPersonalSelectedDesc = NULL;
+    $pattoSelected = $form_dataAr['tipo_patto_formativo'];
+    $pattoSelectedDesc = translateFN($pattoFormativoAr[$pattoSelected]);
+    $pattoFormativoSpan->addChild(new CText($pattoSelectedDesc));
+    
+    /*
+     * Patto formativo personalizzato
+     * $tipoPersonalPattoAr read from config_main.inc.php
+     */
+    $pattoFormativoPersonalAr = $service_infoAr['tipo_patto_personal'];
+    $pattoFormativoPersonalOptionsAr = array();
+    if ($pattoSelected == MC_PATTO_FORMATIVO_PERSONALIZZATO) {
+        $pattoPersonalSelected = $form_dataAr['tipo_personalizzazione'];
+	$pattoPersonalSelectedDesc = ' '.translateFN('per').' '. translateFN($pattoFormativoPersonalAr[$pattoPersonalSelected]);
+	$pattoFormativoSpan->addChild(new CText($pattoPersonalSelectedDesc));
+    }
+	
+    $toe_tbody = array(
+	array(translateFN('tipo').': '.$_SESSION['service_level'][$form_dataAr['tipo_eguidance']]),
+	array(translateFN('status').': '.$instance_status),
+	array(translateFN('Patto formativo').': '.$pattoFormativoSpan->getHtml())
+    );
+
+    $toe_table = BaseHtmlLib::tableElement('', $toe_thead, $toe_tbody);
+    $div->addChild($toe_table);
+    
+    $label = EguidanceSession::textLabelForField('ud_comments');
+    $label .= ' '.translateFN('del') .' ' . Abstract_AMA_DataHandler::ts_to_date($form_dataAr['data_ora']); //, ADA_DATE_FORMAT.' - %R');
+    
+    $divUdComments = CDOMElement::create('div','id:ud_comments');
+    $spanlabel = CDOMElement::create('span','id:label_ud_comments');
+    
+    $spanlabel->addChild(new CText($label.':'));
+    $divUdComments->addChild($spanlabel);
+    $divContainer = CDOMElement::create('div', 'class:ud_commnents_container');
+    $divContainer->addChild(new CText(nl2br($form_dataAr['ud_comments'])));
+    $divUdComments->addChild($divContainer);
+    
+    $div->addChild($divUdComments);
+
+
+    return $div;
   }
 }
 

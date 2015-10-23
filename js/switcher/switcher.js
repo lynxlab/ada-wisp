@@ -28,12 +28,13 @@ function dataTablesExec() {
 	}).show();
         
 	var datatable = $j('#table_users_for_service').dataTable( {
-//		'sScrollX': '100%',
-                'bLengthChange': false,
+
+                 "bJQueryUI": true,
+                'bLengthChange': true,
 		//'bScrollCollapse': true,
-//		'iDisplayLength': 50,
+//		'iDisplayLength': 10,
                 "bFilter": true,
-                "bInfo": false,
+                "bInfo": true,
                 "bSort": true,
                 "bAutoWidth": true,
 //		'bProcessing': true,
@@ -49,7 +50,26 @@ function dataTablesExec() {
                                 null
                             ],
          
-                'bPaginate': false
+//                'bPaginate': false
+
+                'bPaginate': true,
+                "aaSorting": [[ 2, "desc" ]],
+                
+                "oLanguage": 
+                 {
+                    "sUrl": HTTP_ROOT_DIR + "/js/include/jquery/dataTables/dataTablesLang.php"
+                 },
+                 "fnDrawCallback":
+                    function () {
+                        // put the sort icon outside of the DataTables_sort_wrapper div
+                        // for better display styling with CSS
+                        $j(this).find("thead th div.DataTables_sort_wrapper").each(function(){
+                                sortIcon = $j(this).find('span').clone();
+                                $j(this).find('span').remove();
+                                $j(this).parents('th').append(sortIcon);
+                                });
+                    } 
+        
 //		'sPaginationType': 'full_numbers'
 	}).show();
 
@@ -97,18 +117,3 @@ function initListLservices() {
 		"bPaginate" : false
 	}).show();	
 }
-
-
-/*
-        $(document).ready(function() {
-                $('#listaImmobili').dataTable({
-                "bPaginate": false,
-                "bLengthChange": false,
-                "bFilter": true,
-                "bSort": true,
-                "bInfo": false,
-                "bAutoWidth": true,
-                "aaSorting": [[ 2, "desc" ],[ 5, "asc" ]]
-            } );
-        } );
-*/

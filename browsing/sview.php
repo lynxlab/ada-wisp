@@ -181,28 +181,31 @@ $banner = "";
 $go_print = "<a href=\"print.php?id_node=" . $sess_id_node . "\" target=\"_blank\">"  . translateFN("stampa") . "</a>";
 
 
+/*
+ * graf modifica 21710/2015
+ */
 // Links to other modules
-if ($id_profile == AMA_TYPE_TUTOR || $id_profile == AMA_TYPE_STUDENT) {
-	/*
-	 * Ci sono anche altri controlli da fare, tipo quelli che stanno nella
-	 * videochat
-	 */
-	$video_chat = '<a href="' . HTTP_ROOT_DIR . '/comunica/videochat.php" target="_blank">' . translateFN('video conference') . '</a>';
-	$chat = '<a href="' . HTTP_ROOT_DIR . '/comunica/chat.php" target="_blank">' . translateFN('chat') . '</a>';
-	$go_download = '<a href="' . HTTP_ROOT_DIR . '/browsing/download.php">' . translateFN('file sharing') . '</a>';
-	$send_media = '<a href="' . HTTP_ROOT_DIR . '/services/upload.php">' . translateFN('invia un file') . '</a>';
-}
+//if ($id_profile == AMA_TYPE_TUTOR || $id_profile == AMA_TYPE_STUDENT) {
+//	/*
+//	 * Ci sono anche altri controlli da fare, tipo quelli che stanno nella
+//	 * videochat
+//	 */
+//	$video_chat = '<a href="' . HTTP_ROOT_DIR . '/comunica/videochat.php" target="_blank">' . translateFN('video conference') . '</a>';
+//	$chat = '<a href="' . HTTP_ROOT_DIR . '/comunica/chat.php" target="_blank">' . translateFN('chat') . '</a>';
+//	$go_download = '<a href="' . HTTP_ROOT_DIR . '/browsing/download.php">' . translateFN('file sharing') . '</a>';
+//	$send_media = '<a href="' . HTTP_ROOT_DIR . '/services/upload.php">' . translateFN('invia un file') . '</a>';
+//}
 
-
-if ($node_type == ADA_GROUP_TYPE)  {
-	$go_map = '<a href="map.php?id_node=' . $sess_id_node . '">'
-			. translateFN('mappa') . '</a>';
-} elseif ($node_type == ADA_GROUP_WORD_TYPE) {
-	$go_map = '<a href="map.php?id_node=' . $sess_id_node . '&map_type=lemma">'
-			. translateFN('mappa') . '</a>';
-}else {
-				$go_map = '';
-}
+//
+//if ($node_type == ADA_GROUP_TYPE)  {
+//	$go_map = '<a href="map.php?id_node=' . $sess_id_node . '">'
+//			. translateFN('mappa') . '</a>';
+//} elseif ($node_type == ADA_GROUP_WORD_TYPE) {
+//	$go_map = '<a href="map.php?id_node=' . $sess_id_node . '&map_type=lemma">'
+//			. translateFN('mappa') . '</a>';
+//}else {
+//				$go_map = '';
+//}
 
 switch($id_profile) {
 	case AMA_TYPE_STUDENT:
@@ -363,14 +366,31 @@ if ($mod_enabled) {
 	$content_dataAr['edit_note'] = '';
 	$content_dataAr['delete_note'] = '';
 }
-
-if ($com_enabled) {
+$showRead = false;
+foreach ($user_agendaAr as $providerUserDate => $appointmentTmp) {
+    $dhUserDate = AMA_DataHandler::instance(MultiPort::getDSN($providerUserDate));
+    foreach ($appointmentTmp as $idAppTmp => $singleApp) {
+	$event_token = ADAEventProposal::extractEventToken($singleApp[2]);
+	$guidanceSession = $dhUserDate->get_eguidance_session_with_event_token($event_token);
+	if (AMA_DB::isError($guidanceSession)) {
+	    unset($user_agendaAr[$providerUserDate][$idAppTmp]);
+	}
+	
+    }
+    
+}
+$user_agenda   = CommunicationModuleHtmlLib::displayAppointmentsWithAssessementLink($user_agendaAr, ADA_MSG_AGENDA, $testers_dataAr,$showRead);
+/**
+ * $user_events, $user_agenda, $user_messages are set in tutor_function and in browsing_function
+ */
+//if ($com_enabled) {
+if (true) {
 	$online_users_listing_mode = 2;
 	$online_users = ADALoggableUser::get_online_usersFN($sess_id_course_instance,$online_users_listing_mode);
 	$content_dataAr['ajax_chat_link'] = $ajax_chat_link;
 	$content_dataAr['messages'] = $user_messages->getHtml();
 	$content_dataAr['agenda'] = $user_agenda->getHtml();  // confirmed appointments
-    $content_dataAr['events'] = $user_events->getHtml();  // appointment proposals
+        $content_dataAr['events'] = $user_events->getHtml();  // appointment proposals
 	$content_dataAr['chat_users'] = $online_users;
 } else {
 	$content_dataAr['chat_link'] = translateFN("chat non abilitata");

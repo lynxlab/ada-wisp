@@ -25,14 +25,16 @@ $variableToClearAR = array('layout', 'user');
 /**
  * Users (types) allowed to access this module.
  */
-$allowedUsersAr = array(AMA_TYPE_TUTOR, AMA_TYPE_SWITCHER);
+$allowedUsersAr = array(AMA_TYPE_TUTOR, AMA_TYPE_SWITCHER, AMA_TYPE_STUDENT, AMA_TYPE_SUPERTUTOR);
 
 /**
  * Get needed objects
  */
 $neededObjAr = array(
   AMA_TYPE_TUTOR => array('layout'),
-  AMA_TYPE_SWITCHER => array('layout')
+  AMA_TYPE_SWITCHER => array('layout'),
+  AMA_TYPE_STUDENT => array('layout'),
+  AMA_TYPE_SUPERTUTOR => array('layout')
 );
 
 require_once ROOT_DIR.'/include/module_init.inc.php';
@@ -55,7 +57,7 @@ else {
 
 include_once 'include/tutor_functions.inc.php';
 include_once 'include/eguidance_tutor_form_functions.inc.php';
-include_once HTTP_ROOT_DIR.'/include/CourseInstance.php';
+//include_once ROOT_DIR.'/include/CourseInstance.inc.php';
 
 /*
  * YOUR CODE HERE
@@ -116,7 +118,8 @@ else {
   /*
    * Obtain event_token from $_GET.
    */
-
+$userAgendaForThisProvider = $user_agendaAr[$_SESSION['sess_selected_tester']];
+//var_dump($userAgendaForThisProvider);
   if(isset($_GET['event_token'])) {
     $event_token = DataValidator::validate_event_token($_GET['event_token']);
     if($event_token === FALSE) {
@@ -126,6 +129,15 @@ else {
     }
     $id_course_instance = ADAEventProposal::extractCourseInstanceIdFromThisToken($event_token);
     $appointmentTime = ADAEventProposal::extractTimeFromThisToken($event_token);
+    $appointmentTime = NULL;
+    foreach ($userAgendaForThisProvider as $appTmpAr) {
+	if (strpos($appTmpAr[2],$event_token)!== false) {
+	    $eguidance_session_dataAr['data_ora'] = $appTmpAr[1];
+	    $appointmentTime = $appTmpAr[1];
+	    break;
+	}
+    }
+   
   }
   else if (isset($_GET['id_course_instance']))
   {
@@ -157,8 +169,8 @@ else {
   }
 
   $service_info_statusAr = Course_instance::getInstanceStatus($instanceInfoAr);
-  $service_infoAr['instance_status'] = $service_info_statusAr['status_instance'];
-  $service_infoAr['instance_status_value'] = $service_info_statusAr['status_instance_value'];
+  $service_infoAr['instance_status'] = $instanceStatusDescription[$instanceInfoAr['status']];
+  $service_infoAr['instance_status_value'] = $instanceInfoAr['status'];
   
   /*
    * Get tutored user info
@@ -183,18 +195,23 @@ else {
    * Check if an eguidance session with this event_token exists. In this case,
    * use this data to fill the form.
    */
+//      var_dump(array($_SESSION['sess_selected_tester'],$user_agendaAr));die();
+
   if (strlen($event_token)>0) {
   	$eguidance_session_dataAr = $dh->get_eguidance_session_with_event_token($event_token);
   } else {
   	$eguidance_session_dataAr = new AMA_Error();
   }
-  
+  $fill_textareas=FALSE;
   if(!AMA_DataHandler::isError($eguidance_session_dataAr)) {
     if($is_popup) {
       $eguidance_session_dataAr['is_popup'] = true;
     }
-    $eguidance_session_dataAr['data_ora'] = ADAEventProposal::extractTimeFromThisToken($event_token);
-    $form = TutorModuleHtmlLib::getEditEguidanceDataForm($tutoredUserObj, $service_infoAr, $eguidance_session_dataAr);
+    if ($userObj->getType() == AMA_TYPE_STUDENT || $userObj->getType() == AMA_TYPE_SUPERTUTOR) {
+        $eguidanceAssessment = TutorModuleHtmlLib::getEguidanceTutorShow($tutoredUserObj, $service_infoAr,$eguidance_session_dataAr, $fill_textareas);
+    } else {
+        $eguidanceAssessment = TutorModuleHtmlLib::getEditEguidanceDataForm($tutoredUserObj, $service_infoAr,$eguidance_session_dataAr, $fill_textareas);
+    }
   }
   else {
     $last_eguidance_session_dataAr = $dh->get_last_eguidance_session($id_course_instance);
@@ -205,17 +222,23 @@ else {
 
     if($is_popup) {
       $last_eguidance_session_dataAr['is_popup'] = true;
+      $last_eguidance_session_dataAr['data_ora'] = $appointmentTime;
     }
-    $form = TutorModuleHtmlLib::getEguidanceTutorForm($tutoredUserObj, $service_infoAr,$last_eguidance_session_dataAr, true);
+
+    if ($userObj->getType() == AMA_TYPE_STUDENT || $userObj->getType() == AMA_TYPE_SUPERTUTOR) {
+        $eguidanceAssessment = TutorModuleHtmlLib::getEguidanceTutorShow($tutoredUserObj, $service_infoAr,$last_eguidance_session_dataAr, $fill_textareas);
+    } else {
+        $eguidanceAssessment = TutorModuleHtmlLib::getEguidanceTutorForm($tutoredUserObj, $service_infoAr,$last_eguidance_session_dataAr, $fill_textareas);
+    }
+   
   }
 }
-
 $content_dataAr = array(
   'user_name' => $user_name,
   'user_type' => $user_type,
   'status'    => $status,
   'user_modprofilelink' => $userObj->getEditProfilePage(),
-  'dati'      => $form->getHtml()
+  'dati'      => $eguidanceAssessment->getHtml()
 );
 // if it's default.tpl the template field is data and NOT dati
 $content_dataAr['data'] = $content_dataAr['dati'];

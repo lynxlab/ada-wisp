@@ -1275,6 +1275,11 @@ static public function getRecipientsFromAgenda($data_Ar) {
         }else {
             $sender_username = $appointment_Ar[6];
         }
+	
+	$event_token = ADAEventProposal::extractEventToken($appointment_Ar[2]);
+	$href = HTTP_ROOT_DIR . '/tutor/eguidance_tutor_form.php?event_token=' . $event_token;
+	$action_link = CDOMElement::create('a', "href:$href");
+	$action_link->addChild(new CText(translateFN('View eguidance session data')));
         
         /**
          * @author giorgio 16/apr/2014 16:35:39
@@ -1548,5 +1553,133 @@ static public function getRecipientsFromAgenda($data_Ar) {
 
     return $select;
   }
+  
+  static public function displayAppointmentsWithAssessementLink($data_Ar=array(), $message_type = ADA_MSG_SIMPLE, $testers_dataAr=array(), $showRead=true) {
+    $common_dh = $GLOBALS['common_dh'];
+    $javascript_ok = check_javascriptFN($_SERVER['HTTP_USER_AGENT']);
+
+    $appointments_Ar = array();
+
+    if($message_type == ADA_MSG_SIMPLE) {
+      $module = 'read_message.php';
+    }
+    else {
+      $module = 'read_event.php';
+    }
+
+    foreach($data_Ar as $tester => $appointment_data_Ar) {
+
+      //$udh = UserDataHandler::instance(self::getDSN($tester));
+
+      //$tester_info_Ar = $common_dh->get_tester_info_from_pointer($tester);
+      $tester_id = $testers_dataAr[$tester];
+
+//       if (AMA_Common_DataHandler::isError($tester_info_Ar)) {
+//         /*
+//          * Return a ADA_Error with delayed error handling.
+//          */
+//         return new ADA_Error($tester_info_Ar,translateFN('Errore in ottenimento informazioni tester'),
+//                               NULL,NULL,NULL,NULL,TRUE);
+//       }
+      $tester_TimeZone = MultiPort::getTesterTimeZone($tester);
+      $offset = get_timezone_offset($tester_TimeZone,SERVER_TIMEZONE);
+
+      foreach($appointment_data_Ar as $appointment_id => $appointment_Ar) {
+
+        /*
+         *  If message type is ADA_MSG_AGENDA and it is a proposal the appointement id has a suffix.
+         *  The suffix has to be removed in order to create the correct link to the message.
+         */
+        if (is_string($appointment_id)) {
+            $appointment_id_Ar = explode("_", $appointment_id);
+            $appointment_id = $appointment_id_Ar[0];
+        }
+        // trasform message content into variable names
+        $sender_id      = $appointment_Ar[0];
+        $date_time      = $appointment_Ar[1];
+        //$subject        = $appointment_Ar[2];
+        /*
+         * Check if the subject has an internal identifier and remove it.
+         */
+        //$subject        = preg_replace('/[0-9]+#/','',$appointment_Ar[2],1);
+        $subject        = ADAEventProposal::removeEventToken($appointment_Ar[2]);
+        $priority       = $appointment_Ar[3];
+        $read_timestamp = $appointment_Ar[4];
+        $read_msg       = AMA_DataHandler::ts_to_date($read_timestamp, "%d/%m/%Y %H:%M:%S");// ." " . $zone;
+        if ($read_timestamp == 0) $read_msg= '';
+
+        $date_time_zone = $date_time + $offset;
+ 	$zone 		= translateFN("Time zone:") . " " . $tester_TimeZone;
+        $data_msg       = AMA_DataHandler::ts_to_date($date_time_zone, "%d/%m/%Y %H:%M:%S");// ." " . $zone;
+
+        if ($appointment_Ar[7] != '') {
+            $sender_username = $appointment_Ar[7] . ' ' . $appointment_Ar[8];;
+        }else {
+            $sender_username = $appointment_Ar[6];
+        }
+	
+	/*
+	 * Link to appointment report 
+	 */
+	$event_token = ADAEventProposal::extractEventToken($appointment_Ar[2]);
+	$href = HTTP_ROOT_DIR . '/tutor/eguidance_tutor_form.php?event_token=' . $event_token;
+	$report_link = CDOMElement::create('a', "href:$href");
+	$report_link->addChild(new CText(translateFN('View session report')));
+        
+        /**
+         * @author giorgio 16/apr/2014 16:35:39
+         * 
+         * If session user is a student, try to
+         * retrieve tutor's full name just for display purposes
+         */
+        if ($message_type==ADA_MSG_AGENDA && isset($_SESSION['sess_userObj']) && $_SESSION['sess_userObj']->getType()==AMA_TYPE_STUDENT) {
+        	// the token is in $appointment_Ar[2]
+        	$id_tutor = ADAEventProposal::extractTutorIdFromThisToken($appointment_Ar[2]);
+        	if (intval($id_tutor)>0)
+        	{
+        		$tutorObj = MultiPort::findUser($id_tutor);
+        		if ($tutorObj->getType()==AMA_TYPE_TUTOR) {
+        			$sender_username = $tutorObj->getFullName();
+        		}
+        	}
+        }
+        
+        //$msg_id = $tester_info_Ar[0].'_'.$appointment_id;
+        $msg_id = $tester_id.'_'.$appointment_id;
+        $url = HTTP_ROOT_DIR.'/comunica/'.$module.'?msg_id='.$msg_id;
+
+        if ($javascript_ok) {
+          $subject_link = CDOMElement::create('a');
+          $subject_link->setAttribute('href','#');
+          $subject_link->setAttribute('onclick',"openMessenger('$url',800,600);");
+          $subject_link->addChild(new CText($subject));
+        }
+        else {
+          $subject_link = CDOMElement::create('a',"href:$url, target:_blank");
+          $subject_link->addChild(new CText($subject));
+        }
+        if ($showRead) {
+            $appointments_Ar[] = array($data_msg,$subject_link,$sender_username,$report_link,$read_msg);
+        } else {
+            $appointments_Ar[] = array($data_msg,$subject_link,$sender_username,$report_link);
+        }
+      }
+    }
+    $thead_data = array(translateFN('Data'),translateFN('Oggetto'), translateFN('User'),translateFN('report'));
+    if ($showRead) $thead_data[4] =  translateFN('Letto');
+    if(count($appointments_Ar) > 0) {
+//      $table = BaseHtmlLib::tableElement('class:sortable', NULL, $appointments_Ar);
+      $table = BaseHtmlLib::tableElement('id:sortable_'.$message_type, $thead_data, $appointments_Ar);
+      $table->setAttribute('class', 'com_tools_sortable sortable_'.$message_type);
+      return $table;
+    }
+    else {
+      if($message_type == ADA_MSG_SIMPLE) {
+        return new CText(translateFN('Non ci sono messaggi'));
+      }
+      return new CText(translateFN('Non ci sono appuntamenti'));
+    }
+  }
+  
 }
 ?>

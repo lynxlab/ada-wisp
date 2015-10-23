@@ -389,3 +389,15 @@ $tipoPersonalPattoAr = array (
     'altro'
 );
 
+/**
+ * ADA instance service status
+ */
+define('ADA_INSTANCE_OPENED', 0);
+define('ADA_INSTANCE_CLOSED', 1);
+define('ADA_INSTANCE_MORE_DATE', 2);
+
+$instanceStatusDescription = array (
+    'In corso',
+    'Terminato',
+    'Fissare appuntamento'
+);

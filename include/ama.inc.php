@@ -5537,6 +5537,8 @@ abstract class AMA_Tester_DataHandler extends Abstract_AMA_DataHandler {
         $open_subscription = $istanza_ha['open_subscription'];
         $duration_hours = $this->or_zero($istanza_ha['duration_hours']);
         $tipo_servizio = $this->or_null($istanza_ha['service_level']);
+        $status = $this->or_zero($istanza_ha['status']);
+	
 
 
         // check value of supposed starting date (cannot be empty)
@@ -5568,7 +5570,7 @@ abstract class AMA_Tester_DataHandler extends Abstract_AMA_DataHandler {
 
         $sql  = "update istanza_corso set data_inizio=$data_inizio, durata=$durata, data_inizio_previsto=$data_inizio_previsto, ";
         $sql .= "data_fine=$data_fine, self_instruction=$self_instruction, title=$title, self_registration=$self_registration, ";
-        $sql .= "price=$price, duration_subscription=$duration_subscription, start_level_student=$start_level_student, open_subscription=$open_subscription, ";
+        $sql .= "price=$price, duration_subscription=$duration_subscription, status=$status, start_level_student=$start_level_student, open_subscription=$open_subscription, ";
         $sql .= "duration_hours=$duration_hours, tipo_servizio=$tipo_servizio where id_istanza_corso=$id";
         $res = $db->query($sql);
         if (AMA_DB::isError($res)) {
@@ -9540,7 +9542,8 @@ abstract class AMA_Tester_DataHandler extends Abstract_AMA_DataHandler {
                 $eguidance_dataAr['id_tutor'],
                 $eguidance_dataAr['id_istanza_corso'],
                 $eguidance_dataAr['event_token'],
-                time(),
+                $eguidance_dataAr['data_ora'],
+//                time(),
                 $eguidance_dataAr['type_of_guidance'],
                 $eguidance_dataAr['ud_1'],
                 $eguidance_dataAr['ud_2'],
@@ -11338,7 +11341,7 @@ public function get_updates_nodes($userObj, $pointer)
 
         $sql = 'SELECT U1.id_utente, U1.nome, U1.cognome, MC.titolo, I.status,
                    IC.id_istanza_corso, IC.id_corso, IC.data_inizio_previsto AS data_richiesta,
-        		   IC.data_inizio AS data_inizio, IC.data_fine AS data_fine
+        		   IC.data_inizio AS data_inizio, IC.data_fine AS data_fine, IC.status AS instance_status
               FROM utente AS U1, modello_corso AS MC, iscrizioni AS I, istanza_corso AS IC
              WHERE IC.data_inizio = 0 AND MC.id_corso = IC.id_corso
                AND I.id_istanza_corso = IC.id_istanza_corso
@@ -11359,7 +11362,7 @@ public function get_updates_nodes($userObj, $pointer)
         $sql = 'SELECT U1.id_utente, U1.nome, U1.cognome, MC.titolo, I.status,
                    U2.id_utente AS id_tutor, U2.nome AS nome_t, U2.cognome AS cognome_t, U2.username AS username_t,
                    IC.id_istanza_corso, IC.id_corso, IC.data_inizio_previsto AS data_richiesta,
-        		   IC.data_inizio AS data_inizio, IC.data_fine AS data_fine
+        		   IC.data_inizio AS data_inizio, IC.data_fine AS data_fine, IC.status AS instance_status
               FROM utente AS U1, modello_corso AS MC, istanza_corso AS IC, ';
 
         if ($getUnassignedServices===true) {
@@ -11457,7 +11460,7 @@ public function get_updates_nodes($userObj, $pointer)
         if (AMA_DB::isError($db)) return $db;
 
         $sql = 'SELECT U1.id_utente, U1.username, U1.nome, U1.cognome, U1.tipo, MC.titolo, I.status,
-                   IC.id_corso, IC.id_istanza_corso, IC.data_inizio, IC.durata, IC.data_fine
+                   IC.id_corso, IC.id_istanza_corso, IC.data_inizio, IC.durata, IC.data_fine, IC.status as instance_status
           FROM utente AS U1, modello_corso AS MC, iscrizioni AS I, istanza_corso AS IC, tutor_studenti AS TS
          WHERE TS.id_utente_tutor ='.$id_tutor.'
            AND IC.id_istanza_corso = TS.id_istanza_corso

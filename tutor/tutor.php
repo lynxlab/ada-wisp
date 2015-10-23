@@ -263,82 +263,83 @@ switch ($op) {
 		  $status_closed_label     = translateFN('Terminato');
 		  $timeline_link_label = translateFN('Entra nella timeline');
 		
-		  foreach($clients_list as $user_data) {
-		  	$id_course = $user_data['id_corso'];
-		  	
-		  	/**
-             * @author giorgio 18/nov/2013
-             * 
-             * if the id_course is not associated to
-             * a service of ADA_SERVICE_HELP level it
-             * is safe to skip to next iteration
-		  	 */
-		  	if (!in_array($id_course,$serviceHelpIDs)) continue;
-		  	
-		    $id_course_instance = $user_data['id_istanza_corso'];
-		//	$url = HTTP_ROOT_DIR.'/comunica/send_event_proposal.php?id_user='.$user_data['id_utente'];
-		//	$onclick = "openMessenger('$url',800,600);";
-		/* mod: 28/06 zoom utente */
-		// dettagli utente:
-		    $href = 'edit_user.php?id='.$user_data['id_utente'];
-		    // $user_link = CDOMElement::create('a');
-		     $user_link = CDOMElement::create('a', "href:$href");
-		/* end mod */    
-		//    $user_link->setAttribute('href','#');
-		//    $user_link->setAttribute('onclick',$onclick);
-		    $user_link->addChild(new CText($user_data['nome'] . ' ' . $user_data['cognome']));
-		
-		    
-		    $href = HTTP_ROOT_DIR.'/tutor/service_info.php?id_course='.$id_course.'&id_user='.$user_data['id_utente'].'&id_course_instance='.$id_course_instance;
-		    $service_link = CDOMElement::create('a',"href:$href");
-		    $service_link->addChild(new CText(translateFN($user_data['titolo'])));
-		
-		    $user_history_link = CDOMElement::create('a', 'href:user_service_detail.php?id_user='.$user_data['id_utente'].'&id_course_instance='.$id_course_instance);
-		    $user_history_link->addChild(new CText($user_history_link_label));
-		
-		    $id_node   = $id_course.'_'.ADA_DEFAULT_NODE;
-		    $href = HTTP_ROOT_DIR.'/browsing/sview.php?id_course='.$id_course.'&id_node='.$id_node.'&id_course_instance='.$id_course_instance;
-		    $timeline_link = CDOMElement::create('a', "href:$href");
-		    $timeline_link->addChild(new CText($timeline_link_label));
-		    $current_timestamp = time();
-		
-		    if($user_data['data_inizio'] > 0 && $user_data['data_fine'] > 0
-		       && $current_timestamp > $user_data['data_inizio']
-		       && $current_timestamp < $user_data['data_fine']) {
-		      $status = $status_opened_label;
-		      
-		      $serviceCloseLink = CDOMElement::create('a');
-		      $serviceCloseLink->setAttribute('href','#');
-		      $serviceCloseLink->setAttribute('onclick', "javascript:openMessenger('eguidance_tutor_form.php?id_course_instance=".$id_course_instance."&popup=1',800,600);");
-		      $serviceCloseLink->addChild(new CText(translateFN('chiudi')));
-		      
-		      $status .= $serviceCloseLink->getHtml();
-		
-		      $url = HTTP_ROOT_DIR.'/comunica/send_event_proposal.php?id_user='.$user_data['id_utente'].'&id_course_instance='.$id_course_instance;
-		      $onclick = "openMessenger('$url',800,600);";
-		      $appointment_link = CDOMElement::create('a');
-		      $appointment_link->setAttribute('href','#');
-		      $appointment_link->setAttribute('onclick',$onclick);
-		      $appointment_link->addChild(new CText($appointment_link_label));
-		
-		      $actions = BaseHtmlLib::plainListElement('class:actions',array($appointment_link, $timeline_link, $user_history_link));
-		
-		    }
-		    else {
-		      $status = $status_closed_label;
-		
-		      $actions = BaseHtmlLib::plainListElement('class:actions', array($timeline_link, $user_history_link));
-		    }
-		
-		    $tbody_data[] = array(
-		      $user_link,
-		      $actions,
-		      $service_link,
-		      $status,
-		      ts2dFN($user_data['data_inizio'])
-		//      $user_data['durata'],
-		//      ts2dFN($user_data['data_fine'])
-		    );
+		foreach($clients_list as $user_data) {
+		    $id_course = $user_data['id_corso'];
+
+				/**
+		     * @author giorgio 18/nov/2013
+		     * 
+		     * if the id_course is not associated to
+		     * a service of ADA_SERVICE_HELP level it
+		     * is safe to skip to next iteration
+				 */
+		    if (!in_array($id_course,$serviceHelpIDs)) continue;
+			    $id_course_instance = $user_data['id_istanza_corso'];
+			    // dettagli utente:
+			    $href = 'edit_user.php?id='.$user_data['id_utente'];
+			    // $user_link = CDOMElement::create('a');
+			     $user_link = CDOMElement::create('a', "href:$href");
+			    /* end mod */    
+			    $user_link->addChild(new CText($user_data['nome'] . ' ' . $user_data['cognome']));
+
+
+			    $href = HTTP_ROOT_DIR.'/tutor/service_info.php?id_course='.$id_course.'&id_user='.$user_data['id_utente'].'&id_course_instance='.$id_course_instance;
+			    $service_link = CDOMElement::create('a',"href:$href");
+			    $service_link->addChild(new CText(translateFN($user_data['titolo'])));
+
+			    $user_history_link = CDOMElement::create('a', 'href:user_service_detail.php?id_user='.$user_data['id_utente'].'&id_course_instance='.$id_course_instance);
+			    $user_history_link->addChild(new CText($user_history_link_label));
+
+			    $id_node   = $id_course.'_'.ADA_DEFAULT_NODE;
+			    $href = HTTP_ROOT_DIR.'/browsing/sview.php?id_course='.$id_course.'&id_node='.$id_node.'&id_course_instance='.$id_course_instance;
+			    $timeline_link = CDOMElement::create('a', "href:$href");
+			    $timeline_link->addChild(new CText($timeline_link_label));
+			    $current_timestamp = time();
+
+			    $status = $instanceStatusDescription[$user_data['instance_status']];
+			    /*
+			     * Graffio 23/10/2015 
+			     * introduced Status of instance instead of data_inizio and data_fine
+			     * 
+			    if($user_data['data_inizio'] > 0 && $user_data['data_fine'] > 0
+			       && $current_timestamp > $user_data['data_inizio']
+			       && $current_timestamp < $user_data['data_fine']) {
+			      $status = $status_opened_label;
+
+			      $serviceCloseLink = CDOMElement::create('a');
+			      $serviceCloseLink->setAttribute('href','#');
+			      $serviceCloseLink->setAttribute('onclick', "javascript:openMessenger('eguidance_tutor_form.php?id_course_instance=".$id_course_instance."&popup=1',800,600);");
+			      $serviceCloseLink->addChild(new CText(translateFN('chiudi')));
+
+			      $status .= $serviceCloseLink->getHtml();
+			     * 
+			     */
+			    if ($status != ADA_INSTANCE_CLOSED || ($user_data['data_fine'] = 0 || $user_data['data_fine'] < time())) { 
+			      $url = HTTP_ROOT_DIR.'/comunica/send_event_proposal.php?id_user='.$user_data['id_utente'].'&id_course_instance='.$id_course_instance;
+			      $onclick = "openMessenger('$url',800,600);";
+			      $appointment_link = CDOMElement::create('a');
+			      $appointment_link->setAttribute('href','#');
+			      $appointment_link->setAttribute('onclick',$onclick);
+			      $appointment_link->addChild(new CText($appointment_link_label));
+
+			      $actions = BaseHtmlLib::plainListElement('class:actions',array($appointment_link, $timeline_link, $user_history_link));
+
+			    }
+			    else {
+			      $status = $status_closed_label;
+
+			      $actions = BaseHtmlLib::plainListElement('class:actions', array($timeline_link, $user_history_link));
+			    }
+
+			    $tbody_data[] = array(
+			      $user_link,
+			      $actions,
+			      $service_link,
+			      $status,
+			      ts2dFN($user_data['data_inizio'])
+			//      $user_data['durata'],
+			//      ts2dFN($user_data['data_fine'])
+			    );
 		  }
 		  $table = BaseHtmlLib::tableElement('class:sortable',$thead_data,$tbody_data);
 		  $data  = $table;
@@ -372,29 +373,30 @@ switch ($op) {
 					
 					$isEnded = ($tutoredInstance['data_fine'] > 0 && $tutoredInstance['data_fine'] < time()) ? true : false;
 					$isStarted = ($tutoredInstance['data_inizio'] > 0 && $tutoredInstance['data_inizio'] <= time()) ? true : false;
+					$instanceStatus = $tutoredInstance['status'];
 					
 					if (!AMA_DB::isError($serviceInfo)) {
 						if ($serviceInfo[3]==ADA_SERVICE_COMMON_STUDENT || $serviceInfo[3]==ADA_SERVICE_COMMON)
 						{
 							// this is a student common area for which the user is tutor (i.e. she's following it)
 							$groupsIFollow[] = array ('id_corso'=>$tutoredInstance['id_corso'], 
-													  'id_istanza_corso'=> $tutoredInstance['id_istanza_corso'],
-													  'titolo'=>$serviceInfo[1],
-													  'descrizione'=>$serviceInfo[2],
-													  'isStarted' => $isStarted,
-													  'isEnded' => $isEnded,
-													  'active'=>true); 					
+										  'id_istanza_corso'=> $tutoredInstance['id_istanza_corso'],
+										  'titolo'=>$serviceInfo[1],
+										  'descrizione'=>$serviceInfo[2],
+										  'isStarted' => $isStarted,
+										  'isEnded' => $isEnded,
+										  'active'=>true); 					
 						}
 						else if ($serviceInfo[3]==ADA_SERVICE_COMMON_TUTOR)
 						{
 							// this is a practice community for which the user is tutor (i.e. is 'active')
 							$practiceCommunities[] = array ('id_corso'=>$tutoredInstance['id_corso'],
-														    'id_istanza_corso'=> $tutoredInstance['id_istanza_corso'],
-															'titolo'=>$serviceInfo[1],
-														    'descrizione'=>$serviceInfo[2],
-															'isStarted' => $isStarted,
-															'isEnded' => $isEnded,							
-															'active'=>true);
+														'id_istanza_corso'=> $tutoredInstance['id_istanza_corso'],
+														'titolo'=>$serviceInfo[1],
+														'descrizione'=>$serviceInfo[2],
+														'isStarted' => $isStarted,
+														'isEnded' => $isEnded,							
+														'active'=>true);
 						}
 					}
 				}

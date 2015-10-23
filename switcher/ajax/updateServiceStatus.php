@@ -37,8 +37,9 @@ require_once ROOT_DIR.'/include/module_init.inc.php';
 //require_once 'include/switcher_functions.inc.php';
 include_once '../include/Subscription.inc.php';
 
-$status_opened     = 0;
-$status_closed     = 1;
+$status_opened     = ADA_INSTANCE_OPEN; //0;
+$status_closed     = ADA_INSTANCE_CLOSED; //1;
+$status_more_date = ADA_INSTANCE_MORE_DATE; // 2
 
 
 if (isset($_SERVER['REQUEST_METHOD']) && $_SERVER['REQUEST_METHOD'] == 'POST') {
@@ -46,9 +47,12 @@ if (isset($_SERVER['REQUEST_METHOD']) && $_SERVER['REQUEST_METHOD'] == 'POST') {
     $userStatus=$_POST['status'];
     $id_user=$_POST['id_user'];
     $id_instance=$_POST['id_instance'];
+    
 
     $instanceInfoAr = $dh->course_instance_get($id_instance);
     $previousStatus = (!is_null($instanceInfoAr['data_fine'])) ? $status_opened : $status_closed;
+    $instanceInfoAr['status']=$userStatus;
+    
     if(!AMA_DataHandler::isError($instanceInfoAr)) {
 	if ($userStatus == $status_closed) {
 	    $instanceInfoAr['data_fine'] = time();
@@ -60,7 +64,7 @@ if (isset($_SERVER['REQUEST_METHOD']) && $_SERVER['REQUEST_METHOD'] == 'POST') {
 	    */
 	    if ($instanceInfoAr['data_inizio']==0) $instanceInfoAr['data_inizio'] = $instanceInfoAr['data_fine']; 
 	}
-	elseif ($userStatus == $status_opened) {
+	elseif ($userStatus == $status_opened || $userStatus == $status_more_date) {
 	    $instanceInfoAr['data_fine'] = NULL;
 	}
 	$updateInstance = $dh->course_instance_set($id_instance,$instanceInfoAr);
@@ -87,7 +91,7 @@ if (isset($_SERVER['REQUEST_METHOD']) && $_SERVER['REQUEST_METHOD'] == 'POST') {
 		}
 	    }
 	}
-	elseif($updateInstance && ($userStatus == $status_opened)){
+	elseif($updateInstance && ($userStatus == $status_opened || $userStatus == $status_opened)){
 	    /*
 	    *  change user status 
 	    */

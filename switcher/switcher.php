@@ -53,7 +53,8 @@ $head_desc_user = translateFN("utente");
 $head_desc_service = translateFN("servizio");
 $head_desc_date = translateFN("date of request");
 $head_desc_epract = translateFN("consulente");
-$head_desc_instance = translateFN("azioni");
+//$head_desc_instance = translateFN("azioni");
+$head_desc_instance = translateFN("status");
 
 
 $thead_data = array($head_desc_user,$head_desc_service,$head_desc_date,$head_desc_epract,$head_desc_instance);
@@ -140,16 +141,21 @@ if ($op=='not_started' or $op=='all') {
             $epractitioner_link->addChild(new CText(translateFN('Assegna')));
 
             // $href = 'edit_instance.php?id_course_instance='.$user_registration['id_istanza_corso'];
+	    $instance_status = CDOMElement::create('span','class:instance_status');
+            $instance_status->addChild(new CText(translateFN($instanceStatusDescription[$user_registration['instance_status']]).'/'));
+	    
             $instance_link = CDOMElement::create('a');
-            $instance_link->setAttribute('href','../tutor/eguidance_tutor_form.php?id_course_instance='.$user_registration['id_istanza_corso']);
-            $instance_link->addChild(new CText(translateFN('chiudi')));
+            $instance_link->setAttribute('href','../tutor/user_service_detail.php?id_user='.$user_registration['id_utente'].'&id_course_instance='.$user_registration['id_istanza_corso']);
+            $instance_link->addChild(new CText(translateFN('Modifica')));
+	    
+	    $instance_status->addChild($instance_link);
 
             $tbody_data[] = array(
               $user_link,
               $service_link,
               $request_date,
               $epractitioner_link,
-              $instance_link
+              $instance_status
             );
         }
       }
@@ -162,13 +168,12 @@ if ($op=='not_started' or $op=='all') {
     }
 }
 if ($op=='started' || $op=='all' || $op=='open' || $op=='closed') {
-	$getUnassignedServices = true;
+    $getUnassignedServices = true;
     $startedAr = $dh->get_tester_services_started($getUnassignedServices);
     if (is_array($startedAr) && sizeof($startedAr) > 0) {
 
       foreach($startedAr as $user_registration) {
 
-        //print_r($user_registration);
         if (($op == 'closed' &&  time() >= $user_registration['data_fine']) || ($op == 'open' &&  time() < $user_registration['data_fine']) || ($op=='started') || ($op=='all')) {
             $idLocalService = $user_registration['id_corso'];
             if ($infoServicelHa[$idLocalService]['level'] == ADA_SERVICE_HELP) {
@@ -189,13 +194,19 @@ if ($op=='started' || $op=='all' || $op=='open' || $op=='closed') {
                  */
                 // $href = 'edit_instance.php?id_course_instance='.$user_registration['id_istanza_corso'];
                 $instance_link = CDOMElement::create('a');
-                $instance_link->setAttribute('href','../tutor/eguidance_tutor_form.php?id_course_instance='.$user_registration['id_istanza_corso']);
+//                $instance_link->setAttribute('href','../tutor/eguidance_tutor_form.php?id_course_instance='.$user_registration['id_istanza_corso']);
+		$instance_link->setAttribute('href','../tutor/user_service_detail.php?id_user='.$user_registration['id_utente'].'&id_course_instance='.$user_registration['id_istanza_corso']);
+		$instance_link->addChild(new CText(translateFN('Modifica')));
                 
-                $current_timestamp = time();
+		$instance_status = CDOMElement::create('span','class:instance_status');
+		$instance_status->addChild(new CText(translateFN($instanceStatusDescription[$user_registration['instance_status']]).'/'));
+		$instance_status->addChild($instance_link);
+
+		$current_timestamp = time();
                 
-                if($user_registration['data_inizio'] > 0 && $user_registration['data_fine'] > 0
+                if(($user_registration['data_inizio'] > 0 && $user_registration['data_fine'] > 0
                 && $current_timestamp > $user_registration['data_inizio']
-                && $current_timestamp < $user_registration['data_fine']) {
+                && $current_timestamp < $user_registration['data_fine']) || $user_registration['instance_status'] != ADA_INSTANCE_CLOSED) {
                 	// 1. build epractiotioner link
                 	$href = 'assign_practitioner.php?id_course='.$user_registration['id_corso'].'&id_course_instance='.$user_registration['id_istanza_corso'].'&id_user='.$user_registration['id_utente'];
                 	$epractitioner_link = CDOMElement::create('a', "href:$href");
@@ -205,7 +216,7 @@ if ($op=='started' || $op=='all' || $op=='open' || $op=='closed') {
                 		$epractitioner_link->addChild(new CText(translateFN('Assegna')));
                 	}
                 	// 2. build instance link
-                	$instance_link->addChild(new CText(translateFN('chiudi')));                	
+//                	$instance_link->addChild(new CText(translateFN('chiudi')));                	
                 } else {
                 	// 1. build epractiotioner link, that is a span in this case                	
                 	$epractitioner_link = CDOMElement::create('span');
@@ -215,7 +226,7 @@ if ($op=='started' || $op=='all' || $op=='open' || $op=='closed') {
                 		$epractitioner_link = new CText(translateFN('Non Assegnato'));
                 	}
                 	// 2. build instance link
-                	$instance_link->addChild(new CText(translateFN('terminato')));
+  //              	$instance_link->addChild(new CText(translateFN('terminato')));
                 }
                 
 
@@ -224,8 +235,9 @@ if ($op=='started' || $op=='all' || $op=='open' || $op=='closed') {
                   $service_link,
                   $request_date,
                   $epractitioner_link,
-                  $instance_link
-                );
+//                  $instance_link
+		  $instance_status
+		);
             }
         }
       }
@@ -287,15 +299,17 @@ $content_dataAr = array(
 );
 
 $layout_dataAr['JS_filename'] = array(
-		JQUERY,
-		JQUERY_DATATABLE,
-        JQUERY_DATATABLE_DATE,
-		JQUERY_NO_CONFLICT
-	);
+	JQUERY,
+	JQUERY_DATATABLE,
+	JQUERY_DATATABLE_DATE,
+        ROOT_DIR. '/js/include/jquery/dataTables/selectSortPlugin.js',
+	JQUERY_NO_CONFLICT
+);
 
 $layout_dataAr['CSS_filename']= array(
-		JQUERY_DATATABLE_CSS
-	);
+        JQUERY_UI_CSS,
+	JQUERY_DATATABLE_CSS
+    );
   $render = null;
   $options['onload_func'] = 'dataTablesExec()';
   
@@ -303,5 +317,3 @@ $layout_dataAr['CSS_filename']= array(
  * Sends data to the rendering engine
  */
 ARE::render($layout_dataAr, $content_dataAr, $render, $options);
-//ARE::render($layout_dataAr, $content_dataAr);
-?>

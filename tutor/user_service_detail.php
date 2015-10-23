@@ -47,8 +47,6 @@ else {
 }
 include_once 'include/tutor_functions.inc.php';
 include_once 'include/eguidance_tutor_form_functions.inc.php';
-//var_dump($user_events_proposedAr);
-//var_dump($user_eventsAr);
 /*
  * YOUR CODE HERE
  */
@@ -107,13 +105,16 @@ else {
    * Prepare form to allow tutor/switcher to change service status
    */
     $instanceInfoAr = $dh->course_instance_get($id_course_instance);
+//    var_dump($instanceInfoAr);
     if(AMA_DataHandler::isError($instanceInfoAr)) {
     $errObj = new ADA_Error(NULL,translateFN("Errore nell'ottenimento dell'id del servzio"),
 			     NULL,NULL,NULL,$userObj->getHomePage());
     }
     $id_course = $instanceInfoAr['id_corso'];
     
+
     $service_infoAr = $common_dh->get_service_info_from_course($id_course);
+//    var_dump($service_infoAr);
     if(!AMA_Common_DataHandler::isError($service_infoAr)) {
 	$service_infoAr['id_istanza_corso'] = $id_course_instance;
 	$service_infoAr['event_token']      = $event_token;
@@ -123,31 +124,29 @@ else {
       /*
        * data chiusura e apertura istanza
        */
-	$status_opened_label     = translateFN('In corso');
-	$status_closed_label     = translateFN('Terminato');
+	$status_opened_label     = translateFN($instanceStatusDescription[ADA_INSTANCE_OPENED]); //translateFN('In corso');
+	$status_closed_label     = translateFN($instanceStatusDescription[ADA_INSTANCE_CLOSED]); // translateFN('Terminato');
+	$status_more_date	= translateFN($instanceStatusDescription[ADA_INSTANCE_MORE_DATE]);
 	$status_instance = $status_closed_label;  
-	$status_instance_value = 1; // 1 = instance Close 0 = instance open
+	
+	$status_instance_value = ADA_INSTANCE_CLOSED; // 1; 1 = instance Close 0 = instance open
 	$current_timestamp = time();
-
+	
 	if($instanceInfoAr['data_inizio'] > 0 && $instanceInfoAr['data_fine'] > 0
 	&& $current_timestamp > $instanceInfoAr['data_inizio']
 	&& $current_timestamp < $instanceInfoAr['data_fine']) {
-	  $status_instance = $status_opened_label;
-	  $status_instance_value = 0;
-	} else if ($instanceInfoAr['data_inizio']==0) {
-	      $status_instance_value = 0;
+	  $status_instance = translateFN($instanceStatusDescription[$instanceInfoAr['status']]); //$status_opened_label;
+	  $status_instance_value = $instanceInfoAr['status']; //ADA_INSTANCE_OPENED;
+	} 
+	else if ($instanceInfoAr['data_inizio']==0) {
+	      $status_instance_value = ADA_INSTANCE_OPENED;
 	}
-
+	
 	$service_infoAr['instance_status']      = $status_instance;
 	$service_infoAr['instance_status_previous'] = $status_instance;
 	$service_infoAr['instance_status_value']      = $status_instance_value;
 
-	/*
-	$service_infoAr['status_opened_label']      = $status_opened_label;
-	$service_infoAr['status_closed_label']      = $status_closed_label;
-	* 
-	*/
-	$service_infoAr['avalaible_status']      = array($status_opened_label,$status_closed_label);
+	$service_infoAr['avalaible_status']      = $instanceStatusDescription; //array($status_opened_label,$status_closed_label);
 	$service_infoAr['instance'] = $instanceInfoAr;  
 	$statusServiceForm = TutorModuleHtmlLib::getServiceStatusForm($tutoredUserObj, $service_infoAr);
 	$service_infoAr['status'] = $statusServiceForm->getHtml();
@@ -255,6 +254,7 @@ else {
   /*
    * Eguidance sessions data to display
    */
+	
   $eguidance_sessionsAr = $dh->get_eguidance_sessions($id_course_instance);
   $thead_data = array(translateFN('Eguidance sessions conducted'), '', '','');
   $tbody_data = array();
@@ -265,8 +265,13 @@ else {
   else {
     foreach($eguidance_sessionsAr as $eguidance_sessionAr) {
 	if ($eguidance_sessionAr['event_token'] != '') {
-//	    $eguidance_date = ts2dFN($eguidance_sessionAr['data_ora']);
-	    $eguidance_date = Abstract_AMA_DataHandler::ts_to_date(ADAEventProposal::extractTimeFromThisToken($eguidance_sessionAr['event_token']), ADA_DATE_FORMAT.' - %R');
+
+	    $eguidance_date = Abstract_AMA_DataHandler::ts_to_date($eguidance_sessionAr['data_ora'], ADA_DATE_FORMAT.' - %R');
+	    
+//	    $message_handler = MessageHandler::instance();
+//	    $confirmedAppointment = $mh->
+	    
+//	    $eguidance_date = Abstract_AMA_DataHandler::ts_to_date(ADAEventProposal::extractTimeFromThisToken($eguidance_sessionAr['event_token']), ADA_DATE_FORMAT.' - %R');
 	    $eguidance_type = EguidanceSession::textForEguidanceType($eguidance_sessionAr['tipo_eguidance']);
 	    $href = 'eguidance_tutor_form.php?event_token=' . $eguidance_sessionAr['event_token'].$href_suffix;
 	    $eguidance_form = CDOMElement::create('a', "href:$href");

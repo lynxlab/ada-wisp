@@ -270,39 +270,44 @@ class ADAEventProposal
    * @param string $user_events_proposedAr
    * @return Array
    */
-  static public function explodeAgendaMessageFromEventProposal($user_events_proposedAr) {
+  static public function explodeAgendaMessageFromEventProposal($user_events_proposedAr=array()) {
+      $user_events_explodedAr = array();
     foreach ($user_events_proposedAr as $client => $clientAr) {
         foreach ($clientAr as $id_message => $messageAr) {
            $message_text = $messageAr[9];
            $dateAr = self::extractDateTimesFromEventProposalText($message_text);
            $num_date = 0;
-           foreach ($dateAr as $one_date) {
-                $timestamp_time = sumDateTimeFN(array($one_date['date'],$one_date['time'].":00"));
-                if (time() <= $timestamp_time) {
-                    $user_events_exploded_clientAr[$id_message."_".$num_date][] = $messageAr[0];
-                    $user_events_exploded_clientAr[$id_message."_".$num_date][] = $timestamp_time;
-                    $user_events_exploded_clientAr[$id_message."_".$num_date][] = $messageAr[2];
-                    $user_events_exploded_clientAr[$id_message."_".$num_date][] = $messageAr[3];
-                    $user_events_exploded_clientAr[$id_message."_".$num_date][] = $messageAr[4];
-                    $user_events_exploded_clientAr[$id_message."_".$num_date][] = $messageAr[5];
-                    $user_events_exploded_clientAr[$id_message."_".$num_date][] = $messageAr[6];
-                    $num_el = count($messageAr);
-//                    $user_events_exploded_clientAr[$id_message."_".$num_date][] = $messageAr[$num_el-1];
+	   if ($dateAr !== false) {
+	       foreach ($dateAr as $one_date) {
+		    $timestamp_time = sumDateTimeFN(array($one_date['date'],$one_date['time'].":00"));
+		    if (time() <= $timestamp_time) {
+			$user_events_exploded_clientAr[$id_message."_".$num_date][] = $messageAr[0];
+			$user_events_exploded_clientAr[$id_message."_".$num_date][] = $timestamp_time;
+			$user_events_exploded_clientAr[$id_message."_".$num_date][] = $messageAr[2];
+			$user_events_exploded_clientAr[$id_message."_".$num_date][] = $messageAr[3];
+			$user_events_exploded_clientAr[$id_message."_".$num_date][] = $messageAr[4];
+			$user_events_exploded_clientAr[$id_message."_".$num_date][] = $messageAr[5];
+			$user_events_exploded_clientAr[$id_message."_".$num_date][] = $messageAr[6];
+			$num_el = count($messageAr);
+    //                    $user_events_exploded_clientAr[$id_message."_".$num_date][] = $messageAr[$num_el-1];
 
-                    foreach ($messageAr[$num_el-1] as $key => $value) {
-                        $user_events_exploded_clientAr[$id_message."_".$num_date][$key] = $value;
-                        break;
-                    }
-//                    $user_events_exploded_clientAr[$id_message."_".$num_date][] = $messageAr[8];
-                    $num_date++;
-                    $timeStampAr[]=$timestamp_time;
-                }
-           }
+			foreach ($messageAr[$num_el-1] as $key => $value) {
+			    $user_events_exploded_clientAr[$id_message."_".$num_date][$key] = $value;
+			    break;
+			}
+    //                    $user_events_exploded_clientAr[$id_message."_".$num_date][] = $messageAr[8];
+			$num_date++;
+			$timeStampAr[]=$timestamp_time;
+		    }
+	       }
+	   }
         }
-           foreach($user_events_exploded_clientAr as &$time)
-               $tmp[] = &$time[1];
-           array_multisort($tmp, SORT_DESC, $user_events_exploded_clientAr);
-           $user_events_explodedAr[$client] = $user_events_exploded_clientAr;
+	if (isset($user_events_exploded_clientAr) && !is_null($user_events_exploded_clientAr)) {
+	    foreach($user_events_exploded_clientAr as &$time)
+		   $tmp[] = &$time[1];
+	    array_multisort($tmp, SORT_DESC, $user_events_exploded_clientAr);
+	    $user_events_explodedAr[$client] = $user_events_exploded_clientAr;
+	}
     }
     /*
     $pattern = '/(?:[1-9][0-9]*)_(?:[1-9][0-9]*)_(?:[1-9][0-9]*)_(?:[1-9][0-9]+)/';
