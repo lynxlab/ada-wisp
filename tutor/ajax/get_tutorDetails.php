@@ -290,18 +290,18 @@ if (isset($_SERVER['REQUEST_METHOD']) && $_SERVER['REQUEST_METHOD'] == 'GET' &&
 		$tfoot_data = array (
 				count($detailsResults).' '.translateFN('Servizi totali'),
 				'&nbsp;',
-				array_sum(array_column($detailsResults, 'helprequests')),
-				array_sum(array_column($detailsResults, 'appproposals')),
-				array_sum(array_column($detailsResults, 'appconfirmed')),
-				array_sum(array_column($detailsResults, 'apprealized')),
+				array_sum(array_map(function($element) { return $element['helprequests']; }, $detailsResults)),
+				array_sum(array_map(function($element) { return $element['appproposals']; }, $detailsResults)),
+				array_sum(array_map(function($element) { return $element['appconfirmed']; }, $detailsResults)),
+				array_sum(array_map(function($element) { return $element['apprealized']; }, $detailsResults)),
 				array_sum($loginCounts),
 				'&nbsp;',
 				$totStandard,
 				$totPerson,
-				array_sum(array_column($detailsResults, 'addednodes')),
-				array_sum(array_column($detailsResults, 'readnodes')),
-				array_sum(array_column($detailsResults, 'uploadedfiles')),
-				array_sum(array_column($detailsResults, 'chatlines'))
+				array_sum(array_map(function($element) { return $element['addednodes']; }, $detailsResults)),
+				array_sum(array_map(function($element) { return $element['readnodes']; }, $detailsResults)),
+				array_sum(array_map(function($element) { return $element['uploadedfiles']; }, $detailsResults)),
+				array_sum(array_map(function($element) { return $element['chatlines']; }, $detailsResults))
 		);
 		
 		$result_table = BaseHtmlLib::tableElement('class:tutor_table', $thead_data, $detailsResults,$tfoot_data,$caption);
