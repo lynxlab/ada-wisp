@@ -195,6 +195,24 @@ if (!is_null($editUserObj) && isset($_SERVER['REQUEST_METHOD']) && $_SERVER['REQ
     	$carrieraDIV->addChild($carrieraResult);
     	$carrieraDIV->addChild($carrieraError);
     	
+    	// UNIMC Only: Questionari is not going to be an actual form, just a
+    	// loading div and a result div to be populated by an ajax call
+    	$questionariDIV = CDOMElement::create('div','id:questionari_container');
+    	$questionariLoad = CDOMElement::create('div','id:questionari_load');
+    	$questionariLoad->addChild(CDOMElement::create('img','src:'.HTTP_ROOT_DIR.'/js/include/jquery/ui/images/ui-anim_basic_16x16.gif'));
+    	$questionariLoadSpan = CDOMElement::create('span');
+    	$questionariLoadSpan->addChild(new CText('Caricamento in corso...'));
+    	$questionariLoad->addChild($questionariLoadSpan);
+    	$questionariResult = CDOMElement::create('div','id:questionari_results');
+    	$questionariError = CDOMElement::create('div','id:questionari_error');
+    	$questionariErrorSpan = CDOMElement::create('span');
+    	$questionariErrorSpan->addChild(new CText('Errore sconosciuto'));
+    	$questionariError->addChild($questionariErrorSpan);
+    	 
+    	$questionariDIV->addChild($questionariLoad);
+    	$questionariDIV->addChild($questionariResult);
+    	$questionariDIV->addChild($questionariError);
+    	
 		$tabContents = array ();
 		
 		/**
@@ -210,10 +228,14 @@ if (!is_null($editUserObj) && isset($_SERVER['REQUEST_METHOD']) && $_SERVER['REQ
 				array (translateFN ("Tipo di Iscrizione"), $tipoIscrizioneForm),
 				array (translateFN ("Eventuali disabilità"), $disabilitaForm),
 				array (translateFN ("Titolo di studio superiore"), $titoloStudioForm),
-				array (translateFN ("Carriera"), $carrieraDIV,'onclick'=>'javascript:loadCareer(\''.
+				array (translateFN ("Carriera"), $carrieraDIV,'onclick'=>'javascript:loadAPIDetails(\''.
 						$carrieraResult->getAttribute('id').'\',\''.
 						$carrieraLoad->getAttribute('id').'\',\''.
-						$carrieraError->getAttribute('id').'\');')
+						$carrieraError->getAttribute('id').'\');'),
+				array (translateFN ("Questionari"), $questionariDIV,'onclick'=>'javascript:loadAPIDetails(\''.
+						$questionariResult->getAttribute('id').'\',\''.
+						$questionariLoad->getAttribute('id').'\',\''.
+						$questionariError->getAttribute('id').'\');')				
 // 				array (translateFN ("Sample Extra 1:n"), 'oneToManyDataSample'), 
 		);
 		

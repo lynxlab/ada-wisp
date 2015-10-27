@@ -113,3 +113,5 @@ div.fform form fieldset fieldset label { margin-left:0; width: 45%; display: inl
 .dataTables_wrapper td.centerAlign { text-align: center; }
 .dataTables_wrapper tfoot > tr > th.default_th { border-right: none; border-left: none; }
 .dataTables_wrapper tfoot > tr > th:last-child { text-align: right; }
+
+#surveys_table caption { width: 100%; top: -7px; }

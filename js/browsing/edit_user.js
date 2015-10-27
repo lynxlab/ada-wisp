@@ -486,11 +486,35 @@ function deleteExtra ( extraTableName, extraID )
 
 /**
  * UNIMC Only:
- * loads and display the carrier of a student based on his/her CF
+ * loads and display the carrier or questionnaires (aka surveys) of a student based on his/her CF
  */
 var careerLoaded = false;
-function loadCareer(targetDIVid, loadingDIVid, errorDIVid) {
-	if (!careerLoaded) {
+var surveysLoaded = false;
+
+function loadAPIDetails(targetDIVid, loadingDIVid, errorDIVid) {
+	var isCareer = false;
+	var isSurveys = false;
+	var doAjax = false;
+	var dataTableOptions = {};
+	if (targetDIVid.indexOf('carriera')!=-1) {
+		isCareer = true;
+		doAjax = !careerLoaded;
+		dataTableOptions = {
+			"aaSorting": [[ 9, "desc" ]],
+			'aoColumnDefs': [{ "bSortable" : false, "aTargets": [0,1,2,3,4,5,6,7,8] },
+				             { "sType": "date-eu", "aTargets" : [9] } ]
+		};	
+	} else if (targetDIVid.indexOf('questionari')!=-1) {
+		isSurveys = true;
+		doAjax = !surveysLoaded;
+		dataTableOptions = {
+			"aaSorting": [[ 2, "desc" ]],
+			'aoColumnDefs': [{ "bSortable" : false, "aTargets": [0,1,3,4,5] },
+			                 { "bVisible" : false, "aTargets" : [0,1,5] }]	
+		};
+	}
+	
+	if (doAjax) {
 		var cf = '';
 		targetDIVid = '#' + targetDIVid;
 		loadingDIVid = '#' + loadingDIVid;
@@ -502,7 +526,7 @@ function loadCareer(targetDIVid, loadingDIVid, errorDIVid) {
 		
 		$j.ajax({
 			type	:	'GET',
-			url		:	HTTP_ROOT_DIR + '/browsing/ajax/getCareer.php',
+			url		:	HTTP_ROOT_DIR + '/browsing/ajax/'+(isCareer ? 'getCareer' : 'getSurvey')+'.php',
 			data	:	{ cf: cf },
 			dataType:	'json',
 			beforeSend : function() {
@@ -523,16 +547,15 @@ function loadCareer(targetDIVid, loadingDIVid, errorDIVid) {
 			if ('undefined' != typeof JSONObj) {
 				if ('undefined' != typeof JSONObj.msg) {
 					$j(targetDIVid).html(JSONObj.msg);
-					careerLoaded = JSONObj.status==1;
-					if (careerLoaded) {
-						$j(targetDIVid+' table').dataTable({
+					var loadedOK = JSONObj.status==1;
+					if (isCareer) careerLoaded = loadedOK;
+					else if (isSurveys) surveysLoaded = loadedOK;
+					if (loadedOK) {
+						$j(targetDIVid+' table').dataTable($j.extend(dataTableOptions,{
 							"bJQueryUI": true,
 							"bFilter": true,
 							"bInfo": false,
 							"bPaginate": false,
-							"aaSorting": [[ 9, "desc" ]],
-							'aoColumnDefs': [{ "bSortable" : false, "aTargets": [0,1,2,3,4,5,6,7,8] },
-							                 { "sType": "date-eu", "aTargets" : [9] } ],
 							"oLanguage": {
 								"sUrl": HTTP_ROOT_DIR + "/js/include/jquery/dataTables/dataTablesLang.php"
 							},
@@ -546,7 +569,7 @@ function loadCareer(targetDIVid, loadingDIVid, errorDIVid) {
 										$j(this).parents('th').append(sortIcon);
 									});
 								}
-						});
+						}));
 					}
 				}
 			}

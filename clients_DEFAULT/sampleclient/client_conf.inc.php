@@ -48,6 +48,13 @@ define ('ESSE3_LOGIN',			''); // ESSE3 API login username
 define ('ESSE3_PASSWD',			''); // ESSE3 API login password
 
 /**
+ * Survey user API endpoint configuration
+ */
+define ('SURVEY_API_URL',	''); // SURVEY API endpoint here
+define ('SURVEY_API_USER',	''); // SURVEY API endpoint login username
+define ('SURVEY_API_PASSWD',''); // SURVEY API endpoint login password
+
+/**
  * Provider holidays feed, to be show on fullcalendar. Sample is italian holidays feed
  */
 define ('GCAL_HOLIDAYS_FEED','http://www.google.com/calendar/feeds/e327d6lm6r2kb555ce82ll4sbs@group.calendar.google.com/public/basic');	
