@@ -373,18 +373,24 @@ foreach ($user_agendaAr as $providerUserDate => $appointmentTmp) {
 	$event_token = ADAEventProposal::extractEventToken($singleApp[2]);
 	$guidanceSession = $dhUserDate->get_eguidance_session_with_event_token($event_token);
 	if (AMA_DB::isError($guidanceSession)) {
-	    unset($user_agendaAr[$providerUserDate][$idAppTmp]);
+	    $user_agendaAr[$providerUserDate][$idAppTmp]['report'] = false; 
+//	    unset($user_agendaAr[$providerUserDate][$idAppTmp]);
+	    if ($userObj->getType() == AMA_TYPE_TUTOR) 
+			$user_agendaAr[$providerUserDate][$idAppTmp]['crea_report'] = true; 
 	}
-	
+	else {
+	    $user_agendaAr[$providerUserDate][$idAppTmp]['report'] = true; 
+	    
+	}
     }
     
 }
+
 $user_agenda   = CommunicationModuleHtmlLib::displayAppointmentsWithAssessementLink($user_agendaAr, ADA_MSG_AGENDA, $testers_dataAr,$showRead);
 /**
  * $user_events, $user_agenda, $user_messages are set in tutor_function and in browsing_function
  */
 //if ($com_enabled) {
-if (true) {
 	$online_users_listing_mode = 2;
 	$online_users = ADALoggableUser::get_online_usersFN($sess_id_course_instance,$online_users_listing_mode);
 	$content_dataAr['ajax_chat_link'] = $ajax_chat_link;
@@ -392,12 +398,16 @@ if (true) {
 	$content_dataAr['agenda'] = $user_agenda->getHtml();  // confirmed appointments
         $content_dataAr['events'] = $user_events->getHtml();  // appointment proposals
 	$content_dataAr['chat_users'] = $online_users;
+/*	
 } else {
 	$content_dataAr['chat_link'] = translateFN("chat non abilitata");
 	$content_dataAr['messages'] = translateFN("messaggeria non abilitata");
 	$content_dataAr['agenda'] = translateFN("agenda non abilitata");
 	$content_dataAr['chat_users'] = "";
 }
+ * 
+ */
+
 switch ($op){
 
         case 'print':
@@ -419,9 +429,9 @@ switch ($op){
 				JQUERY,
 				JQUERY_UI,
 				JQUERY_NIVOSLIDER,
-                JQUERY_DATATABLE,
-                JQUERY_DATATABLE_DATE,
-                JQUERY_UNIFORM,
+				JQUERY_DATATABLE,
+				JQUERY_DATATABLE_DATE,
+				JQUERY_UNIFORM,
 				JQUERY_NO_CONFLICT,
 				ROOT_DIR. '/external/mediaplayer/flowplayer-5.4.3/flowplayer.js'
 		);		
@@ -440,8 +450,8 @@ switch ($op){
 			);
 		} else $layout_dataAR['CSS_filename'] = array();
                 
-        array_push ($layout_dataAR['CSS_filename'], JQUERY_DATATABLE_CSS);
-        array_push ($layout_dataAR['CSS_filename'], ROOT_DIR.'/external/mediaplayer/flowplayer-5.4.3/skin/minimalist.css');
+	        array_push ($layout_dataAR['CSS_filename'], JQUERY_DATATABLE_CSS);
+		array_push ($layout_dataAR['CSS_filename'], ROOT_DIR.'/external/mediaplayer/flowplayer-5.4.3/skin/minimalist.css');
 		array_push ($layout_dataAR['CSS_filename'], JQUERY_NIVOSLIDER_CSS);
 		array_push ($layout_dataAR['CSS_filename'], ROOT_DIR.'/js/include/jquery/nivo-slider/themes/default/default.css');
 		array_push ($layout_dataAR['CSS_filename'], JQUERY_UNIFORM_CSS);

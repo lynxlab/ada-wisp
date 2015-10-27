@@ -59,6 +59,7 @@ function createCSVFileToDownload($form_dataAr = array()) {
   //$csa_total =  (int)$form_dataAr['csa_1_score'] + (int)$form_dataAr['csa_2_score'] + (int)$form_dataAr['csa_3_score']; 
   $csa_comments = $form_dataAr['ud_comments'];
   
+/*
   $pcitems1 = (int)$form_dataAr['pc_1'];
   $pcitems2 = (int)$form_dataAr['pc_2'];
   $pcitems3 = (int)$form_dataAr['pc_3'];
@@ -101,74 +102,67 @@ function createCSVFileToDownload($form_dataAr = array()) {
   $m_comments = $form_dataAr['m_comments'];
 
   $oc_comments = $form_dataAr['other_comments'];
+ * 
+ */
   
   $dataAr = array(
-    array(translateFN("Numero di codice fiscale/passaporto"), translateFN("Tipologia di intervento di orientamento a distanza")),
-    array($fiscal_code, $type_of_guidance),
+    array(translateFN("Numero di codice fiscale/passaporto")), //, translateFN("Tipologia di intervento di orientamento a distanza")),
+    array($fiscal_code),//, $type_of_guidance),
     array(translateFN("Nome e cognome dell'utente")),
     array($user_fullname),
     array(translateFN("Nazionalità dell'utente")),
     array($user_country),
-    array(translateFN("Durata totale del vostro percorso di orientamento")),
-    array($service_duration),
-    array(translateFN('Caratteristiche utente'),translateFN('Monitoraggio del percorso di e-guidance')),
-    array('',translateFN('Prima sessione di orientamento a distanza'),translateFN('Sessioni di orientamento a distanza successive alla prima'),translateFN('Ultima sessione di orientamento a distanza')),
-    array(EguidanceSession::textLabelForField('area_pc')),
     
-    array(EguidanceSession::textLabelForField('ud_1'), $ud_1),
-    array(EguidanceSession::textLabelForField('ud_2'), $ud_2),
-    array(EguidanceSession::textLabelForField('ud_3'), $ud_3),
-   // array(translateFN('Totale'), $csa_total),  // COME SI FA A DARE UN PUNTEGGIO QUI?
     array(EguidanceSession::textLabelForField('ud_comments'), $csa_comments),
     
-    array(EguidanceSession::textLabelForField('pc_title')),
-    array(EguidanceSession::textLabelForField('pc_1'), $scoresAr[$pcitems1]),
-    array(EguidanceSession::textLabelForField('pc_2'), $scoresAr[$pcitems2]),
-    array(EguidanceSession::textLabelForField('pc_3'), $scoresAr[$pcitems3]),
-    array(EguidanceSession::textLabelForField('pc_4'), $scoresAr[$pcitems4]),
-    array(EguidanceSession::textLabelForField('pc_5'), $scoresAr[$pcitems5]),
-    array(EguidanceSession::textLabelForField('pc_6'), $scoresAr[$pcitems6]),
-    array(translateFN('Totale'), $pcitems_total),  
-    array(EguidanceSession::textLabelForField('pc_comments'), $pcitems_comments),
-    
-    array(EguidanceSession::textLabelForField('area_pp')),
-    array(EguidanceSession::textLabelForField('ba_title')),
-    array(EguidanceSession::textLabelForField('ba_1'), $scoresAr[$ba1]),    
-    array(EguidanceSession::textLabelForField('ba_2'), $scoresAr[$ba2]),
-    array(EguidanceSession::textLabelForField('ba_3'), $scoresAr[$ba3]),
-    array(EguidanceSession::textLabelForField('ba_4'), $scoresAr[$ba4]),
-    array(translateFN('Totale'),$ba_total),
-    array(EguidanceSession::textLabelForField('ba_comments'), $ba_comments),
-    
-    array(EguidanceSession::textLabelForField('t_title')),
-    array(EguidanceSession::textLabelForField('t_1'), $scoresAr[$t1]),
-    array(EguidanceSession::textLabelForField('t_2'), $scoresAr[$t2]),
-    array(EguidanceSession::textLabelForField('t_3'), $scoresAr[$t3]),
-    array(EguidanceSession::textLabelForField('t_4'), $scoresAr[$t4]),
-    array(translateFN('Totale'), $t_total),
-    array(EguidanceSession::textLabelForField('t_comments'), $t_comments),
-    
-    array(EguidanceSession::textLabelForField('pe_title')),
-    array(EguidanceSession::textLabelForField('pe_1'), $scoresAr[$pe1]),
-    array(EguidanceSession::textLabelForField('pe_2'), $scoresAr[$pe2]),
-    array(EguidanceSession::textLabelForField('pe_3'), $scoresAr[$pe3]),
-    array(translateFN('Totale'), $pe_total),
-    array(EguidanceSession::textLabelForField('pe_comments'), $pe_comments),
-    
-    array(EguidanceSession::textLabelForField('ci_title')),
-    array(EguidanceSession::textLabelForField('ci_1'),$scoresAr[$ci1]),
-    array(EguidanceSession::textLabelForField('ci_2'),$scoresAr[$ci2]),
-    array(EguidanceSession::textLabelForField('ci_3'),$scoresAr[$ci3]),
-    array(EguidanceSession::textLabelForField('ci_4'),$scoresAr[$ci4]),
-    array(translateFN('Totale'), $ci_total),
-    array(EguidanceSession::textLabelForField('ci_comments'), $ci_comments),
-    
-    array(EguidanceSession::textLabelForField('m_title')),
-    array(EguidanceSession::textLabelForField('m_1'),$scoresAr[$m1]),
-    array(EguidanceSession::textLabelForField('m_2'),$scoresAr[$m2]),
-    array(translateFN('Totale'), $m_total),
-    array(EguidanceSession::textLabelForField('m_comments'), $m_comments),
-    array(EguidanceSession::textLabelForField('other_comments'), $oc_comments)  
+//    array(EguidanceSession::textLabelForField('pc_title')),
+//    array(EguidanceSession::textLabelForField('pc_1'), $scoresAr[$pcitems1]),
+//    array(EguidanceSession::textLabelForField('pc_2'), $scoresAr[$pcitems2]),
+//    array(EguidanceSession::textLabelForField('pc_3'), $scoresAr[$pcitems3]),
+//    array(EguidanceSession::textLabelForField('pc_4'), $scoresAr[$pcitems4]),
+//    array(EguidanceSession::textLabelForField('pc_5'), $scoresAr[$pcitems5]),
+//    array(EguidanceSession::textLabelForField('pc_6'), $scoresAr[$pcitems6]),
+//    array(translateFN('Totale'), $pcitems_total),  
+//    array(EguidanceSession::textLabelForField('pc_comments'), $pcitems_comments),
+//    
+//    array(EguidanceSession::textLabelForField('area_pp')),
+//    array(EguidanceSession::textLabelForField('ba_title')),
+//    array(EguidanceSession::textLabelForField('ba_1'), $scoresAr[$ba1]),    
+//    array(EguidanceSession::textLabelForField('ba_2'), $scoresAr[$ba2]),
+//    array(EguidanceSession::textLabelForField('ba_3'), $scoresAr[$ba3]),
+//    array(EguidanceSession::textLabelForField('ba_4'), $scoresAr[$ba4]),
+//    array(translateFN('Totale'),$ba_total),
+//    array(EguidanceSession::textLabelForField('ba_comments'), $ba_comments),
+//    
+//    array(EguidanceSession::textLabelForField('t_title')),
+//    array(EguidanceSession::textLabelForField('t_1'), $scoresAr[$t1]),
+//    array(EguidanceSession::textLabelForField('t_2'), $scoresAr[$t2]),
+//    array(EguidanceSession::textLabelForField('t_3'), $scoresAr[$t3]),
+//    array(EguidanceSession::textLabelForField('t_4'), $scoresAr[$t4]),
+//    array(translateFN('Totale'), $t_total),
+//    array(EguidanceSession::textLabelForField('t_comments'), $t_comments),
+//    
+//    array(EguidanceSession::textLabelForField('pe_title')),
+//    array(EguidanceSession::textLabelForField('pe_1'), $scoresAr[$pe1]),
+//    array(EguidanceSession::textLabelForField('pe_2'), $scoresAr[$pe2]),
+//    array(EguidanceSession::textLabelForField('pe_3'), $scoresAr[$pe3]),
+//    array(translateFN('Totale'), $pe_total),
+//    array(EguidanceSession::textLabelForField('pe_comments'), $pe_comments),
+//    
+//    array(EguidanceSession::textLabelForField('ci_title')),
+//    array(EguidanceSession::textLabelForField('ci_1'),$scoresAr[$ci1]),
+//    array(EguidanceSession::textLabelForField('ci_2'),$scoresAr[$ci2]),
+//    array(EguidanceSession::textLabelForField('ci_3'),$scoresAr[$ci3]),
+//    array(EguidanceSession::textLabelForField('ci_4'),$scoresAr[$ci4]),
+//    array(translateFN('Totale'), $ci_total),
+//    array(EguidanceSession::textLabelForField('ci_comments'), $ci_comments),
+//    
+//    array(EguidanceSession::textLabelForField('m_title')),
+//    array(EguidanceSession::textLabelForField('m_1'),$scoresAr[$m1]),
+//    array(EguidanceSession::textLabelForField('m_2'),$scoresAr[$m2]),
+//    array(translateFN('Totale'), $m_total),
+//    array(EguidanceSession::textLabelForField('m_comments'), $m_comments),
+//    array(EguidanceSession::textLabelForField('other_comments'), $oc_comments)  
   );  
   
   $file_content = createCSVFileContent($dataAr);	

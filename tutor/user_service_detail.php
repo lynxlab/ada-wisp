@@ -45,6 +45,7 @@ else {
   $self =  whoami(); //'default';//whoami();
   $href_suffix='';
 }
+$href_suffix='&popup=1';
 include_once 'include/tutor_functions.inc.php';
 include_once 'include/eguidance_tutor_form_functions.inc.php';
 /*
@@ -163,7 +164,7 @@ else {
     $tbody_data_proposed_appointment = array();
     $tbody_data_confirmed_appointment = array();
     
-    if ($status_instance_value == 0) {
+    if ($status_instance_value != ADA_INSTANCE_CLOSED) {
 	/**
 	 * check if there are any proposed appointment for this instance
 	 */
@@ -275,6 +276,7 @@ else {
 	    $eguidance_type = EguidanceSession::textForEguidanceType($eguidance_sessionAr['tipo_eguidance']);
 	    $href = 'eguidance_tutor_form.php?event_token=' . $eguidance_sessionAr['event_token'].$href_suffix;
 	    $eguidance_form = CDOMElement::create('a', "href:$href");
+	    $eguidance_form->setAttribute('target', '_blank');
 	    $eguidance_form->addChild(new CText('edit'));
 
 	    $href = 'user_service_detail.php?op=csv&event_token=' . $eguidance_sessionAr['event_token'];

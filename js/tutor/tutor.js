@@ -1,16 +1,18 @@
 function initDoc() {
 	$j(document).ready(function() {
-		var appointmentsTables = ["sortable_A","sortable_S","sortable_event_proposed"];
+		var appointmentsTables = ["sortable_S","sortable_event_proposed"];
 	
 		for (var i=0; i < appointmentsTables.length; i++ ) {
 			$j('.'+appointmentsTables[i]).dataTable( {
 				"bLengthChange": false,
 				"bFilter":       false,
-				"bInfo":         false,
-				"bPaginate":     false,
+				"bInfo":         true,
+				"bPaginate":     true,
 				"bSort":         true,
 				"bAutoWidth":    true,
 				"bDeferRender":  true,
+                                "bJQueryUI":     true,
+                                "aaSorting": [[ 0, "desc" ]],
                 "oLanguage": {
                 	"sUrl": HTTP_ROOT_DIR + "/js/include/jquery/dataTables/dataTablesLang.php"
                 },				
@@ -23,13 +25,15 @@ function initDoc() {
 		}
 		
 		$j(".sortable").dataTable( {
-			"bLengthChange": false,
+			"bLengthChange": true,
 			"bFilter":       true,
-			"bInfo":         false,
-			'bPaginate':     false,
+			"bInfo":         true,
+			'bPaginate':     true,
 			"bSort":         true,
 			"bAutoWidth":    true,
 			"bDeferRender":  true,
+                        "bJQueryUI":     true,
+                        "aaSorting": [[ 0, "desc" ]],
             "oLanguage": {
             	"sUrl": HTTP_ROOT_DIR + "/js/include/jquery/dataTables/dataTablesLang.php"
             },			
@@ -45,17 +49,45 @@ function initDoc() {
 			              { 'sType': "date-eu" }
 			             ]
 		}).show();
-		
-		$j("#table_preassigned_students").dataTable( {
-			"bLengthChange": false,
+                
+                
+                
+                /***/
+		$j(".sortable_A").dataTable( {
+			"bLengthChange": true,
 			"bFilter":       true,
-			"bInfo":         false,
+			"bInfo":         true,
 			'bPaginate':     true,
 			"bSort":         true,
 			"bAutoWidth":    true,
+			"bDeferRender":  true,
+                        "bJQueryUI":     true,
+                        "aaSorting": [[ 4, "desc" ]],
             "oLanguage": {
             	"sUrl": HTTP_ROOT_DIR + "/js/include/jquery/dataTables/dataTablesLang.php"
-            },			
+            },
+                        "aoColumns": [
+                                      { "sType": "date-euro" },
+                                      null,
+                                      null,
+                                      null
+                                     ]
+		}).show();
+
+            
+		$j("#table_preassigned_students").dataTable( {
+			"bLengthChange": true,
+			"bFilter":       true,
+			"bInfo":         true,
+			'bPaginate':     true,
+			"bSort":         true,
+			"bAutoWidth":    true,
+                        "bJQueryUI":     true,
+            "oLanguage": {
+            	"sUrl": HTTP_ROOT_DIR + "/js/include/jquery/dataTables/dataTablesLang.php"
+            },
+                        "aaSorting": [[ 0, "asc" ]],
+
 			"aoColumnDefs": [
 			                 { "bSortable": false,
 			                	"aTargets": [ 3 ] } 

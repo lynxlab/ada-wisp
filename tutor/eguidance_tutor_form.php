@@ -128,7 +128,9 @@ $userAgendaForThisProvider = $user_agendaAr[$_SESSION['sess_selected_tester']];
                          NULL, NULL, NULL, $userObj->getHomePage());
     }
     $id_course_instance = ADAEventProposal::extractCourseInstanceIdFromThisToken($event_token);
-    $appointmentTime = ADAEventProposal::extractTimeFromThisToken($event_token);
+    $idTutorFromToken = ADAEventProposal::extractTutorIdFromThisToken($event_token);
+    $idUserFromToken = ADAEventProposal::extractTutoredIdFromThisToken($event_token);
+//    $appointmentTime = ADAEventProposal::extractTimeFromThisToken($event_token);
     $appointmentTime = NULL;
     foreach ($userAgendaForThisProvider as $appTmpAr) {
 	if (strpos($appTmpAr[2],$event_token)!== false) {
@@ -203,7 +205,16 @@ $userAgendaForThisProvider = $user_agendaAr[$_SESSION['sess_selected_tester']];
   	$eguidance_session_dataAr = new AMA_Error();
   }
   $fill_textareas=FALSE;
-  if(!AMA_DataHandler::isError($eguidance_session_dataAr)) {
+  if(AMA_DataHandler::isError($eguidance_session_dataAr)) {
+    $eguidance_session_dataAr = array();
+    $eguidance_session_dataAr['id_utente'] = $idUserFromToken;
+    $eguidance_session_dataAr['id_tutor'] = $idTutorFromToken;
+    $eguidance_session_dataAr['id_istanza_corso'] = $id_course_instance;
+    $eguidance_session_dataAr['event_token'] = $event_token;
+    $eguidance_session_dataAr['data_ora'] = $appointmentTime;
+    $eguidance_session_dataAr['tipo_eguidance'] = $service_infoAr[3];
+    
+  }  
     if($is_popup) {
       $eguidance_session_dataAr['is_popup'] = true;
     }
@@ -212,27 +223,18 @@ $userAgendaForThisProvider = $user_agendaAr[$_SESSION['sess_selected_tester']];
     } else {
         $eguidanceAssessment = TutorModuleHtmlLib::getEditEguidanceDataForm($tutoredUserObj, $service_infoAr,$eguidance_session_dataAr, $fill_textareas);
     }
-  }
-  else {
-    $last_eguidance_session_dataAr = $dh->get_last_eguidance_session($id_course_instance);
-    if(AMA_DataHandler::isError($last_eguidance_session_dataAr)) {
-      $errObj = new ADA_Error($users_infoAr,translateFN("Errore nell'ottenimento dei dati della precedente sessione di eguidance"),
-                               NULL,NULL,NULL,$userObj->getHomePage());
-    }
 
-    if($is_popup) {
-      $last_eguidance_session_dataAr['is_popup'] = true;
-      $last_eguidance_session_dataAr['data_ora'] = $appointmentTime;
-    }
-
+/*
     if ($userObj->getType() == AMA_TYPE_STUDENT || $userObj->getType() == AMA_TYPE_SUPERTUTOR) {
         $eguidanceAssessment = TutorModuleHtmlLib::getEguidanceTutorShow($tutoredUserObj, $service_infoAr,$last_eguidance_session_dataAr, $fill_textareas);
     } else {
         $eguidanceAssessment = TutorModuleHtmlLib::getEguidanceTutorForm($tutoredUserObj, $service_infoAr,$last_eguidance_session_dataAr, $fill_textareas);
     }
+ * 
+ */
    
   }
-}
+//}
 $content_dataAr = array(
   'user_name' => $user_name,
   'user_type' => $user_type,

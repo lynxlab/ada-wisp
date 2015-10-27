@@ -601,98 +601,119 @@ switch ($op) {
 		
 	} // end switch $op		
 		
-		//$online_users_listing_mode = 2;
-		//$online_users = WISPLoggableUser::get_online_usersFN($id_course_instance,$online_users_listing_mode);
-		
-		
-		$banner = include ROOT_DIR.'/include/banner.inc.php';
-		
-		     /* ***********************
-		     * Appointment for all instances
-		     * $user_events are valorized in tutor_function.inc.php
-		     */
-		    if (is_object($user_events)) {
-		        $divAppointments = CDOMElement::create('div','class:appointments');
-		//                    $divAppointments->addChild(new CText('<h3>'.translateFN('Appuntamenti').'</h3>'));
-		        if (is_object($user_events) && $user_events->getHtml() != '') $divAppointments->addChild($user_events);
-		        if ($user_events->getHtml() == '') {
-		            $divAppointments->addChild(new CText(translateFN('Non ci sono appuntamenti')));
-		        }
-		    }   
-		
-		
-		     /* ***********************
-		     * proposal for all instances
-		     * $user_events are valorized in browsing_function.inc.php
-		     */
-		    if (is_object($user_events_proposed)) {
-		        $divAppointmentsProposed = CDOMElement::create('div','class:appointments');
-		        if (is_object($user_events_proposed) && $user_events_proposed->getHtml() != '') $divAppointmentsProposed->addChild($user_events_proposed);
-		        if ($user_events_proposed->getHtml() == '') {
-		            $divAppointmentsProposed->addChild(new CText(translateFN('Non ci sono appuntamenti')));
-		        }
-		    }   
-		
-		
-		$imgAvatar = $userObj->getAvatar();
-		$avatar = CDOMElement::create('img','src:'.$imgAvatar);
-		$avatar->setAttribute('class', 'img_user_avatar');
-		
-		$bloccoUnoTitolo = '<h2>'.translateFN('utenti che seguo').'</h2>';
-		$bloccoDueTitolo = '<h2>'.translateFN('Interazioni').'</h2>';
-		$bloccoTreTitolo = '<h2>'.translateFN('gruppi che seguo').'</h2>';
-		$bloccoQuattroTitolo = '<h2>'.translateFN('Comunit&agrave; di pratica').'</h2>';
-		$bloccoSeiTitolo = '<h2>'.translateFN('Utenti che mi sono assegnati').'</h2>';
-		
-		$content_dataAr = array(
-		  'banner'          => $banner,
-		  'bloccoUnoTitolo' => $bloccoUnoTitolo,
-		  'bloccoDueTitolo'  => $bloccoDueTitolo,
-		  'bloccoTreTitolo'  => $bloccoTreTitolo,
-		  'bloccoQuattroTitolo'  => $bloccoQuattroTitolo,
-		  'bloccoSeiTitolo'  => $bloccoSeiTitolo,
-		  'user_name'       => $user_name,
-		  'user_type'       => $user_type,
-		  'level'           => $user_level,
-		//  'messages'        => $user_messages->getHtml(),
-		//  'agenda'          => $user_agenda->getHtml(),
-		//  'events'          => $user_events->getHtml(),
-		  'user_avatar'     => $avatar->getHtml(),
-		  'events_proposed' => $user_events_proposed->getHtml(),
-		  'course_title'    => translateFN("Practitioner's home"),
-		  'dati'            => $data,
-		  'data'            => $data,				
-		//  'menu_01'         => $questionaire,
-		  'menu_02'         => '',
-		  'menu_03'         => '',
-		  'menu_04'         => '',
-		  'menu_05'         => '',
-		  'menu_06'         => '',
-		  'menu_07'         => '',
-		  'menu_08'         => ''
-		);
-		
-		if (isset ($box_dataAr)) $content_dataAr = array_merge($content_dataAr, $box_dataAr);
-		
-		$content_dataAr['bloccoDueAppuntamenti'] = '<h3>'.translateFN('Appuntamenti').'</h3>';
-		//$content_dataAr['bloccoDueAppuntamenti'] .= $divAppointments->getHtml();
-		$content_dataAr['bloccoDueAppuntamenti'] .= $user_agenda->getHtml();
-		
-		$content_dataAr['bloccoDueAppuntamenti'] .= '<h3>'.translateFN('Proposte di appuntamento').'</h3>';
-		$content_dataAr['bloccoDueAppuntamenti'] .= $divAppointmentsProposed->getHtml();
-		
-		$content_dataAr['bloccoDueAppuntamenti'] .= '<h3>'.translateFN('Messaggi ricevuti').'</h3>';
-		$content_dataAr['bloccoDueAppuntamenti'] .= $user_messages->getHtml();
-		
-		$content_dataAr['user_modprofilelink'] = $userObj->getEditProfilePage();
+//$online_users_listing_mode = 2;
+//$online_users = WISPLoggableUser::get_online_usersFN($id_course_instance,$online_users_listing_mode);
+
+
+$banner = include ROOT_DIR.'/include/banner.inc.php';
+
+/* ***********************
+* Appointment for all instances
+* $user_events are valorized in tutor_function.inc.php
+*/
+if (is_object($user_events)) {
+$divAppointments = CDOMElement::create('div','class:appointments');
+//                    $divAppointments->addChild(new CText('<h3>'.translateFN('Appuntamenti').'</h3>'));
+if (is_object($user_events) && $user_events->getHtml() != '') $divAppointments->addChild($user_events);
+if ($user_events->getHtml() == '') {
+$divAppointments->addChild(new CText(translateFN('Non ci sono appuntamenti')));
+}
+}   
+
+foreach ($user_agendaAr as $providerUserDate => $appointmentTmp) {
+    $dhUserDate = AMA_DataHandler::instance(MultiPort::getDSN($providerUserDate));
+    foreach ($appointmentTmp as $idAppTmp => $singleApp) {
+	$event_token = ADAEventProposal::extractEventToken($singleApp[2]);
+	$guidanceSession = $dhUserDate->get_eguidance_session_with_event_token($event_token);
+	if (AMA_DB::isError($guidanceSession)) {
+	    $user_agendaAr[$providerUserDate][$idAppTmp]['report'] = false; 
+//	    unset($user_agendaAr[$providerUserDate][$idAppTmp]);
+	    if ($userObj->getType() == AMA_TYPE_TUTOR) 
+			$user_agendaAr[$providerUserDate][$idAppTmp]['crea_report'] = true; 
+	}
+	else {
+	    $user_agendaAr[$providerUserDate][$idAppTmp]['report'] = true; 
+	    
+	}
+    }
+}
+$user_agenda   = CommunicationModuleHtmlLib::displayAppointmentsWithAssessementLink($user_agendaAr, ADA_MSG_AGENDA, $testers_dataAr,$showRead);
+
+
+
+/* ***********************
+* proposal for all instances
+* $user_events are valorized in browsing_function.inc.php
+*/
+if (is_object($user_events_proposed)) {
+$divAppointmentsProposed = CDOMElement::create('div','class:appointments');
+if (is_object($user_events_proposed) && $user_events_proposed->getHtml() != '') $divAppointmentsProposed->addChild($user_events_proposed);
+if ($user_events_proposed->getHtml() == '') {
+$divAppointmentsProposed->addChild(new CText(translateFN('Non ci sono appuntamenti')));
+}
+}   
+
+
+$imgAvatar = $userObj->getAvatar();
+$avatar = CDOMElement::create('img','src:'.$imgAvatar);
+$avatar->setAttribute('class', 'img_user_avatar');
+
+$bloccoUnoTitolo = '<h2>'.translateFN('utenti che seguo').'</h2>';
+$bloccoDueTitolo = '<h2>'.translateFN('Interazioni').'</h2>';
+$bloccoTreTitolo = '<h2>'.translateFN('gruppi che seguo').'</h2>';
+$bloccoQuattroTitolo = '<h2>'.translateFN('Comunit&agrave; di pratica').'</h2>';
+$bloccoSeiTitolo = '<h2>'.translateFN('Utenti che mi sono assegnati').'</h2>';
+
+$content_dataAr = array(
+'banner'          => $banner,
+'bloccoUnoTitolo' => $bloccoUnoTitolo,
+'bloccoDueTitolo'  => $bloccoDueTitolo,
+'bloccoTreTitolo'  => $bloccoTreTitolo,
+'bloccoQuattroTitolo'  => $bloccoQuattroTitolo,
+'bloccoSeiTitolo'  => $bloccoSeiTitolo,
+'user_name'       => $user_name,
+'user_type'       => $user_type,
+'level'           => $user_level,
+//  'messages'        => $user_messages->getHtml(),
+//  'agenda'          => $user_agenda->getHtml(),
+//  'events'          => $user_events->getHtml(),
+'user_avatar'     => $avatar->getHtml(),
+'events_proposed' => $user_events_proposed->getHtml(),
+'course_title'    => translateFN("Practitioner's home"),
+'dati'            => $data,
+'data'            => $data,				
+//  'menu_01'         => $questionaire,
+'menu_02'         => '',
+'menu_03'         => '',
+'menu_04'         => '',
+'menu_05'         => '',
+'menu_06'         => '',
+'menu_07'         => '',
+'menu_08'         => ''
+);
+
+if (isset ($box_dataAr)) $content_dataAr = array_merge($content_dataAr, $box_dataAr);
+
+
+$content_dataAr['bloccoDueAppuntamenti'] = '<h3>'.translateFN('Appuntamenti').'</h3>';
+//$content_dataAr['bloccoDueAppuntamenti'] .= $divAppointments->getHtml();
+$content_dataAr['bloccoDueAppuntamenti'] .= $user_agenda->getHtml();
+
+$content_dataAr['bloccoDueAppuntamenti'] .= '<h3>'.translateFN('Proposte di appuntamento').'</h3>';
+$content_dataAr['bloccoDueAppuntamenti'] .= $divAppointmentsProposed->getHtml();
+
+$content_dataAr['bloccoDueAppuntamenti'] .= '<h3>'.translateFN('Messaggi ricevuti').'</h3>';
+$content_dataAr['bloccoDueAppuntamenti'] .= $user_messages->getHtml();
+
+$content_dataAr['user_modprofilelink'] = $userObj->getEditProfilePage();
 
 $layout_dataAr['JS_filename'] = array(
-		JQUERY,
-		JQUERY_UI,
-		JQUERY_DATATABLE,
-		JQUERY_DATATABLE_DATE,
-		ROOT_DIR.'/js/include/jquery/dataTables/formattedNumberSortPlugin.js',
-		JQUERY_NO_CONFLICT
+JQUERY,
+JQUERY_UI,
+JQUERY_DATATABLE,
+JQUERY_DATATABLE_DATE,
+ROOT_DIR.'/js/include/jquery/dataTables/formattedNumberSortPlugin.js',
+JQUERY_NO_CONFLICT
 );
 $menuOptions = array();
 if (isset($id_course))   $menuOptions['id_course'] = $id_course;
@@ -701,19 +722,19 @@ if (isset($id_instance)) $menuOptions['id_course_instance'] = $id_instance;
 if (isset($id_student))  $menuOptions['id_student'] =$id_student;
 
 /**
- * add a define for the supertutor menu item to appear
- */
+* add a define for the supertutor menu item to appear
+*/
 if ($userObj instanceof ADAPractitioner && $userObj->isSuper()) define ('IS_SUPERTUTOR', true);
 else define ('NOT_SUPERTUTOR', true);
 
 $layout_dataAr['CSS_filename']= array(
-		JQUERY_DATATABLE_CSS,
-        JQUERY_UI_CSS
-	);
-  $render = null;
-  $options['onload_func'] = 'initDoc()';
-  
+JQUERY_DATATABLE_CSS,
+JQUERY_UI_CSS
+);
+$render = null;
+$options['onload_func'] = 'initDoc()';
+
 /**
- * Sends data to the rendering engine
- */
+* Sends data to the rendering engine
+*/
 ARE::render($layout_dataAr, $content_dataAr, $render, $options);

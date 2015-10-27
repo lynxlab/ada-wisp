@@ -1621,10 +1621,20 @@ static public function getRecipientsFromAgenda($data_Ar) {
 	/*
 	 * Link to appointment report 
 	 */
-	$event_token = ADAEventProposal::extractEventToken($appointment_Ar[2]);
-	$href = HTTP_ROOT_DIR . '/tutor/eguidance_tutor_form.php?event_token=' . $event_token;
-	$report_link = CDOMElement::create('a', "href:$href");
-	$report_link->addChild(new CText(translateFN('View session report')));
+	$report_link = CDOMElement::create('span', "class:no_report");
+	$report_link->addChild(new CText(translateFN('Nessun report')));
+	if ($appointment_Ar['report']) {
+	    $event_token = ADAEventProposal::extractEventToken($appointment_Ar[2]);
+	    $href = HTTP_ROOT_DIR . '/tutor/eguidance_tutor_form.php?event_token=' . $event_token;
+	    $report_link = CDOMElement::create('a', "href:$href");
+	    $report_link->addChild(new CText(translateFN('guarda il report')));
+	}
+	elseif ($appointment_Ar['crea_report']) {
+	    $event_token = ADAEventProposal::extractEventToken($appointment_Ar[2]);
+	    $href = HTTP_ROOT_DIR . '/tutor/eguidance_tutor_form.php?event_token=' . $event_token;
+	    $report_link = CDOMElement::create('a', "href:$href");
+	    $report_link->addChild(new CText(translateFN('crea report')));
+	}
         
         /**
          * @author giorgio 16/apr/2014 16:35:39

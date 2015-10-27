@@ -178,6 +178,8 @@ if (isset($_SERVER['REQUEST_METHOD']) && $_SERVER['REQUEST_METHOD'] == 'GET' &&
 		$mh = MessageHandler::instance(MultiPort::getDSN($sess_selected_tester));
 		$clause = '`titolo` LIKE \'%d\_%d\_%d%%\' AND `id_mittente`=%d AND (`flags` & %d)';
 		
+		$totStandard = 0;
+		$totPerson = 0;
 		foreach ($helpInstances as $helpInstance) {
 			/**
 			 * must aggregate by student and course:
@@ -196,7 +198,8 @@ if (isset($_SERVER['REQUEST_METHOD']) && $_SERVER['REQUEST_METHOD'] == 'GET' &&
 								// msgs having ADA_EVENT_PROPOSED
 								$msgsProp = $mh->find_messages($aStudent['id_utente'],ADA_MSG_AGENDA,array('titolo'),
 										sprintf($clause, $aStudent['id_utente'], $id_tutor,
-												$anInstance['id_istanza_corso'], $id_tutor, ADA_EVENT_PROPOSED));
+												$anInstance['id_istanza_corso'], $id_tutor, ADA_EVENT_PROPOSED),
+									'data_ora desc');
 								$appProposals = 0;
 								if (!AMA_DB::isError($msgsProp)) $appProposals = count($msgsProp);
 								else $msgsProp = array();
@@ -204,7 +207,8 @@ if (isset($_SERVER['REQUEST_METHOD']) && $_SERVER['REQUEST_METHOD'] == 'GET' &&
 								// msgs having ADA_EVENT_CONFIRMED
 								$msgsConf = $mh->find_messages($aStudent['id_utente'],ADA_MSG_AGENDA,array('titolo'),
 										sprintf($clause, $aStudent['id_utente'], $id_tutor,
-												$anInstance['id_istanza_corso'], $aStudent['id_utente'], ADA_EVENT_CONFIRMED));
+												$anInstance['id_istanza_corso'], $aStudent['id_utente'], ADA_EVENT_CONFIRMED),
+									'data_ora desc');
 								$appConfirmed = 0;
 								if (!AMA_DB::isError($msgsConf)) $appConfirmed = count($msgsConf);
 								else $msgsConf = array();
@@ -215,8 +219,13 @@ if (isset($_SERVER['REQUEST_METHOD']) && $_SERVER['REQUEST_METHOD'] == 'GET' &&
 									$token = ADAEventProposal::extractEventToken($aMessage);
 									$eguidRES = $dh->get_eguidance_session_with_event_token($token);
 									if (!AMA_DB::isError($eguidRES) && is_array($eguidRES) && count($eguidRES)>0) {
-										if (!isset($tipoPatto) && isset($eguidRES['tipo_patto_formativo'])) $tipoPatto = $pattoFormativoAr[$eguidRES['tipo_patto_formativo']];
-										if (!isset($personalPatto) && isset($eguidRES['tipo_personalizzazione'])) $personalPatto = $tipoPersonalPattoAr[$eguidRES['tipo_personalizzazione']];
+										if (!isset($tipoPatto) && isset($eguidRES['tipo_patto_formativo']) && 
+										    !isset($studentSummary[$aStudent['id_utente']][$anInstance['id_corso']]['patto'])) {
+										    $tipoPatto = $pattoFormativoAr[$eguidRES['tipo_patto_formativo']];
+										    if ($eguidRES['tipo_patto_formativo']==0) $totStandard++; 
+										    else if ($eguidRES['tipo_patto_formativo'] > 0) $totPerson++;
+										}
+										if ($eguidRES['tipo_patto_formativo'] > 0 && !isset($personalPatto) && isset($eguidRES['tipo_personalizzazione'])) $personalPatto = $tipoPersonalPattoAr[$eguidRES['tipo_personalizzazione']];					
 										$appRealized++;
 									}
 								}
@@ -287,8 +296,8 @@ if (isset($_SERVER['REQUEST_METHOD']) && $_SERVER['REQUEST_METHOD'] == 'GET' &&
 				array_sum(array_column($detailsResults, 'apprealized')),
 				array_sum($loginCounts),
 				'&nbsp;',
-				'&nbsp;',
-				'&nbsp;',
+				$totStandard,
+				$totPerson,
 				array_sum(array_column($detailsResults, 'addednodes')),
 				array_sum(array_column($detailsResults, 'readnodes')),
 				array_sum(array_column($detailsResults, 'uploadedfiles')),
