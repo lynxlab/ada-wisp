@@ -47,7 +47,7 @@ if ($event == ADA_CHAT_EVENT) {
   exit();
 }
 elseif ($event == ADA_VIDEOCHAT_EVENT) {
-  header('Location: ' . HTTP_ROOT_DIR .'/comunica/videochat.php');
+  header('Location: ' . HTTP_ROOT_DIR .'/comunica/videochat.php?event_token='.$event_token);
   exit();
 }
 else {

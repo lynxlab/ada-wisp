@@ -40,8 +40,6 @@ function dataTablesExec() {
 //		'bProcessing': true,
 		'bDeferRender': true,
  
-                'aoColumnDefs': [{ "bSortable": false, "aTargets": [ 4 ] } ],
-
                 'aoColumns': [
                                 null,
                                 null,

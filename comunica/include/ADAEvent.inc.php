@@ -150,12 +150,18 @@ class ADAEvent
       return '';
     }
     $message = $message_ha['testo'];
-
+    $subject = $message_ha['titolo'];
+    $event_token = ADAEventProposal::extractEventToken($subject);
     $pattern = '/<event_data>(?:\s)*<event_type>(.*)<\/event_type>(?:\s)*<id_course>(.*)<\/id_course>(?:\s)*<id_course_instance>(.*)<\/id_course_instance>(?:\s)*<\/event_data>/';
     $matches = array();
 
     if(preg_match($pattern, $message, $matches) > 0) {
-      return "performEnterEventSteps({$matches[1]},{$matches[2]},{$matches[3]});";
+	if ($event_token != '') {
+	    $actionToReturn = "performEnterEventSteps({$matches[1]},{$matches[2]},{$matches[3]},$event_token);";
+	} else {
+	    $actionToReturn = "performEnterEventSteps({$matches[1]},{$matches[2]},{$matches[3]});";
+	}
+      return $actionToReturn;
     }
     return '';
   }

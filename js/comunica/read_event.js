@@ -8,7 +8,7 @@
  * 
  * @return void
  */
-function performEnterEventSteps(event, id_course, id_course_instance) {
+function performEnterEventSteps(event, id_course, id_course_instance, event_token) {
 		
 	var windowOpenerLocationHref = HTTP_ROOT_DIR + '/browsing/sview.php'
 	                       + '?id_node=' + id_course + '_0'
@@ -17,7 +17,8 @@ function performEnterEventSteps(event, id_course, id_course_instance) {
 	var thisWindowLocationHref = HTTP_ROOT_DIR + '/comunica/enter_event.php'
 				               + '?event=' + event
 							   + '&id_course=' + id_course
- 						       + '&id_course_instance=' + id_course_instance;
+ 						       + '&id_course_instance=' + id_course_instance
+                                                       + '&event_token='+ event_token;
 	                           
 	window.opener.location.href = windowOpenerLocationHref;
 	window.location = thisWindowLocationHref;

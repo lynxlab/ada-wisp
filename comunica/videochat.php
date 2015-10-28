@@ -100,8 +100,6 @@ $content_dataAr = array (
 	'data'      => $iframe
 );
 
-$event_token='65_63_17_1444821064';
-	
 if (DataValidator::validate_event_token($event_token)) {
     $closeMenu = HTTP_ROOT_DIR.'/tutor/eguidance_tutor_form.php?event_token='.$event_token.'&popup='.TRUE;
     $menuoptions=array(

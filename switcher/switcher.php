@@ -127,7 +127,7 @@ if ($op=='not_started' or $op=='all') {
         $idLocalService = $user_registration['id_corso'];
         if ($infoServicelHa[$idLocalService]['level'] == ADA_SERVICE_HELP) {
             $numRequiredHelp ++;
-            $href = 'zoom_user.php?id='.$user_registration['id_utente'];
+            $href = 'edit_user.php?id_user='.$user_registration['id_utente'].'&usertype='.AMA_TYPE_STUDENT;
             $user_link = CDOMElement::create('a', "href:$href");
             $user_link->addChild(new CText($user_registration['nome'] .' '.$user_registration['cognome']));
 
@@ -179,7 +179,7 @@ if ($op=='started' || $op=='all' || $op=='open' || $op=='closed') {
             if ($infoServicelHa[$idLocalService]['level'] == ADA_SERVICE_HELP) {
 
                 $numRequiredHelp ++;
-                $href = 'zoom_user.php?id='.$user_registration['id_utente'];
+                $href = 'edit_user.php?id_user='.$user_registration['id_utente'].'&usertype='.AMA_TYPE_STUDENT;
                 $user_link = CDOMElement::create('a', "href:$href");
                 $user_link->addChild(new CText($user_registration['nome'] .' '.$user_registration['cognome']));
 
