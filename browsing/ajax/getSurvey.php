@@ -52,7 +52,7 @@ if (defined('SURVEY_API_URL') && defined('SURVEY_API_USER') && defined ('SURVEY_
 		$cookie_file = tempnam(ADA_UPLOAD_PATH, 'unimc-cookie');
 		
 		$c = curl_init();
-		curl_setopt($c, CURLOPT_URL, SURVEY_API_URL .'?COD_FIS='.$cf);
+		curl_setopt($c, CURLOPT_URL, SURVEY_API_URL .'?cod_fis='.$cf);
 		curl_setopt($c, CURLOPT_RETURNTRANSFER, true);
 		curl_setopt($c, CURLOPT_CONNECTTIMEOUT, 10);
 		curl_setopt($c, CURLOPT_TIMEOUT,       60);
