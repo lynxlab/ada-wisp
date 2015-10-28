@@ -508,9 +508,9 @@ function loadAPIDetails(targetDIVid, loadingDIVid, errorDIVid) {
 		isSurveys = true;
 		doAjax = !surveysLoaded;
 		dataTableOptions = {
-			"aaSorting": [[ 2, "desc" ]],
+			"aaSorting": [[ 2, "asc" ]],
 			'aoColumnDefs': [{ "bSortable" : false, "aTargets": [0,1,3,4,5] },
-			                 { "bVisible" : false, "aTargets" : [0,1,5] }]	
+			                 { "bVisible" : false, "aTargets" : [0,1,2,5] }]	
 		};
 	}
 	
