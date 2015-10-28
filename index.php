@@ -239,7 +239,8 @@ if(isset($_GET['message'])) {
  */
 
 $content_dataAr = array(
-	'form' => $login->getHtml().$forget_link,
+	'form' => $login->getHtml(),
+	'forget_link' => $forget_link,
 	'newsmsg' => $newsmsg,
 	'helpmsg' => $hlpmsg,
     'infomsg' => $infomsg,
@@ -266,10 +267,10 @@ if (isset($_SESSION['sess_userObj']) && $_SESSION['sess_userObj']-> getType() !=
     $content_dataAr['user_type'] = $user_type;
 
     unset($content_dataAr['form']);
+    unset($content_dataAr['forget_link']);
     $onload_function = 'initDoc(true);';
 } else {
     $onload_function = 'initDoc();';
-    $content_dataAr['form'] = $login->getHtml().$forget_link;
     unset($content_dataAr['user_modprofilelink']);
     unset($content_dataAr['user_avatar']);	  
     unset($content_dataAr['user_name']);
