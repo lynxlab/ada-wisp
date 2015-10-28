@@ -157,7 +157,7 @@ class ADAEvent
 
     if(preg_match($pattern, $message, $matches) > 0) {
 	if ($event_token != '') {
-	    $actionToReturn = "performEnterEventSteps({$matches[1]},{$matches[2]},{$matches[3]},$event_token);";
+	    $actionToReturn = "performEnterEventSteps({$matches[1]},{$matches[2]},{$matches[3]},'$event_token');";
 	} else {
 	    $actionToReturn = "performEnterEventSteps({$matches[1]},{$matches[2]},{$matches[3]});";
 	}
