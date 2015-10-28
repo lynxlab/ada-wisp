@@ -105,7 +105,7 @@ if (isset($_SERVER['REQUEST_METHOD']) && $_SERVER['REQUEST_METHOD'] == 'POST') {
                      * if needed it creates the instance and chat...
                      */
                     $confirmDIVHtml = '';
-                    $fieldsAr = array('data_inizio', 'data_inizio_previsto', 'durata', 'data_fine', 'title');
+                    $fieldsAr = array('data_inizio', 'data_inizio_previsto', 'durata', 'data_fine', 'title', 'tipo_servizio');
                     $id_course = $_POST['id_corso'];
                     $instancesAr = $dh->course_instance_get_list($fieldsAr, $id_course);
                     if (($_POST['service_level'] == ADA_SERVICE_COMMON || $_POST['service_level'] == ADA_SERVICE_COMMON_STUDENT || $_POST['service_level'] == ADA_SERVICE_COMMON_TUTOR)
@@ -119,14 +119,15 @@ if (isset($_SERVER['REQUEST_METHOD']) && $_SERVER['REQUEST_METHOD'] == 'POST') {
                             'title' => $_POST['titolo'],
                             'duration_subscription' => '730', //$_POST['duration_subscription'],
                             'start_level_student' => '99', //$_POST['start_level_student'],
-                            'open_subscription' => '1' // $_POST['open_subscription']
+                            'open_subscription' => '1', // $_POST['open_subscription']
+			    'service_level' => $_POST['service_level']			    
                         );
                         $id_instance_course = Course_instance::add_instance($id_course, $course_instanceAr);
                         if(!AMA_DataHandler::isError($result)) {
                             $id_chatroom = Course_instance::add_chatRoom($id_course, $course_instanceAr);
                         }
                     }
-                    elseif (!$_POST['service_level'] && !AMA_DataHandler::isError($instancesAr) && count($instancesAr==1) && ($service_dataAr[3] != $_POST['service_level'])) {
+                    elseif (!$_POST['service_level'] && !AMA_DataHandler::isError($instancesAr) && count($instancesAr)==1 && ($service_dataAr[3] != $_POST['service_level'])) {
                         /* ***********
                          * if instances of service exist, they are deleted before to delete service and link to general service
                          */
