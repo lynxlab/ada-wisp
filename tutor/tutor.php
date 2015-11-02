@@ -540,7 +540,7 @@ switch ($op) {
 			foreach ($listStudentIds as $student_id) {
 				// load the user from the db
 				$studentObj = MultiPort::findUser($student_id);
-				if (is_object($studentObj) && $studentObj instanceof ADAUser && $studentObj->getStatus()!=ADA_STATUS_REMOVED) {
+				if (is_object($studentObj) && $studentObj instanceof ADAUser && $studentObj->getStatus()==ADA_STATUS_REGISTERED) {
 					$getInstancesData = true;
 					$instancesRES = $dh->get_course_instances_for_this_student($studentObj->getId(), $getInstancesData);
 					$countInstances = 0;
