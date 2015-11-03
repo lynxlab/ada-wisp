@@ -266,12 +266,22 @@ if (isset($_GET['file'])){
         } 
 }
 
+/**
+ * @author giorgio 03/nov/2015
+ *
+ * read course instance status and do not display upload link if it's closed
+ */
+$instanceObj = new Course_instance($id_course_instance);
+$closedInstance = $instanceObj instanceof Course_instance && $instanceObj->isFull() && $instanceObj->status==ADA_INSTANCE_CLOSED;
 
-$divUpload = CDOMElement::create('div','class:uploadDiv');  
-$uploadLink = CDOMElement::create('a','href:../services/upload.php');
-$uploadLink->addChild(new CText(translateFn('Invia un documento')));
-$divUpload->addChild($uploadLink);
-$html .= $divUpload->getHtml(); 
+if (!$closedInstance) {
+	$divUpload = CDOMElement::create('div','class:uploadDiv');
+	$uploadLink = CDOMElement::create('a','href:../services/upload.php');
+	$uploadLink->addChild(new CText(translateFn('Invia un documento')));
+	$divUpload->addChild($uploadLink);
+	$html .= $divUpload->getHtml();
+}
+
 
   $navigation_history  = $_SESSION['sess_navigation_history'];
   $last_visited_module = $navigation_history->lastModule();

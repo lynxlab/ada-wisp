@@ -1238,6 +1238,14 @@ class CourseViewer
         $forum_data[$i]['id_nodo_parent'] = $forum_root_node;
       }
     }
+    
+    /**
+     * @author giorgio 03/nov/2015
+     * 
+     * read course instance status and set terminated param accordingly
+     */
+    $instanceObj = new Course_instance($id_course_instance);
+    $params['readonly'] = $instanceObj instanceof Course_instance && $instanceObj->isFull() && $instanceObj->status==ADA_INSTANCE_CLOSED;
 
     $index = CDOMElement::create('div', "id:$container_div");
 
@@ -1252,7 +1260,14 @@ class CourseViewer
   
 
   function NotesHtml($params=array(), $external_params=array()) {
-
+	/**
+	 * @author giorgio 03/nov/2015
+	 * 
+	 * if it's a readonly instance and we're doing a formNuovo, return an empty element
+	 */
+  	if (isset($external_params['readonly']) && $external_params['readonly']===true && 
+  		isset($params['node']['formNuovo']) && $params['node']['formNuovo']) return new CText('');
+  	
     $http_root_dir = $GLOBALS['http_root_dir'];
     
     $spanH3 = CDOMElement::create('div','class:conversation');
@@ -1354,19 +1369,21 @@ class CourseViewer
     $list_item->addChild($divNodeObj);
 //    print_r($params);
      $userId = $_SESSION['sess_userObj']->id_user;
-    if ($params['node']['formNuovo']) {
-        $divForm = CDOMElement::create('div','class:noteForm');
-        $noteForm = new AddNoteForm($userId, $instanceId, $params['node']['id_nodo']);
-        $divForm->addChild(new CText($noteForm->getHtml()));
-        $list_item->addChild(CDOMElement::create('div','class:clearfix'));
-        $list_item->addChild($divForm);
-    } else {
-        $divForm = CDOMElement::create('div','class:noteForm');
-        $subject = $params['node']['nome_nodo'];
-        $noteForm = new AddNoteForm($userId, $instanceId, $params['node']['id_nodo'],$subject);
-        $divForm->addChild(new CText($noteForm->getHtml()));
-        $list_item->addChild(CDOMElement::create('div','class:clearfix'));
-        $list_item->addChild($divForm);
+     if (!isset($external_params['readonly']) || (isset($external_params['readonly']) && $external_params['readonly']!==true)) {
+	    if ($params['node']['formNuovo']) {
+	        $divForm = CDOMElement::create('div','class:noteForm');
+	        $noteForm = new AddNoteForm($userId, $instanceId, $params['node']['id_nodo']);
+	        $divForm->addChild(new CText($noteForm->getHtml()));
+	        $list_item->addChild(CDOMElement::create('div','class:clearfix'));
+	        $list_item->addChild($divForm);
+	    } else {
+	        $divForm = CDOMElement::create('div','class:noteForm');
+	        $subject = $params['node']['nome_nodo'];
+	        $noteForm = new AddNoteForm($userId, $instanceId, $params['node']['id_nodo'],$subject);
+	        $divForm->addChild(new CText($noteForm->getHtml()));
+	        $list_item->addChild(CDOMElement::create('div','class:clearfix'));
+	        $list_item->addChild($divForm);     	
+     }
     }
     $spanH3->addChild($list_item);
 //    return $list_item;

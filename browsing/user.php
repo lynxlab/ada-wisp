@@ -258,8 +258,9 @@ if(count($courseInstances) > 0) {
 			    }
 		    }
 		    elseif ($isEnded) {
-			$access_link = BaseHtmlLib::link("#",
-				translateFN('Servizio terminato'));
+		    	$access_link = CDOMElement::create('a');
+		    	$access_link->setAttribute('href','sview.php?id_node='.$nodeId.'&id_course='.$courseId.'&id_course_instance='.$courseInstanceId);
+		    	$access_link->addChild(new CText(translateFN('Vai allo storico...')));
 		    }
 		    $service->addChild($access_link);
 		    if (is_object($divNews))  $service->addChild($divNews);
