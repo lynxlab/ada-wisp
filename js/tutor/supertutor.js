@@ -80,9 +80,13 @@ function toggleTutorDetails(tutor_id,imgObj) {
                       // put the sort icon outside of the DataTables_sort_wrapper div
                       // for better display styling with CSS
                       $j(this).find("thead th div.DataTables_sort_wrapper").each(function(){
-                      sortIcon = $j(this).find('span').clone();
-                      $j(this).find('span').remove();
-                      $j(this).parents('th').append(sortIcon);
+	                      sortIcon = $j(this).find('span').clone();
+	                      $j(this).find('span').remove();
+	                      $j(this).parents('th').append(sortIcon);
+                      });
+                      
+                      $j(this).find("tbody tr td").each(function(){
+                      	if ($j(this).text()=="0") $j(this).text('-');
                       });
                  } 
               });
