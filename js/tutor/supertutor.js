@@ -12,6 +12,16 @@ function initDoc(){
 		"bSortable":false,
 		"sClass" : "actionCol",
 		"sWidth" : "1%"
+	},{
+		"aTargets": [1,5,6,7,8],
+		"sClass" : "center"
+	},{
+		"aTargets": [6],
+		"sType"   : "date-eu",
+		"sWidth"  : "10%"
+	},{
+		"aTargets": [5,7,8],
+		"sWidth"  : "8%"
 	}];
     
     datatable = $j('table.doDataTable').dataTable({
@@ -30,10 +40,10 @@ function initDoc(){
                 // put the sort icon outside of the DataTables_sort_wrapper div
                 // for better display styling with CSS
                 $j(this).find("thead th div.DataTables_sort_wrapper").each(function(){
-                sortIcon = $j(this).find('span').clone();
-                $j(this).find('span').remove();
-                $j(this).parents('th').append(sortIcon);
-            });
+	                sortIcon = $j(this).find('span').clone();
+	                $j(this).find('span').remove();
+	                $j(this).parents('th').append(sortIcon);
+                });
         }
 	});
 }

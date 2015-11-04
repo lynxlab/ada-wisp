@@ -314,6 +314,13 @@ if (isset($_SERVER['REQUEST_METHOD']) && $_SERVER['REQUEST_METHOD'] == 'GET' &&
 				'sType'=>'date-eu',
 				'aTargets'=>[7]
 		);
+		/**
+		 * login info are not required anymore, hide them
+		 */
+		$retArray['columnDefs'][] = array(
+				'bVisible'=>false,
+				'aTargets'=>[6,7]
+		);
 		$retArray['status']='OK';
 		$retArray['html']=$result;
 	} else {

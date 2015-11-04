@@ -80,6 +80,13 @@ switch ($op) {
 			foreach ($tutorsAr as $aTutor) {
 				// open details button
 				$imgDetails->setAttribute('onclick',"toggleTutorDetails(".$aTutor[0].",this);");
+				
+				// login counts
+				$loginInfo = abstractLogin::getUserLoginInfo($aTutor[0]);
+				if (!AMA_DB::isError($loginInfo) && is_array($loginInfo) && count($loginInfo)>0) {
+					$loginInfo['date'] = AMA_DataHandler::ts_to_date($loginInfo['date']);
+				} else $loginInfo = array ('loginCount'=>0,'date'=>'');
+				
 				// received messages
 				$receivedMessages = 0;
 				$msgs_ha = $mh->get_messages($aTutor[0],ADA_MSG_SIMPLE);
@@ -92,7 +99,9 @@ switch ($op) {
 				if (!AMA_DataHandler::isError($msgs_ha)) {
 					$sentMessages = count($msgs_ha);
 				}
-				$tableDataAr[] = array_merge(array($imgDetails->getHtml()),$aTutor,array($receivedMessages,$sentMessages));
+				$tableDataAr[] = array_merge(array($imgDetails->getHtml()),$aTutor,
+											 array($loginInfo['loginCount'],$loginInfo['date']),
+											 array($receivedMessages,$sentMessages));
 			}
 		}
 		$thead = array(null,
@@ -100,6 +109,8 @@ switch ($op) {
 				translateFN('Nome'),
 				translateFN('Cognome'),
 				translateFN('username'),
+				translateFN('No. Login'),
+				translateFN('Ultimo Login'),				
 				translateFN('Msg Ric'),
 				translateFN('Msg Inv')
 		);
