@@ -27,10 +27,12 @@ table.doDataTable td.actionCol a { margin-right: 10px; background-color:transpar
 #listCourses .DataTables_sort_icon { float: right; margin-top: -20px; }
 #listTutors caption,
 #listCourses caption { width: 65%; margin: -25px auto 0 auto; position: relative; top: -4px; font-weight: bold;   color: #fff; }
-table#listTutors.dataTable td.details { padding-left: 3%; padding-right: 1%; background: darkgray; }
+table#listTutors.dataTable td.details { padding-left: 3%; padding-right:3px; background: darkgray; }
 /*
  * table.doDataTable actions
  */ 
 table.doDataTable .ulactions { list-style-type: none; display: block; padding:0; margin:0; }
 table.doDataTable .liactions { text-align:center; border: none !important; margin-bottom: 5px; }
 table.doDataTable .button_Increase, table.doDataTable .button_Decrease { height: 1.5em; }
+
+th.tutor_table_th { font-size: 0.9em; }

@@ -86,7 +86,12 @@ function toggleTutorDetails(tutor_id,imgObj) {
                       });
                       
                       $j(this).find("tbody tr td").each(function(){
+                    	// substitute zero with dash
                       	if ($j(this).text()=="0") $j(this).text('-');
+                      	// if pattoformativo > 0 substitue the number with a checkbox icon
+                      	if($j(this).hasClass('pattoformativo') && parseInt($j(this).text())>0) {
+                      		$j(this).html('<i class="icon checked checkbox"></i>');
+                      	} 
                       });
                  } 
               });
