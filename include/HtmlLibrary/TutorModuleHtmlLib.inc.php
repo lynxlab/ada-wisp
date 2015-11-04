@@ -571,25 +571,33 @@ static public function getServiceDataTableForTutor($service_dataAr) {
      * Patto formativo personalizzato
      * $tipoPersonalPattoAr read from config_main.inc.php
      */
-    $pattoFormativoPersonalAr = $service_infoAr['tipo_patto_personal'];
-    $pattoFormativoPersonalOptionsAr = array();
-    foreach ($pattoFormativoPersonalAr as $tipoPersonal => $tipoPersonalDesc) {
-	$pattoFormativoPersonalOptionsAr[]=  translateFN($tipoPersonalDesc);
-    }
-    $pattoPersonalSelected = $form_dataAr['tipo_personalizzazione'];
-    $more_attributes['onchange'] = 'toggleVisiblePersonal(this)';
-    $pattoPersonalSelect = BaseHtmlLib::selectElement2('id:tipo_personalizzazione, name:tipo_personalizzazione',$pattoFormativoPersonalOptionsAr,$pattoPersonalSelected);
     $spanPersonalPatto = CDOMElement::create('span','class:personal_patto');
+    $pattoPersonalSelected = intval($form_dataAr['tipo_personalizzazione']);
+    $pattoFormativoPersonalAr = $service_infoAr['tipo_patto_personal'];
+    
+    foreach ($pattoFormativoPersonalAr as $tipoPersonal => $tipoPersonalDesc) {
+    	$aCheck = CDOMElement::create('checkbox','id:tipo_personalizzazione_'.$tipoPersonal.
+    			',name:tipo_personalizzazione[],'.'value:'.$tipoPersonal.
+    			($pattoPersonalSelected & $tipoPersonal ? ',checked:cheked' : ''));
+    	
+    	$aLabel = CDOMElement::create('label','for:tipo_personalizzazione_'.$tipoPersonal);
+    	$aLabel->addChild(new CText(translateFN($tipoPersonalDesc)));
+    	
+    	$spanPersonalPatto->addChild($aCheck);
+    	$spanPersonalPatto->addChild($aLabel);
+    	$spanPersonalPatto->addChild(CDOMElement::create('div','class:clearfix'));
+    }
     
     if ($pattoSelected == 0) {
 	$spanPersonalPatto->setAttribute('style','display:none;');
     }
-    $spanPersonalPatto->addChild($pattoPersonalSelect);
     
     $toe_tbody = array(
 	array(translateFN('tipo').': '.$_SESSION['service_level'][$form_dataAr['tipo_eguidance']]),
 	array(translateFN('status').': '.$instance_status),
-	array(translateFN('Patto formativo').': '.$pattoFormativoSelect->getHtml().$spanPersonalPatto->getHtml())
+	array(translateFN('Patto formativo').': '.$pattoFormativoSelect->getHtml().
+			CDOMElement::create('div','class:clearfix')->getHtml().
+			$spanPersonalPatto->getHtml())
     );
 
     $toe_table = BaseHtmlLib::tableElement('', $toe_thead, $toe_tbody);
@@ -683,10 +691,14 @@ static public function getServiceDataTableForTutor($service_dataAr) {
      * $tipoPersonalPattoAr read from config_main.inc.php
      */
     $pattoFormativoPersonalAr = $service_infoAr['tipo_patto_personal'];
-    $pattoFormativoPersonalOptionsAr = array();
     if ($pattoSelected == MC_PATTO_FORMATIVO_PERSONALIZZATO) {
         $pattoPersonalSelected = $form_dataAr['tipo_personalizzazione'];
-	$pattoPersonalSelectedDesc = ' '.translateFN('per').' '. translateFN($pattoFormativoPersonalAr[$pattoPersonalSelected]);
+	$pattoPersonalSelectedDesc = ' '.translateFN('per');
+	foreach ($pattoFormativoPersonalAr as $tipoPersonal => $tipoPersonalDesc) {
+		if ($pattoPersonalSelected & $tipoPersonal) $pattoPersonalSelectedDesc .= ' '.translateFN($tipoPersonalDesc).',';
+	}
+	$pattoPersonalSelectedDesc = rtrim($pattoPersonalSelectedDesc,',');
+	
 	$pattoFormativoSpan->addChild(new CText($pattoPersonalSelectedDesc));
     }
 	

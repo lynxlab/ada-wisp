@@ -382,11 +382,11 @@ $pattoFormativoAr = array(
 );
 
 $tipoPersonalPattoAr = array (
-    'numero esami',
-    'tempistica esami',
-    'suggerito corso propedeutico',
-    'suggerita consulenza orientativa',
-    'altro'
+    1 => 'numero esami',
+    2 => 'tempistica esami',
+    4 => 'suggerito corso propedeutico',
+    8 => 'suggerita consulenza orientativa',
+    16=> 'altro'
 );
 
 /**
