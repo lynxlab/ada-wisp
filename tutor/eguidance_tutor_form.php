@@ -76,7 +76,7 @@ include_once ROOT_DIR.'/comunica/include/ADAEventProposal.inc.php';
 
   if(isset($_POST['is_popup'])) {
     $href_suffix = '&popup=1';
-    unset($_POST['is_popup']);
+//     unset($_POST['is_popup']);
   }
   else {
     $href_suffix = '';
@@ -107,11 +107,13 @@ include_once ROOT_DIR.'/comunica/include/ADAEventProposal.inc.php';
   //createCSVFileToDownload($_POST);
 
   /*
-   * Redirect the practitioner to user service detail
+   * Redirect the practitioner to user service detail if it's not a popup
    */
-  $tutored_user_id    = $eguidance_dataAr['id_utente'];
-  header('Location: user_service_detail.php?id_user='.$tutored_user_id.'&id_course_instance='.$id_course_instance.$href_suffix);
-  exit();
+  if (!isset($_POST['is_popup'])) {
+	  $tutored_user_id    = $eguidance_dataAr['id_utente'];
+	  header('Location: user_service_detail.php?id_user='.$tutored_user_id.'&id_course_instance='.$id_course_instance.$href_suffix);
+	  exit();  	
+  }  
 }
 else {
 
@@ -235,30 +237,35 @@ $userAgendaForThisProvider = $user_agendaAr[$_SESSION['sess_selected_tester']];
    
   }
 //}
-$content_dataAr = array(
-  'user_name' => $user_name,
-  'user_type' => $user_type,
-  'status'    => $status,
-  'user_modprofilelink' => $userObj->getEditProfilePage(),
-  'dati'      => $eguidanceAssessment->getHtml()
-);
-// if it's default.tpl the template field is data and NOT dati
-$content_dataAr['data'] = $content_dataAr['dati'];
-/**
- * @author giorgio 06/nov/2013
- *
- * form is not built using an FForm object, must attach jquery uniform by hand
- *
- */
-$layout_dataAr['JS_filename'] = array(
-		JQUERY,
-		JQUERY_UNIFORM,
-		JQUERY_NO_CONFLICT
-);
-
-$layout_dataAr['CSS_filename'][] = JQUERY_UNIFORM_CSS;
-
-$options_Ar = array('onload_func' => "initDoc();");
+if (isset($_POST['is_popup'])) {
+	// if it's coming from a post and is_popup, just close the popup window
+	$layout_dataAr = null;
+	$content_dataAr = array();
+	$options_Ar = array('onload_func' => "closeMe();");
+} else {
+	$content_dataAr = array(
+	  'user_name' => $user_name,
+	  'user_type' => $user_type,
+	  'status'    => $status,
+	  'user_modprofilelink' => $userObj->getEditProfilePage(),
+	  'dati'      => $eguidanceAssessment->getHtml()
+	);
+	// if it's default.tpl the template field is data and NOT dati
+	$content_dataAr['data'] = $content_dataAr['dati'];
+	/**
+	 * @author giorgio 06/nov/2013
+	 *
+	 * form is not built using an FForm object, must attach jquery uniform by hand
+	 *
+	 */
+	$layout_dataAr['JS_filename'] = array(
+			JQUERY,
+			JQUERY_UNIFORM,
+			JQUERY_NO_CONFLICT
+	);
+	$layout_dataAr['CSS_filename'][] = JQUERY_UNIFORM_CSS;
+	$options_Ar = array('onload_func' => "initDoc();");	
+}
 
 ARE::render($layout_dataAr, $content_dataAr, NULL, $options_Ar);
 ?>
