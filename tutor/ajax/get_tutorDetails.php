@@ -55,7 +55,7 @@ if (isset($_SERVER['REQUEST_METHOD']) && $_SERVER['REQUEST_METHOD'] == 'GET' &&
 		translateFN('Ultimo P.Form.'),			
 		translateFN('P.Form. Standard'),
 		translateFN('P.Form. Person.'),
-		translateFN('Person.'),
+		translateFN('Personalizzazione'),
 		translateFN('Note Scri'),
 		translateFN('Note Let'),
 		translateFN('File Inviati'),
@@ -162,7 +162,7 @@ if (isset($_SERVER['REQUEST_METHOD']) && $_SERVER['REQUEST_METHOD'] == 'GET' &&
 				'apprealized'=>0,
 				'logincount'=>0,
 				'lastlogin'=>'&nbsp;',
-				'lastpform'=>'&nbsp;',
+				'lasteguidancets'=>'&nbsp;',
 				'pattost'=>'&nbsp;',
 				'pattopers'=>'&nbsp;',					
 				'personalpatto'=>'&nbsp;',
@@ -177,6 +177,7 @@ if (isset($_SERVER['REQUEST_METHOD']) && $_SERVER['REQUEST_METHOD'] == 'GET' &&
 		 */
 		$processedCourseIDs = array();
 		$studentSummary = array();
+		$studentPatto = array();
 		$loginCounts = array();
 		
 		$mh = MessageHandler::instance(MultiPort::getDSN($sess_selected_tester));
@@ -190,9 +191,6 @@ if (isset($_SERVER['REQUEST_METHOD']) && $_SERVER['REQUEST_METHOD'] == 'GET' &&
 			 */
 			if (!in_array($helpInstance['id_corso'], $processedCourseIDs)) {
 				$processedCourseIDs[] = $helpInstance['id_corso'];
-				$pattoSt = 0;
-				$pattoPers = 0;
-				$lastEguidanceTimestamp = 0;
 				$instancesToLoop = $dh->get_tutors_assigned_course_instance($id_tutor, $helpInstance['id_corso']);
 				if (!AMA_DB::isError($instancesToLoop) && is_array($instancesToLoop[$id_tutor]) && count($instancesToLoop[$id_tutor])>0) {
 					// now instancesToLoop contains all instances of the course to which tutor is assigned
@@ -207,6 +205,15 @@ if (isset($_SERVER['REQUEST_METHOD']) && $_SERVER['REQUEST_METHOD'] == 'GET' &&
 						$students = $dh->get_students_for_course_instance($anInstance['id_istanza_corso']);
 						if (!AMA_DB::isError($students) && is_array($students) && count($students)>0) {
 							foreach ($students as $aStudent) {
+								// array to hold patto formativo
+								if (!isset($studentPatto[$aStudent['id_utente']][$anInstance['id_corso']])) {
+									$studentPatto[$aStudent['id_utente']][$anInstance['id_corso']] = array (
+											'lasteguidancets'=>0,
+											'pattost'=>0,
+											'pattopers'=>0,
+											'personalpatto'=>'&nbsp;'
+									);
+								}
 								// msgs having ADA_EVENT_PROPOSED
 								$msgsProp = $mh->find_messages($aStudent['id_utente'],ADA_MSG_AGENDA,array('titolo'),
 										sprintf($clause, $aStudent['id_utente'], $id_tutor,
@@ -229,25 +236,27 @@ if (isset($_SERVER['REQUEST_METHOD']) && $_SERVER['REQUEST_METHOD'] == 'GET' &&
 									$token = ADAEventProposal::extractEventToken($aMessage);
 									$eguidRES = $dh->get_eguidance_session_with_event_token($token);
 									if (!AMA_DB::isError($eguidRES) && is_array($eguidRES) && count($eguidRES)>0) {
-										$currentEguidanceTimestamp = $eguidRES['lastupdate'];
-										if($currentEguidanceTimestamp == 0) $currentEguidanceTimestamp = $eguidRES['data_ora'];
-										if ($currentEguidanceTimestamp > $lastEguidanceTimestamp && isset($eguidRES['tipo_patto_formativo'])) {
+										$currentEguidanceTimestamp = intval($eguidRES['lastupdate']);
+										if($currentEguidanceTimestamp == 0) $currentEguidanceTimestamp = intval($eguidRES['data_ora']);
+										if ($currentEguidanceTimestamp > $studentPatto[$aStudent['id_utente']][$anInstance['id_corso']]['lasteguidancets'] && isset($eguidRES['tipo_patto_formativo'])) {
 											if ($eguidRES['tipo_patto_formativo']==0) {
-												$pattoSt = 1; $pattoPers = 0;
-												if (isset($personalPatto)) unset($personalPatto);
+												$studentPatto[$aStudent['id_utente']][$anInstance['id_corso']]['pattost']=1;
+												$studentPatto[$aStudent['id_utente']][$anInstance['id_corso']]['pattopers']=0;
+												$studentPatto[$aStudent['id_utente']][$anInstance['id_corso']]['personalpatto']='&nbsp;';
 											} else if ($eguidRES['tipo_patto_formativo']>0) {
-												$pattoSt = 0; $pattoPers = 1;
+												$studentPatto[$aStudent['id_utente']][$anInstance['id_corso']]['pattost']=0;
+												$studentPatto[$aStudent['id_utente']][$anInstance['id_corso']]['pattopers']=1;
 												if (isset($eguidRES['tipo_personalizzazione'])) {
 													$eguidRES['tipo_personalizzazione'] = intval($eguidRES['tipo_personalizzazione']);
-													$personalPatto = '';
+													$studentPatto[$aStudent['id_utente']][$anInstance['id_corso']]['personalpatto'] = '';
 													foreach ($tipoPersonalPattoAr as $tipoPersonal => $tipoPersonalDesc) {
-														if ($eguidRES['tipo_personalizzazione'] & $tipoPersonal) $personalPatto .= '- '.translateFN($tipoPersonalDesc).'<br/>';
+														if ($eguidRES['tipo_personalizzazione'] & $tipoPersonal) $studentPatto[$aStudent['id_utente']][$anInstance['id_corso']]['personalpatto'] .= '- '.translateFN($tipoPersonalDesc).'<br/>';
 													}
-													$personalPatto = rtrim($personalPatto,'<br/>');
+													$studentPatto[$aStudent['id_utente']][$anInstance['id_corso']]['personalpatto'] = rtrim($studentPatto[$aStudent['id_utente']][$anInstance['id_corso']]['personalpatto'],'<br/>');
 												}												
 											} 
 										    
-										    $lastEguidanceTimestamp = $currentEguidanceTimestamp;
+										    $studentPatto[$aStudent['id_utente']][$anInstance['id_corso']]['lasteguidancets'] = $currentEguidanceTimestamp;
 										}
 									}
 								}
@@ -267,10 +276,10 @@ if (isset($_SERVER['REQUEST_METHOD']) && $_SERVER['REQUEST_METHOD'] == 'GET' &&
 											'apprealized'=>$closedInstances,
 											'logincount'=>$loginCounts[$aStudent['id_utente']],
 											'lastlogin'=>(AMA_DB::isError($loginInfo)) ? '&nbsp;' : AMA_DataHandler::ts_to_date($loginInfo['date']),
-											'lasteguidancets'=>$lastEguidanceTimestamp,
-											'pattost'=>$pattoSt,
-											'pattopers'=>$pattoPers,
-											'personalpatto'=>isset($personalPatto) ? $personalPatto : '&nbsp;',
+											'lasteguidancets'=>0,
+											'pattost'=>0,
+											'pattopers'=>0,
+											'personalpatto'=>'&nbsp;',
 											'addednodes'=>0,
 											'readnodes'=>0,
 											'uploadedfiles'=>0,
@@ -282,10 +291,6 @@ if (isset($_SERVER['REQUEST_METHOD']) && $_SERVER['REQUEST_METHOD'] == 'GET' &&
 									$studentSummary[$aStudent['id_utente']][$anInstance['id_corso']]['appproposals'] += $appProposals;
 									$studentSummary[$aStudent['id_utente']][$anInstance['id_corso']]['appconfirmed'] += $appConfirmed;
 									$studentSummary[$aStudent['id_utente']][$anInstance['id_corso']]['apprealized']  += $closedInstances;
-									$studentSummary[$aStudent['id_utente']][$anInstance['id_corso']]['lasteguidancets'] = $lastEguidanceTimestamp;
-									$studentSummary[$aStudent['id_utente']][$anInstance['id_corso']]['pattost'] = $pattoSt;
-									$studentSummary[$aStudent['id_utente']][$anInstance['id_corso']]['pattopers'] = $pattoPers;
-									$studentSummary[$aStudent['id_utente']][$anInstance['id_corso']]['personalpatto'] =isset($personalPatto) ? $personalPatto : '&nbsp;';
 								}
 								
 								// PREVIOUSLY LOADED DATA AGGREATION: add results to current student and course
@@ -305,11 +310,11 @@ if (isset($_SERVER['REQUEST_METHOD']) && $_SERVER['REQUEST_METHOD'] == 'GET' &&
 		
 		// done! add studentsummary results to output table
 		if (count($studentSummary)>0 && is_array($studentSummary)) {
-			foreach ($studentSummary as $aSummary) {
+			foreach ($studentSummary as $studentID=>$aSummary) {
 				if (count($aSummary)>0 && is_array($aSummary)) {
-					foreach ($aSummary as $row) {
-						$row['lasteguidancets'] = AMA_DataHandler::ts_to_date($row['lasteguidancets']);
-						array_push($detailsResults, $row); 
+					foreach ($aSummary as $courseID=>$row) {
+						$studentPatto[$studentID][$courseID]['lasteguidancets'] = AMA_DataHandler::ts_to_date($studentPatto[$studentID][$courseID]['lasteguidancets']);
+						array_push($detailsResults, array_merge($row,$studentPatto[$studentID][$courseID])); 
 					}
 				}
 			}
@@ -350,7 +355,7 @@ if (isset($_SERVER['REQUEST_METHOD']) && $_SERVER['REQUEST_METHOD'] == 'GET' &&
 				'aTargets'=>[7,8]
 		);
 		$retArray['columnDefs'][] = array(
-				'sWidth'=>'19%',
+				'sWidth'=>'21%',
 				'aTargets'=>[11]
 		);
 		$retArray['columnDefs'][] = array(
