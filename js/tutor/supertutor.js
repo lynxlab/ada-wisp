@@ -93,7 +93,34 @@ function toggleTutorDetails(tutor_id,imgObj) {
                       		$j(this).html('<i class="icon checked checkbox"></i>');
                       	} 
                       });
-                 } 
+                  },
+              "fnFooterCallback": 
+            	  function ( nRow, aaData, iStart, iEnd, aiDisplay ) {
+            	  	var colToSum = [ 2,3,4,5,9,10,12,13,14,15 ];
+            	  	
+            	  	var totals= [];
+            	  	for (i=0; i<colToSum.length; i++) totals[i]=0;
+            	  	
+            	  	aiDisplay.forEach(function (currentRow){
+            	  		for (i=0; i<colToSum.length; i++) {            	  			
+            	  			var value = parseInt(aaData[currentRow][colToSum[i]]);
+            	  			if (isNaN(value)) value=0;
+            	  			totals[i] += value;
+            	  		}
+            	  	});
+            	  	
+            	  	var nCells = nRow.getElementsByTagName('th');
+            	  	var firstCellText = nCells[0].innerHTML.replace(/\d+/g, '');
+            	  	nCells[0].innerHTML = aiDisplay.length.toString() + firstCellText;
+            	  	for (i=0; i<colToSum.length; i++) {
+            	  		/**
+            	  		 * WARNING: columns 6 and 7 are hidden, so if col index is 
+            	  		 * greater than 7, I must subtract 2 to obtain the footer col index
+            	  		 */
+            	  		cellIndex = (colToSum[i]>7) ? colToSum[i]-2 : colToSum[i];
+            	  		nCells[cellIndex].innerHTML = totals[i];
+            	  	}
+                  }
               });
           }
      })
