@@ -208,3 +208,30 @@ div.tutorServiceBlock { margin-bottom: 10px; }
 /** select helpServiceID dialog **/
 div#selectServiceDialog { text-align: center; }
 div#selectServiceDialog > span.selectServiceMSG { text-align: center; display: inline-block; margin-bottom: 10px; }
+
+/**
+ * DataTables styles
+ */
+.dataTables_wrapper { width: 100% !important; }
+.dataTables_wrapper caption { width: 20%; margin: -25px auto 0 auto; position: relative; top: -10px; font-weight: bold;   color: #fff; }
+.dataTables_wrapper tbody td { height: 2.5em; border:none; vertical-align: middle; }
+.dataTables_wrapper thead th { padding-right: 5px; }
+.dataTables_wrapper .DataTables_sort_wrapper { padding: 5px 0 5px 0; width:90%; }
+.dataTables_wrapper .DataTables_sort_icon { float: right; margin-top: -20px; }
+.dataTables_wrapper .dataTables_paginate > a { margin:0; padding: 3px; }
+.dataTables_wrapper .dataTables_length,
+.dataTables_wrapper .dataTables_filter,
+.dataTables_wrapper .dataTables_paginate { padding: 5px; }
+.dataTables_wrapper .dataTables_info { padding: 8px 0 0 5px; }
+.dataTables_wrapper tbody td.hidden,
+.dataTables_wrapper thead th.hidden { display: none; }
+
+
+/**
+ * DataTables styles for action column
+ */ 
+.dataTables_wrapper ul.ulactions { list-style-type: none; display: table-cell; padding:0; }
+.dataTables_wrapper li.liactions { float: left; border: none !important; }
+.dataTables_wrapper ul.ulactions > li.liactions > button { height: 1.5em; }
+.dataTables_wrapper table.dataTable td.enabledstate.disabled,
+.dataTables_wrapper ul.ulactions > li.liactions > button.ui-button-disabled { opacity: 0.4; }

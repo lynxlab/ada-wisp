@@ -15,7 +15,17 @@ function initDoc() {
                                 "aaSorting": [[ 0, "desc" ]],
                 "oLanguage": {
                 	"sUrl": HTTP_ROOT_DIR + "/js/include/jquery/dataTables/dataTablesLang.php"
-                },				
+                },	
+                "fnDrawCallback":
+                    function () {
+                        // put the sort icon outside of the DataTables_sort_wrapper div
+                        // for better display styling with CSS
+                        $j(this).find("thead th div.DataTables_sort_wrapper").each(function(){
+        	                sortIcon = $j(this).find('span').clone();
+        	                $j(this).find('span').remove();
+        	                $j(this).parents('th').append(sortIcon);
+                        });
+                },
 				"aoColumns": [
 				              { "sType": "date-euro" },
 				              null,
@@ -36,7 +46,17 @@ function initDoc() {
                         "aaSorting": [[ 0, "desc" ]],
             "oLanguage": {
             	"sUrl": HTTP_ROOT_DIR + "/js/include/jquery/dataTables/dataTablesLang.php"
-            },			
+            },
+            "fnDrawCallback":
+                function () {
+                    // put the sort icon outside of the DataTables_sort_wrapper div
+                    // for better display styling with CSS
+                    $j(this).find("thead th div.DataTables_sort_wrapper").each(function(){
+    	                sortIcon = $j(this).find('span').clone();
+    	                $j(this).find('span').remove();
+    	                $j(this).parents('th').append(sortIcon);
+                    });
+            },
 			"aoColumnDefs": [
 			                 { "bSortable": false,
 			                	"aTargets": [ 1 ] } 
@@ -66,6 +86,16 @@ function initDoc() {
             "oLanguage": {
             	"sUrl": HTTP_ROOT_DIR + "/js/include/jquery/dataTables/dataTablesLang.php"
             },
+            "fnDrawCallback":
+                function () {
+                    // put the sort icon outside of the DataTables_sort_wrapper div
+                    // for better display styling with CSS
+                    $j(this).find("thead th div.DataTables_sort_wrapper").each(function(){
+    	                sortIcon = $j(this).find('span').clone();
+    	                $j(this).find('span').remove();
+    	                $j(this).parents('th').append(sortIcon);
+                    });
+            },
                         "aoColumns": [
                                       { "sType": "date-euro" },
                                       null,
@@ -85,6 +115,16 @@ function initDoc() {
                         "bJQueryUI":     true,
             "oLanguage": {
             	"sUrl": HTTP_ROOT_DIR + "/js/include/jquery/dataTables/dataTablesLang.php"
+            },
+            "fnDrawCallback":
+                function () {
+                    // put the sort icon outside of the DataTables_sort_wrapper div
+                    // for better display styling with CSS
+                    $j(this).find("thead th div.DataTables_sort_wrapper").each(function(){
+    	                sortIcon = $j(this).find('span').clone();
+    	                $j(this).find('span').remove();
+    	                $j(this).parents('th').append(sortIcon);
+                    });
             },
                         "aaSorting": [[ 0, "asc" ]],
 
