@@ -325,7 +325,7 @@ switch ($op) {
 			      $status .= $serviceCloseLink->getHtml();
 			     * 
 			     */
-			    if ($user_data['instance_status'] != ADA_INSTANCE_CLOSED || !($user_data['data_fine'] >= 0 && $user_data['data_fine'] < time())) {
+			    if ($user_data['instance_status'] != ADA_INSTANCE_CLOSED && !($user_data['data_fine'] >= 0 && $user_data['data_fine'] < time())) {
 			      $url = HTTP_ROOT_DIR.'/comunica/send_event_proposal.php?id_user='.$user_data['id_utente'].'&id_course_instance='.$id_course_instance;
 			      $onclick = "openMessenger('$url',800,600);";
 			      $appointment_link = CDOMElement::create('a');
