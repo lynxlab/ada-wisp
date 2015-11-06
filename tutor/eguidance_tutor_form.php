@@ -173,6 +173,7 @@ $userAgendaForThisProvider = $user_agendaAr[$_SESSION['sess_selected_tester']];
   }
 
   $service_info_statusAr = Course_instance::getInstanceStatus($instanceInfoAr);
+  if ($instanceInfoAr['data_fine'] > 0 && $instanceInfoAr['data_fine'] < time()) $instanceInfoAr['status'] = ADA_INSTANCE_CLOSED;
   $service_infoAr['instance_status'] = $instanceStatusDescription[$instanceInfoAr['status']];
   $service_infoAr['instance_status_value'] = $instanceInfoAr['status'];
   

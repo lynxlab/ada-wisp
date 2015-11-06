@@ -201,7 +201,7 @@ if (isset($_SERVER['REQUEST_METHOD']) && $_SERVER['REQUEST_METHOD'] == 'GET' &&
 						$instanceObj = new Course_instance($anInstance['id_istanza_corso']);
 						if ($instanceObj instanceof Course_instance && $instanceObj->isFull() && 
 							($instanceObj->status==ADA_INSTANCE_CLOSED ||
-							($instanceObj->data_fine >= 0 && $instanceObj->data_fine < time()))) {
+							($instanceObj->data_fine > 0 && $instanceObj->data_fine < time()))) {
 							$closedInstances++;
 						}
 						$students = $dh->get_students_for_course_instance($anInstance['id_istanza_corso']);

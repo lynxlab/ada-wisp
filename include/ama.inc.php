@@ -5523,7 +5523,7 @@ abstract class AMA_Tester_DataHandler extends Abstract_AMA_DataHandler {
         if ( AMA_DB::isError( $db ) ) return $db;
 
         // prepare values
-        $data_fine = $this->or_null($istanza_ha['data_fine']);
+        $data_fine = $this->or_zero($istanza_ha['data_fine']);
         
         $data_inizio = $this->or_null($istanza_ha['data_inizio']);
         $durata = $this->or_zero($istanza_ha['durata']);

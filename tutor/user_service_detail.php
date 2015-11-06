@@ -133,9 +133,9 @@ else {
 	$status_instance_value = ADA_INSTANCE_CLOSED; // 1; 1 = instance Close 0 = instance open
 	$current_timestamp = time();
 	
-	if($instanceInfoAr['data_inizio'] > 0 && $instanceInfoAr['data_fine'] > 0
+	if($instanceInfoAr['data_inizio'] > 0 && $instanceInfoAr['data_fine'] >= 0
 	&& $current_timestamp > $instanceInfoAr['data_inizio']
-	&& $current_timestamp < $instanceInfoAr['data_fine']) {
+	/*&& $current_timestamp < $instanceInfoAr['data_fine']*/) {
 	  $status_instance = translateFN($instanceStatusDescription[$instanceInfoAr['status']]); //$status_opened_label;
 	  $status_instance_value = $instanceInfoAr['status']; //ADA_INSTANCE_OPENED;
 	} 

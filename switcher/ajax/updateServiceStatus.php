@@ -37,7 +37,7 @@ require_once ROOT_DIR.'/include/module_init.inc.php';
 //require_once 'include/switcher_functions.inc.php';
 include_once '../include/Subscription.inc.php';
 
-$status_opened     = ADA_INSTANCE_OPEN; //0;
+$status_opened     = ADA_INSTANCE_OPENED; //0;
 $status_closed     = ADA_INSTANCE_CLOSED; //1;
 $status_more_date = ADA_INSTANCE_MORE_DATE; // 2
 
