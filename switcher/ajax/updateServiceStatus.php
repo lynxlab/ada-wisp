@@ -91,7 +91,7 @@ if (isset($_SERVER['REQUEST_METHOD']) && $_SERVER['REQUEST_METHOD'] == 'POST') {
 		}
 	    }
 	}
-	elseif($updateInstance && ($userStatus == $status_opened || $userStatus == $status_opened)){
+	elseif($updateInstance && ($userStatus == $status_opened || $userStatus == $status_more_date)){
 	    /*
 	    *  change user status 
 	    */
