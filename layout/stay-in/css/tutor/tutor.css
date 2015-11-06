@@ -225,7 +225,7 @@ div#selectServiceDialog > span.selectServiceMSG { text-align: center; display: i
 .dataTables_wrapper .dataTables_info { padding: 8px 0 0 5px; }
 .dataTables_wrapper tbody td.hidden,
 .dataTables_wrapper thead th.hidden { display: none; }
-.ui-widget .dataTables_wrapper  input { font-family: inital; }
+.ui-widget .dataTables_wrapper  input { font-family: Lucida Sans,Arial,sans-serif; }
 
 
 /**
