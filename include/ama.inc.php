@@ -5536,7 +5536,7 @@ abstract class AMA_Tester_DataHandler extends Abstract_AMA_DataHandler {
         $start_level_student = $this->or_zero($istanza_ha['start_level_student']);
         $open_subscription = $istanza_ha['open_subscription'];
         $duration_hours = $this->or_zero($istanza_ha['duration_hours']);
-        $tipo_servizio = $this->or_null($istanza_ha['service_level']);
+        $tipo_servizio = $this->or_zero($istanza_ha['service_level']);
         $status = $this->or_zero($istanza_ha['status']);
 	
 

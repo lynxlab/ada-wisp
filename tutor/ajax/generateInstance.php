@@ -55,6 +55,8 @@ if (isset($_SERVER['REQUEST_METHOD']) && $_SERVER['REQUEST_METHOD'] == 'POST' &&
 			'open_subscription' => 1,
 			'self_registration' => 0
 	);
+	$aCourse = new Course($courseID);
+	$istanza_ha['service_level'] = intval($aCourse->service_level);
 	// 01. add an instance to tester db 
 	$instanceID = $dh->course_instance_add($courseID, $istanza_ha);
 	if (!AMA_DB::isError($instanceID)) {
