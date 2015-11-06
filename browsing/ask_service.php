@@ -96,6 +96,7 @@ switch ($op) {
 
         $serviceAr = $common_dh->get_service_info_from_course($id_course);
         $service_name = $serviceAr[1];
+	$istanza_ha['service_level']= (int)$serviceAr[3];
         $providerInfoAr = $common_dh->get_tester_info_from_id($providerId);
         if(!AMA_Common_DataHandler::isError($providerInfoAr)) {
             $provider = $providerInfoAr[10];
