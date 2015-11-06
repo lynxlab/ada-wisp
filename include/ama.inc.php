@@ -4970,7 +4970,7 @@ abstract class AMA_Tester_DataHandler extends Abstract_AMA_DataHandler {
         $sql = 'SELECT C.id_corso, C.titolo, C.crediti, IC.id_istanza_corso,'
              . ' IC.data_inizio, IC.durata, IC.data_inizio_previsto, IC.data_fine, I.status';
         if ($extra_fields) {
-            $sql .= ' ,IC.title,I.data_iscrizione,IC.duration_subscription, C.tipo_servizio';
+            $sql .= ' ,IC.title,I.data_iscrizione,IC.duration_subscription, C.tipo_servizio, IC.status as instance_status';
         }
         $sql .=' FROM modello_corso AS C, istanza_corso AS IC, iscrizioni AS I'
              . ' WHERE I.id_utente_studente=?'
@@ -5576,7 +5576,7 @@ abstract class AMA_Tester_DataHandler extends Abstract_AMA_DataHandler {
         if (AMA_DB::isError($res)) {
             return new AMA_Error(AMA_ERR_UPDATE);
         } else {
-        	if (intval($data_inizio)>0) {
+        	if (intval($data_inizio)>0 && intval($duration_subscription)>0) {
         		$this->_update_students_subscription_after_course_instance_set($id, intval($duration_subscription));
         	}
         }

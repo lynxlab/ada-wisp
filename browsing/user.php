@@ -177,7 +177,8 @@ if(count($courseInstances) > 0) {
 		    $subscription_status = $c['status'];
 		    $started = ($c['data_inizio'] > 0 && $c['data_inizio'] < time()) ? translateFN('Si') : translateFN('No');
 		    $start_date = ($c['data inizio'] > 0) ? $c['data_inizio'] : $c['data_inizio_previsto'];
-		    $isEnded = ($c['data_fine'] > 0 && $c['data_fine'] < time()) ? true : false;
+		    $isEnded = ($subscription_status == ADA_SERVICE_SUBSCRIPTION_STATUS_COMPLETED || $subscription_status == ADA_SERVICE_SUBSCRIPTION_STATUS_TERMINATED ||
+		    		    $c['instance_status']==ADA_INSTANCE_CLOSED || ($c['data_fine'] > 0 && $c['data_fine'] < time()) ) ? true : false;
 		    $isStarted = ($c['data_inizio'] > 0 && $c['data_inizio'] <= time()) ? true : false;
 
 		    $service = CDOMElement::create('div','id:serviceRequired'.$courseInstanceId);
@@ -186,7 +187,8 @@ if(count($courseInstances) > 0) {
 
 		    $access_link = BaseHtmlLib::link("#", translateFN('Attendi che ti contatti un consulente...'));
 
-		    if ($subscription_status != ADA_STATUS_SUBSCRIBED && $subscription_status != ADA_STATUS_VISITOR && $subscription_status!= ADA_SERVICE_SUBSCRIPTION_STATUS_COMPLETED) {
+		    if ($subscription_status != ADA_STATUS_SUBSCRIBED && $subscription_status != ADA_STATUS_VISITOR &&
+		        $subscription_status!= ADA_SERVICE_SUBSCRIPTION_STATUS_COMPLETED && $subscription_status != ADA_SERVICE_SUBSCRIPTION_STATUS_TERMINATED) {
 			    $access_link = BaseHtmlLib::link("#",translateFN('Attendi che ti contatti un consulente...'));
 		    } elseif ($isStarted && !$isEnded) {
 			    $tutorAssignedAR = $dh->course_instance_tutor_info_get($courseInstanceId,1);
@@ -315,7 +317,7 @@ if(count($courseInstances) > 0) {
 			    $subscription_status = $singleCommonArea['status'];
 			    $started = ($singleCommonArea['data_inizio'] > 0 && $singleCommonArea['data_inizio'] < time()) ? translateFN('Si') : translateFN('No');
 			    $start_date = ($singleCommonArea['data inizio'] > 0) ? $singleCommonArea['data_inizio'] : $singleCommonArea['data_inizio_previsto'];
-			    $isEnded = ($singleCommonArea['data_fine'] > 0 && $singleCommonArea['data_fine'] < time()) ? true : false;
+			    $isEnded = $singleCommonArea['instance_status']==ADA_INSTANCE_CLOSED || ($singleCommonArea['data_fine'] > 0 && $singleCommonArea['data_fine'] < time()) ? true : false;
 			    $isStarted = ($singleCommonArea['data_inizio'] > 0 && $singleCommonArea['data_inizio'] <= time()) ? true : false;
 
 			    $service = CDOMElement::create('div','id:serviceRequired'.$courseInstanceId);
