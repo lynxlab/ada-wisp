@@ -47,7 +47,7 @@ if (isset($_SERVER['REQUEST_METHOD']) && $_SERVER['REQUEST_METHOD'] == 'POST' &&
 	$tutorID = $userObj->getId();
 	
 	$istanza_ha = array(
-			'data_inizio'=>0,
+			'data_inizio'=>AMA_DataHandler::date_to_ts("now"),
 			'durata'=>'365',
 			'data_inizio_previsto'=>AMA_DataHandler::date_to_ts("now"),
 			'id_layout'=>NULL,
@@ -90,9 +90,26 @@ if (isset($_SERVER['REQUEST_METHOD']) && $_SERVER['REQUEST_METHOD'] == 'POST' &&
 						);
 						require_once ROOT_DIR . '/services/include/NodeEditing.inc.php';
 						if (!AMA_DB::isError(NodeEditing::createNode($node_data))) {
-							// 07. if we've done through here, eventually return the generated instance ID
-							$retArray['status'] = 'OK';
-							$retArray['instanceID'] = $instanceID;
+							// 08. create the chatroom
+							$chatroom_ha = array(
+								'chat_title' => translateFN('chat avviata dal tutor'),
+								'chat_topic' => translateFN('Chat'),
+								'welcome_msg' => translateFN('Benvenut* nella chat'),
+								'max_users' => 99,
+								'start_time' => $istanza_ha['data_inizio'],
+								'end_time' => $dh->add_number_of_days($istanza_ha['durata'],$istanza_ha['data_inizio']),
+								'id_course_instance' => $instanceID									
+							);
+							require_once ROOT_DIR . '/comunica/include/ChatRoom.inc.php';
+							// add chatroom_ha to the database
+							$chatroom = ChatRoom::add_chatroomFN($chatroom_ha);
+							if (!AMA_DB::isError($chatroom) || $chatroom->code != AMA_ERR_UNIQUE_KEY){
+								// 09. if we've done through here, eventually return the generated instance ID
+								$retArray['status'] = 'OK';
+								$retArray['instanceID'] = $instanceID;
+							} else {
+								$retArray['msg'] = translateFN('Errore durante la generazione della chatroom');
+							}
 						} else {
 							$retArray['msg'] = translateFN('Errore durante la generazione del primo nodo della timeline');
 						}
