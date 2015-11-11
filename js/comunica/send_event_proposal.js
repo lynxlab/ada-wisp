@@ -2,6 +2,12 @@
 //document.write("<script type='text/javascript' src='../js/include/menu_functions.js'></script>");
 //document.write("<script type='text/javascript' src='../js/include/ts_picker.js'></script>");
 
+/**
+ * global var to tell the submit handler the timestamp of the last request, to prevent
+ * incidental and buggy uniform plugin double form submissions
+ */
+var lastSubmit = -1;
+
 
 /**
  * JavaScript class to handle appointments
@@ -349,6 +355,20 @@ function initDoc(initDatas, inputProposalNames, max_proposal_count) {
 	    		showDialogByID('#alertDialog', appointments.alertTitle,'#oneProposalAtLeast');
 	    	} else if ($j('#id_course').length>0 && $j('#id_course').val().trim()!='') {
 	    		event.preventDefault();
+				event.stopPropagation();
+				/**
+				 * event timestamp is not valorized correctlry in firefox
+				 * due to a bug opened since 2004, see:
+				 * 
+				 * http://api.jquery.com/event.timeStamp/
+				 */
+				event.timeStamp = (new Date).getTime();
+
+				if (lastSubmit+500 >  event.timeStamp) {
+					return false;
+				} else {
+					lastSubmit = event.timeStamp;
+				}
 	    		// must create an instance for the selected course, subscribe the
 	    		// the student and blablabla.... before saving appointment (aka form submit)
 	    		$j.ajax({
