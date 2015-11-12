@@ -136,7 +136,7 @@ if(isset($_SERVER['REQUEST_METHOD']) && $_SERVER['REQUEST_METHOD'] == 'POST') {
       'mittente'    => $adm_uname,
       'destinatari' => $destinatari,
       'data_ora'    => 'now',
-      'titolo'      => 'ADA: ' . translateFN('a user asks for new event proposal dates'),
+      'titolo'      => (defined('PORTAL_NAME') ? PORTAL_NAME : '') .': '. translateFN('a user asks for new event proposal dates'),
       'testo'       => sprintf(translateFN('Dear practitioner, the user %s is asking you for new event dates for the appointment %s.\r\nThank you.'), $userObj->getFullName(), $clean_subject)
     );
 
