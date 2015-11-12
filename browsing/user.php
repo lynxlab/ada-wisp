@@ -36,7 +36,6 @@ $self = whoami();
 $self = 'user';
 require_once 'include/browsing_functions.inc.php';
 
-$courseInstances = array();
 $serviceProviders = $userObj->getTesters();
 /**
  * change the two below call to active to let the closed
@@ -54,27 +53,27 @@ $serviceProviders = $userObj->getTesters();
 
 $courseInstanceCommonAreaAr = array();
 $courseInstanceHelpAr = array();
-$courseInstances = array();
 $courseInstanceTmp = array();
 $commonAreaToSubscibeAr = array();
 if (is_array($serviceProviders)) {
     
     foreach ($serviceProviders as $Provider) {
 	$provider_dh = AMA_DataHandler::instance(MultiPort::getDSN($Provider));
-    //         $courseInstances_provider = $provider_dh->get_course_instances_active_for_this_student($userObj->getId());
 	$courseInstanceTmp = $provider_dh->get_course_instances_for_this_student($userObj->getId(), true);
 	if (!AMA_DataHandler::isError($courseInstanceTmp)) {
 
 	    array_walk($courseInstanceTmp, function (&$v, $k, $Provider){ $v['provider'] = $Provider;}, $Provider);
 //      	var_dump($courseInstanceTmp);die();
 
-	    if ($courseInstanceTmp['tipo_servizio'] == ADA_SERVICE_HELP) {
-		array_push($courseInstanceHelpAr, $courseInstanceTmp);
-		//	    $courseInstanceHelpAr[] = $courseInstanceTmp;
-	    } elseif ($courseInstanceTmp['tipo_servizio'] == ADA_SERVICE_COMMON || ($courseInstanceTmp['tipo_servizio'] == ADA_SERVICE_COMMON_STUDENT && $userObj->getSerialNumber () != '')) {
-		array_push($courseInstanceCommonAreaAr, $courseInstanceTmp);
-	    } 
-	    array_push($courseInstances,$courseInstanceTmp);
+	    foreach ($courseInstanceTmp as $singleCourseInstanceTmp) {
+		
+		if ((int)$singleCourseInstanceTmp['tipo_servizio'] === ADA_SERVICE_HELP) {
+		    array_push($courseInstanceHelpAr, $singleCourseInstanceTmp);
+		    //	    $courseInstanceHelpAr[] = $courseInstanceTmp;
+		} elseif ((int)$singleCourseInstanceTmp['tipo_servizio'] === ADA_SERVICE_COMMON || ((int)$singleCourseInstanceTmp['tipo_servizio'] === ADA_SERVICE_COMMON_STUDENT && $userObj->getSerialNumber () != '')) {
+		    array_push($courseInstanceCommonAreaAr, $singleCourseInstanceTmp);
+		} 
+	    }
 	}
 	/*
 	  * COMMON AREA TO SUBSCRIBED (if the user wish to)
@@ -84,9 +83,14 @@ if (is_array($serviceProviders)) {
 	 $clause = "self_registration = 1 AND price = '0.00' AND open_subscription  = 1";
 	 $allServiceInstanceAr = $provider_dh->course_instance_find_list($field_list_ar, $clause);
 	 if (!AMA_DataHandler::isError($allServiceInstanceAr)) {
+	    $idS = array(); 
+//	    array_walk($courseInstanceCommonAreaAr, function (&$v, $k) use (&$idS){ $idS[] = $v[0];});
+	    $idS = array_map(function($v) { return $v['id_istanza_corso']; }, $courseInstanceCommonAreaAr);
+	    
 	     foreach ($allServiceInstanceAr as $singleServiceInstanceAr) {
-    //	     var_dump($singleServiceInstanceAr);
-		 if (!in_array($singleServiceInstanceAr[0], $commonAreasSubscribedAr)) {
+//    	     var_dump(array($singleServiceInstanceAr,$courseInstanceCommonAreaAr));
+//		 if (!in_array($singleServiceInstanceAr[0], $commonAreasSubscribedAr)) {
+		 if (!in_array($singleServiceInstanceAr[0], $idS)) {
 		     $instanceIdToSub = $singleServiceInstanceAr[0];
 		     $courseIdToSub = $singleServiceInstanceAr[1];
 		     if (!AMA_DataHandler::isError($serviceForInstanceAr)) {
@@ -100,9 +104,7 @@ if (is_array($serviceProviders)) {
     }
 }
 
-if(count($courseInstances) > 0) {
-    $found = count($courseInstances);
-    for ($i = 0;$i < count($courseInstances);$i++) {
+if(count($courseInstanceCommonAreaAr) > 0 || count($courseInstanceHelpAr)> 0) {
 	
 	/**
 	 * @author giorgio 23/apr/2015
@@ -110,10 +112,6 @@ if(count($courseInstances) > 0) {
 	 *  filter course instance that are associated to a level of service having nonzero
 	 *  value in isPublic, so that all instances of public courses will not be shown here
 	 */
-	$courseInstances = array_filter($courseInstances, function($courseInstance) {
-		if (is_null($courseInstance['tipo_servizio'])) $courseInstance['tipo_servizio'] = DEFAULT_SERVICE_TYPE;
-		return (intval($_SESSION['service_level_info'][$courseInstance['tipo_servizio']]['isPublic'])===0);
-	});
 	$courseInstanceCommonAreaAr = array_filter($courseInstanceCommonAreaAr, function($courseInstanceCommonArea) {
 		if (is_null($courseInstanceCommonArea['tipo_servizio'])) $courseInstanceCommonArea['tipo_servizio'] = DEFAULT_SERVICE_TYPE;
 		return (intval($_SESSION['service_level_info'][$courseInstanceCommonArea['tipo_servizio']]['isPublic'])===0);
@@ -122,7 +120,7 @@ if(count($courseInstances) > 0) {
 		if (is_null($courseInstanceHelp['tipo_servizio'])) $courseInstanceHelp['tipo_servizio'] = DEFAULT_SERVICE_TYPE;
 		return (intval($_SESSION['service_level_info'][$courseInstanceHelp['tipo_servizio']]['isPublic'])===0);
 	});
-    }
+//    }
 	
 //  if (count($courseInstanceHelpAr) > 0 && $userObj->getSerialNumber() != '') {
     if ($userObj->getSerialNumber() != '') {
@@ -154,9 +152,9 @@ if(count($courseInstances) > 0) {
 	 */
 	
 	$providerHelp = null;
-	for ($i = 0;$i<count($courseInstanceHelpAr);$i++) {
-	    foreach($courseInstanceHelpAr[$i] as $c) {
-//			     var_dump(array('vaffa',$c));
+//	for ($i = 0;$i<count($courseInstanceHelpAr);$i++) {
+//	    foreach($courseInstanceHelpAr[$i] as $c) {
+	    foreach($courseInstanceHelpAr as $c) {
 
 		/* ***********************
 		 * INFO for each instance 
@@ -274,7 +272,7 @@ if(count($courseInstances) > 0) {
 		}
 
 	    }
-	}   
+//	}   
 	//cicla
     } else {
 	$data = new CText(translateFN('Non hai ancora chiesto aiuto per nessun argomento'));
@@ -294,9 +292,10 @@ if(count($courseInstances) > 0) {
          $commonAreasSubscribedAr = array();
          $CommonAreaDOM = CDOMElement::create('div','id:CommonAreaRequired');
          if (count($courseInstanceCommonAreaAr) > 0) {
-	    for ($i = 0;$i<count($courseInstanceCommonAreaAr);$i++) {
+//	    for ($i = 0;$i<count($courseInstanceCommonAreaAr);$i++) {
 
-		 foreach ($courseInstanceCommonAreaAr[$i] as $singleCommonArea) {
+		 foreach ($courseInstanceCommonAreaAr as $singleCommonArea) {
+//		 foreach ($courseInstanceCommonAreaAr[$i] as $singleCommonArea) {
 		     $commonAreasSubscribedAr[] = $singleCommonArea['id_istanza_corso'];
 
 			/* ***********************
@@ -385,7 +384,7 @@ if(count($courseInstances) > 0) {
 
 			}
 		 }
-	    } // end for cicle 
+//	    } // end for cicle 
         } else {
             $data = new CText(translateFN('Non sei ancora iscritto a nessuna area comune'));
 //            $CommonAreaDOM->addChild($data);
