@@ -235,10 +235,9 @@ if(count($courseInstanceCommonAreaAr) > 0 || count($courseInstanceHelpAr)> 0) {
 			    }
 
 			    $lastFiles = $userObj->get_new_files($courseInstanceId);
-
+			    $divFiles = CDOMElement::create('div','class:newFiles');
 			    if (!is_null($lastFiles) && !empty($lastFiles))
 			    {
-				    $divFiles = CDOMElement::create('div','class:newFiles');
 				    $divFiles->addChild (new CText('<h4>'.translateFN('documenti recenti').'</h4>'));
 				    $ulFiles = CDOMElement::create('ul');
 
