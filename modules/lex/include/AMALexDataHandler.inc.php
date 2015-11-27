@@ -1712,23 +1712,6 @@ class AMALexDataHandler extends AMA_DataHandler {
 		return $sql;
 	}
 
-	/**
-	 * Returns an instance of AMALexDataHandler.
-	 *
-	 * @param  string $dsn - optional, a valid data source name
-	 *
-	 * @return an instance of AMALexDataHandler
-	 */
-	static function instance($dsn = null) {
-		if(self::$instance === NULL) {
-			self::$instance = new AMALexDataHandler($dsn);
-		}
-		else {
-			self::$instance->setDSN($dsn);
-		}
-		//return null;
-		return self::$instance;
-	}
 
 }
 ?>

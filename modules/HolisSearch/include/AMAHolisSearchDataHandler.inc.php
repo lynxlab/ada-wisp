@@ -83,23 +83,6 @@ class AMAHolisSearchDataHandler extends AMA_DataHandler {
 		return $this->getConnection()->quote($text);
 	}
 
-	/**
-	 * Returns an instance of AMAHolisSearchDataHandler.
-	 *
-	 * @param  string $dsn - optional, a valid data source name
-	 *
-	 * @return an instance of AMAHolisSearchDataHandler
-	 */
-	static function instance($dsn = null) {
-		if(self::$instance === NULL) {
-			self::$instance = new AMAHolisSearchDataHandler($dsn);
-		}
-		else {
-			self::$instance->setDSN($dsn);
-		}
-		//return null;
-		return self::$instance;
-	}
 	
 }
 ?>
