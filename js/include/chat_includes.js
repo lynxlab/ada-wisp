@@ -81,6 +81,8 @@ var GET_AJAX_REQUEST_EXECUTION_TIME = false;
 var ARGUMENTS      = null;
 var HOW_MANY_READS = 0;
 
+var lastSubmit = -1;
+
 /**
  * function startChat()
  * called on window load, starts the two periodical executers used to
@@ -208,6 +210,18 @@ function controlChat()
  */
 function sendMessage()
 {
+	/**
+	 * buggy jQuery/uniform occasionally send button click
+	 * event twice in a row, discard second submission
+	 */
+	var timeStamp = (new Date).getTime();
+
+	if (lastSubmit+500 > timeStamp) {
+		return false;
+	} else {
+		lastSubmit = timeStamp;
+	}
+	
 	/*
 	 * In order to be sent, a message must not be empty.
 	 */
