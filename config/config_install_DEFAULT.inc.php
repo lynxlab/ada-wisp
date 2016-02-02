@@ -152,6 +152,18 @@ define('MAX_WIDTH', "200");
 define('MAX_HEIGHT', "200");
 
 /*
+ * default video width and height
+*/
+define('DEFAULT_VIDEO_WIDTH', 720);
+define('DEFAULT_VIDEO_HEIGHT', 405);
+/*
+define('DEFAULT_VIDEO_WIDTH', 290);
+define('DEFAULT_VIDEO_HEIGHT', 250);
+
+ define('DEFAULT_VIDEO_WIDTH', 528);
+ define('DEFAULT_VIDEO_HEIGHT', 297);
+ */
+/*
  * size of Avatar image reduction
  */
 define('AVATAR_MAX_WIDTH', "600");
@@ -355,6 +367,7 @@ $rbstack_class = ROOT_DIR.'/include/rbstack.inc.php';
 // was $mimetypeHa + $mimetypeCodeHa in 1.7
 // replaced also in upload functions
 $ADA_MIME_TYPE["application/pdf"]['permission'] = _GO;
+$ADA_MIME_TYPE["application/x-pdf"]['permission'] = _GO;
 $ADA_MIME_TYPE["application/x-zip-compressed"]['permission'] = _GO;
 $ADA_MIME_TYPE["application/zip-compressed"]['permission'] = _GO;
 $ADA_MIME_TYPE["application/zip"]['permission'] = _GO;
@@ -438,6 +451,7 @@ $ADA_MIME_TYPE["application/octet-stream"]['permission'] = _STOP;
 //  $mimetypeCodeHa
 
 $ADA_MIME_TYPE["application/pdf"]['type'] = _DOC;
+$ADA_MIME_TYPE["application/x-pdf"]['type'] = _DOC;
 $ADA_MIME_TYPE["application/x-zip-compressed"]['type'] = _DOC;
 $ADA_MIME_TYPE["application/zip-compressed"]['type'] = _DOC;
 $ADA_MIME_TYPE["application/zip"]['type'] = _DOC;
