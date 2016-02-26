@@ -6,7 +6,7 @@
 
     <body>
         <a name="top"></a>
-
+		<div id="pagecontainer">
         <!-- testata -->
         <div id="header">
             <template_field class="microtemplate_field" name="header">header</template_field>
@@ -111,26 +111,23 @@
                     <div id="info_nodo">
                     </div>
                     <div class="firstnode">
+	                <!-- PULSANTI AVANTI E INDIETRO -->
+						<template_field class="template_field" name="navigation_bar">navigation_bar</template_field>
+					<!-- end - PULSANTI AVANTI E INDIETRO -->
+	                    <h1 class="ui red header">
+	                    	<template_field class="template_field" name="title">title</template_field>
+	                    </h1>
+	                    <div class="ui divider"></div>                    
+                        <template_field class="template_field" name="text">text</template_field>
+                    </div>                    
                         <template_field class="template_field" name="text">text</template_field>
                     </div>
 
-                    <template_field class="template_field" name="go_next">go_next</template_field>
+                    
                 </div>
-                <div id="bottomcont">
-                </div>
+
             </div> <!--  / contenuto -->
-            <!-- com_tools -->
-            <div id="com_tools">
-                <div id="topcom_t">
-                </div>
-                <div id="com_toolscontent">
-                    <!--
-                    <template_field class="microtemplate_field" name="com_tools">com_tools</template_field>
-                    -->
-                </div>
-                <div id="bottomcom_t">
-                </div>
-            </div> <!-- /com_tools -->
+            
             <!-- menudestra -->
  <!-- <div id="menuright" class="sottomenu_off menuright_view "> -->
             <div id="menuright" class="menuright_view ui wide right sidebar">
@@ -204,6 +201,8 @@
                 </div>
             <!-- / menudestra  -->
         </div> <!-- / contenitore -->
+     	<div id="push"></div>
+		</div>
 
         <!-- PANELLO VIDEO -->
         <div id="rightpanel" class="sottomenu_off rightpanel_view">
