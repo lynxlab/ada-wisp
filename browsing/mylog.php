@@ -60,7 +60,7 @@ $mylog_mode = 0; // default: only one file for user
 //$log_extension = ".txt";
 $log_extension = ".htm";
 
-$self =  whoami();  // = mylog
+// $self =  whoami();  // = mylog
 
 //$classi_dichiarate = get_declared_classes();
 //mydebug(__LINE__,__FILE__,$classi_dichiarate);
@@ -297,7 +297,7 @@ HTML page building
          $imgAvatar = $userObj->getAvatar();
          $avatar = CDOMElement::create('img','src:'.$imgAvatar);
          $avatar->setAttribute('class', 'img_user_avatar');
-         
+
 $node_data = array(
                    'banner'=>$banner,
                    'course_title'=>'<a href="main_index.php">'.$course_title.'</a>',
@@ -316,7 +316,7 @@ $node_data = array(
                    'myforum'=>isset($my_forum) ? $my_forum : '',
                    'title'=>isset($node_title) ? $node_title : '',
 				   'user_avatar'=>$avatar->getHtml(),
-				   'user_modprofilelink' => $userObj->getEditProfilePage()		
+				   'user_modprofilelink' => $userObj->getEditProfilePage()
                    //'mylog'=>$mylog,
                   );
 
@@ -343,11 +343,11 @@ $node_data = array(
 		JQUERY_UNIFORM,
 		JQUERY_NO_CONFLICT
      );
-	
+
 	$layout_dataAr['CSS_filename'] = array (
 			JQUERY_UI_CSS,
 			JQUERY_UNIFORM_CSS
-	);	
+	);
 
 ARE::render($layout_dataAr,$node_data, NULL, $options);
 
