@@ -1,0 +1,31 @@
+@CHARSET "UTF-8";
+
+#content {
+	width: 100%;
+	float:left;
+}
+
+#pagecontainer {
+	margin-bottom: -55px;
+}
+
+#subject,#sender,#plaintext {
+	width: 100%;
+}
+
+form label {
+	width: auto;
+	margin-right: 10px;
+}
+
+.newsletterSaveResultstext {
+	display: block;
+	text-align: center;
+	margin: 20px;
+}
+
+.newsletterSaveResults {
+	text-align: center;
+}
+
+.ui-effects-transfer { border: 2px dotted gray; }

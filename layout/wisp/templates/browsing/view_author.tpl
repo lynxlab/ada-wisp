@@ -4,8 +4,8 @@
         <link rel="stylesheet" href="../../css/browsing/default.css" type="text/css">
     </head>
     <body>
-        <a name="top">
-        </a>
+        <a name="top"></a>
+        <div id="pagecontainer">
         <!-- testata -->
         <div id="header">
             <template_field class="microtemplate_field" name="header">header</template_field>
@@ -14,7 +14,7 @@
         <!-- contenitore -->
         <div id="container">
             <!-- percorso -->
-            <div id="journey">
+            <div id="journey" class="ui tertiary inverted teal segment">
                 <i18n>dove sei: </i18n>
                 <span>
                     <template_field class="template_field" name="course_title">course_title</template_field>
@@ -109,12 +109,16 @@
                         </span>
                     </div>
                     <div class="firstnode">
+	                <!-- PULSANTI AVANTI E INDIETRO -->
+						<template_field class="template_field" name="navigation_bar">navigation_bar</template_field>
+					<!-- end - PULSANTI AVANTI E INDIETRO -->
+	                    <h1 class="ui red header">
+	                    	<template_field class="template_field" name="title">title</template_field>
+	                    </h1>
+	                    <div class="ui divider"></div>					               
                         <template_field class="template_field" name="text">text</template_field>
                     </div>
 
-                    <div id="go_next">
-						<template_field class="template_field" name="go_next">go_next</template_field>
-					</div>
 
 		    <hr>
 		    <div id="index_in_text">
@@ -136,17 +140,7 @@
                 </div>
             </div>
             <!--  / contenuto -->
-            <!-- com_tools -->
-            <div id="com_tools">
-                <div id="topcom_t">
-                </div>
-                <div id="com_toolscontent">
-                    <template_field class="microtemplate_field" name="com_tools">com_tools</template_field>
-                </div>
-                <div id="bottomcom_t">
-                </div>
-            </div>
-            <!-- /com_tools -->
+
             <!-- menudestra -->
             <div id="menuright" class="sottomenu_off menuright_view"> 
                 <div id="topmenur">
@@ -236,6 +230,8 @@
             <!-- / menudestra  -->
         </div>
         <!-- / contenitore -->
+        <div id="push"></div>
+		</div>
 
         <!-- menu -->
         <div id="mainmenu">

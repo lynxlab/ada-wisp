@@ -5,6 +5,7 @@
     </head>
     <body>
         <a name="top"></a>
+        <div id="pagecontainer">
         <!-- testata -->
         <div id="header">
             <template_field class="microtemplate_field" name="header">header</template_field>
@@ -61,7 +62,8 @@
             <!--  / contenuto -->
         </div>
         <!-- / contenitore -->
-
+		<div id="push"></div>
+		</div>
 
 
         <!-- piede -->

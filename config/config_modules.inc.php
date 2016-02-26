@@ -59,7 +59,7 @@
 	else {
 		define('MODULES_LEX', false);
 	}
-	
+
 	//defines for module HolisSearch
 	define('MODULES_HOLISSEARCH_PATH', MODULES_DIR.'/HolisSearch');
 	if (file_exists(MODULES_HOLISSEARCH_PATH.'/index.php'))
@@ -72,10 +72,24 @@
 	else {
 		define('MODULES_HOLISSEARCH', false);
 	}
-        
-        //defines for module impexport
-        define ('MODULES_IMPEXPORT_PATH', MODULES_DIR.'/impexport');
-        if (file_exists(MODULES_IMPEXPORT_PATH.'/import.php'))
+
+	//defines for module apps
+	define('MODULES_APPS_PATH', MODULES_DIR.'/apps');
+	if (file_exists(MODULES_APPS_PATH.'/index.php'))
+	{
+		require_once(MODULES_APPS_PATH.'/config/config.inc.php');
+	
+		define('MODULES_APPS', true);
+		define('MODULES_APPS_HTTP', HTTP_ROOT_DIR.'/modules/apps');
+	}
+	else {
+		define('MODULES_APPS', false);
+	}
+	
+	
+	//defines for module impexport
+	define ('MODULES_IMPEXPORT_PATH', MODULES_DIR.'/impexport');
+	if (file_exists(MODULES_IMPEXPORT_PATH.'/import.php'))
 	{
 		require_once(MODULES_IMPEXPORT_PATH.'/config/config.inc.php');
 	

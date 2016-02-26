@@ -58,10 +58,8 @@ a:visited { text-decoration: none; }
 }
 
 #user_wrap 	{background:#4a4a4a no-repeat 99% 50%; width:100%}
-
-
-
-#content	{background:#fff; padding:10px; clear:both;min-height:350px;border-bottom:10px solid #4a4a4a;}
+#content	{background:#fff; padding:10px; clear:both;border-bottom:10px solid #4a4a4a;}
+#pagecontainer { margin-bottom: -15px; }
 
 /* CLEAR FIX*/
 #user_wrap:after {content: "."; display: block; height: 0; clear: both; visibility: hidden;}

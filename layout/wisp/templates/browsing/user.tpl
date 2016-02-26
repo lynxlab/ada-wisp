@@ -106,7 +106,7 @@
 					<div id="bloccoTreTitoloContenitore"><h2>RSS</h2>
                                         </div>
 					<div id="content_blocco_tre">
-                                                <template_field class="template_field" name="clientRSS">clientRSS</template_field>
+                                                <template_field class="template_field_disabled" name="clientRSS">clientRSS</template_field>
                                         </div>
 				</div>
                                 <!-- fine blocco RSS-->
