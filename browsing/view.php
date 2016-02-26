@@ -34,7 +34,7 @@ $neededObjAr = array(
     AMA_TYPE_STUDENT => array('node', 'layout', 'tutor', 'course', 'course_instance'),
     AMA_TYPE_TUTOR => array('node', 'layout', 'course', 'course_instance'),
     AMA_TYPE_AUTHOR => array('node', 'layout', 'course'),
-	AMA_TYPE_SWITCHER => array('node', 'layout', 'course')		
+	AMA_TYPE_SWITCHER => array('node', 'layout', 'course')
 );
 
 //FIXME: course_instance is needed by videochat BUT not for guest user
@@ -63,7 +63,13 @@ include_once 'include/cache_manager.inc.php';
 
 if ($userObj instanceof ADAGuest) {
     $self = 'guest_view';
-} else {
+} else if ($userObj->tipo==AMA_TYPE_STUDENT && ($self_instruction)) {
+    $self='viewSelfInstruction';
+    // $self='tutorSelfInstruction';
+} else if ($userObj->tipo == AMA_TYPE_AUTHOR) {
+	$self = 'viewAuthor';
+}
+else {
     $self = whoami();
 }
 
@@ -71,18 +77,20 @@ if ($nodeObj->type != ADA_NOTE_TYPE && $nodeObj->type != ADA_PRIVATE_NOTE_TYPE)
 {
 	require_once 'include/DFSNavigationBar.inc.php';
 	$navBar = new DFSNavigationBar($nodeObj, array(
-			'prevId' => isset($_GET['prevId']) ? $_GET['prevId'] : null, 
+			'prevId' => isset($_GET['prevId']) ? $_GET['prevId'] : null,
 			'nextId' => isset($_GET['nextId']) ? $_GET['nextId'] : null,
 			'userLevel' => $user_level));
+} else {
+	$navBar = new CText('');
 }
 
-if (MODULES_TEST && strpos($nodeObj->type,(string) constant('ADA_PERSONAL_EXERCISE_TYPE')) === 0 && ADA_REDIRECT_TO_TEST && 
+if (MODULES_TEST && strpos($nodeObj->type,(string) constant('ADA_PERSONAL_EXERCISE_TYPE')) === 0 && ADA_REDIRECT_TO_TEST &&
 	isset($_SESSION['sess_id_user_type']) && $_SESSION['sess_id_user_type'] != AMA_TYPE_AUTHOR) {
         $test_db = AMATestDataHandler::instance(MultiPort::getDSN($_SESSION['sess_selected_tester']));
         $res = $test_db->test_getNodes(array('id_nodo_riferimento'=>$nodeObj->id));
         if (!empty($res) && count($res) == 1 && !AMA_DataHandler::isError($res)) {
                 $node = array_shift($res);
-                /*Remove the last item to NavigationHistory to increase the value of back button correctly*/ 
+                /*Remove the last item to NavigationHistory to increase the value of back button correctly*/
                 $_SESSION['sess_navigation_history']->removeLastItem();
                 header('Location: '.MODULES_TEST_HTTP.'/index.php?id_test='.$node['id_nodo']);
                 exit();
@@ -192,14 +200,13 @@ else {
 	$node_path = $nodeObj->findPathFN();
 	$node_index = $nodeObj->indexFN('', 1, $user_level, $user_history, $id_profile);
 	$node_family = $nodeObj->template_family;
-	$next_node_id = $nodeObj->next_id;
 	$sess_id_node = $id_node;
 	$data = $nodeObj->filter_nodeFN($user_level, $user_history, $id_profile, $querystring);
 
 
 
 // history:
-	if ((( $id_profile == AMA_TYPE_STUDENT && !in_array($user_status, array(ADA_STATUS_COMPLETED, ADA_STATUS_TERMINATED)) ) 
+	if ((( $id_profile == AMA_TYPE_STUDENT && !in_array($user_status, array(ADA_STATUS_COMPLETED, ADA_STATUS_TERMINATED)) )
 		|| ($id_profile == AMA_TYPE_VISITOR)
 		|| ($id_profile == AMA_TYPE_TUTOR)
 		)
@@ -233,7 +240,7 @@ if (isset($tutor_uname)) {
 	$write_to_tutor_link = "<a href=\"$http_root_dir/comunica/send_message.php?destinatari=$tutor_uname\">$tutor_uname</a>";
 	if (isset($tutor_id)) {
 		$tutor_info_link = "<a href=\"$http_root_dir/admin/zoom_user.php?id=$tutor_id\">$tutor_uname</a>";
-	} else $tutor_info_link = null;	
+	} else $tutor_info_link = null;
 } else {
 	$write_to_tutor_link = null;
 	$tutor_info_link = null;
@@ -243,37 +250,17 @@ if (isset($node_author)) {
 	if (isset($author_uname)) {
 		$write_to_author_link = "<a href=\"$http_root_dir/comunica/send_message.php?destinatari=$author_uname\">$node_author</a>";
 	} else $write_to_author_link = null;
-	
+
 	if (isset($node_author_id)) {
 		$author_info_link = "<a href=\"$http_root_dir/admin/zoom_user.php?id=$node_author_id\">$node_author</a>";
 	} else {
 		$author_info_link = null;
-	}	
+	}
 } else {
 	$write_to_author_link = null;
 	$author_info_link = null;
 }
 
-//next node
-$next_node_link = '';
-if (!empty($next_node_id)){
-	$nextNodeAr =  $dh->get_node_info($next_node_id);
-	// level test
-	$next_node_level = $nextNodeAr['level'];
-	if ($user_level>= $next_node_level){
-		// exercise test
-		$next_node_type =  $nextNodeAr['type'];
-                
-		if (Node::isNodeExercise($next_node_type)){
-			$next_node_link = "<a href=exercise.php?id_node=$next_node_id>" . translateFN("Continua...") . "</a>";
-                       
-		}
-		else {
-			$next_node_link = "<a href=view.php?id_node=$next_node_id>" . translateFN("Continua...") . "</a>";
-		}
-                
-	}
-}
 // E-portal
 $eportal = PORTAL_NAME;
 
@@ -282,7 +269,7 @@ $eportal = PORTAL_NAME;
 $banner = "";
 
 if ($id_profile == AMA_TYPE_AUTHOR && $mod_enabled) {
-	
+
 	$edit_node = "<a href=\"$http_root_dir/services/edit_node.php?op=edit&id_node=$sess_id_node&id_course=$sess_id_course&type=$node_type\">" .
 			translateFN('modifica nodo') . "</a>";
 
@@ -305,7 +292,7 @@ if (is_array($nodeObj->children) && count($nodeObj->children)>0) {
 				. translateFN('mappa') . '</a>';
 	}else {
 					$go_map = '';
-	}	
+	}
 } else $go_map = '';
 
 switch($id_profile) {
@@ -372,7 +359,7 @@ $content_dataAr = array(
 	'user_level' => $user_level,
 	'user_score' => $user_score,
 	'status' => $status,
-        'node_level' => $node_level,
+    'node_level' => $node_level,
 	'visited' => isset($visited) ? $visited : null,
 	'path' => $node_path,
 	'title' => $node_title,
@@ -382,14 +369,14 @@ $content_dataAr = array(
 	//	 'icon' => CourseViewer::getClassNameForNodeType($node_type),
 	'icon' => $node_icon,
 	// 'keywords' => "<a href=\"search.php?s_node_title=$node_keywords&submit=cerca&l_search=all\">$node_keywords</a>",
-        'keywords' => $linked_node_keywords,
+    'keywords' => $linked_node_keywords,
 	'author' => $author_info_link, //'author'=>$node_author,
 	'tutor' => $tutor_info_link, //'tutor'=>$tutor_uname,
 	'search_form' => $search_form,
 	'index' => $node_index,
 	'go_map' => $go_map,
-	'go_next' => $next_node_link,
-	'edit_profile'=> $userObj->getEditProfilePage()
+	'edit_profile'=> $userObj->getEditProfilePage(),
+	'navigation_bar'=> $navBar->getHtml()
 		//        'messages' => $user_messages,
 		//        'agenda' => $user_agenda
 );
@@ -401,11 +388,10 @@ $content_dataAr['link'] = $data['link'];
 $content_dataAr['media'] = $data['media'];
 $content_dataAr['user_media'] = $data['user_media'];
 $content_dataAr['exercises'] = $data['exercises'];
-$content_dataAr['notes'] = $data['notes'];
-$content_dataAr['personal'] = $data['private_notes'];
+$content_dataAr['notes'] = strlen($data['notes'])>0 ? $data['notes'] : translateFN('Nessuna');
+$content_dataAr['personal'] = strlen($data['private_notes'])>0 ? $data['private_notes'] : translateFN('Nessuna');
 $content_dataAr['user_avatar'] = $avatar->getHtml(); 
 $content_dataAr['user_modprofilelink'] = $userObj->getEditProfilePage();
-
 
 if ($node_type == ADA_GROUP_WORD_TYPE OR $node_type == ADA_LEAF_WORD_TYPE) {
 	$content_dataAr['text'] .= $data['extended_node'];
@@ -442,7 +428,7 @@ if ($mod_enabled) {
 	if (isset($delete_note))      $content_dataAr['delete_note'] = $delete_note;
 	if (isset($publish_note))     $content_dataAr['publish_note'] = $publish_note;
 } else {
-	
+
 	$content_dataAr['edit_node'] = '';
 	$content_dataAr['delete_node'] = '';
 	$content_dataAr['add_note'] = '';
@@ -482,7 +468,7 @@ switch ($op){
 			);
 		ARE::render($layout_dataAR,$content_dataAr,ARE_XML_RENDER,$XML_optionsAr);
 		break;
-            
+
         case 'print':
             $PRINT_optionsAr = array(
 			'id'=>$id_node,
@@ -491,7 +477,7 @@ switch ($op){
 			'portal' => $eportal
 			);
             ARE::render($layout_dataAR,$content_dataAr, ARE_PRINT_RENDER, $PRINT_optionsAr);
-            break;    
+            break;
 	case 'exe':
 		// execute the code (!!!)
 		//  $content_dataAr['text'] = eval($data['text']); DISABLED IN ADA
@@ -502,9 +488,9 @@ switch ($op){
 	case 'view':
 	default:
 		// Sends data to the rendering engine
-		
+
 		// giorgio 06/set/2013, jquery and flowplayer inclusion
-		
+
 		$layout_dataAR['JS_filename'] = array(
 				JQUERY,
 				JQUERY_UI,
@@ -512,8 +498,11 @@ switch ($op){
 				JQUERY_JPLAYER,
 				JQUERY_NO_CONFLICT,
 				ROOT_DIR. '/external/mediaplayer/flowplayer-5.4.3/flowplayer.js'
-		);		
-
+		);
+              if($userObj->tipo==AMA_TYPE_STUDENT && ($self_instruction)) {
+                //$self='viewSelfInstruction';
+                $layout_dataAR['JS_filename'][] = ROOT_DIR.'/js/browsing/view.js';
+              }
 		/**
 		 * if the jquery-ui theme directory is there in the template family,
 		 * do not include the default jquery-ui theme but use the one imported
@@ -532,14 +521,9 @@ switch ($op){
 		array_push ($layout_dataAR['CSS_filename'], JQUERY_NIVOSLIDER_CSS);
 		array_push ($layout_dataAR['CSS_filename'],ROOT_DIR.'/js/include/jquery/nivo-slider/themes/default/default.css');
 		array_push ($layout_dataAR['CSS_filename'], JQUERY_JPLAYER_CSS);
-		
+
 		$optionsAr['onload_func'] = 'initDoc();';
-		
-                if (isset($navBar) && is_object($navBar)) {
-                    $content_dataAr['go_prev'] = $navBar->getHtml('prev'); // can pass href text as second param
-                    $content_dataAr['go_next'] = $navBar->getHtml('next'); // can pass href text as second param
-                }
-        
+
         if(isset($msg))
         {
             $help=CDOMElement::create('label');
@@ -554,15 +538,15 @@ switch ($op){
         $menuOptions['id_course_instance'] = $sess_id_course_instance;
         $menuOptions['id_node'] = $sess_id_node;
         $menuOptions['id_parent'] = $sess_id_node;
-        
+
         // define to enable author menu items
         define ('MODULES_TEST_MOD_ENABLED' , defined('MODULES_TEST') && MODULES_TEST && $mod_enabled);
-        
+
         /**
          * this is modified here to test parameters passing on new menu
          */
         $content_dataAr['test_history'] = 'op=test&id_course_instance='.$sess_id_course_instance.'&id_course='.$sess_id_course;
-        
+
 		ARE::render($layout_dataAR,$content_dataAr, null,$optionsAr,$menuOptions);
 
 }
