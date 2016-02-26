@@ -37,7 +37,7 @@
                                     <div class="bottomright">
                                         <div class="contentlabel">
                                             <h1>
-                                                <template_field class="template_field" name="label">label</template_field>
+                                                <template_field class="template_field_disabled" name="label">label</template_field>
                                             </h1>
                                         </div>
                                     </div>
@@ -60,8 +60,6 @@
                     </div>
                 </div>
 
-                <div id="bottomcont">
-                </div>
             </div>
             <!--  / contenuto -->
 
