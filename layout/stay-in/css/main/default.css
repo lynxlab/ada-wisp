@@ -71,16 +71,27 @@ background: #ffffff
     height: auto;
     overflow: hidden;
 }
-#journey {
-    background: #BF236C;
-    color: #ffffff;
-    padding-top: 2px;
-    padding-right: 0px;
-    padding-bottom: 2px;
-    padding-left: 10px;
-    height: 20px;
-    margin-top:2px;
-    margin-bottom:5px;
+
+/**
+ * subscription success in info.php
+ */
+#contentcontent .ui.success.message .message a {
+	font-weight: bold;
+	color: #006F00;
 }
 
+#contentcontent .ui.success.message .message a:hover {
+	color: #2BE02B;
+}
 
+/**
+ * subscription error in info.php
+ */
+#contentcontent .ui.error.message .message a {
+	font-weight: bold;
+	color: #BD2323;
+}
+
+#contentcontent .ui.error.message .message a:hover {
+	color: #FF6F6F;
+} 

@@ -36,15 +36,31 @@ $neededObjAr = array(
 );
 
 require_once ROOT_DIR . '/include/module_init.inc.php';
-$self = whoami();
+//$self = whoami();
 include_once 'include/browsing_functions.inc.php';
 
-$debug = 0; 
-$mylog_mode = 0; // default: only one file for user
-//$log_extension = ".txt";	
-$log_extension = ".htm";	
+if (isset($courseInstanceObj) && $courseInstanceObj instanceof Course_instance) {
+    $self_instruction = $courseInstanceObj->getSelfInstruction();
+}
+if($userObj->tipo==AMA_TYPE_STUDENT && ($self_instruction))
+{
+   $self='defaultSelfInstruction';
+}
+else if ($userObj->tipo==AMA_TYPE_AUTHOR) {
+	$self = whoami().'Author';
+}
+else
+{
+    $self = whoami();
+}
 
-$self =  whoami();  // = mylog
+
+$debug = 0;
+$mylog_mode = 0; // default: only one file for user
+//$log_extension = ".txt";
+$log_extension = ".htm";
+
+// $self =  whoami();  // = mylog
 
 //$classi_dichiarate = get_declared_classes();
 //mydebug(__LINE__,__FILE__,$classi_dichiarate);
@@ -55,7 +71,7 @@ $ymdhms = today_dateFN();
 
 // ******************************************************
 $reg_enabled = TRUE; // link to edit bookmarks
-$log_enabled = TRUE; // link to history 
+$log_enabled = TRUE; // link to history
 $mod_enabled = TRUE; // link to modify nod/tes
 $com_enabled = TRUE;  // link to comunicate among users
 // Get user object
@@ -69,7 +85,7 @@ if ((is_object($userObj)) && (!AMA_dataHandler::isError($userObj))) {
         case AMA_TYPE_AUTHOR:
            break;
         case AMA_TYPE_ADMIN:
-            $homepage = $http_root_dir . "/browsing/student.php"; 
+            $homepage = $http_root_dir . "/browsing/student.php";
             $msg =   urlencode(translateFN("Ridirezionamento automatico"));
             header("Location: $homepage?err_msg=$msg");
             exit;
@@ -77,12 +93,12 @@ if ((is_object($userObj)) && (!AMA_dataHandler::isError($userObj))) {
         }
         $user_type = $userObj->convertUserTypeFN($id_profile);
         $user_name =  $userObj->username;
-        $user_family = $userObj->template_family; 
+        $user_family = $userObj->template_family;
 } else {
 $errObj = new ADA_error(translateFN("Utente non trovato"),translateFN("Impossibile proseguire."));
 }
 
-// set the  title:	 
+// set the  title:
 $module_title = translateFN("Diario");
 
 // building file name
@@ -102,11 +118,11 @@ if (isset($sess_id_course) and  (!($sess_id_course==""))) {
 	$author_id = $course_ha['id_autore'];
 	if ($mylog_mode == 1){
 		// a log file for every instance of course in which user is enrolled in:
-		// id_course_instance + user_id 
-		$name_tmp = 'log_'.$sess_id_course_instance . "_" . $sess_id_user . $log_extension;	
+		// id_course_instance + user_id
+		$name_tmp = 'log_'.$sess_id_course_instance . "_" . $sess_id_user . $log_extension;
 	} else { // default
 		// only 1 log file for user:
-		$name_tmp = 'log_'.$sess_id_user.$log_extension; 
+		$name_tmp = 'log_'.$sess_id_user.$log_extension;
 	}
 
 	$logfile = $root_dir . "/services/media/" . $author_id . "/" . $name_tmp;
@@ -121,7 +137,7 @@ if (!file_exists($logfile))
 
 if (isset($_POST['Submit']))
 {
-    
+
     if (isset($_POST['log_today']))
     {
        $log = $_POST['log_text']."<br/>".$_POST['log_today'];
@@ -136,7 +152,7 @@ if (isset($_POST['Submit']))
     $msg = translateFN("Le informazioni sono state registrate.");
 }
 // } else {
-                
+
 if ($fp = fopen($logfile,'r'))
 	$log_text = fread ($fp,16000);
 else
@@ -281,7 +297,7 @@ HTML page building
          $imgAvatar = $userObj->getAvatar();
          $avatar = CDOMElement::create('img','src:'.$imgAvatar);
          $avatar->setAttribute('class', 'img_user_avatar');
-         
+
 $node_data = array(
                    'banner'=>$banner,
                    'course_title'=>'<a href="main_index.php">'.$course_title.'</a>',
@@ -300,7 +316,7 @@ $node_data = array(
                    'myforum'=>isset($my_forum) ? $my_forum : '',
                    'title'=>isset($node_title) ? $node_title : '',
 				   'user_avatar'=>$avatar->getHtml(),
-				   'user_modprofilelink' => $userObj->getEditProfilePage()		
+				   'user_modprofilelink' => $userObj->getEditProfilePage()
                    //'mylog'=>$mylog,
                   );
 
@@ -327,11 +343,11 @@ $node_data = array(
 		JQUERY_UNIFORM,
 		JQUERY_NO_CONFLICT
      );
-	
+
 	$layout_dataAr['CSS_filename'] = array (
 			JQUERY_UI_CSS,
 			JQUERY_UNIFORM_CSS
-	);	
+	);
 
 ARE::render($layout_dataAr,$node_data, NULL, $options);
 
