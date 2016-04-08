@@ -101,7 +101,7 @@ padding: 10px;
 }
 
 
-.appointments 
+.appointments:not(.item) 
 {
     background:#97adc0;
     border-radius: 10px;

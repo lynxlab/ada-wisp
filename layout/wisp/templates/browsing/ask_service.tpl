@@ -62,7 +62,7 @@
 		</div>
         
         <!-- PIEDE -->
-        <div id="footer_ask">
+        <div id="footer">
             <template_field class="microtemplate_field" name="footer">footer</template_field>
         </div>
         <!-- / piede -->
