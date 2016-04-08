@@ -6,47 +6,30 @@
 </head>
 
 <body>
-<a name="top">
-</a>
+<a name="top"></a>
+        <!-- testata -->
+        <div id="header">
+            <template_field class="microtemplate_field" name="header">header</template_field>
+        </div>
+        <!-- / testata -->
+        <!-- menu -->
+            <template_field class="microtemplate_field" name="adamenu">adamenu</template_field>  
+        <!-- / menu -->         
 <!-- contenitore -->
 <div id="container">
-<div id="header">
-		 <template_field class="microtemplate_field" name="header_com">header_com</template_field>
-</div> 
+<div id="status_bar">
+    <!--dati utente-->
+       <template_field class="microtemplate_field" name="user_data_micro">user_data_micro</template_field>
+     <!-- / dati utente -->
+</div>
+
 <!--dati utente-->
 <div id="user_wrap">
 
 <!-- label -->
 <div id="label">
-		 <div class="topleft">
-         <div class="topright">
-            <div class="bottomleft">
-               <div class="bottomright">
-                  <div class="contentlabel">
-                  <h1><template_field class="template_field" name="label">label</template_field></h1>
-									</div>
-							</div>
-						</div>
-					</div>
-			</div>		
+   <h1><template_field class="template_field" name="label">label</template_field></h1>
 </div><!-- /label -->
-
-<div id="user_data" class="user_data_default">
- <i18n>utente: </i18n>
- <span>
-			 <template_field class="template_field" name="user_name">user_name</template_field>
- </span>
- <i18n>tipo: </i18n>
-			 <span>
-						 <template_field class="template_field" name="user_type">user_type</template_field>
-			 </span>
- <div class="status">
-	 <i18n>status: </i18n>
-	 <span>
-				 <template_field class="template_field" name="status">status</template_field>
-	 </span>
-
-				 </div>
 </div> <!-- / dati utente -->
 
 <!-- contenuto -->
@@ -62,27 +45,7 @@
 </div> <!-- / contenitore -->
 		<div id="push"></div>
 		</div>
-<!-- MENU -->
-<div id="mainmenucom">
-<ul id="menu">
-		<li id="selfclose">
-				<a href="#" onClick="closeMeAndReloadParent();"><i18n>chiudi</i18n></a>
-		</li>
-<!--		<li id="list">
-				<a href="list_events.php">
-    		 <i18n>appuntamenti</i18n>
-    	  </a>
-		</li>  
--->		
-</ul> <!-- / menu -->
-<!-- PERCORSO -->
-<div id="journey" class="ui tertiary inverted teal segment">
-		 <i18n>dove sei: </i18n>
-		 <span>
-		 			 <i18n>agenda</i18n>
-		 </span>
-	</div> <!-- / percorso -->
-</div> <!-- / MAINMENU -->
+
 <!-- PIEDE -->
 <div id="footer">
 		 <template_field class="microtemplate_field" name="footer">footer</template_field>
