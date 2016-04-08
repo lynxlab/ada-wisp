@@ -88,7 +88,7 @@
         <!-- /com_tools -->			
          <!-- PIEDE -->
         <div id="footer">
-            <template_field class="microtemplate_field" name="footer_guest">footer_guest</template_field>
+            <template_field class="microtemplate_field" name="footer">footer</template_field>
         </div> <!-- / piede -->
     </body>
 </html>
