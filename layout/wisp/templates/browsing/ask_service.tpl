@@ -5,6 +5,7 @@
     </head>
     <body>
         <a name="top"></a>
+        <div id="pagecontainer">
         <!-- testata -->
         <div id="header">
             <template_field class="microtemplate_field" name="header">header</template_field>
@@ -15,7 +16,7 @@
         <!-- contenitore -->
         <div id="container">
             <!-- PERCORSO -->
-            <div id="journey">
+            <div id="journey" class="ui tertiary inverted teal segment">
                 <i18n>dove sei: </i18n>
                 <span>
                     <template_field class="template_field" name="course_title">course_title</template_field>
@@ -47,46 +48,21 @@
                     <div id="help">
                         <template_field class="template_field" name="help">help</template_field>
                     </div>
-                    <div id="boxone">
-					
-				<div id="blocco_uno">
-					<div id="bloccoUnoTitoloContenitore">
-                                                <template_field class="template_field" name="bloccoUnoTitolo">bloccoUnoTitolo</template_field>
-                                        </div>
- 					<div id="content_blocco_uno" class="ui-accordion ui-accordion-icons ui-widget ui-helper-reset">
-                                                
-                                                <template_field class="template_field" name="bloccoUnoContenuto">bloccoUnoContenuto</template_field>
-					</div>
-                                   <br class="clearfix">
-				</div>
-			
-                    </div> 
-                    
                     <div id="data">
                     <div id="data_ask">
                         <template_field class="template_field" name="data">data</template_field>
-                      </div>
-						<!--div id="data_ask_img"></div-->
+                        </div>
+                        <!-- <div id="data_ask_img"></div> -->
                     
-                      </div>   
-                    
-                </div>
-                <div id="bottomcont">
+                    </div>                     
                 </div>
             </div> <!--  / contenuto -->
-            <!-- com_tools -->
-            <div id="com_tools">
-                <div id="topcom_t">
-                </div>
-                <div id="com_toolscontent">                   
-                </div>
-                <div id="bottomcom_t">
-                </div>
-            </div> <!-- /com_tools -->
         </div> <!-- / contenitore -->
-
-		<!-- PIEDE -->
-        <div id="footer_ask">
+        <div id="push"></div>
+		</div>
+        
+        <!-- PIEDE -->
+        <div id="footer">
             <template_field class="microtemplate_field" name="footer">footer</template_field>
         </div>
         <!-- / piede -->

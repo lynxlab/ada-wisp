@@ -75,6 +75,8 @@ define('ADA_DEFAULT_AVATAR','default_avatar.png');
  */
 if (!defined('HTTP_ROOT_DIR')) define('HTTP_ROOT_DIR','http://guidance.stay-in.org'); // *js_import*
 
+define('ADA_DEFAULT_AVATAR','default_avatar.png');
+
 /**
  * portal name string - displayed in window titlebar
  */
@@ -182,7 +184,7 @@ define('ADA_NOREPLY_MAIL_ADDRESS','noreply@lynxlab.com');
 /**
  * ADA version
  */
-define('ADA_VERSION','2.1alpha0');
+define('ADA_VERSION','2.2');
 
 /**
  * URL
@@ -333,13 +335,6 @@ $AgendaSpool_ntc = NTC_TIME;
 $AgendaSpool_rtc = RTC_TIME;
 $ChatSpool_ntc = CS_NTC_TIME;
 $ChatSpool_rtc = CS_RTC_TIME;
-
-/**
- * OLD LOGGING FUNCTION
- * @deprecated
- */
-$log_filename = ROOT_DIR."/trace.log";
-$log_treshold = DB_LOG;
 
 $language = ADA_MESSAGE_LANGUAGE;
 
@@ -536,10 +531,6 @@ define('ADA_MAX_SCORE',100);
 
 // path to the standard error page
 $error = HTTP_ROOT_DIR.'/admin/error.php';
-
-// logging parameters
-$log_filename = ROOT_DIR.'/trace.log';
-$log_treshold = DB_LOG;
 
 /**
  * Preferences array

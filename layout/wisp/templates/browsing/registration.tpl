@@ -5,6 +5,7 @@
     </head>
     <body>
         <a name="top"></a>
+		<div id="pagecontainer">
         <!-- testata -->
         <div id="header">
             <template_field class="microtemplate_field" name="header">header</template_field>
@@ -15,7 +16,7 @@
         <!-- contenitore -->
         <div id="container">
             <!-- PERCORSO -->
-            <div id="journey">
+            <div id="journey" class="ui tertiary inverted teal segment">
                 <i18n>dove sei: </i18n>
                 <span>
                     <template_field class="template_field" name="course_title">course_title</template_field>
@@ -59,32 +60,24 @@
             <div id="content">
                 <div id="contentcontent" class="contentcontent_default">
                     <div id="help">
-                        <!--template_field class="template_field" name="help">help</template_field-->
+                        <template_field class="template_field" name="help">help</template_field>
                     </div>
                     <div id="data">
 						<div id="data_reg">
                         <template_field class="template_field" name="data">data</template_field>
 						</div>
-						<!-- div id="data_reg_img"></div -->
+						<div id="data_reg_img"></div>
                     </div>                    
                 </div>
                 <div id="bottomcont">
                 </div>
             </div> <!--  / contenuto -->
-            <!-- com_tools -->
-            <div id="com_tools">
-                <div id="topcom_t">
-                </div>
-                <div id="com_toolscontent">                   
-                </div>
-                <div id="bottomcom_t">
-                </div>
-            </div> <!-- /com_tools -->
         </div> <!-- / contenitore -->
+        <div id="push"></div>
+		</div>
 
         
 		<!-- PIEDE -->
-		<div class="clearfix"></div>
         <div id="footer">
             <template_field class="microtemplate_field" name="footer">footer</template_field>
         </div>

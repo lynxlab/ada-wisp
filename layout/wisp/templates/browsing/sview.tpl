@@ -4,8 +4,8 @@
         <link rel="stylesheet" href="../../css/browsing/default.css" type="text/css">
     </head>
     <body>
-        <a name="top">
-        </a>
+        <a name="top"></a>
+        <div id="pagecontainer">
         <!-- testata -->
         <div id="header">
             <template_field class="microtemplate_field" name="header">header</template_field>
@@ -17,7 +17,7 @@
         <!-- contenitore -->
         <div id="container">
             <!-- percorso -->
-            <div id="journey">
+            <div id="journey" class="ui tertiary inverted teal segment">
                 <i18n>dove sei: </i18n>
                 <span>
                     <template_field class="template_field" name="course_title">course_title</template_field>
@@ -88,24 +88,11 @@
 			</div>
 			<!-- end due blocchi grafici homepage -->
                         <br class="clearfix">
-                    
 
-
-		    <hr>
-                </div>
-                <div id="bottomcont">
-                </div>
             </div>
             
             <!--  / contenuto -->
-            <!-- com_tools -->
-            <div id="com_tools">
-                <div id="topcom_t">
-                </div>
-                <div id="bottomcom_t">
-                </div>
-            </div>
-            <!-- /com_tools -->
+
             <!-- menudestra -->
             <div id="menuright" class="menuright_view ui wide right sidebar">
               <h3 class="ui block dividing center aligned  header"><i class="globe icon"></i><i18n>Contenuti</i18n></h3>
@@ -154,9 +141,12 @@
                   </div>
                   <!-- /accordion -->  
                 </div>
+             </div>
             <!-- / menudestra  -->
         </div>
         <!-- / contenitore -->
+     	<div id="push"></div>
+		</div>
 
        
         <!-- pannello video -->

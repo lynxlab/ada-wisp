@@ -17,7 +17,7 @@
  */
 
 // redirect to the home page section
-header('Location: hp/portal.php');
+// header('Location: hp/portal.php');
 
 /**
  * Base config file

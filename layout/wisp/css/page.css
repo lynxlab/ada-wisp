@@ -7,11 +7,11 @@ html, body { font-family: "Helvetica Neue", "Helvetica", Arial, Lucida Sans,Verd
 			 background: #fff; height: 99.5%; }
 
 #container { border-bottom: none; }
-#pagecontainer { min-height: 100%; height: auto !important; height: 100%; margin: 0 auto -15px; 
+#pagecontainer { min-height: 100%; height: auto !important; height: 100%; margin: 0 auto -40px; 
 }
 #pagecontainer > .ui.grid.ada.menucontainer { margin:0; }
-#footer, #push { height: 15px; clear: both; }			 
-
+#footer, #push { height: 20px; clear: both; }			 
+#push { height: 40px; } 
 A IMG {border:none;}
 
 h1 {font-size: medium;}
