@@ -4,18 +4,18 @@
     </head>
     <body>
         <a name="top"></a>
-        <div id="pagecontainer">
+		<div id="pagecontainer">
         <!-- testata -->
         <div id="header">
             <template_field class="microtemplate_field" name="header">header</template_field>
         </div> <!-- / testata -->
         <!-- menu -->
             <template_field class="microtemplate_field" name="adamenu">adamenu</template_field>  
-        <!-- / menu -->
+        <!-- / menu --> 
         <!-- contenitore -->
         <div id="container">
             <!-- PERCORSO -->
-            <div id="journey">
+            <div id="journey" class="ui tertiary inverted teal segment">
                 <i18n>dove sei: </i18n>
                 <span>
                     <template_field class="template_field" name="course_title">course_title</template_field>
@@ -23,16 +23,31 @@
             </div>
             <!-- / percorso -->
             <div id="status_bar">
-			
-			
-   				<!--dati utente-->
-                   <template_field class="microtemplate_field" name="user_data_micro">user_data_micro</template_field>
-                 <!-- / dati utente -->
-			
-			
-			
-			
-			
+            <!--dati utente-->
+            <div id="user_data" class="user_data_view">
+                <i18n>utente: </i18n>
+                <span>
+                    <template_field class="template_field" name="user_name">user_name</template_field>
+                </span>
+                <i18n>tipo: </i18n>
+                <span>
+                    <template_field class="template_field" name="user_type">user_type</template_field>
+                </span>
+                <!--i18n>livello: </i18n-->
+                <!--span>
+                													<template_field class="template_field" name="user_level">user_level</template_field>
+                		 								</span-->
+                <!--i18n>punteggio: </i18n-->
+                <!--span>
+                														<template_field class="template_field" name="user_score">user_score</template_field>
+                											</span-->
+                <div class="status">
+                    <i18n>status: </i18n>
+                    <span>
+                        <template_field class="template_field" name="status">status</template_field>
+                    </span>
+                </div>
+            </div> <!-- / dati utente -->
             <!-- label -->
             <div id="labelview">
                 <div class="topleft">
@@ -60,22 +75,7 @@
                 <div id="bottomcont">
                 </div>
             </div> <!--  / contenuto -->
-            <!-- com_tools -->
-            <div id="com_tools">
-                <div id="topcom_t">
-                </div>
-                <div id="com_toolscontent">
-                    <!--
-                      <template_field class="microtemplate_field" name="com_tools">com_tools</template_field>
-                    -->
-                </div>
-                <div id="bottomcom_t">
-                </div>
-            </div> <!-- /com_tools -->
-            <!-- menudestra -->
-             
-            <!-- / menudestra  -->
-        </div> <!-- / contenitore -->   
+        </div> <!-- / contenitore -->
 		<div id="push"></div>
 		</div>
        	<!-- com_tools -->
@@ -85,21 +85,10 @@
                 <template_field class="microtemplate_field" name="com_tools">com_tools</template_field>
             </div>
         </div>
-        <!-- /com_tools -->		        
-	 <!-- piede -->
-        <div class="clearfix"></div>
+        <!-- /com_tools -->			
+         <!-- PIEDE -->
         <div id="footer">
             <template_field class="microtemplate_field" name="footer">footer</template_field>
-        </div>
-        <!-- / piede -->
-	  
-	  
-	  
-	    <!-- PIEDE RIMOSSO -->
-        <!-- <div id="footer">
-            <template_field class="microtemplate_field" name="footer_guest">footer_guest</template_field>
-        </div> 
-		-->
-		<!-- / piede RIMOSSO -->
+        </div> <!-- / piede -->
     </body>
 </html>
