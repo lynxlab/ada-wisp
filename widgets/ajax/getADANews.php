@@ -89,7 +89,9 @@ if (isset($testerName)) {
 	// load course
 	$courseObj = new Course($course_id);
 	$courseOK = false;
-	if ($courseObj instanceof Course && $courseObj->isFull()) {
+	if (isset($_SESSION['sess_userObj']) && $_SESSION['sess_userObj'] instanceof ADAPractitioner)  {
+		$courseOK = true;
+	} else if ($courseObj instanceof Course && $courseObj->isFull()) {
 		// it it's public, go on and show contents
 		$courseOK = $courseObj->getIsPublic();
 		if (!$courseOK && isset($_SESSION['sess_userObj']) && $_SESSION['sess_userObj'] instanceof ADALoggableUser) {
