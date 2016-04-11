@@ -52,40 +52,41 @@ if (isset($_SERVER['REQUEST_METHOD']) && $_SERVER['REQUEST_METHOD'] == 'GET' &&
 		translateFN('Rich. Terminate'),
 		translateFN('No. Login'),
 		translateFN('Ultimo Login'),
-		translateFN('Ultimo P.Form.'),			
+		translateFN('Ultimo P.Form.'),
 		translateFN('P.Form. Standard'),
 		translateFN('P.Form. Person.'),
 		translateFN('Personalizzazione'),
+		translateFN('In itinere'),
 		translateFN('Note Scri'),
 		translateFN('Note Let'),
 		translateFN('File Inviati'),
 		translateFN('Chat')
 	);
-	
+
 	$DetailsAr=$dh->get_tutors_assigned_course_instance($id_tutor);
 	if(!AMA_DB::isError($DetailsAr) && is_array($DetailsAr) && count($DetailsAr)>0) {
 		$DetailsAr = $DetailsAr[$id_tutor];
 	}
-	
+
 	$detailsResults=array();
-	
+
 	if(!AMA_DB::isError($DetailsAr) && is_array($DetailsAr) && count($DetailsAr)>0) {
-		
+
 		$helpInstances = array();
-		
+
 		foreach($DetailsAr as $course){
-			
-			if (!is_null($course['tipo_servizio']) && $course['tipo_servizio']==ADA_SERVICE_HELP) {
+
+			if (!is_null($course['tipo_servizio']) && in_array($course['tipo_servizio'],array(ADA_SERVICE_HELP,ADA_SERVICE_IN_ITINERE))) {
 				// all instances of service level ADA_SERVICE_HELP will be processed afterwards
 				$helpInstances[] = $course;
 				// must keep calculation of nodes, notes, etc. that will be aggregated afterwards
 			}
-			
+
 			$added_nodes_count = 0;
 			$read_notes_count = 0;
-			$chatlines_count = 0;			
+			$chatlines_count = 0;
 			if (isset($course['id_corso']) && isset($course['id_istanza_corso'])) {
-				
+
 				$out_fields_ar = array();
 				// count written (aka added) forum notes
 				$clause =  "tipo = '".ADA_NOTE_TYPE."' AND id_utente = ".$id_tutor.
@@ -93,20 +94,20 @@ if (isset($_SERVER['REQUEST_METHOD']) && $_SERVER['REQUEST_METHOD'] == 'GET' &&
 						   " AND id_istanza=".$course['id_istanza_corso'];
 				$nodes = $dh->find_course_nodes_list($out_fields_ar, $clause,$course['id_corso']);
 				$added_nodes_count = count($nodes);
-				
+
 				/**
 				 * get tutor visit for course instance (to count read notes)
 				 * the method name refers to student, but works ok for a tutor as well
 				 */
-				$visits = $GLOBALS['dh']->get_student_visits_for_course_instance($id_tutor, $course['id_corso'], $course['id_istanza_corso']);				
+				$visits = $GLOBALS['dh']->get_student_visits_for_course_instance($id_tutor, $course['id_corso'], $course['id_istanza_corso']);
 				if (!AMA_DB::isError($visits) && is_array($visits) && count($visits)>0) {
 					foreach ($visits as $visit) {
- 						if ($visit['tipo']==ADA_NOTE_TYPE && 
- 							$visit['id_utente']!=$id_tutor && 
+ 						if ($visit['tipo']==ADA_NOTE_TYPE &&
+ 							$visit['id_utente']!=$id_tutor &&
  							intval($visit['numero_visite'])>0) $read_notes_count++;
 					}
 				}
-				
+
 				/**
 				 * count class chat messages written by the tutor
 				 */
@@ -120,7 +121,7 @@ if (isset($_SERVER['REQUEST_METHOD']) && $_SERVER['REQUEST_METHOD'] == 'GET' &&
 						}
 					}
 				}
-				
+
 				/**
 				 * count files uploaded, for each course
 				 */
@@ -150,10 +151,10 @@ if (isset($_SERVER['REQUEST_METHOD']) && $_SERVER['REQUEST_METHOD'] == 'GET' &&
 						}
 					}
 				}
-					
+
 			}
-			
-			$detailsResults[$course['id_istanza_corso']] = array( 
+
+			$detailsResults[$course['id_istanza_corso']] = array(
 				'title'=>$course['titolo'],
 				'student'=>'&nbsp;',
 				'helprequests'=>0,
@@ -164,25 +165,27 @@ if (isset($_SERVER['REQUEST_METHOD']) && $_SERVER['REQUEST_METHOD'] == 'GET' &&
 				'lastlogin'=>'&nbsp;',
 				'lasteguidancets'=>'&nbsp;',
 				'pattost'=>'&nbsp;',
-				'pattopers'=>'&nbsp;',					
+				'pattopers'=>'&nbsp;',
 				'personalpatto'=>'&nbsp;',
+				'initinere'=>'&nbsp;',
 				'addednodes'=>$added_nodes_count,
 				'readnodes'=>$read_notes_count,
 				'uploadedfiles'=>$uploadedFiles,
 				'chatlines'=>$chatlines_count);
 		}
-		
+
 		/**
-		 * now processing instances having a service level of ADA_SERVICE_HELP
+		 * now processing instances having a service level of ADA_SERVICE_HELP or ADA_SERVICE_IN_ITINERE
 		 */
 		$processedCourseIDs = array();
 		$studentSummary = array();
 		$studentPatto = array();
+		$studentInItinere = array();
 		$loginCounts = array();
-		
+
 		$mh = MessageHandler::instance(MultiPort::getDSN($sess_selected_tester));
 		$clause = '`titolo` LIKE \'%d\_%d\_%d%%\' AND `id_mittente`=%d AND (`flags` & %d)';
-		
+
 		foreach ($helpInstances as $helpInstance) {
 			/**
 			 * must aggregate by student and course:
@@ -199,7 +202,7 @@ if (isset($_SERVER['REQUEST_METHOD']) && $_SERVER['REQUEST_METHOD'] == 'GET' &&
 						$closedInstances = 0;
 						// check if instance is closed
 						$instanceObj = new Course_instance($anInstance['id_istanza_corso']);
-						if ($instanceObj instanceof Course_instance && $instanceObj->isFull() && 
+						if ($instanceObj instanceof Course_instance && $instanceObj->isFull() &&
 							($instanceObj->status==ADA_INSTANCE_CLOSED ||
 							($instanceObj->data_fine > 0 && $instanceObj->data_fine < time()))) {
 							$closedInstances++;
@@ -216,6 +219,12 @@ if (isset($_SERVER['REQUEST_METHOD']) && $_SERVER['REQUEST_METHOD'] == 'GET' &&
 											'personalpatto'=>'&nbsp;'
 									);
 								}
+								// array to hold in itinere data
+								if (!isset($studentInItinere[$aStudent['id_utente']][$anInstance['id_corso']])) {
+									$studentInItinere[$aStudent['id_utente']][$anInstance['id_corso']] = array (
+											'initinere'=>'&nbsp;'
+									);
+								}
 								// msgs having ADA_EVENT_PROPOSED
 								$msgsProp = $mh->find_messages($aStudent['id_utente'],ADA_MSG_AGENDA,array('titolo'),
 										sprintf($clause, $aStudent['id_utente'], $id_tutor,
@@ -224,7 +233,7 @@ if (isset($_SERVER['REQUEST_METHOD']) && $_SERVER['REQUEST_METHOD'] == 'GET' &&
 								$appProposals = 0;
 								if (!AMA_DB::isError($msgsProp)) $appProposals = count($msgsProp);
 								else $msgsProp = array();
-								
+
 								// msgs having ADA_EVENT_CONFIRMED
 								$msgsConf = $mh->find_messages($aStudent['id_utente'],ADA_MSG_AGENDA,array('titolo'),
 										sprintf($clause, $aStudent['id_utente'], $id_tutor,
@@ -233,7 +242,7 @@ if (isset($_SERVER['REQUEST_METHOD']) && $_SERVER['REQUEST_METHOD'] == 'GET' &&
 								$appConfirmed = 0;
 								if (!AMA_DB::isError($msgsConf)) $appConfirmed = count($msgsConf);
 								else $msgsConf = array();
-								
+
 								foreach (array_merge($msgsProp, $msgsConf) as $aMessage) {
 									$token = ADAEventProposal::extractEventToken($aMessage);
 									$eguidRES = $dh->get_eguidance_session_with_event_token($token);
@@ -255,18 +264,29 @@ if (isset($_SERVER['REQUEST_METHOD']) && $_SERVER['REQUEST_METHOD'] == 'GET' &&
 														if ($eguidRES['tipo_personalizzazione'] & $tipoPersonal) $studentPatto[$aStudent['id_utente']][$anInstance['id_corso']]['personalpatto'] .= '- '.translateFN($tipoPersonalDesc).'<br/>';
 													}
 													$studentPatto[$aStudent['id_utente']][$anInstance['id_corso']]['personalpatto'] = rtrim($studentPatto[$aStudent['id_utente']][$anInstance['id_corso']]['personalpatto'],'<br/>');
-												}												
-											} 
-										    
+												}
+											}
+
+											if ($eguidRES['tipo_initinere'] == 0) {
+												$studentInItinere[$aStudent['id_utente']][$anInstance['id_corso']]['initinere'] = '&nbsp;';
+											} else {
+												$eguidRES['tipo_initinere'] = intval($eguidRES['tipo_initinere']);
+												$studentInItinere[$aStudent['id_utente']][$anInstance['id_corso']]['initinere'] = '';
+												foreach ($inItinereCheckboxAr as $tipoInItinere => $tipoInItinereDesc) {
+													if ($eguidRES['tipo_initinere'] & $tipoInItinere) $studentInItinere[$aStudent['id_utente']][$anInstance['id_corso']]['initinere'] .= '- '.translateFN($tipoInItinereDesc).'<br/>';
+												}
+												$studentInItinere[$aStudent['id_utente']][$anInstance['id_corso']]['personalpatto'] = rtrim($studentInItinere[$aStudent['id_utente']][$anInstance['id_corso']]['personalpatto'],'<br/>');
+											}
+
 										    $studentPatto[$aStudent['id_utente']][$anInstance['id_corso']]['lasteguidancets'] = $currentEguidanceTimestamp;
 										}
 									}
 								}
-								
+
 								// login counts
 								$loginInfo = abstractLogin::getUserLoginInfo($aStudent['id_utente']);
 								$loginCounts[$aStudent['id_utente']] = (AMA_DB::isError($loginInfo)) ? '0' : $loginInfo['loginCount'];
-								
+
 								if (!isset($studentSummary[$aStudent['id_utente']][$anInstance['id_corso']])) {
 									// prepare student summary row
 									$studentSummary[$aStudent['id_utente']][$anInstance['id_corso']] = array(
@@ -282,6 +302,7 @@ if (isset($_SERVER['REQUEST_METHOD']) && $_SERVER['REQUEST_METHOD'] == 'GET' &&
 											'pattost'=>0,
 											'pattopers'=>0,
 											'personalpatto'=>'&nbsp;',
+											'initinere'=>'&nbsp;',
 											'addednodes'=>0,
 											'readnodes'=>0,
 											'uploadedfiles'=>0,
@@ -294,7 +315,7 @@ if (isset($_SERVER['REQUEST_METHOD']) && $_SERVER['REQUEST_METHOD'] == 'GET' &&
 									$studentSummary[$aStudent['id_utente']][$anInstance['id_corso']]['appconfirmed'] += $appConfirmed;
 									$studentSummary[$aStudent['id_utente']][$anInstance['id_corso']]['apprealized']  += $closedInstances;
 								}
-								
+
 								// PREVIOUSLY LOADED DATA AGGREATION: add results to current student and course
 								if (isset($detailsResults[$anInstance['id_istanza_corso']])) {
 									$studentSummary[$aStudent['id_utente']][$anInstance['id_corso']]['addednodes'] += $detailsResults[$anInstance['id_istanza_corso']]['addednodes'];
@@ -302,27 +323,27 @@ if (isset($_SERVER['REQUEST_METHOD']) && $_SERVER['REQUEST_METHOD'] == 'GET' &&
 									$studentSummary[$aStudent['id_utente']][$anInstance['id_corso']]['uploadedfiles'] += $detailsResults[$anInstance['id_istanza_corso']]['uploadedfiles'];
 									$studentSummary[$aStudent['id_utente']][$anInstance['id_corso']]['chatlines'] += $detailsResults[$anInstance['id_istanza_corso']]['chatlines'];
 									unset ($detailsResults[$anInstance['id_istanza_corso']]);
-								}								
+								}
 							} // end foreach $students
 						} // if !isError($students)
 					} // end foreach $instancesToLoop
 				} // if !isError $instancesToLoop
 			} // if !in_array $helpInstance['id_corso']
 		} // end foreach $helpInstances
-		
+
 		// done! add studentsummary results to output table
 		if (count($studentSummary)>0 && is_array($studentSummary)) {
 			foreach ($studentSummary as $studentID=>$aSummary) {
 				if (count($aSummary)>0 && is_array($aSummary)) {
 					foreach ($aSummary as $courseID=>$row) {
 						$studentPatto[$studentID][$courseID]['lasteguidancets'] = AMA_DataHandler::ts_to_date($studentPatto[$studentID][$courseID]['lasteguidancets']);
-						array_push($detailsResults, array_merge($row,$studentPatto[$studentID][$courseID])); 
+						array_push($detailsResults, array_merge($row,$studentPatto[$studentID][$courseID],$studentInItinere[$studentID][$courseID]));
 					}
 				}
 			}
 		}
-		
-		
+
+
 		$tfoot_data = array (
 				count($detailsResults).' '.translateFN('Servizi totali'),
 				'&nbsp;',
@@ -336,17 +357,18 @@ if (isset($_SERVER['REQUEST_METHOD']) && $_SERVER['REQUEST_METHOD'] == 'GET' &&
 				array_sum(array_map(function($element) { return $element['pattost']; }, $detailsResults)),
 				array_sum(array_map(function($element) { return $element['pattopers']; }, $detailsResults)),
 				'&nbsp;',
+				'&nbsp;',
 				array_sum(array_map(function($element) { return $element['addednodes']; }, $detailsResults)),
 				array_sum(array_map(function($element) { return $element['readnodes']; }, $detailsResults)),
 				array_sum(array_map(function($element) { return $element['uploadedfiles']; }, $detailsResults)),
 				array_sum(array_map(function($element) { return $element['chatlines']; }, $detailsResults))
 		);
-		
+
 		$result_table = BaseHtmlLib::tableElement('class:tutor_table', $thead_data, $detailsResults,$tfoot_data,$caption);
 		$result=$result_table->getHtml();
 		$retArray['columnDefs'][] = array(
 				'sClass'=>'centerAlign',
-				'aTargets'=>[2,3,4,5,6,7,8,12,13,14,15]
+				'aTargets'=>[2,3,4,5,6,7,8,13,14,15,16]
 		);
 		$retArray['columnDefs'][] = array(
 				'sClass'=>'pattoformativo centerAlign',
@@ -358,11 +380,11 @@ if (isset($_SERVER['REQUEST_METHOD']) && $_SERVER['REQUEST_METHOD'] == 'GET' &&
 		);
 		$retArray['columnDefs'][] = array(
 				'sWidth'=>'21%',
-				'aTargets'=>[11]
+				'aTargets'=>[11,12]
 		);
 		$retArray['columnDefs'][] = array(
 				'sWidth'=>'1%',
-				'aTargets'=>[12,13,14,15]
+				'aTargets'=>[13,14,15,16]
 		);
 		/**
 		 * login info are not required anymore, hide them

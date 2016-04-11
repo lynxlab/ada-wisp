@@ -4853,11 +4853,11 @@ abstract class AMA_Tester_DataHandler extends Abstract_AMA_DataHandler {
 
     /**
      * Directly subscribe a student without presubscription
-     * 
+     *
      * @param $id_course_instance
      * @param $student
      * @param $status
-     * @param int $user_level 
+     * @param int $user_level
      * @return unknown_type
      */
     public function course_instance_student_subscribe_add($id_course_instance, $student,$status=2, $user_level=1) {
@@ -4875,7 +4875,7 @@ abstract class AMA_Tester_DataHandler extends Abstract_AMA_DataHandler {
         return true;
 
     }
-    
+
 
     /**
      * Unsubscribe a set of students from an instance course.
@@ -5525,7 +5525,7 @@ abstract class AMA_Tester_DataHandler extends Abstract_AMA_DataHandler {
 
         // prepare values
         $data_fine = $this->or_zero($istanza_ha['data_fine']);
-        
+
         $data_inizio = $this->or_null($istanza_ha['data_inizio']);
         $durata = $this->or_zero($istanza_ha['durata']);
         $data_inizio_previsto = $this->or_zero($istanza_ha['data_inizio_previsto']);
@@ -5539,7 +5539,7 @@ abstract class AMA_Tester_DataHandler extends Abstract_AMA_DataHandler {
         $duration_hours = $this->or_zero($istanza_ha['duration_hours']);
         $tipo_servizio = $this->or_zero($istanza_ha['service_level']);
         $status = $this->or_zero($istanza_ha['status']);
-	
+
 
 
         // check value of supposed starting date (cannot be empty)
@@ -9536,8 +9536,8 @@ abstract class AMA_Tester_DataHandler extends Abstract_AMA_DataHandler {
         $sql = 'INSERT INTO sessione_eguidance(id_utente,id_tutor,id_istanza_corso,event_token,data_ora,tipo_eguidance,ud_1,ud_2,ud_3,ud_comments,'
                 . 'pc_1,pc_2,pc_3,pc_4,pc_5,pc_6,pc_comments,ba_1,ba_2,ba_3,ba_4,ba_comments,'
                 . 't_1,t_2,t_3,t_4,t_comments,pe_1,pe_2,pe_3,pe_comments,ci_1,ci_2,ci_3,ci_4, ci_comments,'
-                . 'm_1,m_2,m_comments,other_comments, tipo_patto_formativo, tipo_personalizzazione, lastupdate) '
-                . 'VALUES(?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)';
+                . 'm_1,m_2,m_comments,other_comments, tipo_patto_formativo, tipo_personalizzazione, tipo_initinere, lastupdate) '
+                . 'VALUES(?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)';
         /**
          * $eguidance_dataAr['tipo_personalizzazione'] is the logical or of all received array elements
          */
@@ -9546,6 +9546,18 @@ abstract class AMA_Tester_DataHandler extends Abstract_AMA_DataHandler {
         	foreach ($eguidance_dataAr['tipo_personalizzazione'] as $value) $saveValue |= $value;
         	$eguidance_dataAr['tipo_personalizzazione'] = $saveValue;
         } else $eguidance_dataAr['tipo_personalizzazione'] = reset($eguidance_dataAr['tipo_personalizzazione']);
+
+        /**
+         * $eguidance_dataAr['tipo_initinere'] is the logical or of all received array elements
+         */
+        if (isset($eguidance_dataAr['tipo_initinere'])) {
+	        if (is_array($eguidance_dataAr['tipo_initinere']) && count($eguidance_dataAr['tipo_initinere'])>1) {
+	        	$saveValue = 0;
+	        	foreach ($eguidance_dataAr['tipo_initinere'] as $value) $saveValue |= $value;
+	        	$eguidance_dataAr['tipo_initinere'] = $saveValue;
+	        } else $eguidance_dataAr['tipo_initinere'] = reset($eguidance_dataAr['tipo_initinere']);
+        } else $eguidance_dataAr['tipo_initinere'] = 0;
+
         $dataAr = array(
                 $eguidance_dataAr['id_utente'],
                 $eguidance_dataAr['id_tutor'],
@@ -9590,6 +9602,7 @@ abstract class AMA_Tester_DataHandler extends Abstract_AMA_DataHandler {
                 $eguidance_dataAr['other_comments'],
 		$eguidance_dataAr['tipo_patto_formativo'],
 		$eguidance_dataAr['tipo_personalizzazione'],
+        $eguidance_dataAr['tipo_initinere'],
         		time()
         );
 
@@ -9605,9 +9618,9 @@ abstract class AMA_Tester_DataHandler extends Abstract_AMA_DataHandler {
                 . 'SET tipo_eguidance = ?,ud_1 = ?,ud_2 = ?,ud_3 = ?,ud_comments = ?,'
                 . 'pc_1 = ?,pc_2 = ?,pc_3 = ?,pc_4 = ?,pc_5 = ?,pc_6 = ?,pc_comments = ?,ba_1 = ?,ba_2 = ?,ba_3 = ?,ba_4 = ?,ba_comments = ?,'
                 . 't_1 = ?,t_2 = ?,t_3 = ?,t_4 = ?,t_comments = ?,pe_1 = ?,pe_2 = ?,pe_3 = ?,pe_comments = ?,ci_1 = ?,ci_2 = ?,ci_3 = ?,ci_4 = ?, ci_comments = ?,'
-                . 'm_1 = ?,m_2 = ?,m_comments = ?,other_comments = ?, tipo_patto_formativo = ?, tipo_personalizzazione = ?, lastupdate = ? '
+                . 'm_1 = ?,m_2 = ?,m_comments = ?,other_comments = ?, tipo_patto_formativo = ?, tipo_personalizzazione = ?, tipo_initinere = ?, lastupdate = ? '
                 . 'WHERE id = ?';
-        
+
                 /**
                  * $eguidance_dataAr['tipo_personalizzazione'] is the logical or of all received array elements
                  */
@@ -9616,7 +9629,18 @@ abstract class AMA_Tester_DataHandler extends Abstract_AMA_DataHandler {
                 	foreach ($eguidance_dataAr['tipo_personalizzazione'] as $value) $saveValue |= $value;
                 	$eguidance_dataAr['tipo_personalizzazione'] = $saveValue;
                 } else $eguidance_dataAr['tipo_personalizzazione'] = reset($eguidance_dataAr['tipo_personalizzazione']);
-                
+
+                /**
+                 * $eguidance_dataAr['tipo_initinere'] is the logical or of all received array elements
+                 */
+                if (isset($eguidance_dataAr['tipo_initinere'])) {
+                	if (is_array($eguidance_dataAr['tipo_initinere']) && count($eguidance_dataAr['tipo_initinere'])>1) {
+                		$saveValue = 0;
+                		foreach ($eguidance_dataAr['tipo_initinere'] as $value) $saveValue |= $value;
+                		$eguidance_dataAr['tipo_initinere'] = $saveValue;
+                	} else $eguidance_dataAr['tipo_initinere'] = reset($eguidance_dataAr['tipo_initinere']);
+                } else $eguidance_dataAr['tipo_initinere'] = 0;
+
         $dataAr = array(
                 $eguidance_dataAr['type_of_guidance'],
                 $eguidance_dataAr['ud_1'],
@@ -9655,6 +9679,7 @@ abstract class AMA_Tester_DataHandler extends Abstract_AMA_DataHandler {
                 $eguidance_dataAr['other_comments'],
 		$eguidance_dataAr['tipo_patto_formativo'],
 		$eguidance_dataAr['tipo_personalizzazione'],
+        $eguidance_dataAr['tipo_initinere'],
         		time(),
                 $eguidance_dataAr['id_eguidance_session'],
         );
@@ -9674,7 +9699,7 @@ abstract class AMA_Tester_DataHandler extends Abstract_AMA_DataHandler {
         $sql = 'SELECT id, id_utente,id_tutor,data_ora,tipo_eguidance,ud_1,ud_2,ud_3,ud_comments,'
                 . 'pc_1,pc_2,pc_3,pc_4,pc_5,pc_6,pc_comments,ba_1,ba_2,ba_3,ba_4,ba_comments,'
                 . 't_1,t_2,t_3,t_4,t_comments,pe_1,pe_2,pe_3,pe_comments,ci_1,ci_2,ci_3,ci_4, ci_comments,'
-                . 'm_1,m_2,m_comments,other_comments, tipo_patto_formativo, tipo_personalizzazione, lastupdate '
+                . 'm_1,m_2,m_comments,other_comments, tipo_patto_formativo, tipo_personalizzazione, tipo_initinere, lastupdate '
                 . "FROM sessione_eguidance WHERE event_token = '$event_token'";
 
         $result = $db->getRow($sql, NULL, AMA_FETCH_ASSOC);
@@ -9698,7 +9723,7 @@ abstract class AMA_Tester_DataHandler extends Abstract_AMA_DataHandler {
         $sql = 'SELECT id_utente,id_tutor,event_token,data_ora,tipo_eguidance,ud_1,ud_2,ud_3,ud_comments,'
                 . 'pc_1,pc_2,pc_3,pc_4,pc_5,pc_6,pc_comments,ba_1,ba_2,ba_3,ba_4,ba_comments,'
                 . 't_1,t_2,t_3,t_4,t_comments,pe_1,pe_2,pe_3,pe_comments,ci_1,ci_2,ci_3,ci_4, ci_comments,'
-                . 'm_1,m_2,m_comments,other_comments, tipo_patto_formativo, tipo_personalizzazione, lastupdate '
+                . 'm_1,m_2,m_comments,other_comments, tipo_patto_formativo, tipo_personalizzazione, tipo_initinere, lastupdate '
                 . 'FROM sessione_eguidance WHERE id_istanza_corso = ' . $id_course_instance
                 . ' ORDER BY id DESC';
 
@@ -9739,7 +9764,7 @@ abstract class AMA_Tester_DataHandler extends Abstract_AMA_DataHandler {
         $sql = 'SELECT id_utente,id_tutor,data_ora,tipo_eguidance,ud_1,ud_2,ud_3,ud_comments,'
                 . 'pc_1,pc_2,pc_3,pc_4,pc_5,pc_6,pc_comments,ba_1,ba_2,ba_3,ba_4,ba_comments,'
                 . 't_1,t_2,t_3,t_4,t_comments,pe_1,pe_2,pe_3,pe_comments,ci_1,ci_2,ci_3,ci_4, ci_comments,'
-                . 'm_1,m_2,m_comments,other_comments, tipo_patto_formativo, tipo_personalizzazione, lastupdate '
+                . 'm_1,m_2,m_comments,other_comments, tipo_patto_formativo, tipo_personalizzazione, tipo_initinere, lastupdate '
                 . 'FROM sessione_eguidance WHERE id_istanza_corso = ' . $id_course_instance
                 . ' LIMIT ' . $row .',1';
         $result = $db->getRow($sql, NULL, AMA_FETCH_ASSOC);
@@ -10268,19 +10293,19 @@ abstract class AMA_Tester_DataHandler extends Abstract_AMA_DataHandler {
 			return $tutors;
 		}
     }
-    
+
     /**
      * @author giorgio 03/lug/2015
-     * 
+     *
      * On WISP/UNIMC only:
-     * 
+     *
      * Gets the list of students preassigned to a tutor for a course
-     *  
+     *
      * @param number $tutor_id
      * @param number $course_id
-     * 
+     *
      * @return array!AMA_Error
-     * 
+     *
      * @access public
      */
     public function &get_preassigned_students_for_tutor ($tutor_id, $course_id=null) {
@@ -10289,28 +10314,28 @@ abstract class AMA_Tester_DataHandler extends Abstract_AMA_DataHandler {
       		   'WHERE PRE.`id_tutor`=? AND PRE.`id_course`'.
       		   (is_null($course_id) ? ' IS NULL' : '='.intval($course_id)).' AND  '.
       		   'U.`tipo`=? AND PRE.`id_student` IS NOT NULL';
-    	
-    	return $this->getColPrepared($sql, array($tutor_id, AMA_TYPE_STUDENT),AMA_FETCH_ASSOC);    	
+
+    	return $this->getColPrepared($sql, array($tutor_id, AMA_TYPE_STUDENT),AMA_FETCH_ASSOC);
     }
-    
+
     /**
      * @author giorgio 03/lug/2015
-     * 
+     *
      * On WISP/UNIMC only:
-     * 
+     *
      * Saves preassignment of student(s) to a tutor
-     * 
+     *
      * @param number|array $student_ids id or array of ids of students to be preassigned
      * @param number $tutor_id id of tutor to preassign students to
      * @param number $course_id id of course to preassign. null means all courses
-     *  
+     *
      * @return AMA_Error|boolean
-     * 
+     *
      * @access public
      */
     public function preassign_students_to_tutor ($student_ids, $tutor_id, $course_id=null) {
     	if (!is_array($student_ids)) $student_ids = array ($student_ids);
-    	
+
     	$sql = 'INSERT INTO `tutor_student_preassigned` VALUES ';
     	foreach ($student_ids as $student_id) {
     		$sql .= '(?,?,?),';
@@ -10319,41 +10344,41 @@ abstract class AMA_Tester_DataHandler extends Abstract_AMA_DataHandler {
     		$values[] = $course_id;
     	}
     	$sql = rtrim ($sql, ',');
-    	$retval = $this->queryPrepared($sql,$values); 
+    	$retval = $this->queryPrepared($sql,$values);
     	if (AMA_DB::isError($retval)) return new AMA_Error(AMA_ERR_ADD);
     	else return true;
     }
-    
+
     /**
      * @author giorgio 03/lug/2015
-     * 
+     *
      * On WISP/UNIMC only:
-     * 
+     *
      * Removes preassignment of students to a tutor in a course
-     * 
+     *
      * @param number|array $student_ids
      * @param number $tutor_id
      * @param number $course_id
-     * 
+     *
      * @return AMA_Error|boolean
-     * 
+     *
      * @access public
      */
     public function remove_preassign_students_to_tutor ($student_ids, $tutor_id, $course_id=null) {
     	if (!is_array($student_ids)) $student_ids = array ($student_ids);
     	$values = array();
-    	
+
     	$sql = 'DELETE FROM `tutor_student_preassigned` WHERE `id_tutor`=:id_tutor AND '.
     		   '`id_student`=:id_student AND `id_course`';
-    	
+
     	if (is_null($course_id)) $sql .= ' IS NULL';
-    	else { 
+    	else {
     		$sql .= '=:id_course';
     		$values['id_course'] = $course_id;
     	}
-    	
+
     	$values['id_tutor'] = intval($tutor_id);
-    	
+
     	foreach ($student_ids as $student_id) {
     		$values['id_student'] = $student_id;
     		$res = $this->queryPrepared($sql,$values);
@@ -10361,17 +10386,17 @@ abstract class AMA_Tester_DataHandler extends Abstract_AMA_DataHandler {
     	}
     	return true;
     }
-    
+
     /**
      * @author giorgio 02/lug/2015
-     * 
+     *
      * On WISP/UNIMC only:
-     * 
+     *
      * gets the ids of all students that don't have an associated
      * row in the `tutor_student_preassigned` table
-     * 
+     *
      * @return array|AMA_Error
-     * 
+     *
      * @access public
      */
     public function &get_non_preassigned_student_ids() {
@@ -10380,32 +10405,32 @@ abstract class AMA_Tester_DataHandler extends Abstract_AMA_DataHandler {
     		   'WHERE U.`tipo`=? AND PRE.`id_student` IS NULL';
     	return $this->getColPrepared($sql, AMA_TYPE_STUDENT);
     }
-    
+
     /**
      * @author giorgio 01/lug/2015
-     * 
+     *
      * On WISP/UNIMC only:
-     * 
+     *
      * gets the preassigned tutor id for a student in a course.
-     * 
+     *
      * A row in the DB having id_course=null means to assign that tutor
      * to the student for every possible course.
      * A row in the DB having a not null id_course means to assign that
      * tutor to the student for that course only.
      * If both rows are found in the DB, the tutor id with matching
      * id_course is preferred and returned.
-     * 
+     *
      * @param number $id_student id of the student
-     * @param number $id_course  id of the course, or null to mean all courses 
-     * 
+     * @param number $id_course  id of the course, or null to mean all courses
+     *
      * @return Ambigous <number|AMA_Error>
-     * 
+     *
      * @access public
      */
     public function &get_tutor_preassigned_to_student_for_course($id_student, $id_course=null) {
     	$sql = 'SELECT `id_tutor` FROM `tutor_student_preassigned` WHERE '.
       		   '`id_student`=? AND (`id_course` IS NULL OR `id_course`=?) ORDER BY `id_course` DESC';
-    	$res = $this->getOnePrepared($sql,array($id_student, $id_course),AMA_FETCH_ASSOC);    	
+    	$res = $this->getOnePrepared($sql,array($id_student, $id_course),AMA_FETCH_ASSOC);
     	return (!AMA_DB::isError($res) ? intval($res) : $res);
     }
 
@@ -10843,9 +10868,9 @@ public function get_updates_nodes($userObj, $pointer)
     	 *
     	 * @param userId user id to get new nodes for
     	 * @param maxNodes : maximum number of nodes to get, gets all nodes if zero or not passed
-         * @param array $instancesArray the ids of the instances to get news nodes or NULL for all new nodes 
+         * @param array $instancesArray the ids of the instances to get news nodes or NULL for all new nodes
          * @param array $nodeTypesArray
-    	 * 
+    	 *
     	 * @author giorgio 29/apr/2013
     	 *
     	 * @return assoc array containing id_nodo, id_istazna and nome of the matched new nodes
@@ -10853,16 +10878,16 @@ public function get_updates_nodes($userObj, $pointer)
     	 * on success, an AMA_Error object on failure
     	 */
     	public function get_new_nodes($userId, $maxNodes = 3, $nodeTypesArray = array ( ADA_LEAF_TYPE, ADA_GROUP_TYPE ), $instancesArray=array()) {
-    		
+
     		//$nodeTypesArray = array ( ADA_LEAF_TYPE, ADA_GROUP_TYPE );
-    		
+
     		$db =& $this->getConnection();
     		if ( AMA_DB::isError( $db ) ) return $db;
-    		
-                if (count($instancesArray) == 0) { 
+
+                if (count($instancesArray) == 0) {
         		$instancesArray = $this->get_course_instances_active_for_this_student ($userId);
                 }
-    		
+
     		$result = array();
 
     		if (!AMA_DB::isError($instancesArray) && is_array($instancesArray) && count($instancesArray)>0) {
@@ -11391,7 +11416,7 @@ public function get_updates_nodes($userObj, $pointer)
         } else {
         	$sql .= 'utente AS U2,  iscrizioni AS I,  tutor_studenti AS TS';
         }
-        
+
         $sql .= ' WHERE IC.data_inizio > 0 AND MC.id_corso = IC.id_corso
                AND I.id_istanza_corso = IC.id_istanza_corso
                AND U1.id_utente = I.id_utente_studente ';
@@ -11400,9 +11425,9 @@ public function get_updates_nodes($userObj, $pointer)
         	$sql .= 'AND TS.id_istanza_corso = IC.id_istanza_corso
                AND U2.id_utente = TS.id_utente_tutor ';
         }
-        
+
         $sql .= 'ORDER BY IC.id_istanza_corso DESC';
-        
+
         $resultAr = $db->getAll($sql, NULL, AMA_FETCH_ASSOC);
         if(AMA_DB::isError($resultAr)) {
             return new AMA_Error(AMA_ERR_GET);

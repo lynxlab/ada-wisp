@@ -103,7 +103,7 @@ include_once ROOT_DIR.'/comunica/include/ADAEventProposal.inc.php';
     }
   }
   $id_course_instance = $eguidance_dataAr['id_istanza_corso'];
- 
+
   //createCSVFileToDownload($_POST);
 
   /*
@@ -112,8 +112,8 @@ include_once ROOT_DIR.'/comunica/include/ADAEventProposal.inc.php';
   if (!isset($_POST['is_popup'])) {
 	  $tutored_user_id    = $eguidance_dataAr['id_utente'];
 	  header('Location: user_service_detail.php?id_user='.$tutored_user_id.'&id_course_instance='.$id_course_instance.$href_suffix);
-	  exit();  	
-  }  
+	  exit();
+  }
 }
 else {
 
@@ -141,7 +141,7 @@ $userAgendaForThisProvider = $user_agendaAr[$_SESSION['sess_selected_tester']];
 	    break;
 	}
     }
-   
+
   }
   else if (isset($_GET['id_course_instance']))
   {
@@ -176,7 +176,7 @@ $userAgendaForThisProvider = $user_agendaAr[$_SESSION['sess_selected_tester']];
   if ($instanceInfoAr['data_fine'] > 0 && $instanceInfoAr['data_fine'] < time()) $instanceInfoAr['status'] = ADA_INSTANCE_CLOSED;
   $service_infoAr['instance_status'] = $instanceStatusDescription[$instanceInfoAr['status']];
   $service_infoAr['instance_status_value'] = $instanceInfoAr['status'];
-  
+
   /*
    * Get tutored user info
    */
@@ -192,10 +192,13 @@ $userAgendaForThisProvider = $user_agendaAr[$_SESSION['sess_selected_tester']];
 
   $service_infoAr['id_istanza_corso'] = $id_course_instance;
   $service_infoAr['event_token']      = $event_token;
-  
+
   $service_infoAr['tipo_patto_formativo'] = $pattoFormativoAr; // $pattoFormativoAr read from config_main.inc.php
   $service_infoAr['tipo_patto_personal'] = $tipoPersonalPattoAr; // $tipoPersonalPattoAr read from config_main.inc.php
-  
+  if ((int)$service_infoAr[3] === ADA_SERVICE_IN_ITINERE) {
+  	$service_infoAr['in_itinere_checkboxes'] = $inItinereCheckboxAr; // $inItinereCheckboxAr read from config_main.inc.php
+  }
+
   /*
    * Check if an eguidance session with this event_token exists. In this case,
    * use this data to fill the form.
@@ -216,8 +219,8 @@ $userAgendaForThisProvider = $user_agendaAr[$_SESSION['sess_selected_tester']];
     $eguidance_session_dataAr['event_token'] = $event_token;
     $eguidance_session_dataAr['data_ora'] = $appointmentTime;
     $eguidance_session_dataAr['tipo_eguidance'] = $service_infoAr[3];
-    
-  }  
+
+  }
     if($is_popup) {
       $eguidance_session_dataAr['is_popup'] = true;
     }
@@ -233,9 +236,9 @@ $userAgendaForThisProvider = $user_agendaAr[$_SESSION['sess_selected_tester']];
     } else {
         $eguidanceAssessment = TutorModuleHtmlLib::getEguidanceTutorForm($tutoredUserObj, $service_infoAr,$last_eguidance_session_dataAr, $fill_textareas);
     }
- * 
+ *
  */
-   
+
   }
 //}
 if (isset($_POST['is_popup'])) {
@@ -265,7 +268,7 @@ if (isset($_POST['is_popup'])) {
 			JQUERY_NO_CONFLICT
 	);
 	$layout_dataAr['CSS_filename'][] = JQUERY_UNIFORM_CSS;
-	$options_Ar = array('onload_func' => "initDoc();");	
+	$options_Ar = array('onload_func' => "initDoc();");
 }
 
 ARE::render($layout_dataAr, $content_dataAr, NULL, $options_Ar);

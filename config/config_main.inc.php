@@ -78,7 +78,7 @@ define('ADA_SERVICE_SUBSCRIPTION_STATUS_COMPLETED' , ADA_STATUS_COMPLETED);
 define('ADA_SERVICE_SUBSCRIPTION_STATUS_TERMINATED', ADA_STATUS_TERMINATED);
 
 /**
- * ADA node 
+ * ADA node
  */
 define('ADA_LEAF_TYPE',         0);
 define('ADA_GROUP_TYPE',        1);
@@ -112,6 +112,7 @@ define('ADA_SERVICE_COMMON', 1);
 define('ADA_SERVICE_COMMON_STUDENT',2);
 define('ADA_SERVICE_COMMON_TUTOR',3);
 define('ADA_SERVICE_COURSE',9);
+define('ADA_SERVICE_IN_ITINERE',98);
 define('DEFAULT_SERVICE_TYPE', ADA_SERVICE_COMMON);
 define('ADA_SERVICE_TUTORCOMMUNITY', ADA_SERVICE_COMMON_TUTOR);
 
@@ -340,12 +341,12 @@ define('ADA_SECONDS_IN_A_DAY', 86400);
 /**
  * Caching mode
  */
-define('ADA_NO_CACHE',   		0);		//always dynamically read from DB 
+define('ADA_NO_CACHE',   		0);		//always dynamically read from DB
 define('ADA_READONLY_CACHE',	1); 	//read only: the file is always loaded but never rewritten
 define('ADA_UPDATE_CACHE',  	2); 	//static rw: the node content is read from file only if lifetime is > $ic_lifetime
 										// otherwise it is read from DB and then written back to file
 define('ADA_FORCE_UPDATE_CACHE',3); 	//static rw: the node content  is read from DB and then written back to file
-										
+
 define('JQUERY',				  ROOT_DIR.'/js/include/jquery/jquery-1.11.1.min.js');
 define('JQUERY_UI',				  ROOT_DIR.'/js/include/jquery/ui/jquery-ui-1.11.1.custom.min.js');
 define('JQUERY_UI_CSS',			  ROOT_DIR.'/js/include/jquery/ui/jquery-ui-1.11.1.custom.min.css');
@@ -369,9 +370,9 @@ define('JQUERY_JPLAYER',		  ROOT_DIR.'/js/include/jquery/jplayer/jquery.jplayer.
 define('JQUERY_JPLAYER_CSS',	  ROOT_DIR.'/js/include/jquery/jplayer/skin/blue.monday/css/jplayer.blue.monday.min.css');
 
 /**
- * UNIVERSITÀ  DI MACERATA 
+ * UNIVERSITÀ  DI MACERATA
  * PROPRIETÀ SPECIFICHE
- * 
+ *
  */
 
 define('MC_PATTO_FORMATIVO_STANDARD',0);
@@ -382,11 +383,20 @@ $pattoFormativoAr = array(
 );
 
 $tipoPersonalPattoAr = array (
-    1 => 'numero esami',
-    2 => 'tempistica esami',
-    4 => 'suggerito corso propedeutico',
-    8 => 'suggerita consulenza orientativa',
-    16=> 'altro'
+     1 => 'numero esami',
+     2 => 'tempistica esami',
+     4 => 'suggerito corso propedeutico',
+     8 => 'suggerita consulenza orientativa',
+    16 => 'altro'
+);
+
+$inItinereCheckboxAr = array(
+	 1 =>  'Problemi oggettivi ordinari',
+	 2 =>  'Problemi oggettivi straordinari',
+	 4 =>  'Problemi connessi alla struttura organizzativa universitaria',
+	 8 =>  'Problemi connessi alla preparazione dello studente',
+	16 => 'Problemi connessi al metodo di studio',
+	32 => 'Problemi personali e di orientamento'
 );
 
 /**
@@ -397,7 +407,7 @@ define('ADA_INSTANCE_CLOSED', 1);
 define('ADA_INSTANCE_MORE_DATE', 2);
 
 $instanceStatusDescription = array (
-    'In corso',
-    'Terminato',
-    'Fissare appuntamento'
+    ADA_INSTANCE_OPENED => 'In corso',
+    ADA_INSTANCE_CLOSED => 'Terminato',
+    ADA_INSTANCE_MORE_DATE => 'Fissare appuntamento'
 );

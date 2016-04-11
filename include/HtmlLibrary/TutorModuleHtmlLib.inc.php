@@ -21,8 +21,8 @@ class TutorModuleHtmlLib
 
   static public function getServiceStatusForm(ADALoggableUser $tutoredUserObj, $service_infoAr = array()) {
     $form = CDOMElement::create('form','id:user_service_detai, name: user_service_detai, action:user_service_detail.php, method:post');
-      
-    
+
+
    /*
      * Hidden user data
      */
@@ -30,7 +30,7 @@ class TutorModuleHtmlLib
     $user_country = $tutoredUserObj->getCountry();
     $user_birthdate = $tutoredUserObj->getBirthDate();
     $user_birthcity = $tutoredUserObj->getBirthCity();
-    $user_birthprovince = $tutoredUserObj->getBirthProvince();    
+    $user_birthprovince = $tutoredUserObj->getBirthProvince();
     $user_gender = $tutoredUserObj->getGender();
     $user_foreign_culture = 'FOREIGN CULTURE';
 
@@ -54,7 +54,7 @@ class TutorModuleHtmlLib
 
     $hidden_previous_instance_status = CDOMElement::create('hidden', 'id:previous_instance_status, name: previous_instance_status');
     $hidden_previous_instance_status->setAttribute('value', $service_infoAr['instance_status_previous']);
-   
+
     $hidden_user_country = CDOMElement::create('hidden', 'id:user_country, name:user_country');
     $hidden_user_country->setAttribute('value', $user_country);
     $hidden_service_duration = CDOMElement::create('hidden','id:service_duration, name:service_duration');
@@ -82,10 +82,10 @@ class TutorModuleHtmlLib
     $form->addChild($hidden_user_gender);
     $form->addChild($hidden_user_foreign_culture);
     $form->addChild($hidden_previous_instance_status);
-    
+
     $toe_thead = '';
     $instance_status = $service_infoAr['instance_status_value'];
-    $avalaibleStatusAr = array($status_opened_label,$status_closed_label); 
+    $avalaibleStatusAr = array($status_opened_label,$status_closed_label);
     $more_attributes['onchange'] = 'saveStatus(this)';
     $toe_tbody = array(
       array(BaseHtmlLib::selectElement2('id:status_service, name:status_service',$service_infoAr['avalaible_status'],$instance_status,$more_attributes))
@@ -93,15 +93,15 @@ class TutorModuleHtmlLib
     $toe_table = BaseHtmlLib::tableElement('', $toe_thead, $toe_tbody);
     $form->addChild($toe_table);
     return $form;
-  }   
-    
+  }
+
   /*
    * methods used to display forms and data for the eguidance session
    */
   // MARK: methods used to display forms and data for the eguidance session
 
   static public function getServiceDataTable($service_dataAr) {
-      
+
       $avalaibleServiceTypeAr = array(translateFN('Help per studenti'),translateFN('Area comune'), translateFN('Area comune studenti'));
    // S.nome, S.descrizione, S.livello, S.durata_servizio, S.min_incontri, S.max_incontri, S.durata_max_incontro
     $thead = array(translateFN('Service data'),'');
@@ -109,12 +109,12 @@ class TutorModuleHtmlLib
       array(translateFN('Name'), $service_dataAr[1]),
       array(translateFN('Description'), $service_dataAr[2]),
       array(translateFN('Level'), $avalaibleServiceTypeAr[$service_dataAr[3]])
-/*        
+/*
       array(translateFN('Duration'), $service_dataAr[4]),
       array(translateFN('Min incontri'), $service_dataAr[5]),
       array(translateFN('Max incontri')       , $service_dataAr[6]),
       array(translateFN('Durata max incontro'), $service_dataAr[7])
- * 
+ *
  */
     );
     return BaseHtmlLib::tableElement('', $thead, $tbody);
@@ -126,7 +126,7 @@ class TutorModuleHtmlLib
   // MARK: methods used to display forms and data for the eguidance session
 
 static public function getServiceDataTableForTutor($service_dataAr) {
-      
+
     $thead = array(translateFN('Service data'),'');
     $tbody = array(
 	array(translateFN('Name'), $service_dataAr[1]),
@@ -136,7 +136,7 @@ static public function getServiceDataTableForTutor($service_dataAr) {
     );
     return BaseHtmlLib::tableElement('', $thead, $tbody);
   }
-  
+
   static public function getSubscribedUsersList($user_dataAr, $id_course, $id_course_instance) {
 
       $form = CDOMElement::create('form','id:pe_subscribed, method:post, action:course_instance_subscribe.php');
@@ -152,7 +152,7 @@ static public function getServiceDataTableForTutor($service_dataAr) {
       $tbody = array();
       foreach($user_dataAr as $user) {
           $user_id = $user['id_utente'];
-          
+
           $subscribed = CDOMElement::create('radio',"name:student[$user_id] value:".ADA_STATUS_SUBSCRIBED);
           if($user['status'] == ADA_STATUS_SUBSCRIBED) {
               $subscribed->setAttribute('checked', 'true');
@@ -205,7 +205,7 @@ static public function getServiceDataTableForTutor($service_dataAr) {
           $user_id = $user['id_utente'];
 
           $subscribe = CDOMElement::create('radio',"name:student[$user_id] value:".ADA_STATUS_SUBSCRIBED);
-          $subscribe->setAttribute('checked', 'true');          
+          $subscribe->setAttribute('checked', 'true');
           $remove = CDOMElement::create('radio',"name:student[$user_id] value:".ADA_STATUS_REMOVED);
           $tbody[] = array(
               $user['nome'] . ' ' . $user['cognome'],
@@ -427,17 +427,17 @@ static public function getServiceDataTableForTutor($service_dataAr) {
   static public function getEguidanceTutorForm(ADALoggableUser $tutoredUserObj, $service_infoAr = array(), $form_dataAr=array(), $fill_textareas=FALSE, $readOnly = false) {
     $form = CDOMElement::create('form','id:eguidance_tutor_form, name: eguidance_tutor_form, action:eguidance_tutor_form.php, method:post');
 
-/*    
+/*
     $area_personal_conditions = CDOMElement::create('div');
     $area_personal_conditions->addChild(new CText(EguidanceSession::textLabelForField('area_pc')));
     $form->addChild($area_personal_conditions);
- * 
+ *
  */
     /*
      * Serial Number
      */
     $user_serial_number = $tutoredUserObj->getSerialNumber();
-    
+
     if(!is_null($user_serial_number)) {
       $hidden_fc = CDOMElement::create('hidden','id:user_fc, name:user_fc');
       $hidden_fc->setAttribute('value', $user_serial_number);
@@ -459,7 +459,7 @@ static public function getServiceDataTableForTutor($service_dataAr) {
     $user_country = $tutoredUserObj->getCountry();
     $user_birthdate = $tutoredUserObj->getBirthDate();
     $user_birthcity = $tutoredUserObj->getBirthCity();
-    $user_birthprovince = $tutoredUserObj->getBirthProvince();    
+    $user_birthprovince = $tutoredUserObj->getBirthProvince();
     $user_gender = $tutoredUserObj->getGender();
     $user_foreign_culture = 'FOREIGN CULTURE';
 
@@ -472,7 +472,7 @@ static public function getServiceDataTableForTutor($service_dataAr) {
     $appointmentDate = $form_dataAr['data_ora'];
     $hiddenAppointmentDate  = CDOMElement::create('hidden','id:data_ora, name:data_ora');
     $hiddenAppointmentDate->setAttribute('value', $appointmentDate);
-    
+
     $hidden_id_utente  = CDOMElement::create('hidden','id:id_utente, name:id_utente');
     $hidden_id_utente->setAttribute('value', $tutoredUserObj->getId());
 
@@ -487,7 +487,7 @@ static public function getServiceDataTableForTutor($service_dataAr) {
 
     $hidden_previous_instance_status = CDOMElement::create('hidden', 'id:previous_instance_status, name: previous_instance_status');
     $hidden_previous_instance_status->setAttribute('value', $service_infoAr['instance_status_previous']);
-   
+
     $hidden_user_country = CDOMElement::create('hidden', 'id:user_country, name:user_country');
     $hidden_user_country->setAttribute('value', $user_country);
     $hidden_service_duration = CDOMElement::create('hidden','id:service_duration, name:service_duration');
@@ -502,7 +502,7 @@ static public function getServiceDataTableForTutor($service_dataAr) {
     $hidden_user_birthcity->setAttribute('value', $user_birthcity);
     $hidden_user_birthprovince = CDOMElement::create('hidden', 'id:ud_5, name:ud_5');
     $hidden_user_birthprovince->setAttribute('value', $user_birthprovince);
-    
+
 
     $form->addChild($hiddenAppointmentDate);
     $form->addChild($hidden_id_utente);
@@ -534,21 +534,21 @@ static public function getServiceDataTableForTutor($service_dataAr) {
     $hidden_type_of_guidance  = CDOMElement::create('hidden','id:type_of_guidance, name:type_of_guidance');
     $hidden_type_of_guidance->setAttribute('value', $form_dataAr['tipo_eguidance']);
     $form->addChild($hidden_type_of_guidance);
-    
+
 
     //FIXME: qui passo $form_dataAr['tipo_eguidance'], ma dovrei passare $form_dataAr['type_of_guidance']
     /**
      * SERVICE TYPE
      */
 //    $toe_thead = array(EguidanceSession::textLabelForField('toe_title'));
-//   
+//
 //    $toe_tbody = array(
 ////      array(BaseHtmlLib::selectElement2('id:type_of_guidance, name:type_of_guidance',$typeAr,$form_dataAr['tipo_eguidance']))
 //      array($_SESSION['service_level'][$form_dataAr['tipo_eguidance']])
 //    );
 //    $toe_table = BaseHtmlLib::tableElement('', $toe_thead, $toe_tbody);
 //    $form->addChild($toe_table);
-//    
+//
 //    //FIXME: qui passo $form_dataAr['tipo_eguidance'], ma dovrei passare $form_dataAr['type_of_guidance']
     $toe_thead = array(translateFN('Service data'),'');
     $instance_status_value = $service_infoAr['instance_status_value'];
@@ -564,9 +564,9 @@ static public function getServiceDataTableForTutor($service_dataAr) {
 	$pattoFormativoOptionsAr[]=  translateFN($tipoPattoDesc);
     }
     $pattoSelected = $form_dataAr['tipo_patto_formativo'];
-    $more_attributes['onchange'] = 'toggleVisiblePersonal(this)';	    
+    $more_attributes['onchange'] = 'toggleVisiblePersonal(this)';
     $pattoFormativoSelect = BaseHtmlLib::selectElement2('id:tipo_patto_formativo, name:tipo_patto_formativo',$pattoFormativoOptionsAr,$pattoSelected,$more_attributes);
-    
+
     /*
      * Patto formativo personalizzato
      * $tipoPersonalPattoAr read from config_main.inc.php
@@ -574,24 +574,24 @@ static public function getServiceDataTableForTutor($service_dataAr) {
     $spanPersonalPatto = CDOMElement::create('span','class:personal_patto');
     $pattoPersonalSelected = intval($form_dataAr['tipo_personalizzazione']);
     $pattoFormativoPersonalAr = $service_infoAr['tipo_patto_personal'];
-    
+
     foreach ($pattoFormativoPersonalAr as $tipoPersonal => $tipoPersonalDesc) {
     	$aCheck = CDOMElement::create('checkbox','id:tipo_personalizzazione_'.$tipoPersonal.
     			',name:tipo_personalizzazione[],'.'value:'.$tipoPersonal.
     			($pattoPersonalSelected & $tipoPersonal ? ',checked:cheked' : ''));
-    	
+
     	$aLabel = CDOMElement::create('label','for:tipo_personalizzazione_'.$tipoPersonal);
     	$aLabel->addChild(new CText(translateFN($tipoPersonalDesc)));
-    	
+
     	$spanPersonalPatto->addChild($aCheck);
     	$spanPersonalPatto->addChild($aLabel);
     	$spanPersonalPatto->addChild(CDOMElement::create('div','class:clearfix'));
     }
-    
+
     if ($pattoSelected == 0) {
 	$spanPersonalPatto->setAttribute('style','display:none;');
     }
-    
+
     $toe_tbody = array(
 	array(translateFN('tipo').': '.$_SESSION['service_level'][$form_dataAr['tipo_eguidance']]),
 	array(translateFN('status').': '.$instance_status),
@@ -600,10 +600,32 @@ static public function getServiceDataTableForTutor($service_dataAr) {
 			$spanPersonalPatto->getHtml())
     );
 
+
+    if ((int)$form_dataAr['tipo_eguidance'] === ADA_SERVICE_IN_ITINERE) {
+
+        $spanInItinere = CDOMElement::create('span','class:initinere_container');
+	    $inItinereSelected = (int)$form_dataAr['tipo_initinere'];
+	    $inItinereAr = $service_infoAr['in_itinere_checkboxes'];
+
+	    foreach ($inItinereAr as $tipoInItinere => $tipoInItinereDesc) {
+	    	$aCheck = CDOMElement::create('checkbox','id:tipo_initinere_'.$tipoInItinere.
+	    			',name:tipo_initinere[],'.'value:'.$tipoInItinere.
+	    			($inItinereSelected & $tipoInItinere ? ',checked:cheked' : ''));
+
+	    	$aLabel = CDOMElement::create('label','for:tipo_initinere_'.$tipoInItinere);
+	    	$aLabel->addChild(new CText(translateFN($tipoInItinereDesc)));
+
+	    	$spanInItinere->addChild($aCheck);
+	    	$spanInItinere->addChild($aLabel);
+	    	$spanInItinere->addChild(CDOMElement::create('div','class:clearfix'));
+	    }
+
+	    $toe_tbody[] = array($spanInItinere->getHtml());
+    }
+
     $toe_table = BaseHtmlLib::tableElement('', $toe_thead, $toe_tbody);
     $form->addChild($toe_table);
-    
-    
+
     $scoresAr = EguidanceSession::scoresArray();
 
     $label = EguidanceSession::textLabelForField('ud_comments');
@@ -634,7 +656,7 @@ static public function getServiceDataTableForTutor($service_dataAr) {
      * Serial Number
      */
     $user_serial_number = $tutoredUserObj->getSerialNumber();
-    
+
     /*
      * Hidden user data
      */
@@ -642,7 +664,7 @@ static public function getServiceDataTableForTutor($service_dataAr) {
     $user_country = $tutoredUserObj->getCountry();
     $user_birthdate = $tutoredUserObj->getBirthDate();
     $user_birthcity = $tutoredUserObj->getBirthCity();
-    $user_birthprovince = $tutoredUserObj->getBirthProvince();    
+    $user_birthprovince = $tutoredUserObj->getBirthProvince();
     $user_gender = $tutoredUserObj->getGender();
     $user_foreign_culture = 'FOREIGN CULTURE';
 
@@ -668,7 +690,7 @@ static public function getServiceDataTableForTutor($service_dataAr) {
 
     $ufc_table = self::getEguidanceSessionUserDataTable($tutoredUserObj);
     $div->addChild($ufc_table);
-    
+
     $toe_thead = array(translateFN('Service data'),'');
     $instance_status_value = $service_infoAr['instance_status_value'];
     $instance_status = $service_infoAr['instance_status'];
@@ -677,15 +699,14 @@ static public function getServiceDataTableForTutor($service_dataAr) {
      * Patto formativo
      * $pattoFormativoAr read from config_main.inc.php
      */
-    CDOMElement::create('span','class:personal_patto');
-    $pattoFormativoSpan = CDOMElement::create('span','class:patto_formativo'); 
-    
+    $pattoFormativoSpan = CDOMElement::create('span','class:patto_formativo');
+
     $pattoFormativoAr = $service_infoAr['tipo_patto_formativo'];
     $pattoPersonalSelectedDesc = NULL;
     $pattoSelected = $form_dataAr['tipo_patto_formativo'];
     $pattoSelectedDesc = translateFN($pattoFormativoAr[$pattoSelected]);
     $pattoFormativoSpan->addChild(new CText($pattoSelectedDesc));
-    
+
     /*
      * Patto formativo personalizzato
      * $tipoPersonalPattoAr read from config_main.inc.php
@@ -693,36 +714,54 @@ static public function getServiceDataTableForTutor($service_dataAr) {
     $pattoFormativoPersonalAr = $service_infoAr['tipo_patto_personal'];
     if ($pattoSelected == MC_PATTO_FORMATIVO_PERSONALIZZATO) {
         $pattoPersonalSelected = $form_dataAr['tipo_personalizzazione'];
-	$pattoPersonalSelectedDesc = ' '.translateFN('per');
-	foreach ($pattoFormativoPersonalAr as $tipoPersonal => $tipoPersonalDesc) {
-		if ($pattoPersonalSelected & $tipoPersonal) $pattoPersonalSelectedDesc .= ' '.translateFN($tipoPersonalDesc).',';
-	}
-	$pattoPersonalSelectedDesc = rtrim($pattoPersonalSelectedDesc,',');
-	
-	$pattoFormativoSpan->addChild(new CText($pattoPersonalSelectedDesc));
+		$pattoPersonalSelectedDesc = ' '.translateFN('per');
+		foreach ($pattoFormativoPersonalAr as $tipoPersonal => $tipoPersonalDesc) {
+			if ($pattoPersonalSelected & $tipoPersonal) $pattoPersonalSelectedDesc .= ' '.translateFN($tipoPersonalDesc).',';
+		}
+		$pattoPersonalSelectedDesc = rtrim($pattoPersonalSelectedDesc,',');
+
+		$pattoFormativoSpan->addChild(new CText($pattoPersonalSelectedDesc));
     }
-	
+
     $toe_tbody = array(
 	array(translateFN('tipo').': '.$_SESSION['service_level'][$form_dataAr['tipo_eguidance']]),
 	array(translateFN('status').': '.$instance_status),
 	array(translateFN('Patto formativo').': '.$pattoFormativoSpan->getHtml())
     );
 
+    if ((int)$form_dataAr['tipo_eguidance'] === ADA_SERVICE_IN_ITINERE) {
+
+    	$inItinereSelected = (int)$form_dataAr['tipo_initinere'];
+    	$inItinereAr = $service_infoAr['in_itinere_checkboxes'];
+    	$inItinereDesc = '';
+
+    	foreach ($inItinereAr as $tipoInItinere => $tipoInItinereDesc) {
+    		if ($inItinereSelected & $tipoInItinere) $inItinereDesc .=' '.translateFN($tipoInItinereDesc);
+    	}
+
+    	$inItinereDesc = rtrim($inItinereDesc,',');
+    	if (strlen($inItinereDesc)>0) {
+    		$spanInItinere = CDOMElement::create('span','class:initinere_container');
+    		$spanInItinere->addChild(new CText($inItinereDesc));
+    		$toe_tbody[] = array($spanInItinere->getHtml());
+    	}
+    }
+
     $toe_table = BaseHtmlLib::tableElement('', $toe_thead, $toe_tbody);
     $div->addChild($toe_table);
-    
+
     $label = EguidanceSession::textLabelForField('ud_comments');
     $label .= ' '.translateFN('del') .' ' . Abstract_AMA_DataHandler::ts_to_date($form_dataAr['data_ora']); //, ADA_DATE_FORMAT.' - %R');
-    
+
     $divUdComments = CDOMElement::create('div','id:ud_comments');
     $spanlabel = CDOMElement::create('span','id:label_ud_comments');
-    
+
     $spanlabel->addChild(new CText($label.':'));
     $divUdComments->addChild($spanlabel);
     $divContainer = CDOMElement::create('div', 'class:ud_commnents_container');
     $divContainer->addChild(new CText(nl2br($form_dataAr['ud_comments'])));
     $divUdComments->addChild($divContainer);
-    
+
     $div->addChild($divUdComments);
 
 
@@ -740,9 +779,9 @@ class EguidanceSession
     'ud_2'        => 'Sesso',
     'ud_3'        => 'Cultura straniera',
   	'ud_4'		  => 'Comune o stato estero di nascita',
-  	'ud_5'		  => 'Provincia di nascita',  		
+  	'ud_5'		  => 'Provincia di nascita',
     'ud_comments' => "Commenti sull'andamento dell'incontro",
-      
+
     'sl_0'        => 'Help per studente',
     'sl_1'        => 'Colloquio informativo - utente nazionale',
     'sl_2'        => 'Colloquio informativo - utente straniero',

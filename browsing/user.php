@@ -46,9 +46,9 @@ $serviceProviders = $userObj->getTesters();
  * retrives all instances for each provider
  * istances:
  *	common area already subscribed to
- *	common area not (yet) subscribed to 
- *	personal area (help services) 
- *	
+ *	common area not (yet) subscribed to
+ *	personal area (help services)
+ *
  */
 
 $courseInstanceCommonAreaAr = array();
@@ -56,7 +56,7 @@ $courseInstanceHelpAr = array();
 $courseInstanceTmp = array();
 $commonAreaToSubscibeAr = array();
 if (is_array($serviceProviders)) {
-    
+
     foreach ($serviceProviders as $Provider) {
 	$provider_dh = AMA_DataHandler::instance(MultiPort::getDSN($Provider));
 	$courseInstanceTmp = $provider_dh->get_course_instances_for_this_student($userObj->getId(), true);
@@ -66,13 +66,12 @@ if (is_array($serviceProviders)) {
 //      	var_dump($courseInstanceTmp);die();
 
 	    foreach ($courseInstanceTmp as $singleCourseInstanceTmp) {
-		
-		if ((int)$singleCourseInstanceTmp['tipo_servizio'] === ADA_SERVICE_HELP) {
-		    array_push($courseInstanceHelpAr, $singleCourseInstanceTmp);
-		    //	    $courseInstanceHelpAr[] = $courseInstanceTmp;
-		} elseif ((int)$singleCourseInstanceTmp['tipo_servizio'] === ADA_SERVICE_COMMON || ((int)$singleCourseInstanceTmp['tipo_servizio'] === ADA_SERVICE_COMMON_STUDENT && $userObj->getSerialNumber () != '')) {
-		    array_push($courseInstanceCommonAreaAr, $singleCourseInstanceTmp);
-		} 
+			if (in_array((int)$singleCourseInstanceTmp['tipo_servizio'], array(ADA_SERVICE_HELP, ADA_SERVICE_IN_ITINERE))) {
+			    array_push($courseInstanceHelpAr, $singleCourseInstanceTmp);
+			    //	    $courseInstanceHelpAr[] = $courseInstanceTmp;
+			} elseif ((int)$singleCourseInstanceTmp['tipo_servizio'] === ADA_SERVICE_COMMON || ((int)$singleCourseInstanceTmp['tipo_servizio'] === ADA_SERVICE_COMMON_STUDENT && $userObj->getSerialNumber () != '')) {
+			    array_push($courseInstanceCommonAreaAr, $singleCourseInstanceTmp);
+			}
 	    }
 	}
 	/*
@@ -83,10 +82,10 @@ if (is_array($serviceProviders)) {
 	 $clause = "self_registration = 1 AND price = '0.00' AND open_subscription  = 1";
 	 $allServiceInstanceAr = $provider_dh->course_instance_find_list($field_list_ar, $clause);
 	 if (!AMA_DataHandler::isError($allServiceInstanceAr)) {
-	    $idS = array(); 
+	    $idS = array();
 //	    array_walk($courseInstanceCommonAreaAr, function (&$v, $k) use (&$idS){ $idS[] = $v[0];});
 	    $idS = array_map(function($v) { return $v['id_istanza_corso']; }, $courseInstanceCommonAreaAr);
-	    
+
 	     foreach ($allServiceInstanceAr as $singleServiceInstanceAr) {
 //    	     var_dump(array($singleServiceInstanceAr,$courseInstanceCommonAreaAr));
 //		 if (!in_array($singleServiceInstanceAr[0], $commonAreasSubscribedAr)) {
@@ -105,10 +104,10 @@ if (is_array($serviceProviders)) {
 }
 
 if(count($courseInstanceCommonAreaAr) > 0 || count($courseInstanceHelpAr)> 0) {
-	
+
 	/**
 	 * @author giorgio 23/apr/2015
-	 * 
+	 *
 	 *  filter course instance that are associated to a level of service having nonzero
 	 *  value in isPublic, so that all instances of public courses will not be shown here
 	 */
@@ -121,7 +120,7 @@ if(count($courseInstanceCommonAreaAr) > 0 || count($courseInstanceHelpAr)> 0) {
 		return (intval($_SESSION['service_level_info'][$courseInstanceHelp['tipo_servizio']]['isPublic'])===0);
 	});
 //    }
-	
+
 //  if (count($courseInstanceHelpAr) > 0 && $userObj->getSerialNumber() != '') {
     if ($userObj->getSerialNumber() != '') {
 	/*
@@ -144,26 +143,26 @@ if(count($courseInstanceCommonAreaAr) > 0 || count($courseInstanceHelpAr)> 0) {
 		$divAppointments->addChild(new CText(translateFN('Non ci sono appuntamenti')));
 	    }
 	    $content_dataAr['bloccoUnoAppuntamenti'] = '<h3>'.translateFN('Appuntamenti').'</h3>'.$divAppointments->getHtml();
-	}   
+	}
 	/* ***********************
 	 * END
 	 * appointments and proposal for all instances
 	 * $user_events and $user_events_2 are valorized in browsing_function.inc.php
 	 */
-	
+
 	$providerHelp = null;
 //	for ($i = 0;$i<count($courseInstanceHelpAr);$i++) {
 //	    foreach($courseInstanceHelpAr[$i] as $c) {
 	    foreach($courseInstanceHelpAr as $c) {
 
 		/* ***********************
-		 * INFO for each instance 
+		 * INFO for each instance
 		 */
 		$courseId = $c['id_corso'];
 
 		if ($c['provider']!= $providerHelp) {
 		    $providerHelp = $c['provider'];
-		    $dh = AMA_DataHandler::instance(MultiPort::getDSN($providerHelp));		
+		    $dh = AMA_DataHandler::instance(MultiPort::getDSN($providerHelp));
 		}
 
 		$courseDataAr = $dh->get_course($courseId);
@@ -252,7 +251,7 @@ if(count($courseInstanceCommonAreaAr) > 0 || count($courseInstanceHelpAr)> 0) {
 					    $aFile->addChild (new CText($lastFile['displaylink']));
 					    $liFile->addChild ($aFile);
 					    $ulFiles->addChild ($liFile);
-				    }                                	
+				    }
 				    $divFiles->addChild($ulFiles);
 			    }
 		    }
@@ -271,19 +270,19 @@ if(count($courseInstanceCommonAreaAr) > 0 || count($courseInstanceHelpAr)> 0) {
 		}
 
 	    }
-//	}   
+//	}
 	//cicla
     } else {
 	$data = new CText(translateFN('Non hai ancora chiesto aiuto per nessun argomento'));
     //            $serviceDOM->addChild($data);
     }
-        
+
         /* *****************
          * COMMON AREA SERVICE
          */
          $CommonTitle = '<h2>'.translateFN('Aree comuni').'</h2>';
          $content_dataAr['bloccoDueTitolo'] = $CommonTitle;
-         
+
          /*
           * COMMON AREA ALREADY SUBSCRIBED
           */
@@ -298,7 +297,7 @@ if(count($courseInstanceCommonAreaAr) > 0 || count($courseInstanceHelpAr)> 0) {
 		     $commonAreasSubscribedAr[] = $singleCommonArea['id_istanza_corso'];
 
 			/* ***********************
-			 * INFO for each instance 
+			 * INFO for each instance
 			 */
 			$divCommonNews = '';
 			$courseId = $singleCommonArea['id_corso'];
@@ -383,14 +382,14 @@ if(count($courseInstanceCommonAreaAr) > 0 || count($courseInstanceHelpAr)> 0) {
 
 			}
 		 }
-//	    } // end for cicle 
+//	    } // end for cicle
         } else {
             $data = new CText(translateFN('Non sei ancora iscritto a nessuna area comune'));
 //            $CommonAreaDOM->addChild($data);
         }
          $content_dataAr['bloccoDueContenuto'] = $CommonAreaDOM->getHtml();
 
-         
+
          /*
           * COMMON AREA TO SUBSCRIBED (if the user wish to)
           */
@@ -421,8 +420,8 @@ if(count($courseInstanceCommonAreaAr) > 0 || count($courseInstanceHelpAr)> 0) {
 	     }
 	     $content_dataAr['bloccoDueIscrizione'] = $divCommonToSubscribe->getHtml();
 	 }
-} 
-                
+}
+
         /* ASK SERVICE FORM
          * if student show the ask service form
          */
@@ -440,9 +439,9 @@ if(count($courseInstanceCommonAreaAr) > 0 || count($courseInstanceHelpAr)> 0) {
 
                     /**
                      * either the user is anonymous and has the $_GLOBALS['user_provider'] set
-                     * or it is a logged user and then it'll have client0 by default and only 
+                     * or it is a logged user and then it'll have client0 by default and only
                      * the client it's registered into and this info will be index 1 of the returned array
-                     * 
+                     *
                      */
                     if (isset($GLOBALS['user_provider']))
                             $user_provider_name = $GLOBALS['user_provider'];
@@ -466,7 +465,7 @@ if(count($courseInstanceCommonAreaAr) > 0 || count($courseInstanceHelpAr)> 0) {
                             $url = HTTP_ROOT_DIR . ((isset($_COOKIE['ada_provider'])) ? '/'.$_COOKIE['ada_provider'].'/info.php' : '');
                             header ('Location: '.$url);
                             die();
-                    }		
+                    }
             } else {
                     $publishedServices = $common_dh->get_published_courses();
             }
@@ -478,7 +477,7 @@ if(count($courseInstanceCommonAreaAr) > 0 || count($courseInstanceHelpAr)> 0) {
 
                            $serviceId = $service['id_servizio'];
                            $serviceName = $service['nome'];
-                           $coursesAr = $common_dh->get_courses_for_service($serviceId); 
+                           $coursesAr = $common_dh->get_courses_for_service($serviceId);
                            if (!AMA_DataHandler::isError($coursesAr)) {
                                 $currentTesterId = 0;
                                 $currentTester = '';
@@ -489,20 +488,20 @@ if(count($courseInstanceCommonAreaAr) > 0 || count($courseInstanceHelpAr)> 0) {
                                         $courseId = $newTesterId . '_' . $courseData['id_corso'];
                                         $serviceToSubscribeAr[$courseId] = $serviceName;
                                     }
-                                }   
+                                }
                            }
-                      } 
+                      }
 
                 }
                 if(sizeof($serviceToSubscribeAr) > 0) {
                     $AskServiceForm = new AskServiceForm($serviceToSubscribeAr,$user_provider_id);
-                } 
+                }
 
             } else {
                 $data = new CText(translateFN('Non è possibile chiedere aiuto'));
             }
             if (is_object($AskServiceForm)) {
-                
+
                 $askServiceHelp = translateFN('Se non hai ancora chiesto aiuto puoi farlo ora!');
                 $askServiceDiv = CDOMElement::create('div','id:Askservice');
                 $askServiceDiv->setAttribute('class', 'single_service');
@@ -513,12 +512,12 @@ if(count($courseInstanceCommonAreaAr) > 0 || count($courseInstanceHelpAr)> 0) {
                 $content_dataAr['bloccoUnoAskService'] = '<h3>'.translateFN('Chiedi aiuto').'</h3>'.$askServiceDiv->getHtml();
             }
             //print_r($content_dataAr);
-            
-            
+
+
         } else {
-            
+
         }
-           
+
         /*******************
          * end Ask Service form
          */
@@ -534,11 +533,11 @@ if(count($courseInstanceCommonAreaAr) > 0 || count($courseInstanceHelpAr)> 0) {
                     exit();
                 }
                     else {
-                 * 
+                 *
                  */
                  if (MultiPort::checkWhatsNew($userObj, $courseInstanceId, $courseId)) {
                         $displayWhatsNew = true;
-                 }  
+                 }
                  else {
                  	// resume 'normal' behaviour
                  	$access_link = CDOMElement::create('div');
@@ -557,32 +556,32 @@ if($last_access=='' || is_null($last_access))
 /*
  * Output
  */
-	
+
 	// @author giorgio 24/apr/2013 gocontinue link
 	$last_visited_node_id = $userObj->get_last_accessFN($courseInstanceId,"N");
-	
+
 	if  ((!empty($last_visited_node_id)) AND (!is_object($last_visited_node_id))&& $isStarted && !$isEnded){
 		$last_node_visitedObj = BaseHtmlLib::link("sview.php?id_course=$courseId&id_node=$last_visited_node_id&id_course_instance=$courseInstanceId#$nodeId",translateFN("Continua"));
 		// echo "<!--"; var_dump($last_node_visitedObj);echo "-->";
 		$last_node_visited_link =  $last_node_visitedObj->getHtml();
-	
+
 	} else {
 		//$last_node_visitedObj = BaseHtmlLib::link("sview.php?id_node=$nodeId&id_course=$courseId&id_course_instance=$courseInstanceId",translateFN('Continua'));
 		$last_node_visitedObj = BaseHtmlLib::link("#",translateFN(''));
 		$last_node_visited_link = $last_node_visitedObj->getHtml();
 	}
-	
+
         $imgAvatar = $userObj->getAvatar();
         $avatar = CDOMElement::create('img','src:'.$imgAvatar);
         $avatar->setAttribute('class', 'img_user_avatar');
-        
+
         $content_dataAr['user_modprofilelink'] = $userObj->getEditProfilePage();
 
 	$gochat_link = "";
 	$content_dataAr['gostart'] = $gostart_link;
 	$content_dataAr['gocontinue'] = $last_node_visited_link;
-	$content_dataAr['goindex'] = $goindex_link;		
-	if ($new_nodes_html!=='') $content_dataAr['new_nodes_links'] = $new_nodes_html;	
+	$content_dataAr['goindex'] = $goindex_link;
+	if ($new_nodes_html!=='') $content_dataAr['new_nodes_links'] = $new_nodes_html;
 	// msg forum sono le note in realta'
 	$content_dataAr['msg_forum'] = $msg_forum_count;
 	$content_dataAr['msg_agenda'] =  $msg_agenda_count;
@@ -590,7 +589,7 @@ if($last_access=='' || is_null($last_access))
 	$content_dataAr['goclasse'] = $students_link;
 	$content_dataAr['goforum'] = $goforum_link;
 	$content_dataAr['gochat'] = $gochat_link;
-		
+
 	$content_dataAr['banner'] = $banner;
 	$content_dataAr['today'] = $ymdhms;
 	$content_dataAr['user_name'] = $user_name;
@@ -600,8 +599,8 @@ if($last_access=='' || is_null($last_access))
 	$content_dataAr['message'] = $message;
 	$content_dataAr['course_title'] = translateFN("Home dell'utente");
 	$content_dataAr['submenu_actions'] =  $submenu_actions;
-        
-        $content_dataAr['user_avatar'] = $avatar->getHtml(); 
+
+        $content_dataAr['user_avatar'] = $avatar->getHtml();
         if (is_object($serviceDOM)) {
             $content_dataAr['bloccoUnoContenuto'] =  $serviceDOM->getHtml();
             $content_dataAr['bloccoUnoTitolo'] =  $HelpTitle;
@@ -613,7 +612,7 @@ if($last_access=='' || is_null($last_access))
 //        $content_dataAr['events'] = $user_events_2->getHtml().$user_events->getHtml();
 
 //print_r($content_dataAr);
-        
+
 
 $layout_dataAr['CSS_filename'] = array (
 		JQUERY_UI_CSS,
