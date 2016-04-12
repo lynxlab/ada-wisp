@@ -62,36 +62,36 @@ $tbody_data = array();
 
 switch ($op) {
     case 'not_started':
-        $filter_link = "<a href='switcher.php?op=all'>".translateFN("All")."</a>&nbsp;| &nbsp;"; 
+        $filter_link = "<a href='switcher.php?op=all'>".translateFN("All")."</a>&nbsp;| &nbsp;";
         $filter_link .= "<strong>".translateFN("Show not started")."</strong>&nbsp;| &nbsp;";
         $filter_link .= "<a href='switcher.php?op=started'>".translateFN("Show started")."</a>&nbsp;| &nbsp;";
         $filter_link .= "<a href='switcher.php?op=open'>".translateFN("Show open")."</a>&nbsp;| &nbsp;";
         $filter_link .= "<a href='switcher.php?op=closed'>".translateFN("Show closed")."</a>&nbsp;| &nbsp;";
-        break;    
+        break;
     case 'started':
-        $filter_link = "<a href='switcher.php?op=all'>".translateFN("All")."</a>&nbsp;| &nbsp;"; 
+        $filter_link = "<a href='switcher.php?op=all'>".translateFN("All")."</a>&nbsp;| &nbsp;";
         $filter_link .= "<a href='switcher.php?op=not_started'>".translateFN("Show not started")."</a>&nbsp;| &nbsp;";
         $filter_link .= "<strong>".translateFN("Show started")."</strong>&nbsp;| &nbsp;";
         $filter_link .= "<a href='switcher.php?op=open'>".translateFN("Show open")."</a>&nbsp;| &nbsp;";
         $filter_link .= "<a href='switcher.php?op=closed'>".translateFN("Show closed")."</a>&nbsp;| &nbsp;";
-        break;    
+        break;
     case 'closed':
-        $filter_link = "<a href='switcher.php?op=all'>".translateFN("All")."</a>&nbsp;| &nbsp;"; 
+        $filter_link = "<a href='switcher.php?op=all'>".translateFN("All")."</a>&nbsp;| &nbsp;";
         $filter_link .= "<a href='switcher.php?op=not_started'>".translateFN("Show not started")."</a>&nbsp;| &nbsp;";
         $filter_link .= "<a href='switcher.php?op=started'>".translateFN("Show started")."</a>&nbsp;| &nbsp;";
         $filter_link .= "<a href='switcher.php?op=open'>".translateFN("Show open")."</a>&nbsp;| &nbsp;";
         $filter_link .= "<strong>".translateFN("Show closed")."</strong>&nbsp;| &nbsp;";
-        break;    
+        break;
     case 'open':
-        $filter_link = "<a href='switcher.php?op=all'>".translateFN("All")."</a>&nbsp;| &nbsp;"; 
+        $filter_link = "<a href='switcher.php?op=all'>".translateFN("All")."</a>&nbsp;| &nbsp;";
         $filter_link .= "<a href='switcher.php?op=not_started'>".translateFN("Show not started")."</a>&nbsp;| &nbsp;";
         $filter_link .= "<a href='switcher.php?op=started'>".translateFN("Show started")."</a>&nbsp;| &nbsp;";
         $filter_link .= "<strong>".translateFN("Show open")."</strong>&nbsp;| &nbsp;";
         $filter_link .= "<a href='switcher.php?op=closed'>".translateFN("Show closed")."</a>&nbsp;| &nbsp;";
-        break;    
+        break;
     case 'all':
     default:
-        $filter_link = "<strong>".translateFN("All")."</strong>&nbsp;| &nbsp;"; 
+        $filter_link = "<strong>".translateFN("All")."</strong>&nbsp;| &nbsp;";
         $filter_link .= "<a href='switcher.php?op=not_started'>".translateFN("Show not started")."</a>&nbsp;| &nbsp;";
         $filter_link .= "<a href='switcher.php?op=started'>".translateFN("Show started")."</a>&nbsp;| &nbsp;";
         $filter_link .= "<a href='switcher.php?op=open'>".translateFN("Show open")."</a>&nbsp;| &nbsp;";
@@ -102,7 +102,7 @@ switch ($op) {
 if (MULTIPROVIDER) {
     $providerPointer = $GLOBALS['sess_selected_tester'];
 }
-else 
+else
 {
     $providerPointer = $GLOBALS['user_provider'];
 }
@@ -125,7 +125,7 @@ if ($op=='not_started' or $op=='all') {
     if (is_array($not_startedAr) && sizeof($not_startedAr) > 0) {
       foreach($not_startedAr as $user_registration) {
         $idLocalService = $user_registration['id_corso'];
-        if ($infoServicelHa[$idLocalService]['level'] == ADA_SERVICE_HELP) {
+        if (in_array((int)$infoServicelHa[$idLocalService]['level'], array(ADA_SERVICE_HELP, ADA_SERVICE_IN_ITINERE))) {
             $numRequiredHelp ++;
             $href = 'edit_user.php?id_user='.$user_registration['id_utente'].'&usertype='.AMA_TYPE_STUDENT;
             $user_link = CDOMElement::create('a', "href:$href");
@@ -143,11 +143,11 @@ if ($op=='not_started' or $op=='all') {
             // $href = 'edit_instance.php?id_course_instance='.$user_registration['id_istanza_corso'];
 	    $instance_status = CDOMElement::create('span','class:instance_status');
             $instance_status->addChild(new CText(translateFN($instanceStatusDescription[$user_registration['instance_status']]).'/'));
-	    
+
             $instance_link = CDOMElement::create('a');
             $instance_link->setAttribute('href','../tutor/user_service_detail.php?id_user='.$user_registration['id_utente'].'&id_course_instance='.$user_registration['id_istanza_corso']);
             $instance_link->addChild(new CText(translateFN('Modifica')));
-	    
+
 	    $instance_status->addChild($instance_link);
 
             $tbody_data[] = array(
@@ -176,7 +176,7 @@ if ($op=='started' || $op=='all' || $op=='open' || $op=='closed') {
 
         if (($op == 'closed' &&  time() >= $user_registration['data_fine']) || ($op == 'open' &&  time() < $user_registration['data_fine']) || ($op=='started') || ($op=='all')) {
             $idLocalService = $user_registration['id_corso'];
-            if ($infoServicelHa[$idLocalService]['level'] == ADA_SERVICE_HELP) {
+            if (in_array((int)$infoServicelHa[$idLocalService]['level'], array(ADA_SERVICE_HELP, ADA_SERVICE_IN_ITINERE))) {
 
                 $numRequiredHelp ++;
                 $href = 'edit_user.php?id_user='.$user_registration['id_utente'].'&usertype='.AMA_TYPE_STUDENT;
@@ -186,7 +186,7 @@ if ($op=='started' || $op=='all' || $op=='open' || $op=='closed') {
                 $href = HTTP_ROOT_DIR.'/browsing/service_info.php?id_course='.$user_registration['id_corso'];
                 $service_link = CDOMElement::create('a',"href:$href");
                 $service_link->addChild(new CText(translateFN($user_registration['titolo'])));
-                $request_date = AMA_DataHandler::ts_to_date($user_registration['data_richiesta']);               
+                $request_date = AMA_DataHandler::ts_to_date($user_registration['data_richiesta']);
 
                 /**
                  * @author giorgio check if service opened is done on data_fine
@@ -197,13 +197,13 @@ if ($op=='started' || $op=='all' || $op=='open' || $op=='closed') {
 //                $instance_link->setAttribute('href','../tutor/eguidance_tutor_form.php?id_course_instance='.$user_registration['id_istanza_corso']);
 		$instance_link->setAttribute('href','../tutor/user_service_detail.php?id_user='.$user_registration['id_utente'].'&id_course_instance='.$user_registration['id_istanza_corso']);
 		$instance_link->addChild(new CText(translateFN('Modifica')));
-                
+
 		$instance_status = CDOMElement::create('span','class:instance_status');
 		$instance_status->addChild(new CText(translateFN($instanceStatusDescription[$user_registration['instance_status']]).'/'));
 		$instance_status->addChild($instance_link);
 
 		$current_timestamp = time();
-                
+
                 if(($user_registration['data_inizio'] > 0 && $user_registration['data_fine'] > 0
                 && $current_timestamp > $user_registration['data_inizio']
                 && $current_timestamp < $user_registration['data_fine']) || $user_registration['instance_status'] != ADA_INSTANCE_CLOSED) {
@@ -216,9 +216,9 @@ if ($op=='started' || $op=='all' || $op=='open' || $op=='closed') {
                 		$epractitioner_link->addChild(new CText(translateFN('Assegna')));
                 	}
                 	// 2. build instance link
-//                	$instance_link->addChild(new CText(translateFN('chiudi')));                	
+//                	$instance_link->addChild(new CText(translateFN('chiudi')));
                 } else {
-                	// 1. build epractiotioner link, that is a span in this case                	
+                	// 1. build epractiotioner link, that is a span in this case
                 	$epractitioner_link = CDOMElement::create('span');
                 	if (!is_null($user_registration['username_t'])) {
                 		$epractitioner_link = new CText($user_registration['username_t'].' ('.$user_registration['nome_t'] .' '.$user_registration['cognome_t'].')');
@@ -228,7 +228,7 @@ if ($op=='started' || $op=='all' || $op=='open' || $op=='closed') {
                 	// 2. build instance link
   //              	$instance_link->addChild(new CText(translateFN('terminato')));
                 }
-                
+
 
                 $tbody_data[] = array(
                   $user_link,
@@ -256,7 +256,7 @@ $userRequiringTmp = array();
 foreach ($allServicesRequired as $oneService) {
     if (!in_array($oneService['id_utente'], $userRequiringTmp)) {
         array_push($userRequiringTmp, $oneService['id_utente']);
-    } 
+    }
 }
 $numUsers = count($userRequiringTmp);
 
@@ -312,7 +312,7 @@ $layout_dataAr['CSS_filename']= array(
     );
   $render = null;
   $options['onload_func'] = 'dataTablesExec()';
-  
+
 /**
  * Sends data to the rendering engine
  */
