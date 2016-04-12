@@ -561,7 +561,7 @@ static public function getServiceDataTableForTutor($service_dataAr) {
     $pattoFormativoAr = $service_infoAr['tipo_patto_formativo'];
     $pattoFormativoOptionsAr = array();
     foreach ($pattoFormativoAr as $tipoPatto => $tipoPattoDesc) {
-	$pattoFormativoOptionsAr[]=  translateFN($tipoPattoDesc);
+		$pattoFormativoOptionsAr[$tipoPatto]=  translateFN($tipoPattoDesc);
     }
     $pattoSelected = $form_dataAr['tipo_patto_formativo'];
     $more_attributes['onchange'] = 'toggleVisiblePersonal(this)';
@@ -716,9 +716,9 @@ static public function getServiceDataTableForTutor($service_dataAr) {
         $pattoPersonalSelected = $form_dataAr['tipo_personalizzazione'];
 		$pattoPersonalSelectedDesc = ' '.translateFN('per');
 		foreach ($pattoFormativoPersonalAr as $tipoPersonal => $tipoPersonalDesc) {
-			if ($pattoPersonalSelected & $tipoPersonal) $pattoPersonalSelectedDesc .= ' '.translateFN($tipoPersonalDesc).',';
+			if ($pattoPersonalSelected & $tipoPersonal) $pattoPersonalSelectedDesc .= ' '.translateFN($tipoPersonalDesc).', ';
 		}
-		$pattoPersonalSelectedDesc = rtrim($pattoPersonalSelectedDesc,',');
+		$pattoPersonalSelectedDesc = rtrim($pattoPersonalSelectedDesc,', ');
 
 		$pattoFormativoSpan->addChild(new CText($pattoPersonalSelectedDesc));
     }
@@ -736,10 +736,10 @@ static public function getServiceDataTableForTutor($service_dataAr) {
     	$inItinereDesc = '';
 
     	foreach ($inItinereAr as $tipoInItinere => $tipoInItinereDesc) {
-    		if ($inItinereSelected & $tipoInItinere) $inItinereDesc .=' '.translateFN($tipoInItinereDesc);
+    		if ($inItinereSelected & $tipoInItinere) $inItinereDesc .=' '.translateFN($tipoInItinereDesc).', ';
     	}
 
-    	$inItinereDesc = rtrim($inItinereDesc,',');
+    	$inItinereDesc = rtrim($inItinereDesc,', ');
     	if (strlen($inItinereDesc)>0) {
     		$spanInItinere = CDOMElement::create('span','class:initinere_container');
     		$spanInItinere->addChild(new CText($inItinereDesc));
