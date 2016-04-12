@@ -378,8 +378,8 @@ define('JQUERY_JPLAYER_CSS',	  ROOT_DIR.'/js/include/jquery/jplayer/skin/blue.mo
 define('MC_PATTO_FORMATIVO_STANDARD',0);
 define('MC_PATTO_FORMATIVO_PERSONALIZZATO',1);
 $pattoFormativoAr = array(
-    'standard',
-    'personalizzato'
+    MC_PATTO_FORMATIVO_STANDARD => 'standard',
+    MC_PATTO_FORMATIVO_PERSONALIZZATO => 'personalizzato'
 );
 
 $tipoPersonalPattoAr = array (
