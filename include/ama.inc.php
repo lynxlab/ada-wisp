@@ -9541,16 +9541,18 @@ abstract class AMA_Tester_DataHandler extends Abstract_AMA_DataHandler {
         /**
          * $eguidance_dataAr['tipo_personalizzazione'] is the logical or of all received array elements
          */
-        if (is_array($eguidance_dataAr['tipo_personalizzazione']) && count($eguidance_dataAr['tipo_personalizzazione'])>1) {
-        	$saveValue = 0;
-        	foreach ($eguidance_dataAr['tipo_personalizzazione'] as $value) $saveValue |= $value;
-        	$eguidance_dataAr['tipo_personalizzazione'] = $saveValue;
-        } else $eguidance_dataAr['tipo_personalizzazione'] = reset($eguidance_dataAr['tipo_personalizzazione']);
+        if (isset($eguidance_dataAr['tipo_patto_formativo']) && $eguidance_dataAr['tipo_patto_formativo'] != MC_PATTO_FORMATIVO_STANDARD) {
+	        if (is_array($eguidance_dataAr['tipo_personalizzazione']) && count($eguidance_dataAr['tipo_personalizzazione'])>1) {
+	        	$saveValue = 0;
+	        	foreach ($eguidance_dataAr['tipo_personalizzazione'] as $value) $saveValue |= $value;
+	        	$eguidance_dataAr['tipo_personalizzazione'] = $saveValue;
+	        } else $eguidance_dataAr['tipo_personalizzazione'] = reset($eguidance_dataAr['tipo_personalizzazione']);
+        } else $eguidance_dataAr['tipo_personalizzazione'] = 0;
 
         /**
          * $eguidance_dataAr['tipo_initinere'] is the logical or of all received array elements
          */
-        if (isset($eguidance_dataAr['tipo_initinere'])) {
+        if (isset($eguidance_dataAr['tipo_initinere']) && $eguidance_dataAr['tipo_initinere']>0) {
 	        if (is_array($eguidance_dataAr['tipo_initinere']) && count($eguidance_dataAr['tipo_initinere'])>1) {
 	        	$saveValue = 0;
 	        	foreach ($eguidance_dataAr['tipo_initinere'] as $value) $saveValue |= $value;
@@ -9621,25 +9623,27 @@ abstract class AMA_Tester_DataHandler extends Abstract_AMA_DataHandler {
                 . 'm_1 = ?,m_2 = ?,m_comments = ?,other_comments = ?, tipo_patto_formativo = ?, tipo_personalizzazione = ?, tipo_initinere = ?, lastupdate = ? '
                 . 'WHERE id = ?';
 
-                /**
-                 * $eguidance_dataAr['tipo_personalizzazione'] is the logical or of all received array elements
-                 */
-                if (is_array($eguidance_dataAr['tipo_personalizzazione']) && count($eguidance_dataAr['tipo_personalizzazione'])>1) {
-                	$saveValue = 0;
-                	foreach ($eguidance_dataAr['tipo_personalizzazione'] as $value) $saveValue |= $value;
-                	$eguidance_dataAr['tipo_personalizzazione'] = $saveValue;
-                } else $eguidance_dataAr['tipo_personalizzazione'] = reset($eguidance_dataAr['tipo_personalizzazione']);
+        /**
+         * $eguidance_dataAr['tipo_personalizzazione'] is the logical or of all received array elements
+         */
+        if (isset($eguidance_dataAr['tipo_patto_formativo']) && $eguidance_dataAr['tipo_patto_formativo'] != MC_PATTO_FORMATIVO_STANDARD) {
+	        if (is_array($eguidance_dataAr['tipo_personalizzazione']) && count($eguidance_dataAr['tipo_personalizzazione'])>1) {
+	        	$saveValue = 0;
+	        	foreach ($eguidance_dataAr['tipo_personalizzazione'] as $value) $saveValue |= $value;
+	        	$eguidance_dataAr['tipo_personalizzazione'] = $saveValue;
+	        } else $eguidance_dataAr['tipo_personalizzazione'] = reset($eguidance_dataAr['tipo_personalizzazione']);
+        } else $eguidance_dataAr['tipo_personalizzazione'] = 0;
 
-                /**
-                 * $eguidance_dataAr['tipo_initinere'] is the logical or of all received array elements
-                 */
-                if (isset($eguidance_dataAr['tipo_initinere'])) {
-                	if (is_array($eguidance_dataAr['tipo_initinere']) && count($eguidance_dataAr['tipo_initinere'])>1) {
-                		$saveValue = 0;
-                		foreach ($eguidance_dataAr['tipo_initinere'] as $value) $saveValue |= $value;
-                		$eguidance_dataAr['tipo_initinere'] = $saveValue;
-                	} else $eguidance_dataAr['tipo_initinere'] = reset($eguidance_dataAr['tipo_initinere']);
-                } else $eguidance_dataAr['tipo_initinere'] = 0;
+        /**
+         * $eguidance_dataAr['tipo_initinere'] is the logical or of all received array elements
+         */
+        if (isset($eguidance_dataAr['tipo_initinere']) && $eguidance_dataAr['tipo_initinere']>0) {
+	        if (is_array($eguidance_dataAr['tipo_initinere']) && count($eguidance_dataAr['tipo_initinere'])>1) {
+	        	$saveValue = 0;
+	        	foreach ($eguidance_dataAr['tipo_initinere'] as $value) $saveValue |= $value;
+	        	$eguidance_dataAr['tipo_initinere'] = $saveValue;
+	        } else $eguidance_dataAr['tipo_initinere'] = reset($eguidance_dataAr['tipo_initinere']);
+        } else $eguidance_dataAr['tipo_initinere'] = 0;
 
         $dataAr = array(
                 $eguidance_dataAr['type_of_guidance'],
