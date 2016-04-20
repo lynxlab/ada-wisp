@@ -554,56 +554,60 @@ static public function getServiceDataTableForTutor($service_dataAr) {
     $instance_status_value = $service_infoAr['instance_status_value'];
     $instance_status = $service_infoAr['instance_status'];
 
-    /*
-     * Patto formativo
-     * $pattoFormativoAr read from config_main.inc.php
-     */
-    $pattoFormativoAr = $service_infoAr['tipo_patto_formativo'];
-    $pattoFormativoOptionsAr = array();
-    foreach ($pattoFormativoAr as $tipoPatto => $tipoPattoDesc) {
-		$pattoFormativoOptionsAr[$tipoPatto]=  translateFN($tipoPattoDesc);
-    }
-    $pattoSelected = $form_dataAr['tipo_patto_formativo'];
-    $more_attributes['onchange'] = 'toggleVisiblePersonal(this)';
-    $pattoFormativoSelect = BaseHtmlLib::selectElement2('id:tipo_patto_formativo, name:tipo_patto_formativo',$pattoFormativoOptionsAr,$pattoSelected,$more_attributes);
-
-    /*
-     * Patto formativo personalizzato
-     * $tipoPersonalPattoAr read from config_main.inc.php
-     */
-    $spanPersonalPatto = CDOMElement::create('span','class:personal_patto');
-    $pattoPersonalSelected = intval($form_dataAr['tipo_personalizzazione']);
-    $pattoFormativoPersonalAr = $service_infoAr['tipo_patto_personal'];
-
-    foreach ($pattoFormativoPersonalAr as $tipoPersonal => $tipoPersonalDesc) {
-    	$aCheck = CDOMElement::create('checkbox','id:tipo_personalizzazione_'.$tipoPersonal.
-    			',name:tipo_personalizzazione[],'.'value:'.$tipoPersonal.
-    			($pattoPersonalSelected & $tipoPersonal ? ',checked:cheked' : ''));
-
-    	$aLabel = CDOMElement::create('label','for:tipo_personalizzazione_'.$tipoPersonal);
-    	$aLabel->addChild(new CText(translateFN($tipoPersonalDesc)));
-
-    	$spanPersonalPatto->addChild($aCheck);
-    	$spanPersonalPatto->addChild($aLabel);
-    	$spanPersonalPatto->addChild(CDOMElement::create('div','class:clearfix'));
-    }
-
-    if ($pattoSelected == 0) {
-	$spanPersonalPatto->setAttribute('style','display:none;');
-    }
-
     $toe_tbody = array(
-	array(translateFN('tipo').': '.$_SESSION['service_level'][$form_dataAr['tipo_eguidance']]),
-	array(translateFN('status').': '.$instance_status),
-	array(translateFN('Patto formativo').': '.$pattoFormativoSelect->getHtml().
-			CDOMElement::create('div','class:clearfix')->getHtml().
-			$spanPersonalPatto->getHtml())
-    );
+    		array(translateFN('tipo').': '.$_SESSION['service_level'][$form_dataAr['tipo_eguidance']]),
+    		array(translateFN('status').': '.$instance_status));
 
+    if ((int)$form_dataAr['tipo_eguidance'] === ADA_SERVICE_HELP) {
+	    /*
+	     * Patto formativo
+	     * $pattoFormativoAr read from config_main.inc.php
+	     */
+	    $pattoFormativoAr = $service_infoAr['tipo_patto_formativo'];
+	    $pattoFormativoOptionsAr = array();
+	    foreach ($pattoFormativoAr as $tipoPatto => $tipoPattoDesc) {
+			$pattoFormativoOptionsAr[$tipoPatto]=  translateFN($tipoPattoDesc);
+	    }
+	    $pattoSelected = $form_dataAr['tipo_patto_formativo'];
+	    $more_attributes['onchange'] = 'toggleVisiblePersonal(this)';
+	    $pattoFormativoSelect = BaseHtmlLib::selectElement2('id:tipo_patto_formativo, name:tipo_patto_formativo',$pattoFormativoOptionsAr,$pattoSelected,$more_attributes);
 
-    if ((int)$form_dataAr['tipo_eguidance'] === ADA_SERVICE_IN_ITINERE) {
+	    /*
+	     * Patto formativo personalizzato
+	     * $tipoPersonalPattoAr read from config_main.inc.php
+	     */
+	    $spanPersonalPatto = CDOMElement::create('span','class:personal_patto');
+	    $pattoPersonalSelected = intval($form_dataAr['tipo_personalizzazione']);
+	    $pattoFormativoPersonalAr = $service_infoAr['tipo_patto_personal'];
+
+	    foreach ($pattoFormativoPersonalAr as $tipoPersonal => $tipoPersonalDesc) {
+	    	$aCheck = CDOMElement::create('checkbox','id:tipo_personalizzazione_'.$tipoPersonal.
+	    			',name:tipo_personalizzazione[],'.'value:'.$tipoPersonal.
+	    			($pattoPersonalSelected & $tipoPersonal ? ',checked:cheked' : ''));
+
+	    	$aLabel = CDOMElement::create('label','for:tipo_personalizzazione_'.$tipoPersonal);
+	    	$aLabel->addChild(new CText(translateFN($tipoPersonalDesc)));
+
+	    	$spanPersonalPatto->addChild($aCheck);
+	    	$spanPersonalPatto->addChild($aLabel);
+	    	$spanPersonalPatto->addChild(CDOMElement::create('div','class:clearfix'));
+	    }
+
+	    if ($pattoSelected == 0) {
+		$spanPersonalPatto->setAttribute('style','display:none;');
+	    }
+
+	    $toe_tbody[] = array(translateFN('Patto formativo').': '.$pattoFormativoSelect->getHtml().
+				CDOMElement::create('div','class:clearfix')->getHtml().
+				$spanPersonalPatto->getHtml());
+
+    } else if ((int)$form_dataAr['tipo_eguidance'] === ADA_SERVICE_IN_ITINERE) {
 
         $spanInItinere = CDOMElement::create('span','class:initinere_container');
+        $spanInItinereLbl = CDOMElement::create('span','class:initinere_label');
+        $spanInItinereLbl->addChild(new CText('Problematiche in itinere'.': '));
+        $spanInItinere->addChild($spanInItinereLbl);
+        $spanInItinere->addChild(CDOMElement::create('div','class:clearfix'));
 	    $inItinereSelected = (int)$form_dataAr['tipo_initinere'];
 	    $inItinereAr = $service_infoAr['in_itinere_checkboxes'];
 
@@ -695,41 +699,43 @@ static public function getServiceDataTableForTutor($service_dataAr) {
     $instance_status_value = $service_infoAr['instance_status_value'];
     $instance_status = $service_infoAr['instance_status'];
 
-    /*
-     * Patto formativo
-     * $pattoFormativoAr read from config_main.inc.php
-     */
-    $pattoFormativoSpan = CDOMElement::create('span','class:patto_formativo');
-
-    $pattoFormativoAr = $service_infoAr['tipo_patto_formativo'];
-    $pattoPersonalSelectedDesc = NULL;
-    $pattoSelected = $form_dataAr['tipo_patto_formativo'];
-    $pattoSelectedDesc = translateFN($pattoFormativoAr[$pattoSelected]);
-    $pattoFormativoSpan->addChild(new CText($pattoSelectedDesc));
-
-    /*
-     * Patto formativo personalizzato
-     * $tipoPersonalPattoAr read from config_main.inc.php
-     */
-    $pattoFormativoPersonalAr = $service_infoAr['tipo_patto_personal'];
-    if ($pattoSelected == MC_PATTO_FORMATIVO_PERSONALIZZATO) {
-        $pattoPersonalSelected = $form_dataAr['tipo_personalizzazione'];
-		$pattoPersonalSelectedDesc = ' '.translateFN('per');
-		foreach ($pattoFormativoPersonalAr as $tipoPersonal => $tipoPersonalDesc) {
-			if ($pattoPersonalSelected & $tipoPersonal) $pattoPersonalSelectedDesc .= ' '.translateFN($tipoPersonalDesc).', ';
-		}
-		$pattoPersonalSelectedDesc = rtrim($pattoPersonalSelectedDesc,', ');
-
-		$pattoFormativoSpan->addChild(new CText($pattoPersonalSelectedDesc));
-    }
-
     $toe_tbody = array(
-	array(translateFN('tipo').': '.$_SESSION['service_level'][$form_dataAr['tipo_eguidance']]),
-	array(translateFN('status').': '.$instance_status),
-	array(translateFN('Patto formativo').': '.$pattoFormativoSpan->getHtml())
+    		array(translateFN('tipo').': '.$_SESSION['service_level'][$form_dataAr['tipo_eguidance']]),
+    		array(translateFN('status').': '.$instance_status)
     );
 
-    if ((int)$form_dataAr['tipo_eguidance'] === ADA_SERVICE_IN_ITINERE) {
+    if ((int)$form_dataAr['tipo_eguidance'] === ADA_SERVICE_HELP) {
+	    /*
+	     * Patto formativo
+	     * $pattoFormativoAr read from config_main.inc.php
+	     */
+	    $pattoFormativoSpan = CDOMElement::create('span','class:patto_formativo');
+
+	    $pattoFormativoAr = $service_infoAr['tipo_patto_formativo'];
+	    $pattoPersonalSelectedDesc = NULL;
+	    $pattoSelected = $form_dataAr['tipo_patto_formativo'];
+	    $pattoSelectedDesc = translateFN($pattoFormativoAr[$pattoSelected]);
+	    $pattoFormativoSpan->addChild(new CText($pattoSelectedDesc));
+
+	    /*
+	     * Patto formativo personalizzato
+	     * $tipoPersonalPattoAr read from config_main.inc.php
+	     */
+	    $pattoFormativoPersonalAr = $service_infoAr['tipo_patto_personal'];
+	    if ($pattoSelected == MC_PATTO_FORMATIVO_PERSONALIZZATO) {
+	        $pattoPersonalSelected = $form_dataAr['tipo_personalizzazione'];
+			$pattoPersonalSelectedDesc = ' '.translateFN('per');
+			foreach ($pattoFormativoPersonalAr as $tipoPersonal => $tipoPersonalDesc) {
+				if ($pattoPersonalSelected & $tipoPersonal) $pattoPersonalSelectedDesc .= ' '.translateFN($tipoPersonalDesc).', ';
+			}
+			$pattoPersonalSelectedDesc = rtrim($pattoPersonalSelectedDesc,', ');
+
+			$pattoFormativoSpan->addChild(new CText($pattoPersonalSelectedDesc));
+	    }
+
+	    $toe_tbody[] = array(translateFN('Patto formativo').': '.$pattoFormativoSpan->getHtml());
+
+    } else if ((int)$form_dataAr['tipo_eguidance'] === ADA_SERVICE_IN_ITINERE) {
 
     	$inItinereSelected = (int)$form_dataAr['tipo_initinere'];
     	$inItinereAr = $service_infoAr['in_itinere_checkboxes'];

@@ -558,8 +558,8 @@ switch ($op) {
 					$lastRequestTime = 0;
 					if (!AMA_DB::isError($instancesRES)) {
 						foreach ($instancesRES as $anInstance) {
-							// count only instances having a course with ADA_SERVICE_HELP as tipo_servizio
-							if ($anInstance['tipo_servizio']==ADA_SERVICE_HELP) {
+							// count only instances having a course with ADA_SERVICE_HELP or ADA_SERVICE_IN_ITINERE as tipo_servizio
+							if (in_array((int)$anInstance['tipo_servizio'], array(ADA_SERVICE_HELP, ADA_SERVICE_IN_ITINERE))) {
 								$countInstances++;
 								$lastRequestTime = max(array($anInstance['data_iscrizione'],$lastRequestTime));
 							}
@@ -598,7 +598,7 @@ switch ($op) {
 				$hiddenElement = CDOMElement::create('span','id:noHelpServiceMSG');
 				$hiddenElement->setAttribute('style', 'display:none;');
 				$hiddenElement->addChild(new CText(translateFN('Nessun servizio di tipo').
-						' '.$_SESSION['service_level'][ADA_SERVICE_HELP]));
+						' '.$_SESSION['service_level'][ADA_SERVICE_HELP].' o '.$_SESSION['service_level'][ADA_SERVICE_IN_ITINERE]));
 			}
 
 			$box_dataAr['dati6'] = ((isset($hiddenElement)) ? $hiddenElement->getHtml() : '').

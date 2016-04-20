@@ -473,7 +473,7 @@ if(count($courseInstanceCommonAreaAr) > 0 || count($courseInstanceHelpAr)> 0) {
             if(!AMA_Common_DataHandler::isError($publishedServices)) {
                 $serviceToSubscribeAr = array();
                 foreach($publishedServices as $service) {
-                       if ($service['livello'] == ADA_SERVICE_HELP) {
+                	   if (in_array((int)$service['livello'], array(ADA_SERVICE_HELP, ADA_SERVICE_IN_ITINERE))) {
 
                            $serviceId = $service['id_servizio'];
                            $serviceName = $service['nome'];
