@@ -108,10 +108,12 @@ class Spool extends Abstract_AMA_DataHandler
       $id = parent::getOnePrepared($sql, array($timestamp,$type,$id_group,$title,$sender_id));
 
       if (AMA_DataHandler::isError($id)) {
-        return new AMA_Error(AMA_ERR_GET);
+      	$retval = new AMA_Error(AMA_ERR_GET);
+      	return $retval;
       }
       if ($id) {
-        return new AMA_Error(AMA_ERR_UNIQUE_KEY);
+      	$retval = new AMA_Error(AMA_ERR_UNIQUE_KEY);
+      	return $retval;
       }
     }
 
@@ -150,7 +152,8 @@ class Spool extends Abstract_AMA_DataHandler
       //$id = $db->getOne($sql);
       $id = parent::getOnePrepared($sql, array($timestamp, $type, $id_group, $sender_id));
       if (AMA_DB::isError($id) || !$id){
-        return new AMA_Error(AMA_ERR_NOT_FOUND);
+      	$retval = new AMA_Error(AMA_ERR_NOT_FOUND);
+      	return $retval;
       }
 
       return $id;
@@ -172,7 +175,8 @@ class Spool extends Abstract_AMA_DataHandler
       //$id = $db->getOne($sql);
       $id = parent::getOnePrepared($sql, array($timestamp, $type, $id_group, $sender_id));
       if (AMA_DB::isError($id) || !$id){
-        return new AMA_Error(AMA_ERR_NOT_FOUND);
+      	$retval = new AMA_Error(AMA_ERR_NOT_FOUND);
+      	return $retval;
       }
     }//end ADA_MSG_PRV_CHAT
 
@@ -192,7 +196,8 @@ class Spool extends Abstract_AMA_DataHandler
 
       if (AMA_DB::isError($id) || !$id){
         // logger("query failed", 4);
-        return new AMA_Error(AMA_ERR_NOT_FOUND);
+      	$retval = new AMA_Error(AMA_ERR_NOT_FOUND);
+      	return $retval;
       }
 
     }// end type control
@@ -220,7 +225,8 @@ class Spool extends Abstract_AMA_DataHandler
 
         // rollback in case of error
         $this->_rollback();
-        return new AMA_Error(AMA_ERR_ADD);
+        $retval = new AMA_Error(AMA_ERR_ADD);
+        return $retval;
 
       }
       // logger("query succeeded", 4);
@@ -410,7 +416,8 @@ class Spool extends Abstract_AMA_DataHandler
     //  }
 
     if (AMA_DB::isError($res_ar)) {
-      return new AMA_Error(AMA_ERR_GET);
+    	$retval = new AMA_Error(AMA_ERR_GET);
+    	return $retval;
     }
     // logger("query succeeded", 4);
 
@@ -536,7 +543,8 @@ class Spool extends Abstract_AMA_DataHandler
     }
 
     if (AMA_DB::isError($res_ar)) {
-      return new AMA_Error(AMA_ERR_GET);
+    	$retval = new AMA_Error(AMA_ERR_GET);
+    	return $retval;
     }
     // logger("query succeeded", 4);
 
@@ -591,7 +599,8 @@ class Spool extends Abstract_AMA_DataHandler
   	 $res_ar = $db->getAll($sql);
 
   	 if (AMA_DB::isError($res_ar)) {
-  	   return new AMA_Error(AMA_ERR_GET);
+  	 	$retval = new AMA_Error(AMA_ERR_GET);
+  	   return $retval;
   	 }
   	 // logger("query succeeded", 4);
 
@@ -684,7 +693,8 @@ class Spool extends Abstract_AMA_DataHandler
     //  }
 
     if (AMA_DB::isError($res_ar)) {
-      return new AMA_Error(AMA_ERR_GET);
+    	$retval = new AMA_Error(AMA_ERR_GET);
+    	return $retval;
     }
 
     // logger("query succeeded", 4);
@@ -737,7 +747,8 @@ class Spool extends Abstract_AMA_DataHandler
     // logger("performing query: $sql", 4);
     $res_ar = $db->getRow($sql);
     if (AMA_DB::isError($res_ar) || !is_array($res_ar)) {
-      return new AMA_Error(AMA_ERR_GET);
+    	$retval = new AMA_Error(AMA_ERR_GET);
+    	return $retval;
     }
     // logger("query succeeded", 4);
 
@@ -756,7 +767,8 @@ class Spool extends Abstract_AMA_DataHandler
     // logger("performing query: $sql", 4);
     $res_ar = $db->getAll($sql);
     if (AMA_DB::isError($res_ar)) {
-      return new AMA_Error(AMA_ERR_GET);
+    	$retval = new AMA_Error(AMA_ERR_GET);
+    	return $retval;
     }
     // logger("query succeeded", 4);
 
@@ -811,7 +823,8 @@ class Spool extends Abstract_AMA_DataHandler
         $res = $this->_set_message($msg_id, "read", $value);
         if (AMA_DataHandler::isError($res)){
           $this->_rollback();
-          return new AMA_Error(AMA_ERR_UPDATE);
+          $retval = new AMA_Error(AMA_ERR_UPDATE);
+          return $retval;
         }
 
         // add instruction to rollback segment
@@ -866,7 +879,8 @@ class Spool extends Abstract_AMA_DataHandler
         break;
 
       default:
-        return new AMA_Error(AMA_ERR_WRONG_ARGUMENTS);
+      	$retval = new AMA_Error(AMA_ERR_WRONG_ARGUMENTS);
+      	return $retval;
     }
 
     // update message
@@ -879,7 +893,8 @@ class Spool extends Abstract_AMA_DataHandler
     $res =  $db->query($sql);
 
     if (AMA_DB::isError($res)) {
-      return new AMA_Error(AMA_ERR_UPDATE);
+    	$retval = new AMA_Error(AMA_ERR_UPDATE);
+    	return $retval;
     }
     // logger("query succeeded", 4);
 
@@ -916,7 +931,8 @@ class Spool extends Abstract_AMA_DataHandler
       $res = $this->_set_message($msg_id, "deleted", "Y");
 
       if (AMA_DataHandler::isError($res)) {
-        return new AMA_Error(AMA_ERR_REMOVE);
+      	$retval = new AMA_Error(AMA_ERR_REMOVE);
+      	return $retval;
       }
       // 5 dec 2008
       $msg_Ha = $this->get_message_info($msg_id);
@@ -927,7 +943,8 @@ class Spool extends Abstract_AMA_DataHandler
       $res = $this->log_message($msg_Ha[0], $msg_Ha[1]);
 
       if (AMA_DataHandler::isError($res)) {
-        return new AMA_Error(AMA_ERR_ADD);
+      	$retval = new AMA_Error(AMA_ERR_ADD);
+      	return $retval;
       }
     }
   }
@@ -963,7 +980,8 @@ class Spool extends Abstract_AMA_DataHandler
       // remove message from user's spool
       $res = $this->_clean_message($msg_id, $this->user_id);
       if (AMA_DataHandler::isError($res)) {
-        return new AMA_Error(AMA_ERR_REMOVE);
+      	$retval = new AMA_Error(AMA_ERR_REMOVE);
+      	return $retval;
       }
 
       // check if message is referenced by any other user
@@ -971,7 +989,8 @@ class Spool extends Abstract_AMA_DataHandler
       // logger("performing query: $sql", 4);
       $n_refs =  $db->getOne($sql);
       if (AMA_DB::isError($n_refs)) {
-        return new AMA_Error(AMA_ERR_REMOVE);
+      	$retval = new AMA_Error(AMA_ERR_REMOVE);
+      	return $retval;
       }
 
       // logger("query returned: $n_refs", 4);
@@ -981,7 +1000,8 @@ class Spool extends Abstract_AMA_DataHandler
 
         $res =  $this->_clean_message($msg_id);
         if (AMA_DataHandler::isError($res)) {
-          return new AMA_Error(AMA_ERR_REMOVE);
+        	$retval = new AMA_Error(AMA_ERR_REMOVE);
+        	return $retval;
         }
       }
     }
@@ -1213,14 +1233,16 @@ class SimpleSpool extends Spool
     // logger("SimpleSpool::clean: removing deleted", 2);
     $res_ar = parent::find_messages("", "deleted='Y'");
     if (AMA_DataHandler::isError($res_ar)) {
-      return new AMA_Error(AMA_ERR_GET);
+    	$retval = new AMA_Error(AMA_ERR_GET);
+    	return $retval;
     }
 
     if (count($res_ar)){
       // FIXME: self::_clean_messages al posto della riga di sotto
       $res = parent::_clean_messages($res_ar);
       if (AMA_DataHandler::isError($res)) {
-        return new AMA_Error(AMA_ERR_REMOVE);
+      	$retval = new AMA_Error(AMA_ERR_REMOVE);
+      	return $retval;
       }
     }
 
@@ -1234,14 +1256,16 @@ class SimpleSpool extends Spool
     // logger("SimpleSpool::clean: removing not read", 2);
     $res_ar = parent::find_messages("", "read_timestamp=0 and data_ora<$now-$ntc");
     if (AMA_DataHandler::isError($res_ar)) {
-      return new AMA_Error(AMA_ERR_GET);
+    	$retval = new AMA_Error(AMA_ERR_GET);
+    	return $retval;
     }
 
     if (count($res_ar)){
       // FIXME: self::_clean_messages al posto della riga di sotto
       $res = parent::_clean_messages($res_ar);
       if (AMA_DataHandler::isError($res)) {
-        return new AMA_Error(AMA_ERR_REMOVE);
+      	$retval = new AMA_Error(AMA_ERR_REMOVE);
+      	return $retval;
       }
     }
 
@@ -1256,14 +1280,16 @@ class SimpleSpool extends Spool
     // logger("SimpleSpool::clean: removing read", 2);
     $res_ar = parent::find_messages("", "read_timestamp>0 and read_timestamp<$now-$rtc");
     if (AMA_DataHandler::isError($res_ar)) {
-      return new AMA_Error(AMA_ERR_GET);
+    	$retval = new AMA_Error(AMA_ERR_GET);
+    	return $retval;
     }
 
     if (count($res_ar)){
       // FIXME: self::_clean_messages al posto della riga di sotto
       $res = parent::_clean_messages($res_ar);
       if (AMA_DataHandler::isError($res)) {
-        return new AMA_Error(AMA_ERR_REMOVE);
+      	$retval = new AMA_Error(AMA_ERR_REMOVE);
+      	return $retval;
       }
     }
 
@@ -1573,7 +1599,8 @@ class ChatSpool extends Spool
 
     $result = $db->getAll($sql, null, AMA_FETCH_ASSOC);
     if(AMA_DataHandler::isError($result)) {
-      return new AMA_Error(AMA_ERR_GET);
+    	$retval = new AMA_Error(AMA_ERR_GET);
+    	return $retval;
     }
     return $result;
   }
