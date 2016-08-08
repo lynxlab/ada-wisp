@@ -429,6 +429,10 @@ abstract class FForm
      * @return string the html to be rendered
      */
     public function render() {
+    	$submitButton = $this->submitValue();
+    	if ($submitButton == '') {
+    		$submitButton = ' value="' . translateFN('Invia') . '"';
+    	}
         $html = '<div class="fform '.FormControl::DEFAULT_CLASS.'">
 			<form'.$this->formId().$this->formAction().$this->formMethod().$this->formEncType().$this->formAccept().$this->formName().$this->formOnSubmit().$this->formOnReset().$this->formAcceptCharset().'>
   <fieldset class="'.FormControl::DEFAULT_CLASS.'">
@@ -447,7 +451,7 @@ abstract class FForm
    <div id="error_form_'.$this->_name.'" class="hide_error form">
 		'.translateFN('Sono presenti errori nel form, si prega di correggere le voci evidenziate in rosso').'
    </div>
-   <p class="'.FormControl::DEFAULT_CLASS.' submit"><input value="'.translateFN('Invia').'" class="'.FormControl::DEFAULT_CLASS.'" type="submit" id="submit_'.$this->_name.'" name="submit_'.$this->_name. '" onClick="return validate_'.$this->_name.'();"'.$this->submitValue().'/></p>
+   <p class="'.FormControl::DEFAULT_CLASS.' submit"><input '.$submitButton.' class="'.FormControl::DEFAULT_CLASS.'" type="submit" id="submit_'.$this->_name.'" name="submit_'.$this->_name. '" onClick="return validate_'.$this->_name.'();"'.$this->submitValue().'/></p>
 </form>
 </div>';
 
