@@ -233,6 +233,37 @@ switch ($op) {
 	// if id_student is not set or invalid fall into the default
 
 	default:
+		/**
+		 * use AA_ISCR_DESC and ANNO_CORSO from $_GET, if any
+		 *
+		 * @var string $aa_iscr_desc
+		 * @var string $anno_corso
+		 */
+		$aa_iscr_desc = null;
+		$anno_corso = null;
+		if (array_key_exists('AA_ISCR_DESC', $_GET) && array_key_exists('ANNO_CORSO', $_GET)) {
+			$aa_iscr_desc = trim($_GET['AA_ISCR_DESC']);
+			$anno_corso = trim($_GET['ANNO_CORSO']);
+		}
+
+		$annoCorsoAr = $dh->get_tutor_anno_corso_filter();
+		if (is_array($annoCorsoAr) && count($annoCorsoAr)>0) {
+			$annoCorsoSelect = array( 'all' => translateFN('Tutti gli anni'));
+			foreach ($annoCorsoAr as $anAnnoCorso) {
+				// split annocorso option
+				list ($curr_aa_iscr_desc, $curr_anno_corso) = explode(' ', $anAnnoCorso['option']);
+				$curr_anno_corso = trim($curr_anno_corso,'()');
+				$key = 'AA_ISCR_DESC='.$curr_aa_iscr_desc.'&ANNO_CORSO='.$curr_anno_corso;
+				$annoCorsoSelect[$key] = $anAnnoCorso['option'];
+			}
+			if (!is_null($aa_iscr_desc) && !is_null($anno_corso)) {
+				$selected = 'AA_ISCR_DESC='.$aa_iscr_desc.'&ANNO_CORSO='.$anno_corso;
+			} else {
+				$selected = 'all';
+			}
+			$annoCorsoEl = BaseHtmlLib::selectElement2('id:annocorso-select', $annoCorsoSelect, $selected);
+		}
+
 		/*
 		 * Cosa deve esserci:
 		 * 1. agenda del giorno
@@ -531,7 +562,7 @@ switch ($op) {
 		/**
 		 * dati6: pre-assigned students box
 		 */
-		$listStudentIds = $dh->get_preassigned_students_for_tutor($userObj->getId());
+		$listStudentIds = $dh->get_preassigned_students_for_tutor($userObj->getId(), null, $aa_iscr_desc, $anno_corso);
 		if (!AMA_DB::isError($listStudentIds) && is_array($listStudentIds) && count($listStudentIds)>0) {
 			$tableHead = array (translateFN('cognome e nome'),
 					translateFN('num. richieste'), translateFN('ultima richiesta'),
@@ -704,6 +735,7 @@ $content_dataAr = array(
 );
 
 if (isset ($box_dataAr)) $content_dataAr = array_merge($content_dataAr, $box_dataAr);
+if (isset($annoCorsoEl)) $content_dataAr['annocorsofilter'] = $annoCorsoEl->getHtml();
 
 
 $content_dataAr['bloccoDueAppuntamenti'] = '<h3>'.translateFN('Appuntamenti').'</h3>';
