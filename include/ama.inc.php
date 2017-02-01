@@ -10311,19 +10311,31 @@ abstract class AMA_Tester_DataHandler extends Abstract_AMA_DataHandler {
      *
      * @param number $tutor_id
      * @param number $course_id
+     * @param string $aa_iscr_desc AA_ISCR_DESC to fiter for table studente
+     * @param string $anno_corso ANNO_CORSO to filter for table studente
      *
-     * @return array!AMA_Error
+     * @return array|AMA_Error
      *
      * @access public
      */
-    public function &get_preassigned_students_for_tutor ($tutor_id, $course_id=null) {
-    	$sql = 'SELECT U.`id_utente` FROM `utente` U '.
-      		   'JOIN `tutor_student_preassigned` PRE ON U.`id_utente`=PRE.`id_student` '.
-      		   'WHERE PRE.`id_tutor`=? AND PRE.`id_course`'.
-      		   (is_null($course_id) ? ' IS NULL' : '='.intval($course_id)).' AND  '.
-      		   'U.`tipo`=? AND PRE.`id_student` IS NOT NULL';
+    public function &get_preassigned_students_for_tutor ($tutor_id, $course_id=null, $aa_iscr_desc=null, $anno_corso=null) {
+    	$queryParams = array('tutor_id'=>$tutor_id, 'student_type'=>AMA_TYPE_STUDENT, 'disabledstatus'=>ADA_STATUS_REMOVED);
 
-    	return $this->getColPrepared($sql, array($tutor_id, AMA_TYPE_STUDENT),AMA_FETCH_ASSOC);
+    	$sql = 'SELECT U.`id_utente` FROM `utente` U '.
+      		   'JOIN `tutor_student_preassigned` PRE ON U.`id_utente`=PRE.`id_student` ';
+    	if (strlen($aa_iscr_desc)>0 && strlen($anno_corso)>0) {
+    		$sql .= 'JOIN `studente` STU ON (U.`id_utente`=STU.`id_utente_studente` '.
+    				'AND STU.`AA_ISCR_DESC` = :aa_iscr_desc  AND STU.`ANNO_CORSO`=:anno_corso) ';
+    		$queryParams['aa_iscr_desc'] = $aa_iscr_desc;
+    		$queryParams['anno_corso'] = $anno_corso;
+    	}
+      	$sql .='WHERE U.`stato` != :disabledstatus AND PRE.`id_tutor`=:tutor_id AND PRE.`id_course`'.
+      		   (is_null($course_id) ? ' IS NULL' : '='.intval($course_id)).' AND  '.
+      		   'U.`tipo`=:student_type AND PRE.`id_student` IS NOT NULL';
+
+
+
+    	return $this->getColPrepared($sql, $queryParams, AMA_FETCH_ASSOC);
     }
 
     /**
@@ -10440,6 +10452,25 @@ abstract class AMA_Tester_DataHandler extends Abstract_AMA_DataHandler {
       		   '`id_student`=? AND (`id_course` IS NULL OR `id_course`=?) ORDER BY `id_course` DESC';
     	$res = $this->getOnePrepared($sql,array($id_student, $id_course),AMA_FETCH_ASSOC);
     	return (!AMA_DB::isError($res) ? intval($res) : $res);
+    }
+
+    /**
+     * @author giorgio 01/feb/2017
+     *
+     * On WISP/UNIMC only:
+     *
+     * gets values to build tutor filter select element containing
+     * AA_ISCR_DESC and ANNO_CORSO fields from studente table
+     *
+     * @return array
+     */
+    public function get_tutor_anno_corso_filter() {
+    	$sql = "SELECT DISTINCT( CONCAT(`AA_ISCR_DESC`, ' (', `ANNO_CORSO`,')') ) ".
+    		   "AS `option` FROM `studente` WHERE ".
+    	       "(`AA_ISCR_DESC` IS NOT NULL AND `ANNO_CORSO` IS NOT NULL) ".
+    		   "ORDER BY `option` ASC";
+    	$res = $this->getAllPrepared($sql, array(), AMA_FETCH_ASSOC);
+    	return (!AMA_DB::isError($res) ? $res : array());
     }
 
     /**
