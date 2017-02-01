@@ -22,6 +22,10 @@
                 <span>
                     <template_field class="template_field" name="course_title">course_title</template_field>
                 </span>
+                <span class="annocorsofilter">
+                	<span><i18n>Mostra studenti iscritti all'A/A (AC)</i18n></span>
+					<template_field class="template_field" name="annocorsofilter">annocorsofilter</template_field>
+                </span>
             </div>
             <!-- / percorso -->
             <!--dati utente-->
