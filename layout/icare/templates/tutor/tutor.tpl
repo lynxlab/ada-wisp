@@ -54,15 +54,15 @@
                                 <!-- blocco6: pre-assigned students end -->
 
 				<!-- blocco1 -->
-				<div id="blocco_uno">
+				<!-- div id="blocco_uno">
 					<div id="bloccoUnoTitoloContenitore">
-                                                <template_field class="template_field" name="bloccoUnoTitolo">bloccoUnoTitolo</template_field>
+                                                <template_field class="template_field_disabled" name="bloccoUnoTitolo">bloccoUnoTitolo</template_field>
                                         </div>
  					<div id="content_blocco_uno">
-                                                <template_field class="template_field" name="dati">dati</template_field>
+                                                <template_field class="template_field_disabled" name="dati">dati</template_field>
  
 					</div>
-				</div>
+				</div -->
 				<!-- blocco1 end -->
 				
 				<div id="blocco_tre">					
