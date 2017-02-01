@@ -1,0 +1,122 @@
+@CHARSET "UTF-8";
+
+.first {
+	float: left;
+	width: 100%;
+}
+
+/* giorgio, to style jquery ui tab with icons */
+#tabs .ui-tabs-nav .ui-icon { 
+    display: inline-block;
+    float:left;  
+    visibility:hidden;
+    margin-top: 0.5em;
+}
+#tabs  li a.ui-tabs-anchor  {
+	padding: .5em 1em .5em 0;
+	outline-color: transparent;
+	font-size: 0.9em;	
+}
+
+.extraRowsContainer form {
+	width:100%;
+	display:none;
+}
+
+.saveResults {
+	background: rgba(22, 101, 173, 0.9);
+	padding: 5px 0px 15px 0px;    
+	-webkit-border-radius: 2px;    
+    border-radius: 2px;
+	-webkit-box-shadow:  0px 0px 2px 2px rgba(0, 0, 0, .2);
+    box-shadow:  0px 0px 2px 2px rgba(0, 0, 0, .2);
+    font-size: 1.1em;
+}
+
+.saveResults p {
+	margin:0;
+	padding:0;
+	border:none;
+}
+
+.saveResults .title {
+	font-weight: bold;
+	text-align : center;
+	width: 100%;
+	padding: 1px 0px 5px 0px;
+	color: #fff;
+	border-bottom: 1px solid #a0bfdb;
+}
+
+.saveResults .message {
+	padding: 15px 0px 0px 0px;
+	color:#fff;	
+	text-align : center;
+	width: 100%;	
+}
+
+.extraTableContainer {
+	width: 96%;
+	padding:1% 2% 1% 2%;
+	border: 1px dotted #a0a0a0;
+	background: #f4f4f4;
+	margin-bottom: 1%;
+	float: left;
+}
+
+.extraTableDatas {
+	width:100%;
+}
+
+.extraButtonDiv {
+	margin-top: 1%;
+}
+
+.extraDeleteButton {
+	float: right;
+	margin: 0 1% 0 0 !important;
+}
+
+.extraEditButton {
+	float:right;
+}
+
+.extraRowsContainer {
+	display: table;
+	width: 100%;
+}
+
+.formButtons.top {
+	margin-bottom: 1%;
+}
+
+div.fform { width: 80%; }
+div.fform form label { width: 50%; }
+div.fform form li { border-bottom: 1px dotted lightgray; padding: 15px 0 15px 0; }
+div.fform form input[type=text],
+div.fform form input[type=password],
+div.fform form select { width: 45%; border: 1px dotted gray; padding: 5px; }
+div.fform form fieldset fieldset { border: 1px dotted grey; margin-bottom: 10px; }
+div.fform form fieldset fieldset label { margin-left:0; width: 45%; display: inline-block; }
+
+/**
+ * DataTables styles
+ */
+.dataTables_wrapper { width: 100% !important; font-size: 0.85em !important; }
+.dataTables_wrapper caption { width: 20%; margin: -25px auto 0 auto; position: relative; top: -10px; font-weight: bold;   color: #fff; }
+.dataTables_wrapper tbody td { height: 2.5em; border:none; vertical-align: middle; }
+.dataTables_wrapper thead th { padding-right: 5px; }
+.dataTables_wrapper .DataTables_sort_wrapper { padding: 5px 0 5px 0; width:100%; text-overflow: ellipsis; white-space: nowrap; overflow: hidden; }
+.dataTables_wrapper th:nth-last-child(1) .DataTables_sort_wrapper { width: 90%; }
+.dataTables_wrapper .DataTables_sort_icon { float: right; margin-top: -20px; }
+.dataTables_wrapper .dataTables_paginate > a { margin:0; padding: 3px; }
+.dataTables_wrapper .dataTables_length,
+.dataTables_wrapper .dataTables_filter,
+.dataTables_wrapper .dataTables_paginate { padding: 5px; }
+.dataTables_wrapper .dataTables_info { padding: 8px 0 0 5px; }
+
+.dataTables_wrapper td.centerAlign { text-align: center; }
+.dataTables_wrapper tfoot > tr > th.default_th { border-right: none; border-left: none; }
+.dataTables_wrapper tfoot > tr > th:last-child { text-align: right; }
+
+#surveys_table caption { width: 100%; top: -7px; }

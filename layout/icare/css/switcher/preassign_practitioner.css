@@ -1,0 +1,58 @@
+@CHARSET "UTF-8";
+@import url("../switcher/tooltips.css");
+/**
+ * DataTables styles
+ */
+.dataTables_wrapper { width: 100% !important; }
+.dataTables_wrapper caption { width: 20%; margin: -25px auto 0 auto; position: relative; top: -10px; font-weight: bold;   color: #fff; }
+.dataTables_wrapper tbody td { height: 2.5em; border:none; vertical-align: middle; }
+.dataTables_wrapper thead th { padding-right: 5px; }
+.dataTables_wrapper .DataTables_sort_wrapper { padding: 5px 0 5px 0; width:90%; text-overflow: ellipsis; white-space: nowrap; overflow: hidden; }
+.dataTables_wrapper .DataTables_sort_icon { float: right; margin-top: -20px; }
+.dataTables_wrapper .dataTables_paginate > a { margin:0; padding: 3px; }
+.dataTables_wrapper .dataTables_length,
+.dataTables_wrapper .dataTables_filter,
+.dataTables_wrapper .dataTables_paginate { padding: 5px; }
+.dataTables_wrapper .dataTables_info { padding: 8px 0 0 5px; }
+
+.dataTables_wrapper td.centerAlign { text-align: center; }
+.dataTables_wrapper tfoot > tr > th.default_th { border-right: none; border-left: none; }
+.dataTables_wrapper tfoot > tr > th:last-child { text-align: right; }
+
+form[name=preassing_students] button[name=selectAll] { float:left; }
+form[name=preassing_students] button[name=selectAll],
+form[name=preassing_students] button[type=submit] {
+  font-size: 0.9em;
+  text-align: center;
+  padding: 0.5em;
+  margin: 0;	
+  min-height: 100%;
+  cursor: pointer;
+}
+form[name=preassing_students] button[type=submit] { padding: 0 10px 0 10px; }
+#table_preassignment { width: 100% !important; }
+#selTutor_container { margin: 5px; width: 80%; float:left; }
+#editButton_container { margin: 5px; float: right; }
+#selTutor_container > label { width: auto; vertical-align: initial; }
+span.tooltip { border:none; background: none; color: inherit; padding:0; }
+span.preassign_error { clear: both; display: block; margin: 5px; }
+body .ui-tooltip { padding: 10px; border-radius: 5px; border: 1px solid white; } 
+
+body .ui-widget-header {
+  border-radius: 2px;
+  background: url("../../img/ui-bg_gloss-wave_55_7e0441_500x100.png") repeat-x scroll 50% 50% #9d0653;
+  border: 1px solid #7E0441;
+  color: #FFFFFF;
+  font-weight: bold;
+  padding-bottom: 4px;
+  padding-left: 0.2em;
+}
+
+body .ui-state-default, body .ui-widget-content .ui-state-default, body .ui-widget-header .ui-state-default {
+
+    border: 1px solid #9d0653;
+    background: #ac7d92 url("../../img/ui-bg_glass_85_dfeffc_1x400.png") 50% 50% repeat-x;
+    font-weight: bold;
+    color: #9d0653;
+
+}

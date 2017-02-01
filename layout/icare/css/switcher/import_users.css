@@ -1,0 +1,32 @@
+@CHARSET "UTF-8";
+
+#helpForm { display: block; text-align:center; }
+
+#import_users_steptwo {
+  text-align: center;
+  line-height: 40px;
+  display: table;
+  margin: 60px auto 0 auto;
+  padding: 10px;
+  border: 1px dotted;
+  border-radius: 10px;	
+}
+
+#import_users_steptwo > img {
+  margin: 12px 10px 0 0;
+}
+
+#import_users_steptwo.success {
+	background: lime;
+}
+
+#import_users_steptwo.fail {
+    background: red;
+}
+
+#import_users_steptwo > span.importtext {
+  display: table-cell;
+  vertical-align: middle;	
+}
+#import_users_button { text-align: center; margin-top: 60px; display:none;}
+form[name=import_users] p.form.submit { display: none; }

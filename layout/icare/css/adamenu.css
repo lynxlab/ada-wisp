@@ -1,0 +1,271 @@
+@CHARSET "UTF-8";
+div.ui.menu.ada { 
+	font-family: "Helvetica Neue", "Helvetica", Arial;
+	border-radius:0;
+	border-bottom: none;
+    background-color: #7e0441;
+	
+}
+
+.ui.menu.ada i.icon {
+	opacity: 0.9;
+	/* do not remove this float, it overwrites some 
+	   css class in ada layout system for the icons only */ 
+	float: initial;
+}
+
+.ui.menu.ada ul {
+	padding-left: 0;
+	/* float:left;  */
+}
+
+.ui.menu.ada > ul.menu > li.item { padding:0; }
+.ui.menu.ada > ul.menu > li.item.searchItem { margin-right: .95em; }
+.ui.menu.ada > ul.menu > li.item.searchItem.active { background: none; }
+.ui.menu.ada > ul.menu > li.item.searchItem > div.search,
+.ui.menu.ada > ul.menu > li.item > a { padding: .83em .95em .83em .95em; display: inline-block; outline:0; }
+.ui.menu.ada > ul.menu > li.item.dropdown > a { padding-right:0;  outline:0; }
+.ui.menu.ada > ul.menu > li.item.dropdown > .dropdown.icon { padding-right: .95em; }
+
+.ui.menu.ada > ul.menu > li.item.dropdown > ul.menu { margin-top: 1px !important; z-index:999; /* match .ui.menu.ada border-bottom */ }
+.ui.menu.ada > ul.menu > li.item.dropdown > ul.menu > li.item { padding:0 !important; }
+.ui.menu.ada > ul.menu > li.item.dropdown > ul.menu > li.item > a { width: 100%;  display: inline-block; }
+.ui.menu.ada > ul.menu > li.item.dropdown > ul.menu > li.item > a .icon { margin-left: .85em; margin-right:0; }
+.ui.menu.ada > ul.menu > li.item.dropdown > ul.menu > li.item > a .menulabel { padding: .85em; display: inline-block; }
+.ui.menu.ada > ul.menu > li.item.dropdown > ul.menu > li.item.menuseparator > a .menulabel { font-weight: bold; background-color: lightgray; }
+
+div.ui.menu.ada  a .menulabel,
+div.ui.menu.ada  a i.icon,
+div.ui.menu.ada  a,
+div.ui.menu.ada  a.item,
+div.ui.menu.ada .dropdown.item,
+div.ui.menu.ada .dropdown.item a.item,
+div.ui.mobile.ada.menu  .dropdown {
+	text-transform: capitalize;
+	text-decoration: none;
+	cursor: pointer;
+}
+
+.ui.menu.ada .dropdown.item li.item:hover,
+.ui.menu.ada .dropdown.item a.item:hover {
+	background-color: #F5F5F5;
+}
+
+.ui.menu.ada .dropdown.item li.item.menuseparator:hover,
+.ui.menu.ada .dropdown.item li.item.menuseparator a:hover { background-color: inherit; cursor: default;}
+
+.ui.menu.ada div.ui.search.input,
+.ui.menu.ada i.search.link.icon { background-color: transparent;  }
+.ui.menu.ada i.question.icon { background-color: transparent;  }
+.ui.menu.ada i.search.link.icon { margin:0.5em 0.5em 0 0; opacity: 0.5; }
+
+.ui.menu.ada div.item.searchItem > div.search.input {
+	width: 100%;
+}
+
+.ui.search.input span { display: none; }
+
+@media only screen and (max-width : 1220px) {
+    .ui.menu.ada .searchItem { width: 9em; }
+    .ui.menu.ada .searchItem input[type="text"] { width: 9em; float:right; }
+}
+
+@media only screen and (max-width : 1135px) {
+    .ui.menu.ada .userpopup { width: 7em;
+                              white-space: nowrap;
+                              overflow: hidden;
+                              text-overflow: ellipsis;
+    }
+}
+
+/**
+ * mobile only styles
+ */
+.ui.vertical.ada.mobile.menu .item>i.icon { float: none; }
+/* .ui.vertical.ada.mobile.menu .ui.item { padding-left:1.8em; } */
+.ui.vertical.ada.mobile.menu .dropdown a { color: inherit; }
+.ui.vertical.ada.mobile.menu .userpopup { width: 100%; }
+.ui.vertical.ada.mobile.menu .searchItem div.search { width: 95%; }
+.ui.vertical.ada.mobile.menu .searchItem input[type="text"] { width: 100%; float:none; }
+.ui.vertical.ada.mobile.menu i.search.link.icon { margin-right: 1em; margin-top: 0.8em; }
+.ada.mobile.row.menubutton { padding-top: 0;}
+.ada.mobile.row.menubutton .menubutton-container { padding: 0 10px 0 10px;}
+.ada.mobile.row.menubutton { padding-top: 0; }
+.ada.mobile.row.menubutton .menubutton-container { padding: 0 10px 0 10px; margin-bottom: 0.5rem; }
+.ui.vertical.ada.mobile.menu .item { width: 95%; padding-right:0; }
+body.left.pushed > div.ui.popup.right.center.transition.visible { z-index: 9999; } 
+
+.ui.labeled.teal.button, .ui.teal.buttons .button {
+    background-color: #7da238;
+    color: #fff;
+}
+.ui.mobile.inverted.teal.menu {
+    background-color: #7da238;
+}
+/**
+ * menuright styles
+ */
+#topmenur, #bottommenur { display:none;  }
+div#menuright { position: fixed; }
+.menuright_view.sidebar { 
+    -webkit-box-shadow: -5px 0px 5px 0px rgba(50, 50, 50, 0.15);
+    -moz-box-shadow:    -5px 0px 5px 0px rgba(50, 50, 50, 0.15);
+    box-shadow:         -5px 0px 5px 0px rgba(50, 50, 50, 0.15); 
+    background-color: #fff; 
+    }
+
+/**
+ * menuright with accordion
+ */
+ 
+div.right.sidebar .close.icon { background-image: none; padding:0; }
+div.right.sidebar .accordion .content.field #show_index { padding: 10px; }
+div.right.sidebar .accordion .content.field #show_index #structIndex ul { padding:0; }
+div.right.sidebar .accordion .content.field #show_index #structIndex ul>li>ul { padding-left:1.5rem; }
+/* div.right.sidebar .accordion .content.field #show_index #structIndex ul>li>ul>li a { line-height: 30px; } */
+div.right.sidebar .accordion .content.field #show_index #structIndex ul>li>ul>li>span.ADA_LEAF_TYPE { background-position-x: -3px; line-height: 35px; }
+div.right.sidebar .accordion .content.field #show_index #structIndex>ul>li>ul>li>span.ADA_EXERCISE { line-height: 35px; }
+div.right.sidebar .accordion .content.field #show_index #structIndex ul>li>ul>li>span.ADA_GROUP_TYPE { display: inline-block; padding-bottom: 0;padding-top: 0;line-height: 35px; }
+div.right.sidebar .accordion .content.field #show_index #structIndex ul>li>ul>li>ul>li>span.ADA_EXERCISE { display: inline-block; padding: 2px 0 12px 0px; }
+div.right.sidebar .accordion .content.field #show_index #structIndex ul>li>span>span.viewNodeChildren,
+div.right.sidebar .accordion .content.field #show_index #structIndex ul>li>span>span.hideNodeChildren,
+div.right.sidebar .accordion .content.field #show_index #structIndex ul>li>ul>li>span>span.viewNodeChildren,
+div.right.sidebar .accordion .content.field #show_index #structIndex ul>li>ul>li>span>span.hideNodeChildren { display: block; float: left; padding:0; width: 1rem; }
+div.right.sidebar .accordion .loader-wrapper { text-align: center; }
+div.right.sidebar .accordion .icon { float: right; }
+div.right.sidebar .accordion .title,
+div.right.sidebar .accordion .content { text-transform: capitalize; }
+div.right.sidebar .attached.accordion.segment,
+div.right.sidebar .accordion .content { padding: 0; }
+div.right.sidebar .accordion .noitem,
+div.right.sidebar .accordion .content.field>a { 
+    display: block;    
+    margin-left:47px;
+    line-height: 50px;
+    text-decoration: none;
+    background: transparent;
+ }
+div.right.sidebar .accordion .content.field table tbody td { vertical-align: middle; }
+div.right.sidebar .accordion .content.field table.default_table tbody td div { padding: 0; line-height: 50px; } 
+div.right.sidebar .accordion .content.field table tbody td a {
+	background: transparent;
+    line-height: 50px; 
+    /* recuperate from .item .menu a rule */
+    display:inline; margin-left: 0px; } 
+
+div.right.sidebar .accordion .content.field table.table_link_table { width:100%; } 
+div.right.sidebar .accordion .content.field table.table_link_table tbody td img { display: inline; vertical-align: middle; } 
+
+.ui.teal.block.dividing.header,
+.ui.block.dividing.header {
+    border-bottom: 3px solid #7da238;
+}
+
+.ui.teal.block.header,
+.ui.block.header {
+    color: #7da238 !important;
+}
+/**
+ * Fix links icon in links accordion panel
+ */
+div.right.sidebar .accordion .links.content table.table_link_table tbody td img { display: none; }
+div.right.sidebar .accordion .links.content table.table_link_table tbody td a[data-type="link"]:before {
+    font-family: 'Icons';
+    content: '\f0c1';
+    font-size: 1.5em;
+    vertical-align: middle;
+    margin-right: 0.5rem;	
+}
+
+div.right.sidebar .accordion .links.content table.table_link_table tbody td a[data-type="link-disabled"]:before {
+    font-family: 'Icons';
+    content: '\f023';
+    font-size: 1.5em;
+    vertical-align: middle;
+    margin-right: 0.5rem;	
+    color: red;
+}
+
+/**
+ * Fix exercise icon in exercises accordion panel
+ */
+div.right.sidebar .accordion .exercises.content table.table_link_table tbody td img { display: none; }
+div.right.sidebar .accordion .exercises.content table.table_link_table tbody td a:before {
+    font-family: 'Basic Icons';
+    content: '\270d';
+    font-size: 1.5em;
+    vertical-align: middle;
+    margin-right: 0.5rem;
+    color: #7CB97C;
+}
+/**
+ * Fix resource icon in resources accordion panel
+ */
+div.right.sidebar .accordion .resources.content table.table_link_table tbody td img { display: none; }
+div.right.sidebar .accordion .resources.content table.table_link_table tbody td a[data-type="video"]:before {
+    font-family: 'Icons';
+    content: '\f008';
+    font-size: 1.5em;
+    vertical-align: middle;
+    margin-right: 0.5rem;	
+}
+
+div.right.sidebar .accordion .resources.content table.table_link_table tbody td a[data-type="audio"]:before {
+    font-family: 'Icons';
+    content: '\f001';
+    font-size: 1.5em;
+    vertical-align: middle;
+    margin-right: 0.5rem;	
+}
+
+div.right.sidebar .accordion .resources.content table.table_link_table tbody td a[data-type="img"]:before {
+    font-family: 'Icons';
+    content: '\f03e';
+    font-size: 1.5em;
+    vertical-align: middle;
+    margin-right: 0.5rem;	
+}
+
+div.right.sidebar .accordion .resources.content table.table_link_table tbody td a[data-type="link"]:before {
+    font-family: 'Icons';
+    content: '\f0c1';
+    font-size: 1.5em;
+    vertical-align: middle;
+    margin-right: 0.5rem;	
+}
+
+div.right.sidebar .accordion .resources.content table.table_link_table tbody td a[data-type="doc"]:before {
+    font-family: 'Icons';
+    content: '\f016';
+    font-size: 1.5em;
+    vertical-align: middle;
+    margin-right: 1.2rem;	
+}
+ 
+ /**
+  * end accordion
+  */ 
+
+div.right.sidebar #menurightcontent .item .menu  .noitem,
+div.right.sidebar #menurightcontent .item .menu a { 
+    display: block;    
+    margin-left:52px;
+    line-height: 30px;
+ }
+div.right.sidebar #menurightcontent .item .menu table.table_link_table { margin-left: 10px; } 
+div.right.sidebar #menurightcontent .item .menu table.table_link_table tbody td img { float: left; }
+div.right.sidebar #menurightcontent .item .menu table tbody td a { 
+	line-height: 30px; 
+    /* recuperate from .item .menu a rule */
+    display:inline; margin-left: 0px; }
+div.right.sidebar #menurightcontent .item a { text-decoration: none; background: transparent; }
+div.right.sidebar #menurightcontent .item { text-transform: capitalize; }
+div.right.sidebar #menurightcontent .icon { opacity: 1; }
+div.right.sidebar #menurightcontent { background: white; padding: 0px 15px 15px 15px; }
+div.right.sidebar #menurightcontent a.closepanel.item { color: #CC181E; }
+div.right.sidebar #menurightcontent span.index.item,
+div.right.sidebar #menurightcontent span.index.item a { color: #4CB164; }
+
+div.right.sidebar #menurightcontent .resources table.table_link_table { width: 100%; table-layout:fixed; }
+div.right.sidebar #menurightcontent .resources table.table_link_table tbody tr td:first-child { display: none; }
+div.right.sidebar #menurightcontent .resources table.table_link_table tbody td a { width: 100%; display: inline-block; overflow: hidden; text-indent: 0.8rem;  text-overflow: ellipsis; line-height: 25px; }
