@@ -579,7 +579,7 @@ switch ($op) {
 			$appointment_link->setAttribute('href','javascript:void(0);');
 			$appointment_link->addChild(new CText($appointment_link_label));
 
-			foreach ($listStudentIds as $student_id) {
+			foreach ($listStudentIds as $key=>$student_id) {
 				// load the user from the db
 				$studentObj = MultiPort::findUser($student_id);
 				if (is_object($studentObj) && $studentObj instanceof ADAUser && $studentObj->getStatus()==ADA_STATUS_REGISTERED) {
@@ -604,6 +604,8 @@ switch ($op) {
 							($lastRequestTime > 0) ? AMA_Common_DataHandler::ts_to_date($lastRequestTime) : $lastRequestTime,
 							$appointment_link->getHtml()
 					);
+				} else {
+					unset ($listStudentIds[$key]);
 				}
 			}
 
@@ -662,25 +664,42 @@ $divAppointments->addChild(new CText(translateFN('Non ci sono appuntamenti')));
 }
 }
 
-foreach ($user_agendaAr as $providerUserDate => $appointmentTmp) {
-    $dhUserDate = AMA_DataHandler::instance(MultiPort::getDSN($providerUserDate));
-    foreach ($appointmentTmp as $idAppTmp => $singleApp) {
-	$event_token = ADAEventProposal::extractEventToken($singleApp[2]);
-	$guidanceSession = $dhUserDate->get_eguidance_session_with_event_token($event_token);
-	if (AMA_DB::isError($guidanceSession)) {
-	    $user_agendaAr[$providerUserDate][$idAppTmp]['report'] = false;
-//	    unset($user_agendaAr[$providerUserDate][$idAppTmp]);
-	    if ($userObj->getType() == AMA_TYPE_TUTOR)
-			$user_agendaAr[$providerUserDate][$idAppTmp]['crea_report'] = true;
-	}
-	else {
-	    $user_agendaAr[$providerUserDate][$idAppTmp]['report'] = true;
+if (!isset($listStudentIds) || (isset($listStudentIds) && is_array($listStudentIds) && count($listStudentIds)>0)) {
+	foreach ($user_agendaAr as $providerUserDate => $appointmentTmp) {
+	    $dhUserDate = AMA_DataHandler::instance(MultiPort::getDSN($providerUserDate));
+	    foreach ($appointmentTmp as $idAppTmp => $singleApp) {
+		    /**
+		     * @author giorgio 02/feb/2017
+		     *
+		     * On WISP/UNIMC only:
+		     * remove from $user_agendaAr the user ids that are not in $listStudentIds, which
+		     * is the list of preassinged students filtered by AA_ISCR_DESC and ANNO_CORSO
+			 */
+	    	if (isset($listStudentIds) && !in_array($singleApp[0], $listStudentIds)) {
+	    		unset ($user_agendaAr[$providerUserDate]);
+	    		continue;
+	    	}
+		$event_token = ADAEventProposal::extractEventToken($singleApp[2]);
+		$guidanceSession = $dhUserDate->get_eguidance_session_with_event_token($event_token);
+		if (AMA_DB::isError($guidanceSession)) {
+		    $user_agendaAr[$providerUserDate][$idAppTmp]['report'] = false;
+	//	    unset($user_agendaAr[$providerUserDate][$idAppTmp]);
+		    if ($userObj->getType() == AMA_TYPE_TUTOR)
+				$user_agendaAr[$providerUserDate][$idAppTmp]['crea_report'] = true;
+		}
+		else {
+		    $user_agendaAr[$providerUserDate][$idAppTmp]['report'] = true;
 
+		}
+	    }
 	}
-    }
+} else if (isset($listStudentIds) && is_array($listStudentIds) && count($listStudentIds)==0) {
+	/**
+	 * If a set $listStudentIds is empty, there are no appointments to show
+	 */
+	$user_agendaAr = array();
 }
 $user_agenda   = CommunicationModuleHtmlLib::displayAppointmentsWithAssessementLink($user_agendaAr, ADA_MSG_AGENDA, $testers_dataAr,$showRead);
-
 
 
 /* ***********************
@@ -688,11 +707,40 @@ $user_agenda   = CommunicationModuleHtmlLib::displayAppointmentsWithAssessementL
 * $user_events are valorized in browsing_function.inc.php
 */
 if (is_object($user_events_proposed)) {
-$divAppointmentsProposed = CDOMElement::create('div','class:appointments');
-if (is_object($user_events_proposed) && $user_events_proposed->getHtml() != '') $divAppointmentsProposed->addChild($user_events_proposed);
-if ($user_events_proposed->getHtml() == '') {
-$divAppointmentsProposed->addChild(new CText(translateFN('Non ci sono appuntamenti')));
-}
+	/**
+	 * @author giorgio 02/feb/2017
+	 *
+	 * On WISP/UNIMC only:
+	 * remove from $user_events_proposed_exploded (coming from tutor_functions.inc.php)
+	 * the user ids that are not in $listStudentIds, which
+	 * is the list of preassinged students filtered by AA_ISCR_DESC and ANNO_CORSO
+	 */
+	if (isset($listStudentIds) && is_array($listStudentIds)) {
+		if (count($listStudentIds)>0) {
+			foreach ($user_events_proposed_exploded as $provider=>$eventsArr) {
+				foreach ($eventsArr as $evKey=>$event) {
+					/**
+					 * $event is loaded in a non associative way, its 10 key
+					 * holds the student, and the student key 2 holds the student id
+					 */
+					if (array_key_exists(10, $event) && array_key_exists(2, $event[10]) && !in_array($event[10][2], $listStudentIds)) {
+						unset ($user_events_proposed_exploded[$provider][$evKey]);
+					}
+				}
+			}
+		} else if (count($listStudentIds)==0) {
+			$user_events_proposed_exploded = array();
+		}
+		$user_events_proposed   = CommunicationModuleHtmlLib::getEventsProposedAsTableMin($user_events_proposed_exploded, $testers_dataAr, $showRead);
+	}
+
+	$divAppointmentsProposed = CDOMElement::create('div','class:appointments');
+	if (is_object($user_events_proposed) && $user_events_proposed->getHtml() != '') {
+		$divAppointmentsProposed->addChild($user_events_proposed);
+	}
+	if ($user_events_proposed->getHtml() == '') {
+		$divAppointmentsProposed->addChild(new CText(translateFN('Non ci sono appuntamenti')));
+	}
 }
 
 
