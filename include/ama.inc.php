@@ -10319,7 +10319,7 @@ abstract class AMA_Tester_DataHandler extends Abstract_AMA_DataHandler {
      * @access public
      */
     public function &get_preassigned_students_for_tutor ($tutor_id, $course_id=null, $aa_iscr_desc=null, $anno_corso=null) {
-    	$queryParams = array('tutor_id'=>$tutor_id, 'student_type'=>AMA_TYPE_STUDENT, 'disabledstatus'=>ADA_STATUS_REMOVED);
+    	$queryParams = array('tutor_id'=>$tutor_id, 'student_type'=>AMA_TYPE_STUDENT);
 
     	$sql = 'SELECT U.`id_utente` FROM `utente` U '.
       		   'JOIN `tutor_student_preassigned` PRE ON U.`id_utente`=PRE.`id_student` ';
@@ -10329,7 +10329,7 @@ abstract class AMA_Tester_DataHandler extends Abstract_AMA_DataHandler {
     		$queryParams['aa_iscr_desc'] = $aa_iscr_desc;
     		$queryParams['anno_corso'] = $anno_corso;
     	}
-      	$sql .='WHERE U.`stato` != :disabledstatus AND PRE.`id_tutor`=:tutor_id AND PRE.`id_course`'.
+      	$sql .='WHERE PRE.`id_tutor`=:tutor_id AND PRE.`id_course`'.
       		   (is_null($course_id) ? ' IS NULL' : '='.intval($course_id)).' AND  '.
       		   'U.`tipo`=:student_type AND PRE.`id_student` IS NOT NULL';
 
