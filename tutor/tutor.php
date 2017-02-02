@@ -565,7 +565,8 @@ switch ($op) {
 		$listStudentIds = $dh->get_preassigned_students_for_tutor($userObj->getId(), null, $aa_iscr_desc, $anno_corso);
 		if (!AMA_DB::isError($listStudentIds) && is_array($listStudentIds) && count($listStudentIds)>0) {
 			$tableHead = array (translateFN('cognome e nome'),
-					translateFN('num. richieste'), translateFN('ultima richiesta'),
+					translateFN('Iscrizione AA (AC) Tasse').'<br/>('.translateFN('Corso di studi').')',
+					translateFN('ultima richiesta'), translateFN('num. richieste'),
 					translateFN('azioni'));
 			$tableBody = array();
 
@@ -598,10 +599,83 @@ switch ($op) {
 					}
 					$onclick = 'javascript:sendEventProposal('.$studentObj->getId().');';
 					$appointment_link->setAttribute('onclick',$onclick);
+
+					$studenDetailStr = '';
+
+					// Hack for dataTable filter: add an hidden span containing all of the titles text
+					$hiddenHackSpan = CDOMElement::create('span');
+					$hiddenHackSpan->setAttribute('style', 'display:none');
+					$hiddenContents = array();
+
+					if (property_exists($studentObj, 'AA_ISCR_DESC')) $studenDetailStr .= $studentObj->AA_ISCR_DESC;
+					if (property_exists($studentObj, 'ANNO_CORSO')) $studenDetailStr .= ' ('.$studentObj->ANNO_CORSO.')';
+					if (property_exists($studentObj, 'TASSE_IN_REGOLA_OGGI') && !is_null($studentObj->TASSE_IN_REGOLA_OGGI)) {
+						if (strcasecmp($studentObj->TASSE_IN_REGOLA_OGGI, 'no')===0) $studenDetailStr .= ', NR';
+						else $studenDetailStr .= ', IR';
+					}
+
+					// PT_DESC field
+					$pt_desc = CDOMElement::create('span','class:tooltip');
+					if (!is_null($studentObj->PT_DESC)) {
+						$pt_desc->setAttribute('title', $studentObj->PT_DESC);
+						$words = preg_split('/[\s-]+/', $studentObj->PT_DESC);
+						// if one word, extract 2 chars
+						$maxLen = (count($words) > 1) ? 1 :2;
+						for ($w = reset($words), $pt_desc_str = ''; current($words); $w = next($words)) {
+							$pt_desc_str .= substr($w, 0, $maxLen);
+						}
+						$pt_desc->addChild(new CText(strtoupper($pt_desc_str)));
+						if (!in_array($studentObj->PT_DESC, $hiddenContents)) $hiddenContents[] = $studentObj->PT_DESC;
+					}
+					// TIPO_DID_DECODE field
+					$tipo_did_decode = CDOMElement::create('span','class:tooltip');
+					if (!is_null($studentObj->TIPO_DID_DECODE)) {
+						$tipo_did_decode->setAttribute('title', $studentObj->TIPO_DID_DECODE);
+						if (strcasecmp($studentObj->TIPO_DID_DECODE, 'teledidattica')===0) {
+							$tipo_did_decode->addChild(new CText('TD'));
+						} else if (strcasecmp($studentObj->TIPO_DID_DECODE, 'teleconferenza')===0) {
+							$tipo_did_decode->addChild(new CText('TC'));
+						} else $tipo_did_decode->addChild(new CText(strtoupper(substr($studentObj->TIPO_DID_DECODE, 0, 2))));
+						if (!in_array($studentObj->TIPO_DID_DECODE, $hiddenContents)) $hiddenContents[] = $studentObj->TIPO_DID_DECODE;
+					}
+
+					// STA_OCCUP_DECODE field
+					$sta_occup_decode = CDOMElement::create('span','class:tooltip');
+					if (!is_null($studentObj->STA_OCCUP_DECODE)) {
+						// Change 'Non lavoratore' to 'Inoccupato'
+						if (strcasecmp($studentObj->STA_OCCUP_DECODE, 'Non lavoratore')===0) {
+							$studentObj->STA_OCCUP_DECODE = 'Inoccupato';
+						}
+						$sta_occup_decode->setAttribute('title', $studentObj->STA_OCCUP_DECODE);
+						if (strcasecmp($studentObj->STA_OCCUP_DECODE, 'N/D')===0) {
+							$sta_occup_decode->addChild(new CText(strtoupper($studentObj->STA_OCCUP_DECODE)));
+						} else {
+							$words = preg_split('/[\s-]+/', $studentObj->STA_OCCUP_DECODE);
+							// if one word, extract 2 chars
+							$maxLen = (count($words) > 1) ? 1 :2;
+							for ($w = reset($words), $sta_occup_str = ''; current($words); $w = next($words)) {
+								$sta_occup_str .= substr($w, 0, $maxLen);
+							}
+							$sta_occup_decode->addChild(new CText(strtoupper($sta_occup_str)));
+						}
+						if (!in_array($studentObj->STA_OCCUP_DECODE, $hiddenContents)) $hiddenContents[] = $studentObj->STA_OCCUP_DECODE;
+					}
+					$hiddenHackSpan->addChild(new CText(implode(' ', $hiddenContents)));
+
+					$divTitle = array();
+					if (property_exists($studentObj, 'CDS_DESC') && !is_null($studentObj->CDS_DESC)) $divTitle[] = $studentObj->CDS_DESC;
+					if (property_exists($studentObj, 'PDSORD_DESC') && !is_null($studentObj->PDSORD_DESC)) $divTitle[] = $studentObj->PDSORD_DESC;
+
+					$detailsDIV = CDOMElement::create('div','class:tooltip');
+					$detailsDIV->setAttribute('title', implode('<br/>', $divTitle));
+					$detailsDIV->addChild(new CText($studenDetailStr.'<br/>'.$hiddenHackSpan->getHtml().
+									$pt_desc->getHtml().'&nbsp;'.$tipo_did_decode->getHtml().'&nbsp;'.$sta_occup_decode->getHtml()));
+
 					$tableBody[] = array(
 							BaseHtmlLib::link('edit_user.php?id='.$studentObj->getId(), $studentObj->getLastName().' '.$studentObj->getFirstName())->getHtml(),
-							$countInstances,
+							$detailsDIV->getHtml(),
 							($lastRequestTime > 0) ? AMA_Common_DataHandler::ts_to_date($lastRequestTime) : $lastRequestTime,
+							$countInstances,
 							$appointment_link->getHtml()
 					);
 				} else {

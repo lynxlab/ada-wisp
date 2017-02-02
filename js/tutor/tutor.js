@@ -1,7 +1,7 @@
 function initDoc() {
 	$j(document).ready(function() {
 		var appointmentsTables = ["sortable_S","sortable_event_proposed"];
-	
+
 		for (var i=0; i < appointmentsTables.length; i++ ) {
 			$j('.'+appointmentsTables[i]).dataTable( {
 				"bLengthChange": false,
@@ -15,7 +15,7 @@ function initDoc() {
                                 "aaSorting": [[ 0, "desc" ]],
                 "oLanguage": {
                 	"sUrl": HTTP_ROOT_DIR + "/js/include/jquery/dataTables/dataTablesLang.php"
-                },	
+                },
                 "fnDrawCallback":
                     function () {
                         // put the sort icon outside of the DataTables_sort_wrapper div
@@ -33,7 +33,7 @@ function initDoc() {
 				             ]
 			}).show();
 		}
-		
+
 		$j(".sortable").dataTable( {
 			"bLengthChange": true,
 			"bFilter":       true,
@@ -59,7 +59,7 @@ function initDoc() {
             },
 			"aoColumnDefs": [
 			                 { "bSortable": false,
-			                	"aTargets": [ 1 ] } 
+			                	"aTargets": [ 1 ] }
 			                ],
 			"aoColumns": [
 			              null,
@@ -69,9 +69,9 @@ function initDoc() {
 			              { 'sType': "date-eu" }
 			             ]
 		}).show();
-                
-                
-                
+
+
+
                 /***/
 		$j(".sortable_A").dataTable( {
 			"bLengthChange": true,
@@ -105,6 +105,11 @@ function initDoc() {
 		}).show();
 
 
+		var unsortableCols = [];
+		var preassignedLastCol = $j("#table_preassigned_students>thead>tr>th").length-1;
+		if (preassignedLastCol >= 0) {
+			unsortableCols.push(preassignedLastCol);
+		}
 		$j("#table_preassigned_students").dataTable( {
 			"bLengthChange": true,
 			"bFilter":       true,
@@ -130,18 +135,21 @@ function initDoc() {
 
 			"aoColumnDefs": [
 			                 { "bSortable": false,
-			                	"aTargets": [ 3 ] } 
+			                	"aTargets": unsortableCols }
 			                ],
 			"aoColumns": [
 			              null,
 			              null,
 			              { 'sType': "date-eu" },
+			              null,
 			              null
 			             ]
 		}).show();
 
+		initToolTips();
+
 // $j("#content_blocco_uno").addClass("ui-accordion ui-accordion-icons ui-widget ui-helper-reset")
-	$j('[id^="content_blocco_"]').addClass("ui-accordion ui-accordion-icons ui-widget ui-helper-reset")	
+	$j('[id^="content_blocco_"]').addClass("ui-accordion ui-accordion-icons ui-widget ui-helper-reset")
 	  .find("h3")
 	    .addClass("ui-accordion-header ui-helper-reset ui-state-active ui-corner-top ui-corner-bottom")
 	    .hover(function() { $j(this).toggleClass("ui-state-hover"); })
@@ -156,7 +164,7 @@ function initDoc() {
 	    .next()
 	      .addClass("ui-accordion-content  ui-helper-reset ui-widget-content ui-corner-bottom")
 	      .show();
-	
+
 //$j("#content_blocco_due").addClass("ui-accordion ui-accordion-icons ui-widget ui-helper-reset")
 //  .find("h3")
 //    .addClass("ui-accordion-header ui-helper-reset ui-state-active ui-corner-top ui-corner-bottom")
@@ -213,16 +221,16 @@ function sendEventProposal (userID) {
 
 function getHelpServiceID() {
 	var d = $j.Deferred();
-	
+
 	if ($j('#helpServiceID').length<=0 && $j('#selectServiceDialog').length<=0) d.reject();
-	else if ($j('#helpServiceID').length>0) { 
+	else if ($j('#helpServiceID').length>0) {
 		appWindow = openMessenger('',800,600);
 		d.resolve(parseInt($j('#helpServiceID').val()));
 	} else {
 		// prepare and show the dialog to select a helpServiceID
 		var dialog_buttons = {};
-		
-		dialog_buttons[i18n['confirm']] = function() {			
+
+		dialog_buttons[i18n['confirm']] = function() {
 			var helpServiceID = parseInt($j('#selectHelpService option:selected').val());
 			if (helpServiceID>0) {
 				/**
@@ -230,14 +238,14 @@ function getHelpServiceID() {
 				 * because here it's where the user has clicked and not
 				 * inside the ajax.done callback where opening a new window
 				 * will trigger the browser popup blocker.
-				 */	
+				 */
 				appWindow = openMessenger('',800,600);
 				d.resolve(helpServiceID);
 			}
 			$j(this).dialog('close');
-			
+
 		};
-		
+
 		dialog_buttons[i18n['cancel']] = function() {
 			var firstVal = $j('#selectHelpService option:first').val();
 			$j('#selectHelpService [value='+firstVal+']').attr('selected','selected');
@@ -245,7 +253,7 @@ function getHelpServiceID() {
 			d.resolve(-1);
 			$j(this).dialog('close');
 		};
-		
+
 		$j('#selectServiceDialog').dialog({
 			show: {
 				effect: "fade",
@@ -261,4 +269,26 @@ function getHelpServiceID() {
 		});
 	}
 	return d.promise();
+}
+
+function  initToolTips() {
+  $j('.tooltip').tooltip({
+   content : function () {
+	   return $j(this).prop('title');
+   },
+   show : {
+           effect : "slideDown",
+           delay : 300,
+           duration : 100
+   },
+   hide : {
+           effect : "slideUp",
+           delay : 100,
+           duration : 100
+   },
+   position : {
+           my : "center bottom-5",
+           at : "center top"
+       }
+   });
 }
