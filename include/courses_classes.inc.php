@@ -1565,6 +1565,8 @@ class Student_class {
                         $err_msg =$studentObj->error_msg;
                     } else {
 
+                    	if ($studentObj->getStatus()!=ADA_STATUS_REGISTERED) continue;
+
                     	if ($studentObj instanceof ADAPractitioner) {
                     		/**
                     		 * @author giorgio 14/apr/2015
