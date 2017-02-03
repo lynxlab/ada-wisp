@@ -183,7 +183,7 @@ function initDoc() {
 
 		$j('#journey').on('change', 'select#annocorso-select', function() {
 			// get base url
-			var baseUrl = window.location.href.split("?")[0];
+			var baseUrl = window.location.href.split("?")[0].replace('#','');
 			// get query string as an object
 			var queryStringObj = {};
 			window.location.search.substring(1).replace(
