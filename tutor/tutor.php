@@ -750,31 +750,46 @@ if (!isset($listStudentIds) || (isset($listStudentIds) && is_array($listStudentI
 		     * is the list of preassinged students filtered by AA_ISCR_DESC and ANNO_CORSO
 			 */
 	    	if (isset($listStudentIds) && !in_array($singleApp[0], $listStudentIds)) {
-	    		unset ($user_agendaAr[$providerUserDate]);
+	    		unset ($user_agendaAr[$providerUserDate][$idAppTmp]);
 	    		continue;
 	    	}
-		$event_token = ADAEventProposal::extractEventToken($singleApp[2]);
-		$guidanceSession = $dhUserDate->get_eguidance_session_with_event_token($event_token);
-		if (AMA_DB::isError($guidanceSession)) {
-		    $user_agendaAr[$providerUserDate][$idAppTmp]['report'] = false;
-	//	    unset($user_agendaAr[$providerUserDate][$idAppTmp]);
-		    if ($userObj->getType() == AMA_TYPE_TUTOR)
-				$user_agendaAr[$providerUserDate][$idAppTmp]['crea_report'] = true;
-		}
-		else {
-		    $user_agendaAr[$providerUserDate][$idAppTmp]['report'] = true;
+			$event_token = ADAEventProposal::extractEventToken($singleApp[2]);
+			$guidanceSession = $dhUserDate->get_eguidance_session_with_event_token($event_token);
+			if (AMA_DB::isError($guidanceSession)) {
+			    $user_agendaAr[$providerUserDate][$idAppTmp]['report'] = false;
+		//	    unset($user_agendaAr[$providerUserDate][$idAppTmp]);
+			    if ($userObj->getType() == AMA_TYPE_TUTOR)
+					$user_agendaAr[$providerUserDate][$idAppTmp]['crea_report'] = true;
+			} else {
+			    $user_agendaAr[$providerUserDate][$idAppTmp]['report'] = true;
 
-		}
+			}
 	    }
+	}
+
+	/**
+	 * @author giorgio 03/feb/2017
+	 *
+	 * On WISP/UNIMC only:
+	 * remove from $user_messagesAr the user ids that are not in $listStudentIds, which
+	 * is the list of preassinged students filtered by AA_ISCR_DESC and ANNO_CORSO
+	 */
+	foreach ($user_messagesAr as $providerUserDate => $messageTmp) {
+		foreach ($messageTmp as $idMsgTmp => $singleMsg) {
+			if (isset($listStudentIds) && !in_array($singleMsg[0], $listStudentIds)) {
+				unset ($user_messagesAr[$providerUserDate][$idMsgTmp]);
+			}
+		}
 	}
 } else if (isset($listStudentIds) && is_array($listStudentIds) && count($listStudentIds)==0) {
 	/**
-	 * If a set $listStudentIds is empty, there are no appointments to show
+	 * If a set $listStudentIds is empty, there are no appointments and messages to show
 	 */
 	$user_agendaAr = array();
+	$user_messagesAr = array();
 }
 $user_agenda   = CommunicationModuleHtmlLib::displayAppointmentsWithAssessementLink($user_agendaAr, ADA_MSG_AGENDA, $testers_dataAr,$showRead);
-
+$user_messages   = CommunicationModuleHtmlLib::getMessagesAsTable($user_messagesAr, $testers_dataAr,$showRead);
 
 /* ***********************
 * proposal for all instances
