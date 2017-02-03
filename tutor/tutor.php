@@ -692,7 +692,7 @@ switch ($op) {
 						$link->setAttribute('class', 'service history');
 						$servicesDIV->addChild($link);
 					}
-
+					if (isset($reqLink)) unset($reqLink);
 					if ($waitingInstances > 0) {
 						// prepare manage requests link
 						$reqLink = CDOMElement::create('a','class:manage waiting services');
