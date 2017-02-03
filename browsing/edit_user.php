@@ -7,12 +7,12 @@
  * @author		Stefano Penge <steve@lynxlab.com>
  * @author		Maurizio "Graffio" Mazzoneschi <graffio@lynxlab.com>
  * @author		Vito Modena <vito@lynxlab.com>
- * @author		giorgio <g.consorti@lynxlab.com> 
+ * @author		giorgio <g.consorti@lynxlab.com>
  * @copyright	Copyright (c) 2009-2010, Lynx s.r.l.
  * @license		http://www.gnu.org/licenses/gpl-2.0.html GNU Public License v.2
  * @link
  * @version		0.1
- * 
+ *
  * WARNING:		THIS FILE IS INCLUDED IN /switcher/edit_user.php FOR THE SWITHCER
  * 				TO EDIT A USER PROFILE.
  * 				PAY ATTENTION TO SWITHCER ROLE WHEN EDITING THE FILE
@@ -71,7 +71,7 @@ switch($userObj->getType()) {
 			$editUserObj = MultiPort::findUser($userId);
 		} else {
 			$data = new CText(translateFN('Utente non trovato'));
-		}	
+		}
 		break;
 }
 
@@ -91,13 +91,13 @@ if (!is_null($editUserObj) && isset($_SERVER['REQUEST_METHOD']) && $_SERVER['REQ
         } else {
             $user_layout = '';
         }
-        
+
         // set user datas
         $editUserObj->fillWithArrayData($_POST);
 
         // set user extra datas if any
         if ($editUserObj->hasExtra()) $editUserObj->setExtras($_POST);
-        
+
         MultiPort::setUser($editUserObj, array(), true, ADAUser::getExtraTableName() );
         /**
          * Set the session user to the saved one if it's not
@@ -108,7 +108,7 @@ if (!is_null($editUserObj) && isset($_SERVER['REQUEST_METHOD']) && $_SERVER['REQ
         }
         /* unset $_SESSION['service_level'] to reload it with the correct  user language translation */
         unset($_SESSION['service_level']);
-        
+
         $navigationHistoryObj = $_SESSION['sess_navigation_history'];
         $location = $navigationHistoryObj->lastModule();
         header('Location: ' . $location);
@@ -127,7 +127,7 @@ if (!is_null($editUserObj) && isset($_SERVER['REQUEST_METHOD']) && $_SERVER['REQ
 	     * UNIMC only: tutor can view/edit user profile
 	     * removed: || $userObj->getType()==AMA_TYPE_TUTOR
 	     * from the above if condition
-	     * 
+	     *
 	     */
         header('Location: ' .$userObj->getEditProfilePage() );
         exit();
@@ -138,25 +138,25 @@ if (!is_null($editUserObj) && isset($_SERVER['REQUEST_METHOD']) && $_SERVER['REQ
     unset($user_dataAr['password']);
     $user_dataAr['email'] = $user_dataAr['e_mail'];
     unset($user_dataAr['e_mail']);
-    $form->fillWithArrayData($user_dataAr);   
+    $form->fillWithArrayData($user_dataAr);
     $form->doNotUniform();
-    
+
     if (!$editUserObj->hasExtra()) {
     	// user has no extra, let's display it
     	$data = $form->render();
     } else {
     	require_once ROOT_DIR .'/include/HtmlLibrary/UserExtraModuleHtmlLib.inc.php';
-    	
+
     	// the extra UserExtraForm is needed as well
     	require_once ROOT_DIR . '/include/Forms/UserExtraForm.inc.php';
     	$extraForm = new UserExtraForm ($languages);
     	$extraForm->fillWithArrayData ($user_dataAr);
     	$extraForm->doNotUniform();
-    	
+
     	array_walk ($user_dataAr, function (&$value) {
     		if(is_string($value)) $value = htmlentities ($value, ENT_QUOTES, ADA_CHARSET);
     	});
-    	
+
     	// UNIMC Only: CorsoStudio Form
     	require_once ROOT_DIR . '/include/Forms/UserCorsoStudioForm.inc.php';
     	$corsoStudioForm = new UserCorsoStudioForm ();
@@ -179,22 +179,22 @@ if (!is_null($editUserObj) && isset($_SERVER['REQUEST_METHOD']) && $_SERVER['REQ
     	$titoloStudioForm->doNotUniform();
     	// UNIMC Only: Esami is not going to be an actual form, just a
     	// loading div and a result div to be populated by an ajax call
-    	$carrieraDIV = CDOMElement::create('div','id:carriera_container');    	
+    	$carrieraDIV = CDOMElement::create('div','id:carriera_container');
     	$carrieraLoad = CDOMElement::create('div','id:carriera_load');
     	$carrieraLoad->addChild(CDOMElement::create('img','src:'.HTTP_ROOT_DIR.'/js/include/jquery/ui/images/ui-anim_basic_16x16.gif'));
     	$carrieraLoadSpan = CDOMElement::create('span');
     	$carrieraLoadSpan->addChild(new CText('Caricamento in corso...'));
-    	$carrieraLoad->addChild($carrieraLoadSpan);    	
+    	$carrieraLoad->addChild($carrieraLoadSpan);
     	$carrieraResult = CDOMElement::create('div','id:carriera_results');
     	$carrieraError = CDOMElement::create('div','id:carriera_error');
     	$carrieraErrorSpan = CDOMElement::create('span');
     	$carrieraErrorSpan->addChild(new CText('Errore sconosciuto'));
     	$carrieraError->addChild($carrieraErrorSpan);
-    	
+
     	$carrieraDIV->addChild($carrieraLoad);
     	$carrieraDIV->addChild($carrieraResult);
     	$carrieraDIV->addChild($carrieraError);
-    	
+
     	// UNIMC Only: Questionari is not going to be an actual form, just a
     	// loading div and a result div to be populated by an ajax call
     	$questionariDIV = CDOMElement::create('div','id:questionari_container');
@@ -208,19 +208,37 @@ if (!is_null($editUserObj) && isset($_SERVER['REQUEST_METHOD']) && $_SERVER['REQ
     	$questionariErrorSpan = CDOMElement::create('span');
     	$questionariErrorSpan->addChild(new CText('Errore sconosciuto'));
     	$questionariError->addChild($questionariErrorSpan);
-    	 
+
     	$questionariDIV->addChild($questionariLoad);
     	$questionariDIV->addChild($questionariResult);
     	$questionariDIV->addChild($questionariError);
-    	
+
+    	// UNIMC Only: Storico Richieste is not going to be an actual form, just a
+    	// loading div and a result div to be populated by an ajax call
+    	$storicoDIV = CDOMElement::create('div','id:storico_container');
+    	$storicoLoad = CDOMElement::create('div','id:storico_load');
+    	$storicoLoad->addChild(CDOMElement::create('img','src:'.HTTP_ROOT_DIR.'/js/include/jquery/ui/images/ui-anim_basic_16x16.gif'));
+    	$storicoLoadSpan = CDOMElement::create('span');
+    	$storicoLoadSpan->addChild(new CText('Caricamento in corso...'));
+    	$storicoLoad->addChild($questionariLoadSpan);
+    	$storicoResult = CDOMElement::create('div','id:storico_results');
+    	$storicoError = CDOMElement::create('div','id:storico_error');
+    	$storicoErrorSpan = CDOMElement::create('span');
+    	$storicoErrorSpan->addChild(new CText('Errore sconosciuto'));
+    	$storicoError->addChild($questionariErrorSpan);
+
+    	$storicoDIV->addChild($storicoLoad);
+    	$storicoDIV->addChild($storicoResult);
+    	$storicoDIV->addChild($storicoError);
+
 		$tabContents = array ();
-		
+
 		/**
 		 * @author giorgio 22/nov/2013
 		 * Uncomment and edit the below array to have the needed
 		 * jQuery tabs to be used for user extra data and tables
 		 */
-		
+
 		$tabsArray = array (
 				array (translateFN ("Anagrafica"), $form, 'withExtra'=>true),
 // 				array (translateFN ("Anagrafica Estesa"), $extraForm),
@@ -235,29 +253,39 @@ if (!is_null($editUserObj) && isset($_SERVER['REQUEST_METHOD']) && $_SERVER['REQ
 				array (translateFN ("Questionari"), $questionariDIV,'onclick'=>'javascript:loadAPIDetails(\''.
 						$questionariResult->getAttribute('id').'\',\''.
 						$questionariLoad->getAttribute('id').'\',\''.
-						$questionariError->getAttribute('id').'\');')				
-// 				array (translateFN ("Sample Extra 1:n"), 'oneToManyDataSample'), 
+						$questionariError->getAttribute('id').'\');')
+// 				array (translateFN ("Sample Extra 1:n"), 'oneToManyDataSample'),
 		);
-		
+
+		if (in_array($userObj->getType(), array(AMA_TYPE_SWITCHER, AMA_TYPE_TUTOR))) {
+			$storicoTabIndex = count($tabsArray);
+			array_push($tabsArray,
+					array (translateFN ("Storico richieste"), $storicoDIV,'onclick'=>'javascript:loadStudentServicesHistory(\''.
+							$storicoResult->getAttribute('id').'\',\''.
+							$storicoLoad->getAttribute('id').'\',\''.
+							$storicoError->getAttribute('id').'\', '.$editUserObj->getId().');')
+					);
+		}
+
 		$data = "";
 		$linkedTablesInADAUser = !is_null(ADAUser::getLinkedTables()) ? ADAUser::getLinkedTables() : array();
 		for($currTab = 0; $currTab < count ($tabsArray); $currTab ++) {
-			
+
 			// if is a subclass of FForm the it's a multirow element
-			$doMultiRowTab = !(is_subclass_of($tabsArray[$currTab][1], 'FForm') || 
+			$doMultiRowTab = !(is_subclass_of($tabsArray[$currTab][1], 'FForm') ||
 							   is_a($tabsArray[$currTab][1], 'CDiv'));
 			if ($doMultiRowTab === true)
 			{
 				$extraTableName = $tabsArray[$currTab][1];
 				$extraTableFormClass = "User" . ucfirst ($extraTableName) . "Form";
-			
+
 				/*
 				 * if extraTableName is not in the linked tables array or there's
 				 * no form classes for the extraTableName skip to the next iteration
 				 *
 				 * NOTE: there's no need to check for classes (data classes, not for ones)
 				 * existance here because if they did not existed you'd get an error while loggin in.
-				 */ 
+				 */
 				if (!in_array($extraTableName,$linkedTablesInADAUser) ||
 				    !@include_once (ROOT_DIR . '/include/Forms/' . $extraTableFormClass . '.inc.php') )
 					continue;
@@ -265,34 +293,34 @@ if (!is_null($editUserObj) && isset($_SERVER['REQUEST_METHOD']) && $_SERVER['REQ
 				// if the file is included, but still there's no form class defined
 				// skip to the next iteration
 				if (!class_exists($extraTableFormClass)) continue;
-				
+
 				// generate the form
 				$form = new $extraTableFormClass ($languages);
 				$form->fillWithArrayData (array (
-						$extraTableName::getForeignKeyProperty() => $editUserObj->getId () 
+						$extraTableName::getForeignKeyProperty() => $editUserObj->getId ()
 				));
-				
+
 				// create a div for placing 'new' and 'discard changes button'
 				$divButton = CDOMElement::create ('div', 'class:formButtons');
-				
+
 					$showButton = CDOMElement::create ('a');
 					$showButton->setAttribute ('href', 'javascript:toggleForm(\'' . $form->getName () . '\', true);');
-					$showButton->setAttribute ('class', 'showFormButton ' . $form->getName ());					
+					$showButton->setAttribute ('class', 'showFormButton ' . $form->getName ());
 					$showButton->addChild (new CText (translateFN ('Nuova scheda')));
-					
+
 					$hideButton = CDOMElement::create ('a');
 					$hideButton->setAttribute ('href', 'javascript:toggleForm(\'' . $form->getName () . '\');');
 					$hideButton->setAttribute ('class', 'hideFormButton ' . $form->getName ());
 					$hideButton->setAttribute ('style', 'display:none');
 					$hideButton->addChild (new CText (translateFN ('Chiudi e scarta modifiche')));
-				
+
 				$divButton->addChild ($showButton);
 				$divButton->addChild ($hideButton);
-				
+
 				$objProperty = 'tbl_' . $extraTableName;
-				// create a div to wrap up all the rows of the array tbl_educationTrainig				
+				// create a div to wrap up all the rows of the array tbl_educationTrainig
 				$container = CDOMElement::create ('div', 'class:extraRowsContainer,id:container_' . $extraTableName);
-				
+
 				// if have 3 or more rows, add the new and discard buttons on top also
 				if (count ($editUserObj->$objProperty) >= 3) {
 					$divButton->setAttribute('class', $divButton->getAttribute('class').' top');
@@ -300,17 +328,17 @@ if (!is_null($editUserObj) && isset($_SERVER['REQUEST_METHOD']) && $_SERVER['REQ
 					// reset the button class by removing top
 					$divButton->setAttribute('class', str_ireplace(' top', '', $divButton->getAttribute('class')));
 				}
-				
+
 				if (count ($editUserObj->$objProperty) > 0) {
 					foreach ($editUserObj->$objProperty as $num => $aElement) {
 						$keyFieldName = $aElement::getKeyProperty();
-						$keyFieldVal = $aElement->$keyFieldName;						
+						$keyFieldVal = $aElement->$keyFieldName;
 						$container->addChild (new CText (UserExtraModuleHtmlLib::extraObjectRow ($aElement)));
 					}
 				}
 				// in these cases the form is added here
 				$container->addChild (CDOMElement::create('div','class:clearfix'));
-				$container->addChild (new CText ($form->render()));	
+				$container->addChild (new CText ($form->render()));
 				// unset the form that's going to be userd in next iteration
 				unset ($form);
 				$container->addChild (CDOMElement::create('div','class:clearfix'));
@@ -342,12 +370,12 @@ if (!is_null($editUserObj) && isset($_SERVER['REQUEST_METHOD']) && $_SERVER['REQ
 				// add a link to the div that holds tab content
 				$tabLink = BaseHtmlLib::link ('#divTab' . $currTab, $tabsArray [$currTab][0]);
 				if (isset($tabsArray[$currTab]['onclick'])) {
-					$tabLink->setAttribute('onclick', $tabsArray[$currTab]['onclick']);					
+					$tabLink->setAttribute('onclick', $tabsArray[$currTab]['onclick']);
 				}
 				$tabsLI->addChild ($tabLink);
 				$tabsUL->addChild ($tabsLI);
 				$tabContents [$currTab] = CDOMElement::create ('div', 'id:divTab' . $currTab);
-				
+
 				if (isset ($container)) {
 					// add the container to the current tab
 					$tabContents [$currTab]->addChild ($container);
@@ -355,19 +383,19 @@ if (!is_null($editUserObj) && isset($_SERVER['REQUEST_METHOD']) && $_SERVER['REQ
 					// if form of current tab wants the UserExtraForm fields embedded, obey it
 					if (isset($tabsArray[$currTab]['withExtra']) && $tabsArray[$currTab]['withExtra']===true) {
 						UserExtraForm::addExtraControls($currentForm);
-						$currentForm->fillWithArrayData($user_dataAr);						
+						$currentForm->fillWithArrayData($user_dataAr);
 					}
 					$tabContents [$currTab]->addChild (new CText ($currentForm->getHtml()));
-					unset ($currentForm);				
-				}			
+					unset ($currentForm);
+				}
 				$tabsContainer->addChild ($tabContents [$currTab]);
-			}			
+			}
 		} // end cycle through all tabs
-		
-		if (isset ($tabsContainer)) { 
+
+		if (isset ($tabsContainer)) {
 			$data .= $tabsContainer->getHtml ();
 		}
-		else if (isset($form)) {			
+		else if (isset($form)) {
 			if (isset($extraForm)) {
 				// if there are extra controls and NO tabs
 				// add the extra controls to the standard form
@@ -375,16 +403,16 @@ if (!is_null($editUserObj) && isset($_SERVER['REQUEST_METHOD']) && $_SERVER['REQ
 				$form->fillWithArrayData($user_dataAr);
 			}
 			$data .= $form->render();
-		}		
+		}
 		else $data = 'No form to display :(';
-	} 
+	}
 }
 
 $label = translateFN('Modifica dati utente');
 
 $divProgressBar = CDOMElement::create('div','id:progressbar');
-$divProgressLabel = CDOMElement::create('div','id:progress-label');			
-$divProgressBar->addChild ($divProgressLabel);			
+$divProgressLabel = CDOMElement::create('div','id:progress-label');
+$divProgressBar->addChild ($divProgressLabel);
 
 
 $help = translateFN('Modifica dati utente');
@@ -410,12 +438,20 @@ $maxFileSize = (int) (ADA_FILE_UPLOAD_MAX_FILESIZE / (1024*1024));
 /**
  * do the form have to be submitted with an AJAX call?
  * defalut answer is true, call this method to set it to false.
- * 
+ *
  * $editUserObj->useAjax(false);
  */
 if (!is_null($editUserObj)) {
 	$optionsAr['onload_func']  = 'initDoc('.$maxFileSize.','. $editUserObj->getId().');';
 	$optionsAr['onload_func'] .= 'initUserRegistrationForm('.(int)(isset($tabsContainer)).', '.(int)$editUserObj->saveUsingAjax().');';
+
+	if (in_array($userObj->getType(), array(AMA_TYPE_SWITCHER, AMA_TYPE_TUTOR)) && isset($_GET['tab']) && $_GET['tab']==='servicesHistory') {
+		$optionsAr['onload_func'] .= 'loadStudentServicesHistory(\''.
+										$storicoResult->getAttribute('id').'\',\''.
+										$storicoLoad->getAttribute('id').'\',\''.
+										$storicoError->getAttribute('id').'\', '.$editUserObj->getId().');';
+		$optionsAr['onload_func'] .= '$j(\'#tabs\').tabs(\'option\',\'active\', '.$storicoTabIndex.' );';
+	}
 } else $optionsAr = null;
 
 //$optionsAr['onload_func'] = 'initDateField();';
@@ -430,7 +466,7 @@ if(isset($_GET['message']))
 {
    $help= $_GET['message'];
 }
-   
+
 if(isset($_SESSION['sess_id_course_instance']))
 {
     $last_access=$userObj->get_last_accessFN(($_SESSION['sess_id_course_instance']),"UT",null);
@@ -455,9 +491,9 @@ $content_dataAr = array(
     'data' => $data,
     'last_visit' => $last_access,
     'help' => $help,
-	'user_avatar'=>$avatar->getHtml(),		
+	'user_avatar'=>$avatar->getHtml(),
 	'user_modprofilelink' => $userObj->getEditProfilePage(),
-	
+
 );
 
 
