@@ -566,7 +566,7 @@ switch ($op) {
 		if (!AMA_DB::isError($listStudentIds) && is_array($listStudentIds) && count($listStudentIds)>0) {
 			$tableHead = array (translateFN('cognome e nome'),
 					translateFN('Iscrizione AA (AC) Tasse').'<br/>('.translateFN('Corso di studi').')',
-					translateFN('ultima richiesta'), translateFN('num. richieste'),
+					translateFN('ultima richiesta'), translateFN('Servizi in attesa / richiesti'),
 					translateFN('azioni'));
 			$tableBody = array();
 
@@ -578,7 +578,7 @@ switch ($op) {
 
 			$appointment_link = CDOMElement::create('a');
 			$appointment_link->setAttribute('href','javascript:void(0);');
-			$appointment_link->addChild(new CText($appointment_link_label));
+			$appointment_link->addChild(new CText(translateFN('Avvia un nuovo servizio')));
 
 			foreach ($listStudentIds as $key=>$student_id) {
 				// load the user from the db
@@ -586,6 +586,7 @@ switch ($op) {
 				if (is_object($studentObj) && $studentObj instanceof ADAUser && $studentObj->getStatus()==ADA_STATUS_REGISTERED) {
 					$getInstancesData = true;
 					$instancesRES = $dh->get_course_instances_for_this_student($studentObj->getId(), $getInstancesData);
+					$closedInstances = 0;
 					$countInstances = 0;
 					$lastRequestTime = 0;
 					if (!AMA_DB::isError($instancesRES)) {
@@ -593,6 +594,7 @@ switch ($op) {
 							// count only instances having a course with ADA_SERVICE_HELP or ADA_SERVICE_IN_ITINERE as tipo_servizio
 							if (in_array((int)$anInstance['tipo_servizio'], array(ADA_SERVICE_HELP, ADA_SERVICE_IN_ITINERE))) {
 								$countInstances++;
+								if ($anInstance['instance_status'] == ADA_INSTANCE_CLOSED) $closedInstances++;
 								$lastRequestTime = max(array($anInstance['data_iscrizione'],$lastRequestTime));
 							}
 						}
@@ -671,12 +673,41 @@ switch ($op) {
 					$detailsDIV->addChild(new CText($studenDetailStr.'<br/>'.$hiddenHackSpan->getHtml().
 									$pt_desc->getHtml().'&nbsp;'.$tipo_did_decode->getHtml().'&nbsp;'.$sta_occup_decode->getHtml()));
 
+					$waitingInstances = $countInstances - $closedInstances;
+					$servicesDIV = CDOMElement::create('div','class:serivces count');
+					$spanWaiting = CDOMElement::create('span', 'class:service waiting');
+					if ($waitingInstances == 0 && $countInstances==0 || ($waitingInstances>0 && $countInstances>0)) {
+						$spanWaiting->setAttribute('class', $spanWaiting->getAttribute('class').' warning');
+					}
+					$spanWaiting->addChild(new CText($waitingInstances));
+					$spanTotal = CDOMElement::create('span','class:service total');
+					$spanTotal->addChild(new CText($countInstances));
+					$sep = CDOMElement::create('span','class:service separator');
+					$sep->addChild(new CText('/'));
+					$servicesDIV->addChild($spanWaiting);
+					$servicesDIV->addChild($sep);
+					$servicesDIV->addChild($spanTotal);
+					if ($countInstances>0) {
+						$link = BaseHtmlLib::link('edit_user.php?tab=servicesHistory&id='.$studentObj->getId(), translateFN('Storico Richieste'));
+						$link->setAttribute('class', 'service history');
+						$servicesDIV->addChild($link);
+					}
+
+					if ($waitingInstances > 0) {
+						// prepare manage requests link
+						$reqLink = CDOMElement::create('a','class:manage waiting services');
+						$reqLink->setAttribute('href', 'javascript:void(0);');
+						$reqLink->setAttribute('onclick','javascript:toggleManageRequest($j(this), '.$studentObj->getId().');');
+						$reqLink->addChild(new CText(translateFN('Gestisci richieste in attesa')));
+						$reqLink->addChild(CDOMElement::create('i','class:triangle down icon'));
+					}
+
 					$tableBody[] = array(
 							BaseHtmlLib::link('edit_user.php?id='.$studentObj->getId(), $studentObj->getLastName().' '.$studentObj->getFirstName())->getHtml(),
 							$detailsDIV->getHtml(),
-							($lastRequestTime > 0) ? AMA_Common_DataHandler::ts_to_date($lastRequestTime) : $lastRequestTime,
-							$countInstances,
-							$appointment_link->getHtml()
+							($lastRequestTime > 0) ? AMA_Common_DataHandler::ts_to_date($lastRequestTime) : 'N/N',
+							$servicesDIV->getHtml(),
+							$appointment_link->getHtml().' '.(isset($reqLink) ? $reqLink->getHtml() : '')
 					);
 				} else {
 					unset ($listStudentIds[$key]);

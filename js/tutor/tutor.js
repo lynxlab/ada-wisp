@@ -1,3 +1,5 @@
+var studentsDT = null;
+
 function initDoc() {
 	$j(document).ready(function() {
 		var appointmentsTables = ["sortable_S","sortable_event_proposed"];
@@ -110,7 +112,7 @@ function initDoc() {
 		if (preassignedLastCol >= 0) {
 			unsortableCols.push(preassignedLastCol);
 		}
-		$j("#table_preassigned_students").dataTable( {
+		studentsDT = $j("#table_preassigned_students").dataTable( {
 			"bLengthChange": true,
 			"bFilter":       true,
 			"bInfo":         true,
@@ -269,6 +271,36 @@ function getHelpServiceID() {
 		});
 	}
 	return d.promise();
+}
+
+/* Formatting function for row details - modify as you need */
+function getRequestsDetails (studentID) {
+	return $j.ajax({
+	    type	: 'GET',
+	    url	: HTTP_ROOT_DIR+ '/tutor/ajax/getStudentPendingInstances.php',
+	    data	: { studentID: studentID },
+	    dataType :'json'
+	});
+}
+
+function toggleManageRequest(jQueryObj, studentID) {
+	if (studentsDT !== null) {
+		var tr = $j(jQueryObj).closest('tr')[0];
+		var icon = $j(jQueryObj).children('i.icon').first();
+
+		if (studentsDT.fnIsOpen(tr)) {
+			icon.toggleClass('down').toggleClass('up');
+			studentsDT.fnClose(tr);
+		} else {
+			$j.when(getRequestsDetails(studentID))
+			.done(function (response) {
+				if ('html' in response && response.html.trim().length>0) {
+					icon.toggleClass('down').toggleClass('up');
+					studentsDT.fnOpen( tr, response.html, 'details' );
+				}
+			});
+		}
+	}
 }
 
 function  initToolTips() {

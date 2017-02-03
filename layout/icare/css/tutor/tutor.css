@@ -252,3 +252,38 @@ div#selectServiceDialog > span.selectServiceMSG { text-align: center; display: i
 #journey .annocorsofilter {
 	float: right;
 }
+
+div.serivces.count .service.warning {
+	font-weight: bold;
+	color: red;
+}
+
+div.serivces.count a.service.history {
+	float:right;
+	margin-right: 2em;
+}
+
+a.manage.waiting.services i.icon {
+	text-decoration: none;
+}
+
+.dataTables_wrapper table#table_preassigned_students tbody > tr > td.details {
+	border-bottom: 1px solid #8c8c8c;
+	background: rgba(181,178,178,0.5);
+}
+
+.pending.link.service {
+	float: left;
+}
+
+.pending.service.descr {
+	display: block;
+    padding: 2px;
+    margin-left: 1em;
+    float: left;
+}
+
+.show.status.link,
+.new.appointment.link {
+	display: inline;
+}
