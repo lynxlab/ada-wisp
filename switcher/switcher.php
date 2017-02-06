@@ -118,12 +118,54 @@ foreach ($infoServicesForCurrentProviderAr as $infoService) {
     $infoServicelHa[$idLocalService]['name'] = $infoService['nome'];
 }
 
+/**
+ * use AA_ISCR_DESC and ANNO_CORSO from $_GET, if any
+ *
+ * @var string $aa_iscr_desc
+ * @var string $anno_corso
+ */
+$aa_iscr_desc = null;
+$anno_corso = null;
+if (array_key_exists('AA_ISCR_DESC', $_GET) && array_key_exists('ANNO_CORSO', $_GET)) {
+	$aa_iscr_desc = trim($_GET['AA_ISCR_DESC']);
+	$anno_corso = trim($_GET['ANNO_CORSO']);
+}
+
+$annoCorsoAr = $dh->get_tutor_anno_corso_filter();
+if (is_array($annoCorsoAr) && count($annoCorsoAr)>0) {
+	$annoCorsoSelect = array( 'all' => translateFN('Tutti gli anni'));
+	foreach ($annoCorsoAr as $anAnnoCorso) {
+		// split annocorso option
+		list ($curr_aa_iscr_desc, $curr_anno_corso) = explode(' ', $anAnnoCorso['option']);
+		$curr_anno_corso = trim($curr_anno_corso,'()');
+		$key = 'AA_ISCR_DESC='.$curr_aa_iscr_desc.'&ANNO_CORSO='.$curr_anno_corso;
+		$annoCorsoSelect[$key] = $anAnnoCorso['option'];
+	}
+	if (!is_null($aa_iscr_desc) && !is_null($anno_corso)) {
+		$selected = 'AA_ISCR_DESC='.$aa_iscr_desc.'&ANNO_CORSO='.$anno_corso;
+	} else {
+		$selected = 'all';
+	}
+	$annoCorsoEl = BaseHtmlLib::selectElement2('id:annocorso-select', $annoCorsoSelect, $selected);
+}
+
+
+
 $numRequiredHelp = 0;
 if ($op=='not_started' or $op=='all') {
     $not_startedAr = $dh->get_tester_services_not_started();
 
     if (is_array($not_startedAr) && sizeof($not_startedAr) > 0) {
-      foreach($not_startedAr as $user_registration) {
+      foreach($not_startedAr as $not_startedKey => $user_registration) {
+
+      	// load the user from the db and do not loop if their AA_ISCR_DESC and ANNO_CORSO does not match the passed ones
+      	$studentObj = MultiPort::findUser($user_registration['id_utente']);
+        if (!is_null($aa_iscr_desc) && property_exists($studentObj, 'AA_ISCR_DESC') && $studentObj->AA_ISCR_DESC != $aa_iscr_desc &&
+        	!is_null($anno_corso) && property_exists($studentObj, 'ANNO_CORSO') && $studentObj->ANNO_CORSO != $anno_corso) {
+        	unset ($not_startedAr[$not_startedKey]);
+        	continue;
+        }
+
         $idLocalService = $user_registration['id_corso'];
         if (in_array((int)$infoServicelHa[$idLocalService]['level'], array(ADA_SERVICE_HELP, ADA_SERVICE_IN_ITINERE))) {
             $numRequiredHelp ++;
@@ -172,7 +214,15 @@ if ($op=='started' || $op=='all' || $op=='open' || $op=='closed') {
     $startedAr = $dh->get_tester_services_started($getUnassignedServices);
     if (is_array($startedAr) && sizeof($startedAr) > 0) {
 
-      foreach($startedAr as $user_registration) {
+      foreach($startedAr as $startedKey => $user_registration) {
+
+      	// load the user from the db and do not loop if their AA_ISCR_DESC and ANNO_CORSO does not match the passed ones
+      	$studentObj = MultiPort::findUser($user_registration['id_utente']);
+      	if (!is_null($aa_iscr_desc) && property_exists($studentObj, 'AA_ISCR_DESC') && $studentObj->AA_ISCR_DESC != $aa_iscr_desc &&
+      		!is_null($anno_corso) && property_exists($studentObj, 'ANNO_CORSO') && $studentObj->ANNO_CORSO != $anno_corso) {
+      		unset($startedAr[$startedKey]);
+      		continue;
+      	}
 
         if (($op == 'closed' &&  time() >= $user_registration['data_fine']) || ($op == 'open' &&  time() < $user_registration['data_fine']) || ($op=='started') || ($op=='all')) {
             $idLocalService = $user_registration['id_corso'];
@@ -298,6 +348,8 @@ $content_dataAr = array(
   'user_modprofilelink' => $userObj->getEditProfilePage()
 );
 
+if (isset($annoCorsoEl)) $content_dataAr['annocorsofilter'] = $annoCorsoEl->getHtml();
+
 $layout_dataAr['JS_filename'] = array(
 	JQUERY,
 	JQUERY_DATATABLE,
@@ -311,7 +363,7 @@ $layout_dataAr['CSS_filename']= array(
 	JQUERY_DATATABLE_CSS
     );
   $render = null;
-  $options['onload_func'] = 'dataTablesExec()';
+  $options['onload_func'] = 'initDoc()';
 
 /**
  * Sends data to the rendering engine

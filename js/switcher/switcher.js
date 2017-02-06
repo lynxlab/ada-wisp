@@ -1,3 +1,30 @@
+function initDoc() {
+	dataTablesExec();
+	$j('#journey').on('change', 'select#annocorso-select', function() {
+		// get base url
+		var baseUrl = window.location.href.split("?")[0].replace('#','');
+		// get query string as an object
+		var queryStringObj = {};
+		window.location.search.substring(1).replace(
+				new RegExp("([^?=&]+)(=([^&]*))?", "g"),
+				function($0, $1, $2, $3) { queryStringObj[$1] = $3; }
+		);
+		// remove query string unwanted properties
+		if ('AA_ISCR_DESC' in queryStringObj) delete queryStringObj.AA_ISCR_DESC;
+		if ('ANNO_CORSO' in queryStringObj) delete queryStringObj.ANNO_CORSO;
+		// build new query string with what's left in the object
+		var newQueryString = $j.param(queryStringObj);
+		// append selected value
+		if ($j(this).val() !== 'all') {
+			newQueryString += ((newQueryString.length == 0) ? '' : '&') + $j(this).val();
+		}
+		// build new url and redirect
+		var newurl = baseUrl + ((newQueryString.length == 0) ? '' : '?') + newQueryString;
+		$j('body').css({'opacity': '0.2'});
+		window.location.href = newurl;
+	});
+}
+
 function dataTablesExec() {
 //	$j('#container').css('width', '99%');
 
@@ -12,7 +39,7 @@ function dataTablesExec() {
                 "bAutoWidth": true,
 //		'bProcessing': true,
 		'bDeferRender': true,
- 
+
                 'aoColumnDefs': [{ "bSortable": false, "aTargets": [ 3 ] } ],
 
                 'aoColumns': [
@@ -22,11 +49,11 @@ function dataTablesExec() {
                                 null,
                                 null
                             ],
-         
+
                 'bPaginate': false
 //		'sPaginationType': 'full_numbers'
 	}).show();
-        
+
 	var datatable = $j('#table_users_for_service').dataTable( {
 
                  "bJQueryUI": true,
@@ -39,7 +66,7 @@ function dataTablesExec() {
                 "bAutoWidth": true,
 //		'bProcessing': true,
 		'bDeferRender': true,
- 
+
                 'aoColumns': [
                                 null,
                                 null,
@@ -47,13 +74,13 @@ function dataTablesExec() {
                                 null,
                                 null
                             ],
-         
+
 //                'bPaginate': false
 
                 'bPaginate': true,
                 "aaSorting": [[ 2, "desc" ]],
-                
-                "oLanguage": 
+
+                "oLanguage":
                  {
                     "sUrl": HTTP_ROOT_DIR + "/js/include/jquery/dataTables/dataTablesLang.php"
                  },
@@ -66,8 +93,8 @@ function dataTablesExec() {
                                 $j(this).find('span').remove();
                                 $j(this).parents('th').append(sortIcon);
                                 });
-                    } 
-        
+                    }
+
 //		'sPaginationType': 'full_numbers'
 	}).show();
 
@@ -82,7 +109,7 @@ function dataTablesExec() {
                 "bAutoWidth": true,
 //		'bProcessing': true,
 		'bDeferRender': true,
- 
+
 //                'aoColumnDefs': [{ "bSortable": false, "aTargets": [ 3 ] } ],
 
                 'aoColumns': [
@@ -92,15 +119,15 @@ function dataTablesExec() {
                                 null,
                                 { 'sType': "date-euro" }
                             ],
-         
+
                 'bPaginate': false
 //		'sPaginationType': 'full_numbers'
 	}).show();
-        
+
 }
 
 function initListLservices() {
-	$j('table.sortable').dataTable( {		
+	$j('table.sortable').dataTable( {
         "bLengthChange" : false,
 		"bFilter" : true,
 		"bInfo" : false,
@@ -113,5 +140,5 @@ function initListLservices() {
 		} ],
 		"aoColumns" : [ null, null, null, null, null, null ],
 		"bPaginate" : false
-	}).show();	
+	}).show();
 }

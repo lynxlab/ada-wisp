@@ -139,3 +139,7 @@ div.fform form input[type=text],
 div.fform form input[type=password],
 div.fform form select { width: 45%; border: 1px dotted gray; padding: 5px; }
 div.fform form fieldset fieldset { border: 1px dotted grey; margin-bottom: 10px; }
+
+#journey .annocorsofilter {
+	float: right;
+}
