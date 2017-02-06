@@ -260,10 +260,10 @@ if (!is_null($editUserObj) && isset($_SERVER['REQUEST_METHOD']) && $_SERVER['REQ
 		if (in_array($userObj->getType(), array(AMA_TYPE_SWITCHER, AMA_TYPE_TUTOR))) {
 			$storicoTabIndex = count($tabsArray);
 			array_push($tabsArray,
-					array (translateFN ("Storico richieste"), $storicoDIV,'onclick'=>'javascript:loadStudentServicesHistory(\''.
+					array (translateFN ("Storico richieste"), $storicoDIV,'onclick'=>'javascript:loadAPIDetails(\''.
 							$storicoResult->getAttribute('id').'\',\''.
 							$storicoLoad->getAttribute('id').'\',\''.
-							$storicoError->getAttribute('id').'\', '.$editUserObj->getId().');')
+							$storicoError->getAttribute('id').'\');')
 					);
 		}
 
@@ -446,10 +446,10 @@ if (!is_null($editUserObj)) {
 	$optionsAr['onload_func'] .= 'initUserRegistrationForm('.(int)(isset($tabsContainer)).', '.(int)$editUserObj->saveUsingAjax().');';
 
 	if (in_array($userObj->getType(), array(AMA_TYPE_SWITCHER, AMA_TYPE_TUTOR)) && isset($_GET['tab']) && $_GET['tab']==='servicesHistory') {
-		$optionsAr['onload_func'] .= 'loadStudentServicesHistory(\''.
+		$optionsAr['onload_func'] .= 'loadAPIDetails(\''.
 										$storicoResult->getAttribute('id').'\',\''.
 										$storicoLoad->getAttribute('id').'\',\''.
-										$storicoError->getAttribute('id').'\', '.$editUserObj->getId().');';
+										$storicoError->getAttribute('id').'\');';
 		$optionsAr['onload_func'] .= '$j(\'#tabs\').tabs(\'option\',\'active\', '.$storicoTabIndex.' );';
 	}
 } else $optionsAr = null;

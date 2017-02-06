@@ -501,13 +501,19 @@ function deleteExtra ( extraTableName, extraID, foreignKeyName )
  */
 var careerLoaded = false;
 var surveysLoaded = false;
+var historyLoaded = false;
 
 function loadAPIDetails(targetDIVid, loadingDIVid, errorDIVid) {
 	var isCareer = false;
 	var isSurveys = false;
+	var isHistory = false;
 	var doAjax = false;
+	var paginateTable = false;
 	var dataTableOptions = {};
+	var ajaxUrl = HTTP_ROOT_DIR + '/browsing/ajax/';
+
 	if (targetDIVid.indexOf('carriera')!=-1) {
+		ajaxUrl += 'getCareer.php';
 		isCareer = true;
 		doAjax = !careerLoaded;
 		dataTableOptions = {
@@ -516,6 +522,7 @@ function loadAPIDetails(targetDIVid, loadingDIVid, errorDIVid) {
 				             { "sType": "date-eu", "aTargets" : [9] } ]
 		};
 	} else if (targetDIVid.indexOf('questionari')!=-1) {
+		ajaxUrl += 'getSurvey.php';
 		isSurveys = true;
 		doAjax = !surveysLoaded;
 		dataTableOptions = {
@@ -523,6 +530,16 @@ function loadAPIDetails(targetDIVid, loadingDIVid, errorDIVid) {
 			'aoColumnDefs': [{ "bSortable" : false, "aTargets": [0,1,3,4,5] },
 			                 { "bVisible" : false, "aTargets" : [0,1,2,5] }]
 		};
+	} else if (targetDIVid.indexOf('storico')!=-1) {
+		ajaxUrl += 'getStudentServicesHistory.php';
+		isHistory = true;
+		paginateTable = true;
+		doAjax = !historyLoaded;
+		dataTableOptions = {
+				"aaSorting": [[ 2, "desc" ]],
+				'aoColumnDefs': [{ "bSortable" : false, "aTargets": [5] },
+				                 { "sType": "date-eu", "aTargets" : [2] } ]
+			};
 	}
 
 	if (doAjax) {
@@ -531,14 +548,20 @@ function loadAPIDetails(targetDIVid, loadingDIVid, errorDIVid) {
 		loadingDIVid = '#' + loadingDIVid;
 		errorDIVid = '#' + errorDIVid;
 
-		if ($j('#codice_fiscale').val().length>0) {
-			cf = $j('#codice_fiscale').val();
+		var ajaxData = {};
+
+		if ((isCareer || isSurveys) && $j('#codice_fiscale').val().length>0) {
+			ajaxData['cf'] = $j('#codice_fiscale').val();
+		}
+
+		if (isHistory && $j('#id_utente').val().length>0) {
+			ajaxData['userId'] = $j('#id_utente').val();
 		}
 
 		$j.ajax({
 			type	:	'GET',
-			url		:	HTTP_ROOT_DIR + '/browsing/ajax/'+(isCareer ? 'getCareer' : 'getSurvey')+'.php',
-			data	:	{ cf: cf },
+			url		:	ajaxUrl,
+			data	:	ajaxData,
 			dataType:	'json',
 			beforeSend : function() {
 				$j(errorDIVid).hide();
@@ -561,12 +584,13 @@ function loadAPIDetails(targetDIVid, loadingDIVid, errorDIVid) {
 					var loadedOK = JSONObj.status==1;
 					if (isCareer) careerLoaded = loadedOK;
 					else if (isSurveys) surveysLoaded = loadedOK;
+					else if (isHistory) historyLoaded = loadedOK;
 					if (loadedOK) {
 						$j(targetDIVid+' table').dataTable($j.extend(dataTableOptions,{
 							"bJQueryUI": true,
 							"bFilter": true,
-							"bInfo": false,
-							"bPaginate": false,
+							"bInfo": paginateTable,
+							"bPaginate": paginateTable,
 							"oLanguage": {
 								"sUrl": HTTP_ROOT_DIR + "/js/include/jquery/dataTables/dataTablesLang.php"
 							},
@@ -587,56 +611,6 @@ function loadAPIDetails(targetDIVid, loadingDIVid, errorDIVid) {
 		});
 	}
 }
-
-/**
- * UNIMC Only:
- * loads and display the services history of a student based on his/her ID
- */
-var historyLoaded = false;
-function loadStudentServicesHistory(targetDIVid, loadingDIVid, errorDIVid, userId) {
-
-	var targetDIVid = '#' + targetDIVid;
-	var loadingDIVid = '#' + loadingDIVid;
-	var errorDIVid = '#' + errorDIVid;
-
-	$j.ajax({
-		type	:	'GET',
-		url		:	HTTP_ROOT_DIR + '/browsing/ajax/getStudentServicesHistory.php',
-		data	:	{ userId: userId },
-		dataType:	'json',
-		beforeSend : function() {
-			$j(errorDIVid).hide();
-			$j(targetDIVid).html('');
-			if (!$j(loadingDIVid).is(':visible')) {
-				$j(targetDIVid).fadeOut(function(){  $j(loadingDIVid).fadeIn(); });
-			}
-		}
-	}).always (function() {
-		if ($j(loadingDIVid).is(':visible')) {
-			$j(loadingDIVid).fadeOut(function(){  $j(targetDIVid).fadeIn(); });
-		}
-	}).error (function(response){
-		var errorStr = [];
-		if ('status' in response) errorStr.push(response.status);
-		if ('statusText' in response) errorStr.push(response.statusText);
-		if (errorStr.length>0) $j(errorDIVid).text(errorStr.join(' - '));
-		$j(loadingDIVid+','+targetDIVid).stop(true).hide();
-		$j(errorDIVid).fadeIn();
-	}).done (function(JSONObj){
-		if ('undefined' != typeof JSONObj) {
-			if ('undefined' != typeof JSONObj.msg) {
-				$j(targetDIVid).html(JSONObj.msg);
-				var loadedOK = JSONObj.status==1;
-				historyLoaded = loadedOK;
-
-				if (loadedOK) {
-					// fill in targetDIV
-				}
-			}
-		}
-	});
-}
-
 
 /**
  * shows and after 500ms removes the div to give feedback to the user about

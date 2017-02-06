@@ -49,26 +49,30 @@ $student_id = DataValidator::is_uinteger(isset($_GET['id']) ? $_GET['id'] : null
 $studensList = $GLOBALS['dh']->get_list_of_tutored_unique_users($userObj->getId());
 $preassigned = $GLOBALS['dh']->get_preassigned_students_for_tutor($userObj->getId());
 
-if (!AMA_DB::isError($studensList) && is_array($studensList) && count($studensList)>=0 && 
+if (!AMA_DB::isError($studensList) && is_array($studensList) && count($studensList)>=0 &&
 	!AMA_DB::isError($preassigned) && is_array($preassigned) && count($preassigned)>0) {
-		foreach ($preassigned as $userID) $studensList[]['id_utente'] = $userID;	
-} else if (AMA_DB::isError($studensList) && 
+		foreach ($preassigned as $userID) $studensList[]['id_utente'] = $userID;
+} else if (AMA_DB::isError($studensList) &&
 		   !AMA_DB::isError($preassigned) && is_array($preassigned) && count($preassigned)>=0) {
-		   	$studensList = $preassigned;			
+		   	$studensList = $preassigned;
 } else if (AMA_DB::isError($studensList) && AMA_DB::isError($preassigned)) {
 	$studensList = array();
 }
 
-
-$isAllowed = false; // is $userObj a tutor of the student with the passed id?
-if (!AMA_DB::isError($studensList) && is_array($studensList) && count($studensList)>0) {
-	foreach ($studensList as $aStudent) {
-		if ($aStudent['id_utente'] == $student_id) {
-			$isAllowed = true;
-			break;
+if ($userObj instanceof ADAPractitioner && $userObj->isSuper()) {
+	$isAllowed = true;
+} else {
+	$isAllowed = false; // is $userObj a tutor of the student with the passed id?
+	if (!AMA_DB::isError($studensList) && is_array($studensList) && count($studensList)>0) {
+		foreach ($studensList as $aStudent) {
+			if ($aStudent['id_utente'] == $student_id) {
+				$isAllowed = true;
+				break;
+			}
 		}
 	}
 }
+
 
 if ($isAllowed) {
 	/**
