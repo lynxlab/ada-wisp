@@ -83,7 +83,7 @@ if ($_SERVER['REQUEST_METHOD']=='GET' && intval(trim($_GET['userId']))>0) {
 						$timeline_link = CDOMElement::create('a', "class:history service link,href:$href");
 						$timeline_link->addChild(new CText($anInstance['titolo']));
 
-						$status_link = CDOMElement::create('a', 'class:show status link,href:user_service_detail.php?id_user='.intval($_GET['userId']).'&id_course_instance='.$anInstance['id_istanza_corso']);
+						$status_link = CDOMElement::create('a', 'class:show status link,href:'.HTTP_ROOT_DIR.'/tutor/user_service_detail.php?id_user='.intval($_GET['userId']).'&id_course_instance='.$anInstance['id_istanza_corso']);
 						$status_link->addChild(new CText($status_link_label));
 						$actions[] = $status_link->getHtml();
 
