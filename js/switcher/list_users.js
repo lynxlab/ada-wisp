@@ -1,12 +1,12 @@
-/* 
+/*
  * To change this license header, choose License Headers in Project Properties.
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
 var oTable = null;
 
-function initDoc(){
-    createDataTable();
+function initDoc(tableType){
+    createDataTable(tableType);
     initToolTips();
 }
 
@@ -62,22 +62,31 @@ function toggleDetails(user_id,imgObj) {
 }
 
 
-function createDataTable() {
-    
+function createDataTable(tableType) {
+
+	/**
+	 * look for an inline_menu class inside the first row
+	 * the cell containing it is the actions col
+	 */
+	var firstTD = $j('#table_users > tbody > tr > td > .inline_menu').first().parents('td');
+	var actionColIndex = $j('#table_users > tbody > tr > td').index(firstTD);
+
     oTable = $j('#table_users').dataTable({
         "bJQueryUI": true,
         "bFilter": true,
         "bInfo": true,
         "bSort": true,
         "bAutoWidth": true,
-        'aoColumnDefs': [{"aTargets": [ 0 ],"sClass":"expandCol"},{ "bSortable": false, "aTargets": [ 4 ],"sClass":"actionCol" } ],
-        "oLanguage": 
+        'aoColumnDefs': [{"aTargets": [ 0 ],"sClass":"expandCol"},
+                         { "bVisible": (tableType!=='students'), "aTargets": [ 1 ] },
+                         { "bSortable": false, "aTargets": [ actionColIndex ],"sClass":"actionCol" } ],
+        "oLanguage":
         {
             "sUrl": HTTP_ROOT_DIR + "/js/include/jquery/dataTables/dataTablesLang.php"
         }
      
-    });
-}    
+    }).fadeIn('slow');
+}
      
   function fnFormatDetails ( idUser )
 {

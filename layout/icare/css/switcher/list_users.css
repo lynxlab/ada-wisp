@@ -14,6 +14,19 @@ and open the template in the editor.
 
 .actionCol{width: 27%;}
 
+#table_users {
+	display: none;
+}
+#table_users.default_table.students .actionCol {
+	width: 15%;
+} 
+
+#table_users.default_table ul.inline_menu {
+	margin: 0 auto;
+    padding: 0;
+    text-align: center;
+}
+
 #table_users.default_table ul.inline_menu li a:link{
     background-color: transparent;
     border: none;
@@ -23,9 +36,14 @@ and open the template in the editor.
 }
 
 .tooltip {
+   padding:0;
    background: transparent;
    border-color: transparent;
    cursor: default;
+ }
+ 
+ .details.tooltip {
+ 	color: inherit;
  }
  
 .fg-toolbar.ui-widget-header {
