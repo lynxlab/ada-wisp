@@ -9894,7 +9894,7 @@ abstract class AMA_Tester_DataHandler extends Abstract_AMA_DataHandler {
             $more_fields = ', '.implode(', ', $field_list_ar);
         }
         // do the query
-        $students_ar =  $db->getAll("select id_utente$more_fields from utente, studente where  tipo=".AMA_TYPE_STUDENT ." and id_utente=id_utente_studente");
+        $students_ar =  $db->getAll("select id_utente$more_fields from utente, studente where  tipo=".AMA_TYPE_STUDENT ." and id_utente=id_utente_studente", array(), AMA_FETCH_BOTH);
         if (AMA_DB::isError($students_ar)) {
             return new AMA_Error(AMA_ERR_GET);
         }
