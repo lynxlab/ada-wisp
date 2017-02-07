@@ -11,7 +11,7 @@
  * depending upon user's role.
  *
  * PLS NOTE:
- * For the 'standard' version this class should only have the hasExtra and 
+ * For the 'standard' version this class should only have the hasExtra and
  * extraFieldsArray properties, and class code will take care of everything.
  *
  * For the customizations, you must implement all the stuff you need here,
@@ -35,10 +35,10 @@ class ADAUser extends ADAAbstractUser
 	 * array to list linked tables that have
 	 * a 1:n relationship with the user, must be private
 	 * each item MUST have a corresponding class with its own fields.
-	 * 
+	 *
 	 * The constructor will build a public variable called $tbl_<array element>
 	 * of type array to hold the rows from the corresponding table.
-	 * 
+	 *
 	 * @var array
 	 */
 	protected static $_linkedTables = array ();
@@ -47,22 +47,22 @@ class ADAUser extends ADAAbstractUser
 	 * table prefix used in the DB.
 	 * eg. if in the linkedTables there is 'moreUserFields'
 	 * the corresponding table in the db must be $_tablesPrefix.'moreUserFields'
-	 * 
+	 *
 	 * * @var string
 	 */
 	protected static $_tablesPrefix = '';
-	
+
 	/**
 	 * extra table name: the table where are stored
 	 * extra datas in a 1:1 relationship with the user
-	 * 
+	 *
 	 * @var string
 	 */
 	protected static $_extraTableName = 'studente';
-	
+
 	/**
 	 * extra table (see above) unique index field name
-	 * 
+	 *
 	 * @var string
 	 */
 	protected static $_extraTableKeyProperty = 'id_utente_studente';
@@ -75,7 +75,7 @@ class ADAUser extends ADAAbstractUser
 	public $privateEmail;
 	public $TEL_DOM;
 	public $TEL_RES;
-	public $FACOLTA_COD;	
+	public $FACOLTA_COD;
 	public $TIPO_CORSO_DES;
 	public $CDS_DESC;
 	public $CDSORD_DESC;
@@ -97,8 +97,8 @@ class ADAUser extends ADAAbstractUser
 	public $SCUOLA_DESC;
 	public $PROVINCIA_SCUOLA_DESC;
 	public $REGIONE_SCUOLA_DESC;
-	
-	
+
+
 	/**
 	 * boolean to tell if the class is for a customization
 	 * and thus has extra values (i.e. properties).
@@ -109,35 +109,35 @@ class ADAUser extends ADAAbstractUser
 	 * @var boolean
 	 */
 	protected $_hasExtra;
-	
+
 	/**
 	 * boolean to tell if the system must use AJAX or standard POST
 	 * when saving user data.
 	 * Defaults to true, because ADA is a cool system and use AJAX
-	 * 
+	 *
 	 * NOTE: if $_linkedTables is not empty, MUST save through ajax
 	 *       can use POST only if there are no tabs and you only
 	 *       have $_extraTableName + public properties.
-	 *       
-	 * @var boolean       
+	 *
+	 * @var boolean
 	 */
 	protected $_useAjax;
-	
+
 	/**
 	 * boolean to tell if you are free to decide to save
 	 * via ajax or not.
-	 * 
+	 *
 	 * NOTE: - if there are no extras you are forced to have no tabs
 	 *         in the form and save using POST
 	 *       - if there are extras and linkedTables you are forced
 	 *         to have tabs in the form and save using ajx
 	 *       - if there are extras and NO linkedTables you are free
 	 *         to decide if you want: (tabs AND ajax) OR (no tabs AND POST)
-	 * 
+	 *
 	 * @var boolean
 	 */
 	private $_canSetAjax;
-	
+
 	/**
 	 * array containg extra fields list, builded automatically in the constructor
 	 */
@@ -156,7 +156,7 @@ class ADAUser extends ADAAbstractUser
 
 		$this->_canSetAjax = true;
 		$this->useAjax();
-		
+
 		$this->_extraFieldsArray = $this->buildExtraFieldsArray();
 		$this->_hasExtra = !is_null($this->_extraFieldsArray);
 
@@ -216,7 +216,7 @@ class ADAUser extends ADAAbstractUser
 							}
 							// force protected property _isSaved
 							if ($tableObject->getSaveState()) $extraValues[$tableName][$num]['_isSaved'] = 1;
-	
+
 						}
 					}
 				}
@@ -253,7 +253,7 @@ class ADAUser extends ADAAbstractUser
 						if ($arrayValues[$classKeyProperty]>0 && isset($arrayValues['_isSaved']) && $arrayValues['_isSaved']==0 )
 						{
 							// look for array index that has the passed id
-							$tempArray = &$this->$classPropertyName;							
+							$tempArray = &$this->$classPropertyName;
  							foreach ($tempArray as $key=>$aElement)
  							{
  								if ($aElement->$classKeyProperty == $arrayValues[$classKeyProperty]) break;
@@ -293,7 +293,7 @@ class ADAUser extends ADAAbstractUser
 			$classPropertyName = 'tbl_'.$extraTableClass;
 			$keyFieldName = $extraTableClass::getKeyProperty();
 			$propertyArray = &$this->$classPropertyName;
-				
+
 			if (is_array($propertyArray))
 			{
 				foreach ($propertyArray as $key=>$extraObject)
@@ -357,12 +357,12 @@ class ADAUser extends ADAAbstractUser
 	{
 		if (property_exists(get_called_class(), '_tablesPrefix')) return self::$_tablesPrefix;
 	}
-	
+
 	public static function getExtraTableName()
 	{
 		if (property_exists(get_called_class(), '_extraTableName')) return self::$_extraTableName;
 	}
-	
+
 	public static function getExtraTableKeyProperty()
 	{
 		if (property_exists(get_called_class(), '_extraTableKeyProperty')) return self::$_extraTableKeyProperty;
@@ -377,7 +377,7 @@ class ADAUser extends ADAAbstractUser
 	public function hasExtra() {
 		return $this->_hasExtra;
 	}
-	
+
 	/**
 	 * useAjax getter
 	 *
@@ -387,12 +387,12 @@ class ADAUser extends ADAAbstractUser
 	public function saveUsingAjax() {
 		return $this->_useAjax;
 	}
-	
+
 	/**
 	 * useAjax setter
-	 * 
+	 *
 	 * sets the data savemode to use AJAX calls,
-	 * can set it to false only if forceAjax is not true 
+	 * can set it to false only if forceAjax is not true
 	 * @param string $mode
 	 */
 	public function useAjax ($mode = true)
@@ -400,7 +400,7 @@ class ADAUser extends ADAAbstractUser
 		if ($this->_canSetAjax) $this->_useAjax = $mode;
 		else $this->_useAjax = true;
 	}
-	
+
 	/**
 	 * getDefaultTester implementation:
 	 * - if it's not a multiprovider environment, return the user selected provider
@@ -410,7 +410,7 @@ class ADAUser extends ADAAbstractUser
 	 */
 	public function getDefaultTester() {
 		if(!MULTIPROVIDER) {
-				
+
 			$candidate = null;
 			/**
 			 * the default tester is the only one in which the user is listed
@@ -425,14 +425,14 @@ class ADAUser extends ADAAbstractUser
 				$testersArr = array_values(array_diff ($testersArr, array(ADA_PUBLIC_TESTER)));
 				if (count($testersArr)===1) $candidate = $testersArr[0];
 			}
-	
+
 			$tester = DataValidator::validate_testername($candidate,MULTIPROVIDER);
 			if ($tester!==false) return $tester;
 			else return NULL;
 		}
 		else return parent::getDefaultTester();
 	}
-	
+
 	/**
 	 * Sets the terminated status for the passed courseId and courseInstanceId
 	 * It is usually called from user.php when the user has a subscried status
@@ -467,6 +467,69 @@ class ADAUser extends ADAAbstractUser
 			$GLOBALS['dh']->disconnect();
 		}
 		return (isset($retval) ? $retval : null);
+	}
+
+	/**
+	 * On WISP/UNIMC only:
+	 *
+	 * Gets a short code for a long field, like TIPO_DID_DECODE, PT_DESC...
+	 *
+	 * @param string $fieldName name of the property
+	 * @param string $fieldValue value of the property
+	 *
+	 * @return string
+	 *
+	 * @access public
+	 *
+	 * @author giorgio 07/feb/2017
+	 */
+	public static function getShortCodeForField($fieldName, $fieldValue) {
+
+		$shortcodes = array(
+			'TIPO_DID_DECODE' => array('teledidattica' => 'TD', 'teleconferenza' => 'TC'),
+			'PT_DESC' => function($value) {
+				$words = preg_split('/[\s-]+/', $value);
+				// if one word, extract 2 chars
+				$maxLen = (count($words) > 1) ? 1 :2;
+				for ($w = reset($words), $pt_desc_str = ''; current($words); $w = next($words)) {
+					$pt_desc_str .= substr($w, 0, $maxLen);
+				}
+				return strtoupper($pt_desc_str);
+			},
+			'STA_OCCUP_DECODE' => function($value) {
+				if (strcasecmp($value, 'N/D')===0) {
+					return strtoupper($value);
+				} else {
+					$words = preg_split('/[\s-]+/', $value);
+					// if one word, extract 2 chars
+					$maxLen = (count($words) > 1) ? 1 :2;
+					for ($w = reset($words), $sta_occup_str = ''; current($words); $w = next($words)) {
+						$sta_occup_str .= substr($w, 0, $maxLen);
+					}
+					return strtoupper($sta_occup_str);
+				}
+			},
+			'TASSE_IN_REGOLA_OGGI'=> function($value) {
+				if (strcasecmp($value, 'no')===0) return 'NR';
+				else return 'IR';
+			}
+		);
+
+		if (array_key_exists(strtoupper($fieldName), $shortcodes)) {
+			if (array_key_exists(strtolower($fieldValue), $shortcodes[strtoupper($fieldName)])) {
+				if (is_callable($shortcodes[strtoupper($fieldName)][strtolower($fieldValue)])) {
+					return $shortcodes[strtoupper($fieldName)][strtolower($fieldValue)]($fieldValue);
+				} else {
+					return $shortcodes[strtoupper($fieldName)][strtolower($fieldValue)];
+				}
+			} else {
+				if (is_callable($shortcodes[strtoupper($fieldName)])) {
+					return $shortcodes[strtoupper($fieldName)]($fieldValue);
+				}
+				else return strtoupper(substr($fieldValue, 0, 2));
+			}
+		}
+		else return $fieldValue;
 	}
 }
 ?>

@@ -43,18 +43,18 @@ else $op = 'preassign';
 if (isset($_SERVER['REQUEST_METHOD']) && $_SERVER['REQUEST_METHOD'] == 'POST'  &&
 	isset($_POST['student_ids']) && is_array($_POST['student_ids']) &&
 	isset($_POST['selTutor']) && intval($_POST['selTutor'])>0) {
-		
+
 	if ($op==='preassign') {
 	 	$res = $GLOBALS['dh']->preassign_students_to_tutor($_POST['student_ids'],intval($_POST['selTutor']));
-	 	$url = HTTP_ROOT_DIR . $_SERVER['SCRIPT_NAME'];		
+	 	$url = HTTP_ROOT_DIR . $_SERVER['SCRIPT_NAME'];
 	} else if ($op==='edit') {
 		$res = $GLOBALS['dh']->remove_preassign_students_to_tutor($_POST['student_ids'],intval($_POST['selTutor']));
 		$url = HTTP_ROOT_DIR . $_SERVER['SCRIPT_NAME'].'?practitioner_id='.intval($_POST['selTutor']);
 	}
-	
+
 	// add error handling on $res if needed
 	redirect($url);
-// http://macerata.localwisp.com/switcher/preassign_practitioner.php?practitioner_id=11 	
+// http://macerata.localwisp.com/switcher/preassign_practitioner.php?practitioner_id=11
 }
 
 // get all tutors
@@ -63,16 +63,16 @@ $tutors_ar = $dh->get_tutors_list($field_list_ar);
 
 // translated error messages to be passed to javascript
 $selectATutorMSG = translateFN('Selezionare un orientatore');
-$selectAStudentMSG = translateFN('Seleziona almeno uno studente');				
+$selectAStudentMSG = translateFN('Seleziona almeno uno studente');
 
 if (!AMA_DB::isError($tutors_ar) && is_array($tutors_ar) && count($tutors_ar)>0) {
 
 	// add a dummy select option if preassign
 	if ($op==='preassign') array_unshift($tutors_ar, array ('0', translateFN('Seleziona un orientatore'),''));
-	
+
 	// generate array for BaseHtmlLib::selectElement2 method
 	foreach ($tutors_ar as $tutor_el) $tutorSelect[$tutor_el[0]] = $tutor_el[1].' '.$tutor_el[2];
-		
+
 	// get selected tutor id, or select first element
 	reset($tutorSelect);
 	if (isset($_GET['practitioner_id']) && intval($_GET['practitioner_id'])>0) {
@@ -80,8 +80,8 @@ if (!AMA_DB::isError($tutors_ar) && is_array($tutors_ar) && count($tutors_ar)>0)
 	} else {
 		$selectedTutorID = key($tutorSelect);
 	}
-	
-	// set options for each supported $op	
+
+	// set options for each supported $op
 	if ($op==='preassign') {
 		$listStudentIds = $GLOBALS['dh']->get_non_preassigned_student_ids();
 		$onsubmit = 'return checkPreassignForm(\''.
@@ -94,11 +94,11 @@ if (!AMA_DB::isError($tutors_ar) && is_array($tutors_ar) && count($tutors_ar)>0)
 		$addChildOnError = true;
 	} else if ($op==='edit') {
 		$listStudentIds = $GLOBALS['dh']->get_preassigned_students_for_tutor($selectedTutorID);
-		$question = translateFN('Confermi l\'operazione?');		
+		$question = translateFN('Confermi l\'operazione?');
 		$onsubmit = 'return checkEditPreassignForm(\''.
 				addslashes($selectATutorMSG).'\',\''.
 				addslashes($selectAStudentMSG).'\',\''.
-				addslashes($question).'\');';		
+				addslashes($question).'\');';
 		$tutorLabelTxt = translateFN('Seleziona un orientatore a cui rimuovere la preassegnazione degli studenti');
 		$tableCaption = translateFN('Studenti preassegnati');
 		$noStudentsError = translateFN('Nessuno studente trovato');
@@ -106,22 +106,22 @@ if (!AMA_DB::isError($tutors_ar) && is_array($tutors_ar) && count($tutors_ar)>0)
 		$saveButtonText = translateFN('Rimuovi');
 		$addChildOnError = true;
 	}
-	
+
 	// main container div
 	$data = CDOMElement::create('div','id:preassign_students_container');
 	// main form object
 	$theForm = CDOMElement::create('form','name:preassing_students,method:post');
 	// select tutor div container
 	$selTutorDIV = CDOMElement::create('div','id:selTutor_container');
-	$theForm->addChild($selTutorDIV);		
+	$theForm->addChild($selTutorDIV);
 	$data->addChild($theForm);
 	// select tutor label
 	$selTutorLabel = CDOMElement::create('label','for:selTutor');
-	$selTutorLabel->addChild(new CText($tutorLabelTxt.': '));		
+	$selTutorLabel->addChild(new CText($tutorLabelTxt.': '));
 	$selTutorDIV->addChild($selTutorLabel);
 	// select tutor select object
 	$selTutorDIV->addChild(BaseHtmlLib::selectElement2('id:selTutor,name:selTutor',$tutorSelect,$selectedTutorID));
-	
+
 	if ($op==='preassign') {
 		$editButtonDIV = CDOMElement::create('div','id:editButton_container');
 		$editButton = CDOMElement::create('button','type:button,class:editButton');
@@ -130,7 +130,7 @@ if (!AMA_DB::isError($tutors_ar) && is_array($tutors_ar) && count($tutors_ar)>0)
 		$editButtonDIV->addChild($editButton);
 		$theForm->addChild($editButtonDIV);
 	}
-	
+
 	if (!AMA_DB::isError($listStudentIds) && is_array($listStudentIds) && count($listStudentIds)>0) {
 		// onsubmit check form with javascript
 		$theForm->setAttribute('onsubmit', $onsubmit);
@@ -144,18 +144,18 @@ if (!AMA_DB::isError($tutors_ar) && is_array($tutors_ar) && count($tutors_ar)>0)
 		$checkAllBtn->addChild(new CText('Inverti Selezione'));
 		// add submit button to footer
 		$submitBtn = CDOMElement::create('button','type:submit');
-		$submitBtn->addChild(new CText($saveButtonText));		
+		$submitBtn->addChild(new CText($saveButtonText));
 		$tableFoot = array ($checkAllBtn->getHtml().$submitBtn->getHtml());
 		// table body array
 		$tableBody = array();
-		
+
 		foreach ($listStudentIds as $student_id) {
-			// load the user from the db		
+			// load the user from the db
 			$userObj = MultiPort::findUser($student_id);
 			if (is_object($userObj) && $userObj instanceof ADAUser) {
 				// checkbox for first cell
 				$checkBox = CDOMElement::create('checkbox','name:student_ids[],value:'.$userObj->getId());
-				
+
 				// CDS_DESC field, with tooltips
 				$cds_desc = CDOMElement::create('span','class:tooltip');
 				if (strlen($userObj->CDS_DESC)>0) $spanTitle[] = $userObj->CDSORD_DESC;
@@ -165,7 +165,7 @@ if (!AMA_DB::isError($tutors_ar) && is_array($tutors_ar) && count($tutors_ar)>0)
 					unset($spanTitle);
 				}
 				$cds_desc->addChild(new CText($userObj->CDS_DESC));
-				
+
 				// Hack for dataTable filter: add an hidden span containing all of the titles text
 				$hiddenHackSpan = CDOMElement::create('span');
 				$hiddenHackSpan->setAttribute('style', 'display:none');
@@ -174,62 +174,42 @@ if (!AMA_DB::isError($tutors_ar) && is_array($tutors_ar) && count($tutors_ar)>0)
 				$pt_desc = CDOMElement::create('span','class:tooltip');
 				if (!is_null($userObj->PT_DESC)) {
 					$pt_desc->setAttribute('title', $userObj->PT_DESC);
-					$words = preg_split('/[\s-]+/', $userObj->PT_DESC);
-					// if one word, extract 2 chars
-					$maxLen = (count($words) > 1) ? 1 :2;					
-					for ($w = reset($words), $pt_desc_str = ''; current($words); $w = next($words)) {
-						$pt_desc_str .= substr($w, 0, $maxLen); 
-					}
-					$pt_desc->addChild(new CText(strtoupper($pt_desc_str)));					
+					$pt_desc->addChild(new CText(ADAUser::getShortCodeForField('PT_DESC', $userObj->PT_DESC)));
 					if (!in_array($userObj->PT_DESC, $hiddenContents)) $hiddenContents[] = $userObj->PT_DESC;
 				}
-				
+
 				// TIPO_DID_DECODE field
 				$tipo_did_decode = CDOMElement::create('span','class:tooltip');
-				if (!is_null($userObj->TIPO_DID_DECODE)) {					
+				if (!is_null($userObj->TIPO_DID_DECODE)) {
 					$tipo_did_decode->setAttribute('title', $userObj->TIPO_DID_DECODE);
-					if (strcasecmp($userObj->TIPO_DID_DECODE, 'teledidattica')===0) {
-						$tipo_did_decode->addChild(new CText('TD'));
-					} else if (strcasecmp($userObj->TIPO_DID_DECODE, 'teleconferenza')===0) {
-						$tipo_did_decode->addChild(new CText('TC'));
-					} else $tipo_did_decode->addChild(new CText(strtoupper(substr($userObj->TIPO_DID_DECODE, 0, 2))));
+					$tipo_did_decode->addChild(new CText(ADAUser::getShortCodeForField('TIPO_DID_DECODE', $userObj->TIPO_DID_DECODE)));
 					if (!in_array($userObj->TIPO_DID_DECODE, $hiddenContents)) $hiddenContents[] = $userObj->TIPO_DID_DECODE;
 				}
-				
+
 				// STA_OCCUP_DECODE field
 				$sta_occup_decode = CDOMElement::create('span','class:tooltip');
 				if (!is_null($userObj->STA_OCCUP_DECODE)) {
 					// Change 'Non lavoratore' to 'Inoccupato'
 					if (strcasecmp($userObj->STA_OCCUP_DECODE, 'Non lavoratore')===0) {
 						$userObj->STA_OCCUP_DECODE = 'Inoccupato';
-					}					
-					$sta_occup_decode->setAttribute('title', $userObj->STA_OCCUP_DECODE);
-					if (strcasecmp($userObj->STA_OCCUP_DECODE, 'N/D')===0) {
-						$sta_occup_decode->addChild(new CText(strtoupper($userObj->STA_OCCUP_DECODE)));
-					} else {
-						$words = preg_split('/[\s-]+/', $userObj->STA_OCCUP_DECODE);
-						// if one word, extract 2 chars
-						$maxLen = (count($words) > 1) ? 1 :2;
-						for ($w = reset($words), $sta_occup_str = ''; current($words); $w = next($words)) {
-							$sta_occup_str .= substr($w, 0, $maxLen);
-						}
-						$sta_occup_decode->addChild(new CText(strtoupper($sta_occup_str)));
 					}
+					$sta_occup_decode->setAttribute('title', $userObj->STA_OCCUP_DECODE);
+					$sta_occup_decode->addChild(new CText(ADAUser::getShortCodeForField('STA_OCCUP_DECODE', $userObj->STA_OCCUP_DECODE)));
+
 					if (!in_array($userObj->STA_OCCUP_DECODE, $hiddenContents)) $hiddenContents[] = $userObj->STA_OCCUP_DECODE;
 				}
 				$hiddenHackSpan->addChild(new CText(implode(' ', $hiddenContents)));
-				
+
 				// 'stato iscrizione field
 				$stato_iscr_des = CDOMElement::create('span');
 				$stato_iscr_str = '';
 				if (!is_null($userObj->AA_ISCR_DESC)) $stato_iscr_str .= $userObj->AA_ISCR_DESC;
 				if (!is_null($userObj->ANNO_CORSO)) $stato_iscr_str .= '('.$userObj->ANNO_CORSO.')';
 				if (!is_null($userObj->TASSE_IN_REGOLA_OGGI)) {
-					if (strcasecmp($userObj->TASSE_IN_REGOLA_OGGI, 'no')===0) $stato_iscr_str .= ',NR';
-					else $stato_iscr_str .= ',IR';
+					$stato_iscr_str .= ', '.ADAUser::getShortCodeForField('TASSE_IN_REGOLA_OGGI', $userObj->TASSE_IN_REGOLA_OGGI);
 				}
 				if (strlen($stato_iscr_str)>0) $stato_iscr_des->addChild(new CText($stato_iscr_str));
-				
+
 				// TIPO_HAND_DES field
 				$tipo_hand_des = CDOMElement::create('span','class:tooltip');
 				if (strlen($userObj->TIPO_HAND_DES)>0) {
@@ -245,18 +225,18 @@ if (!AMA_DB::isError($tutors_ar) && is_array($tutors_ar) && count($tutors_ar)>0)
 					$voto = $userObj->VOTO;
 					if (strlen($userObj->VOTO_MAX)>0) $voto .= '/'.$userObj->VOTO_MAX;
 				} else $voto = null;
-				
+
 				$voto_des = CDOMElement::create('span','class:tooltip');
 				if (!is_null($voto)) {
 					$voto_tooltip = array();
 					if (!is_null($userObj->TIPO_TITOLO_DESC)) $voto_tooltip[] = htmlentities($userObj->TIPO_TITOLO_DESC,ENT_QUOTES,ADA_CHARSET);
 					if (!is_null($userObj->PROVINCIA_SCUOLA_DESC)) $voto_tooltip[] = htmlentities($userObj->PROVINCIA_SCUOLA_DESC,ENT_QUOTES,ADA_CHARSET);
 					if (count($voto_tooltip)>0) {
-						$voto_des->setAttribute('title', implode('<br/>', $voto_tooltip));						
+						$voto_des->setAttribute('title', implode('<br/>', $voto_tooltip));
 					}
 					$voto_des->addChild(new CText($voto));
 				}
-				
+
 				// table body row, according to header
 				$tableBody[] = array ( $checkBox->getHtml(), $userObj->getId(), $userObj->getLastName(),
 						$userObj->getFirstName(), $userObj->getProvincia(),$cds_desc->getHtml(),
@@ -269,7 +249,7 @@ if (!AMA_DB::isError($tutors_ar) && is_array($tutors_ar) && count($tutors_ar)>0)
 		// add table to main form
 		$theForm->addChild(BaseHtmlLib::tableElement('id:table_preassignment',
 				$tableHead, $tableBody, $tableFoot, $tableCaption));
-		
+
 	} else {
 		if (isset($addChildOnError) && $addChildOnError) {
 			$errorSPAN = CDOMElement::create('span','class:preassign_error');

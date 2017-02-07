@@ -612,32 +612,21 @@ switch ($op) {
 					if (property_exists($studentObj, 'AA_ISCR_DESC')) $studenDetailStr .= $studentObj->AA_ISCR_DESC;
 					if (property_exists($studentObj, 'ANNO_CORSO')) $studenDetailStr .= ' ('.$studentObj->ANNO_CORSO.')';
 					if (property_exists($studentObj, 'TASSE_IN_REGOLA_OGGI') && !is_null($studentObj->TASSE_IN_REGOLA_OGGI)) {
-						if (strcasecmp($studentObj->TASSE_IN_REGOLA_OGGI, 'no')===0) $studenDetailStr .= ', NR';
-						else $studenDetailStr .= ', IR';
+						$studenDetailStr .= ', '.ADAUser::getShortCodeForField('TASSE_IN_REGOLA_OGGI', $studentObj->TASSE_IN_REGOLA_OGGI);
 					}
 
 					// PT_DESC field
 					$pt_desc = CDOMElement::create('span','class:tooltip');
 					if (!is_null($studentObj->PT_DESC)) {
 						$pt_desc->setAttribute('title', $studentObj->PT_DESC);
-						$words = preg_split('/[\s-]+/', $studentObj->PT_DESC);
-						// if one word, extract 2 chars
-						$maxLen = (count($words) > 1) ? 1 :2;
-						for ($w = reset($words), $pt_desc_str = ''; current($words); $w = next($words)) {
-							$pt_desc_str .= substr($w, 0, $maxLen);
-						}
-						$pt_desc->addChild(new CText(strtoupper($pt_desc_str)));
+						$pt_desc->addChild(new CText(ADAUser::getShortCodeForField('PT_DESC', $studentObj->PT_DESC)));
 						if (!in_array($studentObj->PT_DESC, $hiddenContents)) $hiddenContents[] = $studentObj->PT_DESC;
 					}
 					// TIPO_DID_DECODE field
 					$tipo_did_decode = CDOMElement::create('span','class:tooltip');
 					if (!is_null($studentObj->TIPO_DID_DECODE)) {
 						$tipo_did_decode->setAttribute('title', $studentObj->TIPO_DID_DECODE);
-						if (strcasecmp($studentObj->TIPO_DID_DECODE, 'teledidattica')===0) {
-							$tipo_did_decode->addChild(new CText('TD'));
-						} else if (strcasecmp($studentObj->TIPO_DID_DECODE, 'teleconferenza')===0) {
-							$tipo_did_decode->addChild(new CText('TC'));
-						} else $tipo_did_decode->addChild(new CText(strtoupper(substr($studentObj->TIPO_DID_DECODE, 0, 2))));
+						$tipo_did_decode->addChild(new CText(ADAUser::getShortCodeForField('TIPO_DID_DECODE', $studentObj->TIPO_DID_DECODE)));
 						if (!in_array($studentObj->TIPO_DID_DECODE, $hiddenContents)) $hiddenContents[] = $studentObj->TIPO_DID_DECODE;
 					}
 
@@ -649,17 +638,7 @@ switch ($op) {
 							$studentObj->STA_OCCUP_DECODE = 'Inoccupato';
 						}
 						$sta_occup_decode->setAttribute('title', $studentObj->STA_OCCUP_DECODE);
-						if (strcasecmp($studentObj->STA_OCCUP_DECODE, 'N/D')===0) {
-							$sta_occup_decode->addChild(new CText(strtoupper($studentObj->STA_OCCUP_DECODE)));
-						} else {
-							$words = preg_split('/[\s-]+/', $studentObj->STA_OCCUP_DECODE);
-							// if one word, extract 2 chars
-							$maxLen = (count($words) > 1) ? 1 :2;
-							for ($w = reset($words), $sta_occup_str = ''; current($words); $w = next($words)) {
-								$sta_occup_str .= substr($w, 0, $maxLen);
-							}
-							$sta_occup_decode->addChild(new CText(strtoupper($sta_occup_str)));
-						}
+						$sta_occup_decode->addChild(new CText(ADAUser::getShortCodeForField('STA_OCCUP_DECODE', $studentObj->STA_OCCUP_DECODE)));
 						if (!in_array($studentObj->STA_OCCUP_DECODE, $hiddenContents)) $hiddenContents[] = $studentObj->STA_OCCUP_DECODE;
 					}
 					$hiddenHackSpan->addChild(new CText(implode(' ', $hiddenContents)));
