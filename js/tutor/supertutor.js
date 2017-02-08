@@ -5,7 +5,7 @@
  */
 var datatable;
 
-function initDoc(){
+function initDoc(isSuperTutor, clickID){
 
 	var colDefs = [{
 		"aTargets": [0],
@@ -46,6 +46,10 @@ function initDoc(){
                 });
         }
 	});
+
+    if ('undefined' !== typeof clickID && $j('img[data-userid="'+clickID+'"]').length>0) {
+    	$j('img[data-userid="'+clickID+'"]').trigger('click');
+    }
 }
 
 var openedRow = null;
