@@ -1500,10 +1500,8 @@ class ADAPractitioner extends ADALoggableUser {
          */
         if ($this->isSuper && $this->tipo==AMA_TYPE_SUPERTUTOR) {
         	$this->tipo = AMA_TYPE_TUTOR;
-        	$this->setHomePage(HTTP_ROOT_DIR.'/tutor/tutor.php?op=tutor');
-        } else {
-	        $this->setHomePage(HTTP_ROOT_DIR.'/tutor/tutor.php');
         }
+        $this->setHomePage(HTTP_ROOT_DIR.'/tutor/tutor.php');
         $this->setEditProfilePage('tutor/edit_tutor.php');
     }
 
