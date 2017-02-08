@@ -1,6 +1,6 @@
 var studentsDT = null;
 
-function initDoc() {
+function initDoc(isSuperTutor) {
 	$j(document).ready(function() {
 		var appointmentsTables = ["sortable_S","sortable_event_proposed"];
 
@@ -106,12 +106,19 @@ function initDoc() {
                                      ]
 		}).show();
 
-
-		var unsortableCols = [];
-		var preassignedLastCol = $j("#table_preassigned_students>thead>tr>th").length-1;
-		if (preassignedLastCol >= 0) {
-			unsortableCols.push(preassignedLastCol);
+		var aoColumnDefs = [];
+		var aoColumns = [ null, null, { 'sType': "date-eu" }, null, null ];
+		if (!isSuperTutor) {
+				var unsortableCols = [];
+				var preassignedLastCol = $j("#table_preassigned_students>thead>tr>th").length-1;
+				if (preassignedLastCol >= 0) {
+					unsortableCols.push(preassignedLastCol);
+				}
+				aoColumnDefs.push({ "bSortable": false, "aTargets": unsortableCols });
+		} else {
+			aoColumns.push (null);
 		}
+
 		studentsDT = $j("#table_preassigned_students").dataTable( {
 			"bLengthChange": true,
 			"bFilter":       true,
@@ -119,7 +126,7 @@ function initDoc() {
 			'bPaginate':     true,
 			"bSort":         true,
 			"bAutoWidth":    true,
-                        "bJQueryUI":     true,
+            "bJQueryUI":     true,
             "oLanguage": {
             	"sUrl": HTTP_ROOT_DIR + "/js/include/jquery/dataTables/dataTablesLang.php"
             },
@@ -133,19 +140,9 @@ function initDoc() {
     	                $j(this).parents('th').append(sortIcon);
                     });
             },
-                        "aaSorting": [[ 0, "asc" ]],
-
-			"aoColumnDefs": [
-			                 { "bSortable": false,
-			                	"aTargets": unsortableCols }
-			                ],
-			"aoColumns": [
-			              null,
-			              null,
-			              { 'sType': "date-eu" },
-			              null,
-			              null
-			             ]
+            "aaSorting": [[ 0, "asc" ]],
+			"aoColumnDefs": aoColumnDefs,
+			"aoColumns": aoColumns
 		}).show();
 
 		initToolTips();

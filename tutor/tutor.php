@@ -60,11 +60,13 @@ if (!isset($op)) $op = null;
  * check if it's not a supertutor asking for op='tutor'
  * then set $op to make the default action
  */
-if (!$userObj->isSuper() && $op=='tutor') $op=null;
+$isSuperTutor = $userObj->isSuper();
+if (!$isSuperTutor && $op=='tutor') $op=null;
 
 switch ($op) {
 	case 'tutor':
 		$self = 'supertutor';
+		$superTutorTitle = translateFN('Elenco tutor');
 		$help = '';
 		$fieldsAr = array('nome','cognome','username');
 		$tutorsAr = $dh->get_tutors_list($fieldsAr);
@@ -80,6 +82,7 @@ switch ($op) {
 			foreach ($tutorsAr as $aTutor) {
 				// open details button
 				$imgDetails->setAttribute('onclick',"toggleTutorDetails(".$aTutor[0].",this);");
+				$imgDetails->setAttribute('data-userid', $aTutor[0]);
 
 				// login counts
 				$loginInfo = abstractLogin::getUserLoginInfo($aTutor[0]);
@@ -562,12 +565,35 @@ switch ($op) {
 		/**
 		 * dati6: pre-assigned students box
 		 */
-		$listStudentIds = $dh->get_preassigned_students_for_tutor($userObj->getId(), null, $aa_iscr_desc, $anno_corso);
+		if ($isSuperTutor) {
+			$self = 'supertutor-students-list';
+			$listStudentIds = $dh->get_students_list(array('AA_ISCR_DESC','ANNO_CORSO'));
+			if (!AMA_DB::isError($listStudentIds) && is_array($listStudentIds) && count($listStudentIds)>0) {
+				foreach ($listStudentIds as $key=>$aStudent) {
+					if (!is_null($aa_iscr_desc) && !(is_null($anno_corso))) {
+						if ($aStudent['AA_ISCR_DESC'] == $aa_iscr_desc && $aStudent['ANNO_CORSO'] == $anno_corso) {
+							$listStudentIds[$key] = $aStudent['id_utente'];
+						} else unset($listStudentIds[$key]);
+					} else {
+						$listStudentIds[$key] = $aStudent['id_utente'];
+					}
+				}
+			}
+		} else {
+			$listStudentIds = $dh->get_preassigned_students_for_tutor($userObj->getId(), null, $aa_iscr_desc, $anno_corso);
+		}
 		if (!AMA_DB::isError($listStudentIds) && is_array($listStudentIds) && count($listStudentIds)>0) {
-			$tableHead = array (translateFN('cognome e nome'),
-					translateFN('Iscrizione AA (AC) Tasse').'<br/>('.translateFN('Corso di studi').')',
-					translateFN('ultima richiesta'), translateFN('Servizi in attesa / richiesti'),
-					translateFN('azioni'));
+			if ($isSuperTutor) {
+				$tableHead = array (translateFN('cognome e nome'),
+						translateFN('Iscrizione AA (AC) Tasse').'<br/>('.translateFN('Corso di studi').')',
+						translateFN('ultima richiesta'), translateFN('Servizi in attesa / richiesti'),
+						translateFN('orientatore'), translateFN('abilitato'));
+			} else {
+				$tableHead = array (translateFN('cognome e nome'),
+						translateFN('Iscrizione AA (AC) Tasse').'<br/>('.translateFN('Corso di studi').')',
+						translateFN('ultima richiesta'), translateFN('Servizi in attesa / richiesti'),
+						translateFN('azioni'));
+			}
 			$tableBody = array();
 
 			$helpCourses = array();
@@ -583,12 +609,15 @@ switch ($op) {
 			foreach ($listStudentIds as $key=>$student_id) {
 				// load the user from the db
 				$studentObj = MultiPort::findUser($student_id);
-				if (is_object($studentObj) && $studentObj instanceof ADAUser && $studentObj->getStatus()==ADA_STATUS_REGISTERED) {
+				if (is_object($studentObj) && $studentObj instanceof ADAUser &&
+					($isSuperTutor || (!$isSuperTutor && $studentObj->getStatus()==ADA_STATUS_REGISTERED))) {
+
 					$getInstancesData = true;
 					$instancesRES = $dh->get_course_instances_for_this_student($studentObj->getId(), $getInstancesData);
 					$closedInstances = 0;
 					$countInstances = 0;
 					$lastRequestTime = 0;
+					$tutorsAr = array();
 					if (!AMA_DB::isError($instancesRES)) {
 						foreach ($instancesRES as $anInstance) {
 							// count only instances having a course with ADA_SERVICE_HELP or ADA_SERVICE_IN_ITINERE as tipo_servizio
@@ -596,7 +625,21 @@ switch ($op) {
 								$countInstances++;
 								if ($anInstance['instance_status'] == ADA_INSTANCE_CLOSED) $closedInstances++;
 								$lastRequestTime = max(array($anInstance['data_iscrizione'],$lastRequestTime));
+								if ($isSuperTutor) {
+									$tutorRes = $dh->get_tutors_for_student($studentObj->getId());
+									if (!AMA_DB::isError($tutorRes) && is_array($tutorRes) && count($tutorRes)>0) {
+										foreach ($tutorRes as $aTutorRes) {
+											$lookFor = $aTutorRes['nome'].' '.$aTutorRes['cognome'];
+											if (!in_array($lookFor, $tutorsAr)) $tutorsAr[$aTutorRes['id_utente']] = $lookFor;
+										}
+									}
+								}
 							}
+						}
+						if ($isSuperTutor && empty($tutorsAr)) {
+							// look for a preassigned tutor if tutorsAr is still empty
+							$tutorRes = $dh->get_tutor_preassigned_to_student_for_course($studentObj->getId());
+							if (!AMA_DB::isError($tutorRes)) $tutorsAr[$tutorRes] = MultiPort::findUser($tutorRes)->getFullName();
 						}
 					}
 					$onclick = 'javascript:sendEventProposal('.$studentObj->getId().');';
@@ -612,7 +655,14 @@ switch ($op) {
 					if (property_exists($studentObj, 'AA_ISCR_DESC')) $studenDetailStr .= $studentObj->AA_ISCR_DESC;
 					if (property_exists($studentObj, 'ANNO_CORSO')) $studenDetailStr .= ' ('.$studentObj->ANNO_CORSO.')';
 					if (property_exists($studentObj, 'TASSE_IN_REGOLA_OGGI') && !is_null($studentObj->TASSE_IN_REGOLA_OGGI)) {
-						$studenDetailStr .= ', '.ADAUser::getShortCodeForField('TASSE_IN_REGOLA_OGGI', $studentObj->TASSE_IN_REGOLA_OGGI);
+						if (strcasecmp($studentObj->TASSE_IN_REGOLA_OGGI, 'no')===0) {
+							$tasseText = 'Non in regola';
+						} else {
+							$tasseText = 'In regola';
+						}
+						$tasse = CDOMElement::create('span','class:tooltip, title:'.$tasseText);
+						$tasse->addChild(new CText(ADAUser::getShortCodeForField('TASSE_IN_REGOLA_OGGI', $studentObj->TASSE_IN_REGOLA_OGGI)));
+						$studenDetailStr .= ', '.$tasse->getHtml();
 					}
 
 					// PT_DESC field
@@ -666,7 +716,7 @@ switch ($op) {
 					$servicesDIV->addChild($spanWaiting);
 					$servicesDIV->addChild($sep);
 					$servicesDIV->addChild($spanTotal);
-					if ($countInstances>0) {
+					if (!$isSuperTutor && $countInstances>0) {
 						$link = BaseHtmlLib::link('edit_user.php?tab=servicesHistory&id='.$studentObj->getId(), translateFN('Storico Richieste'));
 						$link->setAttribute('class', 'service history');
 						$servicesDIV->addChild($link);
@@ -681,13 +731,27 @@ switch ($op) {
 						$reqLink->addChild(CDOMElement::create('i','class:triangle down icon'));
 					}
 
-					$tableBody[] = array(
-							BaseHtmlLib::link('edit_user.php?id='.$studentObj->getId(), $studentObj->getLastName().' '.$studentObj->getFirstName())->getHtml(),
-							$detailsDIV->getHtml(),
-							($lastRequestTime > 0) ? AMA_Common_DataHandler::ts_to_date($lastRequestTime) : 'N/N',
-							$servicesDIV->getHtml(),
-							$appointment_link->getHtml().' '.(isset($reqLink) ? $reqLink->getHtml() : '')
-					);
+					if ($isSuperTutor) {
+
+						array_walk($tutorsAr, function(&$value, $tutorID) {
+							$value = BaseHtmlLib::link(HTTP_ROOT_DIR . '/tutor/tutor.php?op=tutor&tutorID='.$tutorID, $value)->getHtml();
+						});
+
+						$tableBody[] = array(
+								$studentObj->getLastName().' '.$studentObj->getFirstName(),
+								$detailsDIV->getHtml(),
+								($lastRequestTime > 0) ? AMA_Common_DataHandler::ts_to_date($lastRequestTime) : 'N/N',
+								$servicesDIV->getHtml(),
+								implode('<br/>', $tutorsAr),
+								($studentObj->getStatus() == ADA_STATUS_REGISTERED) ? translateFN("Si") : translateFN("No"));
+					} else {
+						$tableBody[] = array(
+								BaseHtmlLib::link('edit_user.php?id='.$studentObj->getId(), $studentObj->getLastName().' '.$studentObj->getFirstName())->getHtml(),
+								$detailsDIV->getHtml(),
+								($lastRequestTime > 0) ? AMA_Common_DataHandler::ts_to_date($lastRequestTime) : 'N/N',
+								$servicesDIV->getHtml(),
+								$appointment_link->getHtml().' '.(isset($reqLink) ? $reqLink->getHtml() : ''));
+					}
 				} else {
 					unset ($listStudentIds[$key]);
 				}
@@ -868,7 +932,7 @@ $content_dataAr = array(
 //  'events'          => $user_events->getHtml(),
 'user_avatar'     => $avatar->getHtml(),
 'events_proposed' => $user_events_proposed->getHtml(),
-'course_title'    => translateFN("Practitioner's home"),
+'course_title'    => isset($superTutorTitle) ? $superTutorTitle :translateFN("Practitioner's home"),
 'dati'            => $data,
 'data'            => $data,
 //  'menu_01'         => $questionaire,
@@ -914,15 +978,17 @@ if (isset($id_student))  $menuOptions['id_student'] =$id_student;
 /**
 * add a define for the supertutor menu item to appear
 */
-if ($userObj instanceof ADAPractitioner && $userObj->isSuper()) define ('IS_SUPERTUTOR', true);
-else define ('NOT_SUPERTUTOR', true);
+define ('IS_SUPERTUTOR', $isSuperTutor);
+define ('NOT_SUPERTUTOR', !$isSuperTutor);
 
 $layout_dataAr['CSS_filename']= array(
 JQUERY_DATATABLE_CSS,
 JQUERY_UI_CSS
 );
 $render = null;
-$options['onload_func'] = 'initDoc()';
+$options['onload_func'] = 'initDoc('.($isSuperTutor ? 'true' : 'false');
+if (isset($_GET['tutorID']) && is_numeric($_GET['tutorID'])) $options['onload_func'] .= ','.intval($_GET['tutorID']);
+$options['onload_func'] .= ');';
 
 /**
 * Sends data to the rendering engine
