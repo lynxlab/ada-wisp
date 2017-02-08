@@ -206,7 +206,14 @@ if (!AMA_DB::isError($tutors_ar) && is_array($tutors_ar) && count($tutors_ar)>0)
 				if (!is_null($userObj->AA_ISCR_DESC)) $stato_iscr_str .= $userObj->AA_ISCR_DESC;
 				if (!is_null($userObj->ANNO_CORSO)) $stato_iscr_str .= '('.$userObj->ANNO_CORSO.')';
 				if (!is_null($userObj->TASSE_IN_REGOLA_OGGI)) {
-					$stato_iscr_str .= ', '.ADAUser::getShortCodeForField('TASSE_IN_REGOLA_OGGI', $userObj->TASSE_IN_REGOLA_OGGI);
+					if (strcasecmp($userObj->TASSE_IN_REGOLA_OGGI, 'no')===0) {
+						$tasseText = 'Non in regola';
+					} else {
+						$tasseText = 'In regola';
+					}
+					$tasse = CDOMElement::create('span','class:tooltip, title:'.$tasseText);
+					$tasse->addChild(new CText(ADAUser::getShortCodeForField('TASSE_IN_REGOLA_OGGI', $userObj->TASSE_IN_REGOLA_OGGI)));
+					$stato_iscr_str .= ', '.$tasse->getHtml();
 				}
 				if (strlen($stato_iscr_str)>0) $stato_iscr_des->addChild(new CText($stato_iscr_str));
 

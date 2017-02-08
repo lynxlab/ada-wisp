@@ -151,7 +151,16 @@ if(is_array($usersAr) && count($usersAr) > 0) {
         	$studentDetailStr = $user['AA_ISCR_DESC'];
         	if (strlen($user['ANNO_CORSO'])>0) $studentDetailStr .= '&nbsp;('.$user['ANNO_CORSO'].')';
         	$short = ADAUser::getShortCodeForField('TASSE_IN_REGOLA_OGGI', $user['TASSE_IN_REGOLA_OGGI']);
-        	if (strlen($short)>0) $studentDetailStr .= ',&nbsp;'.$short;
+        	if (strlen($short)>0) {
+        		if (strcasecmp($user['TASSE_IN_REGOLA_OGGI'], 'no')===0) {
+        			$tasseText = 'Non in regola';
+        		} else {
+        			$tasseText = 'In regola';
+        		}
+        		$span = CDOMElement::create('span','class:details tooltip, title:'.$tasseText);
+        		$span->addChild(new CText($short));
+        		$studentDetailStr .= $span->getHtml();
+        	}
 
         	if (strlen($studentDetailStr)>0) $studentDetailStr .= '<br/>';
 
