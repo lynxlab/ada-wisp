@@ -112,7 +112,7 @@ else {
 			     NULL,NULL,NULL,$userObj->getHomePage());
     }
     $id_course = $instanceInfoAr['id_corso'];
-    
+
 
     $service_infoAr = $common_dh->get_service_info_from_course($id_course);
 //    var_dump($service_infoAr);
@@ -128,27 +128,27 @@ else {
 	$status_opened_label     = translateFN($instanceStatusDescription[ADA_INSTANCE_OPENED]); //translateFN('In corso');
 	$status_closed_label     = translateFN($instanceStatusDescription[ADA_INSTANCE_CLOSED]); // translateFN('Terminato');
 	$status_more_date	= translateFN($instanceStatusDescription[ADA_INSTANCE_MORE_DATE]);
-	$status_instance = $status_closed_label;  
-	
+	$status_instance = $status_closed_label;
+
 	$status_instance_value = ADA_INSTANCE_CLOSED; // 1; 1 = instance Close 0 = instance open
 	$current_timestamp = time();
-	
+
 	if($instanceInfoAr['data_inizio'] > 0 && $instanceInfoAr['data_fine'] >= 0
 	&& $current_timestamp > $instanceInfoAr['data_inizio']
 	/*&& $current_timestamp < $instanceInfoAr['data_fine']*/) {
 	  $status_instance = translateFN($instanceStatusDescription[$instanceInfoAr['status']]); //$status_opened_label;
 	  $status_instance_value = $instanceInfoAr['status']; //ADA_INSTANCE_OPENED;
-	} 
+	}
 	else if ($instanceInfoAr['data_inizio']==0) {
 	      $status_instance_value = ADA_INSTANCE_OPENED;
 	}
-	
+
 	$service_infoAr['instance_status']      = $status_instance;
 	$service_infoAr['instance_status_previous'] = $status_instance;
 	$service_infoAr['instance_status_value']      = $status_instance_value;
 
 	$service_infoAr['avalaible_status']      = $instanceStatusDescription; //array($status_opened_label,$status_closed_label);
-	$service_infoAr['instance'] = $instanceInfoAr;  
+	$service_infoAr['instance'] = $instanceInfoAr;
 	$statusServiceForm = TutorModuleHtmlLib::getServiceStatusForm($tutoredUserObj, $service_infoAr);
 	$service_infoAr['status'] = $statusServiceForm->getHtml();
 	$service_data = TutorModuleHtmlLib::getServiceDataTableForTutor($service_infoAr);
@@ -156,18 +156,33 @@ else {
     else {
       $service_data = new CText('');
     }
-    
+
     $isProposedAppointment = false;
     $isFutureProposedAppointment = false;
     $isConfirmedAppointement = false;
     $isFutureConfirmedAppointment = false;
     $tbody_data_proposed_appointment = array();
     $tbody_data_confirmed_appointment = array();
-    
+
     if ($status_instance_value != ADA_INSTANCE_CLOSED) {
 	/**
 	 * check if there are any proposed appointment for this instance
 	 */
+
+    /**
+     * @author giorgio 08/feb/2017
+     *
+     * On WISP/UNIMC only:
+     * If session user is a switcher, $user_events_proposedAr will hold its own proposal
+     * BUT we need to know the instance's tutor proposals instead
+     */
+    if ($userObj->getType() == AMA_TYPE_SWITCHER) {
+    	$tutorObj = MultiPort::findUser($dh->course_instance_tutor_get($id_course_instance));
+    	if ($tutorObj instanceof ADAPractitioner) {
+    		$user_events_proposedAr = MultiPort::getTutorEventsProposed($tutorObj);
+    	}
+    }
+
 	foreach ($user_events_proposedAr as $user_events_for_provider => $event_list_for_provider) {
 	    if (!$isFutureAppointment) {
 		if ($user_events_for_provider == $_SESSION['sess_selected_tester']) {
@@ -186,18 +201,45 @@ else {
 				    $isFutureProposedAppointment = true;
 				    for ($i = 0; $i < count($event_time_tmpAr); $i++) {
 //					if (!$isFutureProposedAppointment) {
+						if (count(explode(':', $event_time_tmpAr[$i]['time']))!=3) $event_time_tmpAr[$i]['time'].=':00';
 					    $event_time_tmpAr[$i]['timestamp'] = Abstract_AMA_DataHandler::date_to_ts($event_time_tmpAr[$i]['date'],$event_time_tmpAr[$i]['time']);
-					    if ($event_time_tmpAr[$i]['timestamp'] >= time()) {
-						$isFutureProposedAppointment = true;
-//						$tbody_data_proposed_appointment[] = array(Abstract_AMA_DataHandler::ts_to_date($event_time_tmpAr[$i]['timestamp']), ADAEventProposal::removeEventToken($event_title_tmp));
-						$tbody_data_proposed_appointment[] = array($event_time_tmpAr[$i]['date'].' - '.$event_time_tmpAr[$i]['time'], ADAEventProposal::removeEventToken($event_title_tmp));
+					    /**
+					     * @author giorgio 08/feb/2017
+					     *
+					     * On WISP/UNIMC only:
+					     *
+					     * keep showing expired proposals for DAYS_TO_SHOW_EXPIRED_PROPOSALS
+					     * number of days (86400 is the number of seconds in a day).
+					     * DAYS_TO_SHOW_EXPIRED_PROPOSALS is a define in the client config.
+					     */
+					    $timeToShowProposal = 0;
+					    if  (defined('DAYS_TO_SHOW_EXPIRED_PROPOSALS') && intval(DAYS_TO_SHOW_EXPIRED_PROPOSALS)>0) {
+					    	$timeToShowProposal += DAYS_TO_SHOW_EXPIRED_PROPOSALS * 86400;
+					    }
+					    if ($event_time_tmpAr[$i]['timestamp']+$timeToShowProposal >= time()) {
+					    	/**
+					    	 * @author giorgio 08/feb/2017
+					    	 *
+					    	 * On WISP/UNIMC only:
+					    	 *
+					    	 * generate create report link
+					    	 */
+					    	$href = HTTP_ROOT_DIR . '/tutor/eguidance_tutor_form.php?event_token=' . $event_token_tmp .
+					    							'&ts='.$event_time_tmpAr[$i]['timestamp'];
+					    	if (isset($tutorObj)) $href .= '&tutorID='.$tutorObj->getId();
+					    	$report_link = CDOMElement::create('a', "href:$href");
+					    	$report_link->addChild(new CText(translateFN('crea report')));
+
+					    	$isFutureProposedAppointment = true;
+// 					    	$tbody_data_proposed_appointment[] = array(Abstract_AMA_DataHandler::ts_to_date($event_time_tmpAr[$i]['timestamp']), ADAEventProposal::removeEventToken($event_title_tmp));
+							$tbody_data_proposed_appointment[] = array($event_time_tmpAr[$i]['date'].' - '.$event_time_tmpAr[$i]['time'], ADAEventProposal::removeEventToken($event_title_tmp));
 					    }
 //					}
-				    } 
-				} 
+				    }
+				}
 			    }
 //			}
-		    }    
+		    }
 		}
 	    }
 	}
@@ -234,28 +276,28 @@ else {
 //					    $agenda_time_tmpAr[$i]['timestamp'] = Abstract_AMA_DataHandler::date_to_ts($agenda_time_tmpAr[$i]['date'],$agenda_time_tmpAr[$i]['time']);
 //					    if ($agenda_time_tmpAr[$i]['timestamp'] >= time()) $isFutureConfirmedAppointment = true;
 //					}
-//				    } 
+//				    }
 //				    var_dump($isFutureConfirmedAppointment);
 //				    echo "porcoilcletro Confermato";
-				} 
+				}
 			    }
 			}
-		    }    
+		    }
 		}
 	    }
 	}
 	/**
 	 * End check confirmed appointement
 	 */
-	
-	
+
+
     }
 //    $user_events_proposedAr
-    
+
   /*
    * Eguidance sessions data to display
    */
-	
+
   $eguidance_sessionsAr = $dh->get_eguidance_sessions($id_course_instance);
   $thead_data = array(translateFN('Eguidance sessions conducted'), '', '','');
   $tbody_data = array();
@@ -268,10 +310,10 @@ else {
 	if ($eguidance_sessionAr['event_token'] != '') {
 
 	    $eguidance_date = Abstract_AMA_DataHandler::ts_to_date($eguidance_sessionAr['data_ora'], ADA_DATE_FORMAT.' - %R');
-	    
+
 //	    $message_handler = MessageHandler::instance();
 //	    $confirmedAppointment = $mh->
-	    
+
 //	    $eguidance_date = Abstract_AMA_DataHandler::ts_to_date(ADAEventProposal::extractTimeFromThisToken($eguidance_sessionAr['event_token']), ADA_DATE_FORMAT.' - %R');
 	    $eguidance_type = EguidanceSession::textForEguidanceType($eguidance_sessionAr['tipo_eguidance']);
 	    $href = 'eguidance_tutor_form.php?event_token=' . $eguidance_sessionAr['event_token'].$href_suffix;
@@ -292,7 +334,7 @@ else {
 	$tbody_data[] = array(new CText(translateFN('Nessuna Sessione effettuata (o non è stato compilato il modulo di valutazione, o la sessione è stata fatta senza un appuntamento)')));
     }
     $eguidance_data = BaseHtmlLib::tableElement('',$thead_data,$tbody_data);
-  
+
   /*
    * Future appointments with this user
    *
@@ -315,20 +357,20 @@ else {
                                 $clause,
                                 $sort_field);
   if(AMA_DataHandler::isError($msgs_ha) || count($msgs_ha) == 0) {
-   * 
-   * 
+   *
+   *
    * NON SI PUÒ USARE PERCHÉ L'APPUNTAMENTO È SU UTENTE E ISTANZA SERVIZIO
    * La query eventuale andrebbe costruita sul titolo del messaggio che contiene il token
-   * 
-   * Token: 
-   * first match: tutored user id 
-   * second match: tutor id 
-   * third match: course instance id 
-   * fourth match: timestamp 
-   * 
+   *
+   * Token:
+   * first match: tutored user id
+   * second match: tutor id
+   * third match: course instance id
+   * fourth match: timestamp
+   *
 
    */
-  
+
   if (!$isFutureConfirmedAppointment) {
     $appointments_data = new CText('');
   }
@@ -336,20 +378,20 @@ else {
     $thead_data = array(translateFN('Prossime sessioni di orientamento'), translateFN('Appointment type'));
     $appointments_data = BaseHtmlLib::tableElement('', $thead_data, $tbody_data_confirmed_appointment);
   }
- 
+
   if (!$isFutureProposedAppointment) {
     $appointments_proposed_data = new CText('');
   }
   else {
-    $thead_data = array(translateFN('Prossime proposte di appuntamento'), translateFN('Appointment type'));
+    $thead_data = array(translateFN('Prossime proposte di appuntamento'), translateFN('Appointment type'), '&nbsp;');
     $appointments_proposed_data = BaseHtmlLib::tableElement('', $thead_data, $tbody_data_proposed_appointment);
   }
-  
+
   $data = $user_data->getHtml()
         . $service_data->getHtml()
         . $eguidance_data->getHtml()
 	. $appointments_data->getHtml()
-	. $appointments_proposed_data->getHtml()  
+	. $appointments_proposed_data->getHtml()
 	;
 }
 
@@ -373,12 +415,12 @@ $content_dataAr = array(
   'label'     => $label,
   'data'      => $data,
   'user_avatar'=>$avatar->getHtml(),
-  'user_modprofilelink' => $userObj->getEditProfilePage(),		
+  'user_modprofilelink' => $userObj->getEditProfilePage(),
 );
 
 /**
  * @author giorgio 11/apr/2014 16:27:21
- * 
+ *
  * Force a reload of parent window, to
  * reflect saved changes right away.
  */
