@@ -302,7 +302,20 @@ class ADAEventProposal
 	   if ($dateAr !== false) {
 	       foreach ($dateAr as $one_date) {
 		    $timestamp_time = sumDateTimeFN(array($one_date['date'],$one_date['time'].":00"));
-		    if (time() <= $timestamp_time) {
+		    /**
+		     * @author giorgio 08/feb/2017
+		     *
+		     * On WISP/UNIMC only:
+		     *
+		     * keep showing expired proposals for DAYS_TO_SHOW_EXPIRED_PROPOSALS
+		     * number of days (86400 is the number of seconds in a day).
+		     * DAYS_TO_SHOW_EXPIRED_PROPOSALS is a define in the client config.
+		     */
+		    $timeToShowProposal = 0;
+		    if  (defined('DAYS_TO_SHOW_EXPIRED_PROPOSALS') && intval(DAYS_TO_SHOW_EXPIRED_PROPOSALS)>0) {
+		    	$timeToShowProposal += DAYS_TO_SHOW_EXPIRED_PROPOSALS * 86400;
+		    }
+		    if (time() <= $timestamp_time + $timeToShowProposal) {
 			$user_events_exploded_clientAr[$id_message."_".$num_date][] = $messageAr[0];
 			$user_events_exploded_clientAr[$id_message."_".$num_date][] = $timestamp_time;
 			$user_events_exploded_clientAr[$id_message."_".$num_date][] = $messageAr[2];
