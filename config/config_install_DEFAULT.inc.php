@@ -65,6 +65,12 @@ if (MULTIPROVIDER) {
          * Maximum number of appointment proposal the tutor can make
          */
         define ('MAX_PROPOSAL_COUNT',2);
+
+        /**
+         * Number of days after which an expired appointment
+         * proposal is not shown anymore in the tutor's box
+         */
+        define('DAYS_TO_SHOW_EXPIRED_PROPOSALS', 10);
 }
 
 define('ADA_DEFAULT_AVATAR','default_avatar.png');

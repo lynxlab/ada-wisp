@@ -51,6 +51,12 @@ if (!MULTIPROVIDER)
 	 * Decimal point when formatting as currency
 	 */
 	define ('ADA_CURRENCY_DECIMAL_POINT', ',');
+
+	/**
+	 * Number of days after which an expired appointment
+	 * proposal is not shown anymore in the tutor's box
+	 */
+	define('DAYS_TO_SHOW_EXPIRED_PROPOSALS', 10);
 }
 
 /**
@@ -77,7 +83,7 @@ define ('SURVEY_API_PASSWD',''); // SURVEY API endpoint login password
 /**
  * Provider holidays feed, to be show on fullcalendar. Sample is italian holidays feed
  */
-define ('GCAL_HOLIDAYS_FEED','http://www.google.com/calendar/feeds/e327d6lm6r2kb555ce82ll4sbs@group.calendar.google.com/public/basic');	
+define ('GCAL_HOLIDAYS_FEED','http://www.google.com/calendar/feeds/e327d6lm6r2kb555ce82ll4sbs@group.calendar.google.com/public/basic');
 
 /*
  * Maximum number of appointment proposal the tutor can make
