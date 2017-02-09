@@ -742,7 +742,7 @@ switch ($op) {
 								$detailsDIV->getHtml(),
 								($lastRequestTime > 0) ? AMA_Common_DataHandler::ts_to_date($lastRequestTime) : 'N/N',
 								$servicesDIV->getHtml(),
-								implode('<br/>', $tutorsAr),
+								implode('', $tutorsAr),
 								($studentObj->getStatus() == ADA_STATUS_REGISTERED) ? translateFN("Si") : translateFN("No"));
 					} else {
 						$tableBody[] = array(
@@ -888,13 +888,26 @@ if (is_object($user_events_proposed)) {
 					 */
 					if (array_key_exists(10, $event) && array_key_exists(2, $event[10]) && !in_array($event[10][2], $listStudentIds)) {
 						unset ($user_events_proposed_exploded[$provider][$evKey]);
+					} else {
+						$user_events_proposed_exploded[$provider][$evKey]['report'] = false;
+						$user_events_proposed_exploded[$provider][$evKey]['crea_report'] = true;
 					}
 				}
 			}
 		} else if (count($listStudentIds)==0) {
 			$user_events_proposed_exploded = array();
 		}
-		$user_events_proposed   = CommunicationModuleHtmlLib::getEventsProposedAsTableMin($user_events_proposed_exploded, $testers_dataAr, $showRead);
+		/**
+		 * @author giorgio 08/feb/2017
+		 *
+		 * On WISP/UNIMC only:
+		 * use displayAppointmentsWithAssessementLink to display proposal table,
+		 * so events will have a link to generate/edit the guidance session report.
+		 *
+		 * Below code was:
+		 * $user_events_proposed   = CommunicationModuleHtmlLib::getEventsProposedAsTableMin($user_events_proposed_exploded, $testers_dataAr, $showRead);
+		 */
+		$user_events_proposed   = CommunicationModuleHtmlLib::displayAppointmentsWithAssessementLink($user_events_proposed_exploded, ADA_MSG_AGENDA, $testers_dataAr,$showRead);
 	}
 
 	$divAppointmentsProposed = CDOMElement::create('div','class:appointments');

@@ -1626,12 +1626,26 @@ static public function getRecipientsFromAgenda($data_Ar) {
 	if ($appointment_Ar['report']) {
 	    $event_token = ADAEventProposal::extractEventToken($appointment_Ar[2]);
 	    $href = HTTP_ROOT_DIR . '/tutor/eguidance_tutor_form.php?event_token=' . $event_token;
+	    /**
+	     * @author giorgio 08/feb/2017
+	     *
+	     * On WISP/UNIMC only:
+	     * If appointment is a proposal indeed, add date and time to the url
+	     */
+	    if ($appointment_Ar[5] & ADA_EVENT_PROPOSED) $href .= '&ts='.$date_time;
 	    $report_link = CDOMElement::create('a', "href:$href");
 	    $report_link->addChild(new CText(translateFN('guarda il report')));
 	}
 	elseif ($appointment_Ar['crea_report']) {
 	    $event_token = ADAEventProposal::extractEventToken($appointment_Ar[2]);
 	    $href = HTTP_ROOT_DIR . '/tutor/eguidance_tutor_form.php?event_token=' . $event_token;
+	    /**
+	     * @author giorgio 08/feb/2017
+	     *
+	     * On WISP/UNIMC only:
+	     * If appointment is a proposal indeed, add date and time to the url
+	     */
+	    if ($appointment_Ar[5] & ADA_EVENT_PROPOSED) $href .= '&ts='.$date_time;
 	    $report_link = CDOMElement::create('a', "href:$href");
 	    $report_link->addChild(new CText(translateFN('crea report')));
 	}

@@ -71,6 +71,27 @@ include_once ROOT_DIR.'/comunica/include/ADAEventProposal.inc.php';
   $status_closed     = 1;
 
   if(isset($_SERVER['REQUEST_METHOD']) && $_SERVER['REQUEST_METHOD'] == 'POST') {
+
+  	/**
+  	 * @author giorgio 08/feb/2017
+  	 *
+  	 * On WISP/UNIMC only:
+  	 *
+  	 * If submitting for an event that was a proposal, the $_POST['message_ha'] is
+  	 * an array holding message data. That message must be persisted to the DB
+  	 */
+  	if (array_key_exists('message_ha', $_POST) && is_array($_POST['message_ha']) && count($_POST['message_ha'])>0) {
+  		$message_ha = array();
+  		foreach ($_POST['message_ha'] as $key=>$val) $message_ha[$key] = urldecode($val);
+  		if (count($message_ha)>0) {
+	  		$mh = MessageHandler::instance(MultiPort::getDSN($_SESSION['sess_selected_tester']));
+	  		// don't care about errors
+	  		$mh->send_message($message_ha);
+	  		MultiPort::removeUserAppointments(MultiPort::findUser($message_ha['id_mittente']), array($message_ha['id_messaggio']));
+	  		MultiPort::removeUserAppointments($userObj, array($message_ha['id_messaggio']));
+  		}
+  	}
+
   // Genera CSV a partire da contenuto $_POST
   // e crea CSV forzando il download
 
@@ -120,28 +141,45 @@ else {
   /*
    * Obtain event_token from $_GET.
    */
-$userAgendaForThisProvider = $user_agendaAr[$_SESSION['sess_selected_tester']];
-//var_dump($userAgendaForThisProvider);
   if(isset($_GET['event_token'])) {
-    $event_token = DataValidator::validate_event_token($_GET['event_token']);
-    if($event_token === FALSE) {
-      $errObj = new ADA_Error(NULL,
-                         translateFN("Dati in input per il modulo eguidance_tutor_form non corretti"),
-                         NULL, NULL, NULL, $userObj->getHomePage());
-    }
-    $id_course_instance = ADAEventProposal::extractCourseInstanceIdFromThisToken($event_token);
-    $idTutorFromToken = ADAEventProposal::extractTutorIdFromThisToken($event_token);
-    $idUserFromToken = ADAEventProposal::extractTutoredIdFromThisToken($event_token);
-//    $appointmentTime = ADAEventProposal::extractTimeFromThisToken($event_token);
-    $appointmentTime = NULL;
-    foreach ($userAgendaForThisProvider as $appTmpAr) {
-	if (strpos($appTmpAr[2],$event_token)!== false) {
-	    $eguidance_session_dataAr['data_ora'] = $appTmpAr[1];
-	    $appointmentTime = $appTmpAr[1];
-	    break;
+  	/**
+  	 * @author giorgio 08/feb/2017
+  	 *
+  	 * On WISP/UNIMC only:
+  	 *
+  	 * loop agenda and event proposals to find where the event_token is.
+  	 * If it's a proposal, save the 'proposals' string in $foundKey and
+  	 * the message id for building hidden form fields (see below)
+  	 */
+  	$foundKey = null;
+  	$foundMsgId = null;
+	foreach (array('agenda' => $user_agendaAr, 'proposals' => $user_events_proposed_exploded) as $key => $currentAr) {
+		$userAgendaForThisProvider = $currentAr[$_SESSION['sess_selected_tester']];
+		if (is_array($userAgendaForThisProvider) && count($userAgendaForThisProvider)>0) {
+			//var_dump($userAgendaForThisProvider);
+			$event_token = DataValidator::validate_event_token($_GET['event_token']);
+			if($event_token === FALSE) {
+				$errObj = new ADA_Error(NULL,
+					translateFN("Dati in input per il modulo eguidance_tutor_form non corretti"),
+					NULL, NULL, NULL, $userObj->getHomePage());
+		    }
+		    $id_course_instance = ADAEventProposal::extractCourseInstanceIdFromThisToken($event_token);
+		    $idTutorFromToken = ADAEventProposal::extractTutorIdFromThisToken($event_token);
+		    $idUserFromToken = ADAEventProposal::extractTutoredIdFromThisToken($event_token);
+	// 	    $appointmentTime = ADAEventProposal::extractTimeFromThisToken($event_token);
+		    $appointmentTime = NULL;
+		    foreach ($userAgendaForThisProvider as $appTmpAr) {
+				if (strpos($appTmpAr[2],$event_token)!== false) {
+				    $eguidance_session_dataAr['data_ora'] = $appTmpAr[1];
+				    $appointmentTime = $appTmpAr[1];
+				    $foundKey = $key;
+				    $foundMsgId = $appTmpAr[10][3];
+				}
+		    }
+		    // break out of the loop if event_token has been found
+		    if (!is_null($foundKey)) break;
+		}
 	}
-    }
-
   }
   else if (isset($_GET['id_course_instance']))
   {
@@ -228,6 +266,37 @@ $userAgendaForThisProvider = $user_agendaAr[$_SESSION['sess_selected_tester']];
         $eguidanceAssessment = TutorModuleHtmlLib::getEguidanceTutorShow($tutoredUserObj, $service_infoAr,$eguidance_session_dataAr, $fill_textareas);
     } else {
         $eguidanceAssessment = TutorModuleHtmlLib::getEditEguidanceDataForm($tutoredUserObj, $service_infoAr,$eguidance_session_dataAr, $fill_textareas);
+        /**
+         * @author giorgio 08/feb/2017
+         *
+         * On WISP/UNIMC only:
+         *
+         * If event_token has been found in the proposal, add some hidden fields to
+         * the form so that when it gets submitted the proposal becomes a confirmed appointment
+         */
+        if (isset($foundKey) && !is_null($foundKey) && ($foundKey==='proposals') && isset($foundMsgId) && !is_null($foundMsgId)) {
+        	require_once ROOT_DIR.'/comunica/include/ADAEvent.inc.php';
+        	$msg = MultiPort::getUserAppointment($tutoredUserObj,$foundMsgId);
+
+        	$newDest = $msg['mittente'];
+        	$newMitt = $msg['destinatari'];
+        	$msg['destinatari'] = $newDest;
+        	$msg['mittente'] = $newMitt;
+        	// turn off propsed bit
+        	$msg['flags'] = $msg['flags'] & (~ADA_EVENT_PROPOSED);
+        	$msg['testo'] = ADAEvent::generateEventMessageAction($msg['flags'], $id_course, $id_course_instance);
+        	$msg['flags'] = $msg['flags'] | ADA_EVENT_CONFIRMED;
+        	$msg['id_mittente'] = $tutoredUserObj->getId();
+        	$msg['data_ora'] = (isset($_GET['ts']) && is_numeric($_GET['ts'])) ? intval($_GET['ts']) : 'now';
+
+        	// add $msg keys to the form as hidden fields, will become an array when posted
+        	foreach ($msg as $key=>$val) {
+	        	$el = CDOMElement::create('hidden','name:message_ha['.$key.']');
+	        	$el->setAttribute('value', urlencode($val));
+	        	$eguidanceAssessment->addChild($el);
+        	}
+        }
+
     }
 
 /*
