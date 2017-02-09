@@ -87,8 +87,9 @@ include_once ROOT_DIR.'/comunica/include/ADAEventProposal.inc.php';
 	  		$mh = MessageHandler::instance(MultiPort::getDSN($_SESSION['sess_selected_tester']));
 	  		// don't care about errors
 	  		$mh->send_message($message_ha);
-	  		MultiPort::removeUserAppointments(MultiPort::findUser($message_ha['id_mittente']), array($message_ha['id_messaggio']));
-	  		MultiPort::removeUserAppointments($userObj, array($message_ha['id_messaggio']));
+	  		foreach (array($message_ha['mittente'], $message_ha['destinatari']) as $username) {
+	  			MultiPort::removeUserAppointments(MultiPort::findUserByUsername($username), array($message_ha['id_messaggio']));
+	  		}
   		}
   	}
 
@@ -150,10 +151,24 @@ else {
   	 * loop agenda and event proposals to find where the event_token is.
   	 * If it's a proposal, save the 'proposals' string in $foundKey and
   	 * the message id for building hidden form fields (see below)
+  	 *
+     * If session user is a switcher, $user_agendaAr and  $user_events_proposed_exploded will
+     * hold its own appointments proposal BUT we need to know the instance's tutor proposals instead
   	 */
   	$foundKey = null;
   	$foundMsgId = null;
-	foreach (array('agenda' => $user_agendaAr, 'proposals' => $user_events_proposed_exploded) as $key => $currentAr) {
+  	$agendaToUse = $user_agendaAr;
+  	$proposalToUse = $user_events_proposed_exploded;
+
+  	if ($userObj->getType()==AMA_TYPE_SWITCHER && isset($_GET['tutorID']) && intval($_GET['tutorID'])>0) {
+  		$tutorObj = MultiPort::findUser(intval($_GET['tutorID']));
+  		if ($tutorObj instanceof ADAPractitioner) {
+  			$agendaToUse = MultiPort::getUserAgenda($tutorObj);
+  			$proposalToUse = ADAEventProposal::explodeAgendaMessageFromEventProposal(MultiPort::getTutorEventsProposed($tutorObj));
+  		}
+  	}
+
+	foreach (array('agenda' => $agendaToUse, 'proposals' => $proposalToUse) as $key => $currentAr) {
 		$userAgendaForThisProvider = $currentAr[$_SESSION['sess_selected_tester']];
 		if (is_array($userAgendaForThisProvider) && count($userAgendaForThisProvider)>0) {
 			//var_dump($userAgendaForThisProvider);
