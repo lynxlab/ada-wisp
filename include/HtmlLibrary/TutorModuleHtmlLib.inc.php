@@ -86,10 +86,26 @@ class TutorModuleHtmlLib
     $toe_thead = '';
     $instance_status = $service_infoAr['instance_status_value'];
     $avalaibleStatusAr = array($status_opened_label,$status_closed_label);
-    $more_attributes['onchange'] = 'saveStatus(this)';
-    $toe_tbody = array(
-      array(BaseHtmlLib::selectElement2('id:status_service, name:status_service',$service_infoAr['avalaible_status'],$instance_status,$more_attributes))
-    );
+
+    $isReadonly = true;
+    if (isset($_SESSION['sess_userObj'])) {
+    	if ( $_SESSION['sess_userObj']->getType() == AMA_TYPE_SWITCHER ||
+    	    ($_SESSION['sess_userObj']->getType() == AMA_TYPE_TUTOR && !$_SESSION['sess_userObj']->isSuper()  &&
+    	     $GLOBALS['dh']->is_tutor_of_instance($_SESSION['sess_userObj']->getId(), $service_infoAr['id_istanza_corso']))) {
+    	     	$isReadonly = false;
+    	     	$more_attributes['onchange'] = 'saveStatus(this)';
+    	}
+    }
+
+    if (!$isReadonly) {
+	    $toe_tbody = array(
+	      array(BaseHtmlLib::selectElement2('id:status_service, name:status_service',$service_infoAr['avalaible_status'],$instance_status,$more_attributes))
+	    );
+    } else {
+    	$span = CDOMElement::create('span');
+    	$span->addChild(new CText($service_infoAr['avalaible_status'][$instance_status]));
+    	$toe_tbody = array(array($span));
+    }
     $toe_table = BaseHtmlLib::tableElement('', $toe_thead, $toe_tbody);
     $form->addChild($toe_table);
     return $form;
