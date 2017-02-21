@@ -605,7 +605,15 @@ function parameter_controlFN($neededObjAr=array(), $allowedUsersAr=array()) {
 	                      $tutorsInstance = $dh->course_instance_tutor_get($id_course_instance,$number=2);
 	                      if (AMA_DataHandler::isError($tutorsInstance)) {
 	                          $invalid_course_instance = TRUE;
-	                      } elseif (!in_array($sess_id_user, $tutorsInstance)) {
+	                      } elseif (false && !in_array($sess_id_user, $tutorsInstance)) {
+	                      	  /**
+	                      	   * @author giorgio 21/feb/2017
+	                      	   *
+	                      	   * On WISP/UNIMC only:
+	                      	   *
+	                      	   * in order to grant access to sview to instances to which
+	                      	   * the tutor is not assigned we must drop this check on course instance
+	                      	   */
 	                          $invalid_course_instance = TRUE;
 	                      }
                   	  }
