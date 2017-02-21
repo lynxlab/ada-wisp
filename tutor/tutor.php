@@ -639,7 +639,9 @@ switch ($op) {
 						if ($isSuperTutor && empty($tutorsAr)) {
 							// look for a preassigned tutor if tutorsAr is still empty
 							$tutorRes = $dh->get_tutor_preassigned_to_student_for_course($studentObj->getId());
-							if (!AMA_DB::isError($tutorRes)) $tutorsAr[$tutorRes] = MultiPort::findUser($tutorRes)->getFullName();
+							if (!AMA_DB::isError($tutorRes) && is_array($tutorRes) && count($tutorRes)>0) {
+								$tutorsAr[$tutorRes] = MultiPort::findUser($tutorRes)->getFullName();
+							}
 						}
 					}
 					$onclick = 'javascript:sendEventProposal('.$studentObj->getId().');';
