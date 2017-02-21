@@ -1261,7 +1261,27 @@ class CourseViewer
      * read course instance status and set terminated param accordingly
      */
     $instanceObj = new Course_instance($id_course_instance);
-    $params['readonly'] = $instanceObj instanceof Course_instance && $instanceObj->isFull() && $instanceObj->status==ADA_INSTANCE_CLOSED;
+
+    /**
+     * @author giorgio 21/feb/2017
+     *
+     * On WISP/UNIMC only:
+     *
+     * display the timeline in readonly mode if:
+     *  - userObj is a switcher or supertutor
+     *  - userObj is not the tutor of the passed instance
+     */
+    if (($userObj->getType() == AMA_TYPE_SWITCHER) ||
+        ($userObj->getType() == AMA_TYPE_TUTOR && $userObj->isSuper())) {
+        $params['readonly'] = true;
+    } else if ($userObj->getType() == AMA_TYPE_TUTOR && !$dh->is_tutor_of_instance($userObj->getId(), $instanceObj->getId())) {
+    	// if logged user ($userObj) is not in the tutors of the instance readonly is true
+    	$params['readonly'] = true;
+    }
+
+    if (!isset($params['readonly'])) {
+	    $params['readonly'] = $instanceObj instanceof Course_instance && $instanceObj->isFull() && $instanceObj->status==ADA_INSTANCE_CLOSED;
+    }
 
     $index = CDOMElement::create('div', "id:$container_div");
 
