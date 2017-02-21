@@ -180,6 +180,7 @@ else {
     	$tutorObj = MultiPort::findUser($dh->course_instance_tutor_get($id_course_instance));
     	if ($tutorObj instanceof ADAPractitioner) {
     		$user_events_proposedAr = MultiPort::getTutorEventsProposed($tutorObj);
+    		$user_agendaAr = MultiPort::getUserAgenda($tutorObj);
     	}
     }
 
@@ -227,12 +228,30 @@ else {
 					    	$href = HTTP_ROOT_DIR . '/tutor/eguidance_tutor_form.php?event_token=' . $event_token_tmp .
 					    							'&ts='.$event_time_tmpAr[$i]['timestamp'];
 					    	if (isset($tutorObj)) $href .= '&tutorID='.$tutorObj->getId();
-					    	$report_link = CDOMElement::create('a', "href:$href");
-					    	$report_link->addChild(new CText(translateFN('crea report')));
+				    		if ($userObj->getType() == AMA_TYPE_SWITCHER ||
+				    		    ($userObj->getType() == AMA_TYPE_TUTOR && !$userObj->isSuper()  &&
+				    			$dh->is_tutor_of_instance($userObj->getId(), $id_course_instance))) {
+						    	$report_link = CDOMElement::create('a', "href:$href");
+						    	$report_link->addChild(new CText(translateFN('crea report')));
+				    		} else {
+				    			$report_link = CDOMElement::create('span');
+				    			$report_link->addChild(new CText('-'));
+				    		}
 
 					    	$isFutureProposedAppointment = true;
+
+					    	if ($event_flag_tmp & ADA_VIDEOCHAT_EVENT)
+					    		$propType = translateFN ( 'Appuntamento in videochat' );
+					    	else if ($event_flag_tmp & ADA_CHAT_EVENT)
+					    		$propType = translateFN ( 'Appuntamento in chat' );
+					   		else if ($event_flag_tmp & ADA_PHONE_EVENT)
+				 				$propType = translateFN ( 'Appuntamento telefonico' );
+		    				else if ($event_flag_tmp & ADA_IN_PLACE_EVENT)
+		    					$propType = translateFN ( 'Appuntamento in presenza' );
+
 // 					    	$tbody_data_proposed_appointment[] = array(Abstract_AMA_DataHandler::ts_to_date($event_time_tmpAr[$i]['timestamp']), ADAEventProposal::removeEventToken($event_title_tmp));
-							$tbody_data_proposed_appointment[] = array($event_time_tmpAr[$i]['date'].' - '.$event_time_tmpAr[$i]['time'], ADAEventProposal::removeEventToken($event_title_tmp));
+//							$tbody_data_proposed_appointment[] = array($event_time_tmpAr[$i]['date'].' - '.$event_time_tmpAr[$i]['time'], ADAEventProposal::removeEventToken($event_title_tmp));
+		    				$tbody_data_proposed_appointment[] = array($event_time_tmpAr[$i]['date'].' - '.$event_time_tmpAr[$i]['time'], $propType, $report_link->getHtml());
 					    }
 //					}
 				    }
@@ -269,7 +288,41 @@ else {
 				    $isConfirmedAppointment = true;
 				    if ($agenda_time_send_tmp >= time()) {
 					$isFutureConfirmedAppointment = true;
-				        $tbody_data_confirmed_appointment[] = array(Abstract_AMA_DataHandler::ts_to_date($agenda_time_send_tmp, ADA_DATE_FORMAT.' - %R'), ADAEventProposal::removeEventToken($agenda_title_tmp));
+
+
+					/**
+					 * @author giorgio 21/feb/2017
+					 *
+					 * On WISP/UNIMC only:
+					 *
+					 * generate create report link
+					 */
+					$href = HTTP_ROOT_DIR . '/tutor/eguidance_tutor_form.php?event_token=' . $event_token_tmp .
+					'&ts='.$event_time_tmpAr[$i]['timestamp'];
+					if (isset($tutorObj)) $href .= '&tutorID='.$tutorObj->getId();
+					if ($userObj->getType() == AMA_TYPE_SWITCHER ||
+					    ($userObj->getType() == AMA_TYPE_TUTOR && !$userObj->isSuper()  &&
+						 $dh->is_tutor_of_instance($userObj->getId(), $id_course_instance))) {
+						 $report_link = CDOMElement::create('a', "href:$href");
+						 $report_link->addChild(new CText(translateFN('crea report')));
+					} else {
+						$report_link = CDOMElement::create('span');
+						$report_link->addChild(new CText('-'));
+					}
+
+					if ($agenda_flag_tmp & ADA_VIDEOCHAT_EVENT)
+						$propType = translateFN ( 'Appuntamento in videochat' );
+					else if ($agenda_flag_tmp & ADA_CHAT_EVENT)
+						$propType = translateFN ( 'Appuntamento in chat' );
+					else if ($agenda_flag_tmp & ADA_PHONE_EVENT)
+						$propType = translateFN ( 'Appuntamento telefonico' );
+					else if ($agenda_flag_tmp & ADA_IN_PLACE_EVENT)
+						$propType = translateFN ( 'Appuntamento in presenza' );
+
+
+// 			        $tbody_data_confirmed_appointment[] = array(Abstract_AMA_DataHandler::ts_to_date($agenda_time_send_tmp, ADA_DATE_FORMAT.' - %R'), ADAEventProposal::removeEventToken($agenda_title_tmp));
+					$tbody_data_confirmed_appointment[] = array(Abstract_AMA_DataHandler::ts_to_date($agenda_time_send_tmp, ADA_DATE_FORMAT.' - %R'), $propType, $report_link->getHtml());
+
 				    }
 //				    for ($i = 0; $i < count($event_time_tmpAr); $i++) {
 //					if (!$isFutureConfirmedAppointment) {
@@ -375,7 +428,7 @@ else {
     $appointments_data = new CText('');
   }
   else {
-    $thead_data = array(translateFN('Prossime sessioni di orientamento'), translateFN('Appointment type'));
+    $thead_data = array(translateFN('Prossime sessioni di orientamento'), translateFN('Appointment type'), translateFN('Azioni'));
     $appointments_data = BaseHtmlLib::tableElement('', $thead_data, $tbody_data_confirmed_appointment);
   }
 
@@ -383,7 +436,7 @@ else {
     $appointments_proposed_data = new CText('');
   }
   else {
-    $thead_data = array(translateFN('Prossime proposte di appuntamento'), translateFN('Appointment type'), '&nbsp;');
+    $thead_data = array(translateFN('Prossime proposte di appuntamento'), translateFN('Appointment type'), translateFN('Azioni'));
     $appointments_proposed_data = BaseHtmlLib::tableElement('', $thead_data, $tbody_data_proposed_appointment);
   }
 
