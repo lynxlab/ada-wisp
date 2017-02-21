@@ -24,14 +24,15 @@ $variableToClearAR = array('node', 'layout', 'course', 'user');
 /**
  * Users (types) allowed to access this module.
  */
-$allowedUsersAr = array(AMA_TYPE_STUDENT, AMA_TYPE_TUTOR);
+$allowedUsersAr = array(AMA_TYPE_STUDENT, AMA_TYPE_TUTOR, AMA_TYPE_SWITCHER);
 
 /**
  * Get needed objects
  */
 $neededObjAr = array(
     AMA_TYPE_STUDENT => array('node', 'layout', 'tutor', 'course', 'course_instance'),
-    AMA_TYPE_TUTOR => array('node', 'layout', 'course', 'course_instance')
+    AMA_TYPE_TUTOR => array('node', 'layout', 'course', 'course_instance'),
+	AMA_TYPE_SWITCHER => array('node', 'layout', 'course', 'course_instance')
 );
 
 //FIXME: course_instance is needed by videochat BUT not for guest user
