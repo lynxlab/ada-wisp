@@ -54,7 +54,7 @@ class ADAEventProposal
   }
 
   /**
-   * Returns the course instance id from a given event token
+   * Returns the tutored student id instance id from a given event token
    *
    * @param  string $event_token
    * @return int
@@ -62,7 +62,7 @@ class ADAEventProposal
   static public function extractTutoredIdFromThisToken($event_token) {
 
     /*
-     * first match: tutored user id (not loaded in $matches, because of the ?: )
+     * first match: tutored user id
      * second match: tutor id (not loaded in $matches, because of the ?: )
      * third match: course instance id
      * fourth match: timestamp (not loaded in $matches, because of the ?: )
