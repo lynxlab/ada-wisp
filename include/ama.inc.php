@@ -10474,6 +10474,28 @@ abstract class AMA_Tester_DataHandler extends Abstract_AMA_DataHandler {
     }
 
     /**
+     * @author giorgio 21/feb/2017
+     *
+     * On WISP/UNIMC only:
+     *
+     * check if the passed tutor is a tutor of the passed instance
+     *
+     * @return bool
+     */
+    public function is_tutor_of_instance ($tutor_id, $course_instance_id) {
+    	$isTutorOfInstance = false;
+    	$tutorsAr = $this->course_instance_tutor_get($course_instance_id);
+    	if (!AMA_DB::isError($tutorsAr)) {
+    		// $tutorsAr may be a scalar, convert it to array
+    		if (!is_array($tutorsAr) && is_numeric($tutorsAr)) $tutorsAr = array($tutorsAr);
+    		if (is_array($tutorsAr) && in_array($tutor_id, $tutorsAr)) {
+    			$isTutorOfInstance = true;
+    		}
+    	}
+    	return $isTutorOfInstance;
+    }
+
+    /**
      * Get all informations about tutor
      *
      * @access public
