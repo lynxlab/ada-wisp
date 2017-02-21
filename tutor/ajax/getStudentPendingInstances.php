@@ -60,32 +60,34 @@ if (isset($_SERVER['REQUEST_METHOD']) && $_SERVER['REQUEST_METHOD'] == 'GET' && 
 					$timeline_span = CDOMElement::create('span','class:pending service descr');
 					$timeline_span->addChild(new CText('('.translateFN($instanceStatusDescription[$anInstance['instance_status']]).')'));
 
-					/**
-					 * Should give new appointment link only for instances with valid data_fine
-					 * to have this behaviour, uncomment the below if condition
-					 */
-					// if ($anInstance['data_fine'] == 0 || $anInstance['data_fine'] > time()) {
-						$url = HTTP_ROOT_DIR.'/comunica/send_event_proposal.php?id_user='.intval($_GET['studentID']).'&id_course_instance='.$anInstance['id_istanza_corso'];
-						$onclick = "openMessenger('$url',800,600);";
-						$appointment_link = CDOMElement::create('a');
-						$appointment_link->setAttribute('href','javascript:void(0);');
-						$appointment_link->setAttribute('onclick',$onclick);
-						$appointment_link->setAttribute('class', 'new appointment link');
-						$appointment_link->addChild(new CText($appointment_link_label));
-						$actions[] = $appointment_link->getHtml();
-					// }
+					$tutorOwnStudent = $dh->is_tutor_of_instance($userObj->getId(), $anInstance['id_istanza_corso']);
+					$row = array(
+							count($tbody)+1,
+							AMA_Common_DataHandler::ts_to_date($anInstance['data_iscrizione']),
+							$timeline_link->getHtml().$timeline_span->getHtml());
 
+					if ($tutorOwnStudent) {
+						/**
+						 * Should give new appointment link only for instances with valid data_fine
+						 * to have this behaviour, uncomment the below if condition
+						 */
+						// if ($anInstance['data_fine'] == 0 || $anInstance['data_fine'] > time()) {
+							$url = HTTP_ROOT_DIR.'/comunica/send_event_proposal.php?id_user='.intval($_GET['studentID']).'&id_course_instance='.$anInstance['id_istanza_corso'];
+							$onclick = "openMessenger('$url',800,600);";
+							$appointment_link = CDOMElement::create('a');
+							$appointment_link->setAttribute('href','javascript:void(0);');
+							$appointment_link->setAttribute('onclick',$onclick);
+							$appointment_link->setAttribute('class', 'new appointment link');
+							$appointment_link->addChild(new CText($appointment_link_label));
+							$actions[] = $appointment_link->getHtml();
+						// }
+					}
 					$status_link = CDOMElement::create('a', 'class:show status link,href:user_service_detail.php?id_user='.intval($_GET['studentID']).'&id_course_instance='.$anInstance['id_istanza_corso']);
 					$status_link->addChild(new CText($status_link_label));
 					$actions[] = $status_link->getHtml();
 
-					$tbody[] = array(
-							count($tbody)+1,
-							AMA_Common_DataHandler::ts_to_date($anInstance['data_iscrizione']),
-							$timeline_link->getHtml().$timeline_span->getHtml(),
-							implode(' | ', $actions)
-					);
-
+					array_push($row, implode(' | ', $actions));
+					$tbody[] = $row;
 				}
 			}
 		}
@@ -93,7 +95,7 @@ if (isset($_SERVER['REQUEST_METHOD']) && $_SERVER['REQUEST_METHOD'] == 'GET' && 
 		if (count($tbody)>0) {
 			$retArray['html'] =
 			BaseHtmlLib::tableElement('class:student pending services default_table,id:pendingServices-'.intval($_GET['studentID']),
-					array('#','data', 'servizio', 'azioni'), $tbody)->getHtml();
+					array('#',translateFN('data'), translateFN('servizio'), translateFN('azioni')), $tbody)->getHtml();
 		}
 
 	}
