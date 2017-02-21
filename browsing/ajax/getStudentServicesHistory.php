@@ -74,9 +74,9 @@ if ($_SERVER['REQUEST_METHOD']=='GET' && intval(trim($_GET['userId']))>0) {
 
 				if (!AMA_DB::isError($tutorRes)) {
 
-					if (in_array($_SESSION['sess_userObj']->getType(), array(AMA_TYPE_SWITCHER)) ||
-						($_SESSION['sess_userObj']->getType() == AMA_TYPE_TUTOR && $_SESSION['sess_userObj']->isSuper()) ||
-						($_SESSION['sess_userObj']->getType() == AMA_TYPE_TUTOR && $_SESSION['sess_userObj']->getId() == $tutorRes[0])) {
+// 					if (in_array($_SESSION['sess_userObj']->getType(), array(AMA_TYPE_SWITCHER)) ||
+// 						($_SESSION['sess_userObj']->getType() == AMA_TYPE_TUTOR && $_SESSION['sess_userObj']->isSuper()) ||
+// 						($_SESSION['sess_userObj']->getType() == AMA_TYPE_TUTOR && $_SESSION['sess_userObj']->getId() == $tutorRes[0])) {
 
 						$id_node   = $anInstance['id_corso'].'_'.ADA_DEFAULT_NODE;
 						$href = HTTP_ROOT_DIR.'/browsing/sview.php?id_course='.$anInstance['id_corso'].'&id_node='.$id_node.'&id_course_instance='.$anInstance['id_istanza_corso'];
@@ -85,7 +85,6 @@ if ($_SERVER['REQUEST_METHOD']=='GET' && intval(trim($_GET['userId']))>0) {
 
 						$status_link = CDOMElement::create('a', 'class:show status link,href:'.HTTP_ROOT_DIR.'/tutor/user_service_detail.php?id_user='.intval($_GET['userId']).'&id_course_instance='.$anInstance['id_istanza_corso']);
 						$status_link->addChild(new CText($status_link_label));
-						$actions[] = $status_link->getHtml();
 
 						$tableData[] = array(
 							count($tableData)+1,
@@ -96,7 +95,7 @@ if ($_SERVER['REQUEST_METHOD']=='GET' && intval(trim($_GET['userId']))>0) {
 							$status_link->getHtml()
 						);
 
-					}
+// 					}
 				}
 
 			}
