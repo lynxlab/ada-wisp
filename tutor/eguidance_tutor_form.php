@@ -293,6 +293,16 @@ else {
         	require_once ROOT_DIR.'/comunica/include/ADAEvent.inc.php';
         	$msg = MultiPort::getUserAppointment($tutoredUserObj,$foundMsgId);
 
+        	$msg['titolo'] = ADAEventProposal::extractEventToken($msg['titolo']).'#';
+
+        	if ($msg['flags'] & ADA_VIDEOCHAT_EVENT)
+        		$msg['titolo'] .= translateFN ( 'Appuntamento in videochat' );
+        	else if ($msg['flags'] & ADA_CHAT_EVENT)
+        		$msg['titolo'] .= translateFN ( 'Appuntamento in chat' );
+        	else if ($msg['flags'] & ADA_PHONE_EVENT)
+        		$msg['titolo'] .= translateFN ( 'Appuntamento telefonico' );
+        	else if ($msg['flags'] & ADA_IN_PLACE_EVENT)
+        		$msg['titolo'] .= translateFN ( 'Appuntamento in presenza' );
         	$newDest = $msg['mittente'];
         	$newMitt = $msg['destinatari'];
         	$msg['destinatari'] = $newDest;
