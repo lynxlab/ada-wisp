@@ -1644,10 +1644,19 @@ static public function getRecipientsFromAgenda($data_Ar) {
 	     *
 	     * On WISP/UNIMC only:
 	     * If appointment is a proposal indeed, add date and time to the url
+	     * and substitue the sender_username with the student just for display purposes
 	     */
 	    if ($appointment_Ar[5] & ADA_EVENT_PROPOSED) $href .= '&ts='.$date_time;
 	    $report_link = CDOMElement::create('a', "href:$href");
 	    $report_link->addChild(new CText(translateFN('crea report')));
+	    $idUserFromToken = ADAEventProposal::extractTutoredIdFromThisToken($appointment_Ar[2]);
+	    $sender_username = '-';
+	    if (isset($appointment_Ar[$idUserFromToken]) && isset($appointment_Ar[$idUserFromToken][0]) && isset($appointment_Ar[$idUserFromToken][1])) {
+	    	$sender_username = $appointment_Ar[$idUserFromToken][0].' '.$appointment_Ar[$idUserFromToken][1];
+	    } else {
+	    	$userObj = MultiPort::findUser($idUserFromToken);
+	    	if ($userObj instanceof ADALoggableUser) $sender_username = $userObj->getFullName();
+	    }
 	}
         
         /**
