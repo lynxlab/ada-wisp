@@ -149,14 +149,14 @@ class CommunicationModuleHtmlLib
     else if (!$modify && isset($_GET['id_course'])) {
       $form->addChild(CDOMElement::create('hidden','id:id_course,name:id_course,value:'.intval($_GET['id_course'])));
     }
-    
+
 
     $form->addChild($idcourseinstance);
-    
+
     $topContainerDIV = CDOMElement::create('div','id:top_container_form');
-    
+
     $leftDIV = CDOMElement::create('div','id:left_proposal_form');
-    
+
     $rightDIV = CDOMElement::create('div','id:right_proposal_form');
 
     $tutoredUserObj = MultiPort::findUser($id_user);
@@ -242,17 +242,17 @@ class CommunicationModuleHtmlLib
     $select->addChild($option4);
     $type->addChild(new CText(translateFN('Tipo di appuntamento')));
     $type->addChild($select);
-    
+
     /**
 	 * full calendar div
      */
     $fullCalendarDIV = CDOMElement::create('div','id:fullcalendar');
     $fullCalendarDIV->setAttribute('style', 'margin-top:20px;');
-    
+
     /**
 	 * proposal detail modal dialog div
-     */    
-    $proposalDetailsDIV = CDOMElement::create('div','id:proposalDetails');    
+     */
+    $proposalDetailsDIV = CDOMElement::create('div','id:proposalDetails');
 	// this shall become the button label inside the dialog
     $detailsButton = CDOMElement::create('span','class:buttonLbl');
     $detailsButton->setAttribute('style','display:none;');
@@ -262,7 +262,7 @@ class CommunicationModuleHtmlLib
 	$userLbl->setAttribute('style', 'display:block;');
 	$userLbl->addChild (new CText(translateFN("Proposta con l'utente").": "));
 	$userLbl->addChild (CDOMElement::create('span','id:proposalUserDetails'));
-	// label and placeholder (filled by send_event_proposal.js) for appointment type    
+	// label and placeholder (filled by send_event_proposal.js) for appointment type
     $typeLbl = CDOMElement::create('span');
     $typeLbl->setAttribute('style', 'display:block;');
     $typeLbl->addChild (new CText(translateFN('Tipo di appuntamento').": "));
@@ -272,8 +272,8 @@ class CommunicationModuleHtmlLib
     $notesLbl->setAttribute('style', 'display:block');
     $notesLbl->addChild (new CText(translateFN("Note").": "));
     $notesLbl->addChild (CDOMElement::create('span','id:proposalNotes'));
-	// add elements to the div    
-	$proposalDetailsDIV->addChild($detailsButton);	    
+	// add elements to the div
+	$proposalDetailsDIV->addChild($detailsButton);
     $proposalDetailsDIV->addChild($userLbl);
     $proposalDetailsDIV->addChild($typeLbl);
     $proposalDetailsDIV->addChild($notesLbl);
@@ -307,7 +307,7 @@ class CommunicationModuleHtmlLib
     $alertDIV->addChild($oneAtLeastText);
     $alertDIV->addChild($overlappingProposal);
     $alertDIV->addChild($alertButton);
-    
+
     /**
 	 * confirm dialog box
      */
@@ -318,7 +318,7 @@ class CommunicationModuleHtmlLib
     $confirmDelSPAN->addChild(new CText(translateFN("Confermi la cancellazione della proposta?")));
     // question for form reset
     $confirmResetSPAN = CDOMElement::create('span','id:questionReset');
-    $confirmResetSPAN->addChild(new CText(translateFN("Confermi il ripristino della pagina?")));    
+    $confirmResetSPAN->addChild(new CText(translateFN("Confermi il ripristino della pagina?")));
     // this shall become the ok button label inside the dialog
     $confirmOK = CDOMElement::create('span','class:confirmOKLbl');
     $confirmOK->setAttribute('style','display:none;');
@@ -332,12 +332,12 @@ class CommunicationModuleHtmlLib
     $confirmDIV->addChild($confirmCancel);
     $confirmDIV->addChild($confirmDelSPAN);
     $confirmDIV->addChild($confirmResetSPAN);
-    
+
     $calendar_icon = CDOMElement::create('img','src:img/cal.png');
     $calendar_icon->setAttribute('alt', translateFN('Scegli una data'));
-    
+
     if (!defined(MAX_PROPOSAL_COUNT)) define ('MAX_PROPOSAL_COUNT',3);
-    
+
     for ($i=0;$i<MAX_PROPOSAL_COUNT;$i++)
     {
     	$date[$i] = CDOMElement::create('div','class:proposed_date');
@@ -356,12 +356,12 @@ class CommunicationModuleHtmlLib
     	}
     	$date[$i]->addChild(new CText(sprintf(translateFN('Proposta #%s in data (dd/mm/yyyy)'),($i+1))));
     	$date[$i]->addChild($dateInput[$i]);
-    	
+
     	$calendar[$i] = CDOMElement::create('a');
     	$calendar[$i]->setAttribute('href',"javascript:show_calendar('document.send_event_proposal_form.date".($i+1).", document.send_event_proposal_form.date".($i+1).".value);");
     	$calendar[$i]->addChild($calendar_icon);//new CText(translateFN('Scegli')));
     	$date[$i]->addChild($calendar[$i]);
-    	
+
     	$date[$i]->addChild(new CText(translateFN('alle ore')));
     	$date[$i]->addChild($time[$i]);
     }
@@ -388,44 +388,44 @@ class CommunicationModuleHtmlLib
     $leftDIV->addChild($timezone);
 
     $rightDIV->addChild($notes);
-    
+
     $legendDIV = CDOMElement::create('div','id:proposalLegend');
-    
+
     $legendLabel = CDOMElement::create('span','class:proposalLegendLbl');
     $legendLabel->addChild (new CText(translateFN('Legenda')));
-    
-    $notConfirmedBox = CDOMElement::create('div','class:legendBox proposal');    
+
+    $notConfirmedBox = CDOMElement::create('div','class:legendBox proposal');
     $notConfirmedBox->addChild(new CText(translateFN('Proposta').' '.translateFN('non confermata')));
-    
+
     $confirmedBox = CDOMElement::create('div','class:legendBox confirmed');
     $confirmedBox->addChild(new CText(translateFN('Proposta').' '.translateFN('confermata')));
-    
+
     $proposedBox = CDOMElement::create('div','class:legendBox fc-event');
     $proposedBox->addChild(new CText(translateFN('Proposta').' '.translateFN('inserita')));
-    
+
     $legendDIV->addChild ($legendLabel);
     $legendDIV->addChild ($notConfirmedBox);
     $legendDIV->addChild ($confirmedBox);
     $legendDIV->addChild ($proposedBox);
-    
+
     $topContainerDIV->addChild ($leftDIV);
     $topContainerDIV->addChild ($rightDIV);
     $topContainerDIV->addChild ($legendDIV);
-    
+
     $form->addChild ($topContainerDIV);
     $form->addChild (CDOMElement::create('div','class:clearfix'));
-    $form->addChild ($fullCalendarDIV);    
+    $form->addChild ($fullCalendarDIV);
     $form->addChild ($proposalDetailsDIV);
     $form->addChild ($alertDIV);
     $form->addChild ($confirmDIV);
-    
+
     $hiddenFormElements = CDOMElement::create('div','id:hidden_form_controls');
     for ($i=0; $i<MAX_PROPOSAL_COUNT;$i++) $hiddenFormElements->addChild($date[$i]);
 //     $hiddenFormElements->addChild($date1);
 //     $hiddenFormElements->addChild($date2);
 //     $hiddenFormElements->addChild($date3);
     $hiddenFormElements->addChild($user_id);
-    
+
     $form->addChild ($hiddenFormElements);
     $form->addChild($buttons);
 
@@ -499,7 +499,7 @@ class CommunicationModuleHtmlLib
     $descriptive_text->addChild(new CText(translateFN("Seleziona una delle possibilit&agrave; qui di seguito:")));
 
     $needs_to_be_checked = TRUE;
-    
+
 	if (is_array($datetimesAr) && !empty($datetimesAr)) {
 			foreach ( $datetimesAr as $k => $datetimesEl ) {
 				$proposal[$k] = CDOMElement::create ( 'div', 'class:radio_button' );
@@ -521,7 +521,7 @@ class CommunicationModuleHtmlLib
 	} else {
 		$k=-1; // needs to be -1 because of the pre-increment below
 	}
-    
+
     $proposal[++$k] = CDOMElement::create('div','id:refuse_proposal, class:radio_button');
     $radio[$k] = CDOMElement::create('radio','name:date, value:0');
     if($needs_to_be_checked) {
@@ -609,14 +609,14 @@ class CommunicationModuleHtmlLib
     $javascript_ok = check_javascriptFN($_SERVER['HTTP_USER_AGENT']);
 
     $appointments_Ar = array();
-    
+
     if($userObj instanceof ADAUser) {
       $module = 'event_proposal.php';
     }
     else {
       $module = 'send_event_proposal.php';
     }
-    
+
     //  $module = 'read_event.php';
 
     foreach($data_Ar as $tester => $appointment_data_Ar) {
@@ -680,7 +680,7 @@ class CommunicationModuleHtmlLib
       foreach($appointments_Ar as $appointment) {
         $d = CDOMElement::create('div');
        // $d->addChild(new CText($appointment[0]));
-        
+
         if($userObj instanceof ADAPractitioner) {
           $string = translateFN('Appointment proposal: %s, the user %s asks for new dates');
         }
@@ -750,7 +750,7 @@ class CommunicationModuleHtmlLib
         }else {
             $sender_username = $appointment_Ar[6];
         }
-        
+
         /**
          * @author giorgio 16/apr/2014 16:35:39
          *
@@ -767,7 +767,7 @@ class CommunicationModuleHtmlLib
         			$sender_username = $tutorObj->getFullName();
         		}
         	}
-        }        
+        }
 
 
         //$msg_id = $tester_info_Ar[0].'_'.$appointment_id;
@@ -1117,7 +1117,7 @@ static public function getRecipientsFromAgenda($data_Ar) {
     $data_Ar = self::getRecipientsFromAgenda($data_Ar);
     return self::display_messages_as_form($data_Ar, ADA_MSG_AGENDA, $testers_dataAr);
   }
-  
+
   static private function display_proposed_as_table($data_Ar=array(), $message_type = ADA_MSG_SIMPLE, $testers_dataAr=array(), $showRead=true) {
     $common_dh = $GLOBALS['common_dh'];
     $javascript_ok = check_javascriptFN($_SERVER['HTTP_USER_AGENT']);
@@ -1211,7 +1211,7 @@ static public function getRecipientsFromAgenda($data_Ar) {
       return new CText(translateFN('Non ci sono nuovi appuntamenti'));
     }
   }
-  
+
   static private function display_messages_as_table($data_Ar=array(), $message_type = ADA_MSG_SIMPLE, $testers_dataAr=array(), $showRead=true) {
     $common_dh = $GLOBALS['common_dh'];
     $javascript_ok = check_javascriptFN($_SERVER['HTTP_USER_AGENT']);
@@ -1275,15 +1275,15 @@ static public function getRecipientsFromAgenda($data_Ar) {
         }else {
             $sender_username = $appointment_Ar[6];
         }
-	
+
 	$event_token = ADAEventProposal::extractEventToken($appointment_Ar[2]);
 	$href = HTTP_ROOT_DIR . '/tutor/eguidance_tutor_form.php?event_token=' . $event_token;
 	$action_link = CDOMElement::create('a', "href:$href");
 	$action_link->addChild(new CText(translateFN('View eguidance session data')));
-        
+
         /**
          * @author giorgio 16/apr/2014 16:35:39
-         * 
+         *
          * If session user is a student, try to
          * retrieve tutor's full name just for display purposes
          */
@@ -1298,7 +1298,7 @@ static public function getRecipientsFromAgenda($data_Ar) {
         		}
         	}
         }
-        
+
         //$msg_id = $tester_info_Ar[0].'_'.$appointment_id;
         $msg_id = $tester_id.'_'.$appointment_id;
         $url = HTTP_ROOT_DIR.'/comunica/'.$module.'?msg_id='.$msg_id;
@@ -1474,7 +1474,7 @@ static public function getRecipientsFromAgenda($data_Ar) {
 
           // PROVA, POI RIMETTERE A POSTO
           $userObj = $_SESSION['sess_userObj'];
-          
+
           if($userObj instanceof ADAPractitioner) {
             $event_token = ADAEventProposal::extractEventToken($appointment_Ar[2]);
             $href = HTTP_ROOT_DIR . '/tutor/eguidance_tutor_form.php?event_token=' . $event_token;
@@ -1496,7 +1496,7 @@ static public function getRecipientsFromAgenda($data_Ar) {
 
     if(count($appointments_Ar) > 0) {
       $table = BaseHtmlLib::tableElement('',$thead_data, $appointments_Ar);
-      if (!isset($module)) $module=null;	
+      if (!isset($module)) $module=null;
       $form = CDOMElement::create('form',"name:form, method:post, action:$module");
       $form->addChild($table);
       $div = CDOMElement::create('div','id:buttons');
@@ -1553,7 +1553,7 @@ static public function getRecipientsFromAgenda($data_Ar) {
 
     return $select;
   }
-  
+
   static public function displayAppointmentsWithAssessementLink($data_Ar=array(), $message_type = ADA_MSG_SIMPLE, $testers_dataAr=array(), $showRead=true) {
     $common_dh = $GLOBALS['common_dh'];
     $javascript_ok = check_javascriptFN($_SERVER['HTTP_USER_AGENT']);
@@ -1617,9 +1617,9 @@ static public function getRecipientsFromAgenda($data_Ar) {
         }else {
             $sender_username = $appointment_Ar[6];
         }
-	
+
 	/*
-	 * Link to appointment report 
+	 * Link to appointment report
 	 */
 	$report_link = CDOMElement::create('span', "class:no_report");
 	$report_link->addChild(new CText(translateFN('Nessun report')));
@@ -1644,11 +1644,20 @@ static public function getRecipientsFromAgenda($data_Ar) {
 	     *
 	     * On WISP/UNIMC only:
 	     * If appointment is a proposal indeed, add date and time to the url
-	     * and substitue the sender_username with the student just for display purposes
 	     */
 	    if ($appointment_Ar[5] & ADA_EVENT_PROPOSED) $href .= '&ts='.$date_time;
 	    $report_link = CDOMElement::create('a', "href:$href");
 	    $report_link->addChild(new CText(translateFN('crea report')));
+	}
+
+	/**
+	 * @author giorgio 08/feb/2017
+	 *
+	 * On WISP/UNIMC only:
+	 * If appointment is a proposal indeed
+	 * substitue the sender_username with the student just for display purposes
+	 */
+	if ($appointment_Ar[5] & ADA_EVENT_PROPOSED) {
 	    $idUserFromToken = ADAEventProposal::extractTutoredIdFromThisToken($appointment_Ar[2]);
 	    $sender_username = '-';
 	    if (isset($appointment_Ar[$idUserFromToken]) && isset($appointment_Ar[$idUserFromToken][0]) && isset($appointment_Ar[$idUserFromToken][1])) {
@@ -1658,10 +1667,9 @@ static public function getRecipientsFromAgenda($data_Ar) {
 	    	if ($userObj instanceof ADALoggableUser) $sender_username = $userObj->getFullName();
 	    }
 	}
-        
         /**
          * @author giorgio 16/apr/2014 16:35:39
-         * 
+         *
          * If session user is a student, try to
          * retrieve tutor's full name just for display purposes
          */
@@ -1676,7 +1684,7 @@ static public function getRecipientsFromAgenda($data_Ar) {
         		}
         	}
         }
-        
+
         //$msg_id = $tester_info_Ar[0].'_'.$appointment_id;
         $msg_id = $tester_id.'_'.$appointment_id;
         $url = HTTP_ROOT_DIR.'/comunica/'.$module.'?msg_id='.$msg_id;
@@ -1713,6 +1721,6 @@ static public function getRecipientsFromAgenda($data_Ar) {
       return new CText(translateFN('Non ci sono appuntamenti'));
     }
   }
-  
+
 }
 ?>
