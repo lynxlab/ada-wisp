@@ -888,11 +888,13 @@ if (is_object($user_events_proposed)) {
 					 * $event is loaded in a non associative way, its 10 key
 					 * holds the student, and the student key 2 holds the student id
 					 */
-					if (array_key_exists(10, $event) && array_key_exists(2, $event[10]) && !in_array($event[10][2], $listStudentIds)) {
+					$userIdFromToken = ADAEventProposal::extractTutoredIdFromThisToken($event[2]);
+					$eventDate = $event[1];
+					if (!in_array($userIdFromToken, $listStudentIds)) {
 						unset ($user_events_proposed_exploded[$provider][$evKey]);
 					} else {
 						$user_events_proposed_exploded[$provider][$evKey]['report'] = false;
-						$user_events_proposed_exploded[$provider][$evKey]['crea_report'] = true;
+						$user_events_proposed_exploded[$provider][$evKey]['crea_report'] = time() >= $eventDate;
 					}
 				}
 			}
