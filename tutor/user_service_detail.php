@@ -228,9 +228,9 @@ else {
 					    	$href = HTTP_ROOT_DIR . '/tutor/eguidance_tutor_form.php?event_token=' . $event_token_tmp .
 					    							'&ts='.$event_time_tmpAr[$i]['timestamp'];
 					    	if (isset($tutorObj)) $href .= '&tutorID='.$tutorObj->getId();
-				    		if ($userObj->getType() == AMA_TYPE_SWITCHER ||
+				    		if (time() >= $event_time_tmpAr[$i]['timestamp'] && ($userObj->getType() == AMA_TYPE_SWITCHER ||
 				    		    ($userObj->getType() == AMA_TYPE_TUTOR && !$userObj->isSuper()  &&
-				    			$dh->is_tutor_of_instance($userObj->getId(), $id_course_instance))) {
+				    			$dh->is_tutor_of_instance($userObj->getId(), $id_course_instance)))) {
 						    	$report_link = CDOMElement::create('a', "href:$href");
 						    	$report_link->addChild(new CText(translateFN('crea report')));
 				    		} else {
@@ -300,9 +300,9 @@ else {
 					$href = HTTP_ROOT_DIR . '/tutor/eguidance_tutor_form.php?event_token=' . $event_token_tmp .
 					'&ts='.$event_time_tmpAr[$i]['timestamp'];
 					if (isset($tutorObj)) $href .= '&tutorID='.$tutorObj->getId();
-					if ($userObj->getType() == AMA_TYPE_SWITCHER ||
+					if (time() >= $event_time_tmpAr[$i]['timestamp'] && ($userObj->getType() == AMA_TYPE_SWITCHER ||
 					    ($userObj->getType() == AMA_TYPE_TUTOR && !$userObj->isSuper()  &&
-						 $dh->is_tutor_of_instance($userObj->getId(), $id_course_instance))) {
+						 $dh->is_tutor_of_instance($userObj->getId(), $id_course_instance)))) {
 						 $report_link = CDOMElement::create('a', "href:$href");
 						 $report_link->addChild(new CText(translateFN('crea report')));
 					} else {
@@ -370,6 +370,7 @@ else {
 //	    $eguidance_date = Abstract_AMA_DataHandler::ts_to_date(ADAEventProposal::extractTimeFromThisToken($eguidance_sessionAr['event_token']), ADA_DATE_FORMAT.' - %R');
 	    $eguidance_type = EguidanceSession::textForEguidanceType($eguidance_sessionAr['tipo_eguidance']);
 	    $href = 'eguidance_tutor_form.php?event_token=' . $eguidance_sessionAr['event_token'].$href_suffix;
+	    if ($userObj->getType() == AMA_TYPE_SWITCHER && isset($tutorObj)) $href .= '&tutorID='.$tutorObj->getId();
 	    $eguidance_form = CDOMElement::create('a', "href:$href");
 	    $eguidance_form->setAttribute('target', '_blank');
 	    $eguidance_form->addChild(new CText('edit'));
