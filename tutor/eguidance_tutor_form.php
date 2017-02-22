@@ -188,7 +188,7 @@ else {
 				    $eguidance_session_dataAr['data_ora'] = $appTmpAr[1];
 				    $appointmentTime = $appTmpAr[1];
 				    $foundKey = $key;
-				    $foundMsgId = $appTmpAr[10][3];
+				    $foundMsgId = $appTmpAr[$idUserFromToken][3];
 				}
 		    }
 		    // break out of the loop if event_token has been found
@@ -270,7 +270,7 @@ else {
     $eguidance_session_dataAr['id_tutor'] = $idTutorFromToken;
     $eguidance_session_dataAr['id_istanza_corso'] = $id_course_instance;
     $eguidance_session_dataAr['event_token'] = $event_token;
-    $eguidance_session_dataAr['data_ora'] = $appointmentTime;
+    $eguidance_session_dataAr['data_ora'] = (isset($_GET['ts']) && is_numeric($_GET['ts'])) ? intval($_GET['ts']) : $appointmentTime;
     $eguidance_session_dataAr['tipo_eguidance'] = $service_infoAr[3];
 
   }
