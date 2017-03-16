@@ -160,7 +160,7 @@ else {
   	$agendaToUse = $user_agendaAr;
   	$proposalToUse = $user_events_proposed_exploded;
 
-  	if ($userObj->getType()==AMA_TYPE_SWITCHER && isset($_GET['tutorID']) && intval($_GET['tutorID'])>0) {
+  	if (in_array($userObj->getType(), array(AMA_TYPE_SWITCHER, AMA_TYPE_TUTOR)) && isset($_GET['tutorID']) && intval($_GET['tutorID'])>0) {
   		$tutorObj = MultiPort::findUser(intval($_GET['tutorID']));
   		if ($tutorObj instanceof ADAPractitioner) {
   			$agendaToUse = MultiPort::getUserAgenda($tutorObj);
@@ -277,7 +277,9 @@ else {
     if($is_popup) {
       $eguidance_session_dataAr['is_popup'] = true;
     }
-    if ($userObj->getType() == AMA_TYPE_STUDENT || $userObj->getType() == AMA_TYPE_SUPERTUTOR) {
+
+    $tutorReadOnly = $userObj->getType() == AMA_TYPE_TUTOR && !$dh->is_tutor_of_instance($userObj->getId(), $id_course_instance);
+    if ($userObj->getType() == AMA_TYPE_STUDENT || $userObj->getType() == AMA_TYPE_SUPERTUTOR || $tutorReadOnly) {
         $eguidanceAssessment = TutorModuleHtmlLib::getEguidanceTutorShow($tutoredUserObj, $service_infoAr,$eguidance_session_dataAr, $fill_textareas);
     } else {
         $eguidanceAssessment = TutorModuleHtmlLib::getEditEguidanceDataForm($tutoredUserObj, $service_infoAr,$eguidance_session_dataAr, $fill_textareas);
