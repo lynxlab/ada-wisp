@@ -44,7 +44,9 @@ if (isset($_SERVER['REQUEST_METHOD']) && $_SERVER['REQUEST_METHOD'] == 'GET' && 
 	$appointment_link_label  = translateFN('Proponi appuntamento');
 	$status_link_label = translateFN('Vedi lo stato');
 
-	if (!AMA_DB::isError($instancesRES)) {
+	if (!AMA_DB::isError($instancesRES) && is_array($instancesRES) && count($instancesRES)>0) {
+		// sort by data_inizio desc
+		uasort($instancesRES, function ($a, $b) { return $a["data_inizio"] - $b["data_inizio"]; });
 		$tbody = array();
 		foreach ($instancesRES as $anInstance) {
 			$actions = array();
