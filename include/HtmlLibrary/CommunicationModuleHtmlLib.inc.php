@@ -1475,10 +1475,28 @@ static public function getRecipientsFromAgenda($data_Ar) {
           // PROVA, POI RIMETTERE A POSTO
           $userObj = $_SESSION['sess_userObj'];
 
-          if($userObj instanceof ADAPractitioner) {
+          /**
+           * @author giorgio 16/mar/2017
+           *
+           * On WISP/UNIMC only:
+           * If tutor is not the tutor of the appointment instance, do not show the link
+           * and open it in the parent window and close the current one
+           */
+          $id_current_user = $userObj->getId();
+          $tutored_user_id = ADAEventProposal::extractTutoredIdFromThisToken($appointment_Ar[2]);
+          $appointment_id_instance = ADAEventProposal::extractCourseInstanceIdFromThisToken($appointment_Ar[2]);
+          $tester_dh = AMA_DataHandler::instance(MultiPort::getDSN($tester));
+
+          if($userObj instanceof ADAPractitioner && ($tester_dh->is_tutor_of_instance($id_current_user,$appointment_id_instance))) {
             $event_token = ADAEventProposal::extractEventToken($appointment_Ar[2]);
             $href = HTTP_ROOT_DIR . '/tutor/eguidance_tutor_form.php?event_token=' . $event_token;
-            $action_link = CDOMElement::create('a', "href:$href");
+            $action_link = CDOMElement::create('a');
+            if ($javascript_ok) {
+            	$action_link->setAttribute('href', 'javascript:void(0);');
+            	$action_link->setAttribute('onclick',"window.opener.document.location.replace('" . urlencode($href) . "');window.close(); return false;");
+            } else {
+            	$action_link->setAttribute('href', $href);
+            }
             $action_link->addChild(new CText(translateFN('View eguidance session data')));
           }
 
