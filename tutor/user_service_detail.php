@@ -176,7 +176,7 @@ else {
      * If session user is a switcher, $user_events_proposedAr will hold its own proposal
      * BUT we need to know the instance's tutor proposals instead
      */
-    if ($userObj->getType() == AMA_TYPE_SWITCHER) {
+    	if (in_array($userObj->getType(), array(AMA_TYPE_SWITCHER, AMA_TYPE_TUTOR))) {
     	$tutorObj = MultiPort::findUser($dh->course_instance_tutor_get($id_course_instance));
     	if ($tutorObj instanceof ADAPractitioner) {
     		$user_events_proposedAr = MultiPort::getTutorEventsProposed($tutorObj);
@@ -251,7 +251,18 @@ else {
 
 // 					    	$tbody_data_proposed_appointment[] = array(Abstract_AMA_DataHandler::ts_to_date($event_time_tmpAr[$i]['timestamp']), ADAEventProposal::removeEventToken($event_title_tmp));
 //							$tbody_data_proposed_appointment[] = array($event_time_tmpAr[$i]['date'].' - '.$event_time_tmpAr[$i]['time'], ADAEventProposal::removeEventToken($event_title_tmp));
-		    				$tbody_data_proposed_appointment[] = array($event_time_tmpAr[$i]['date'].' - '.$event_time_tmpAr[$i]['time'], $propType, $report_link->getHtml());
+
+		    				/**
+	    					 * @author giorgio 16/mar/2017
+	    					 *
+	    					 * On WISP/UNIMC only:
+	    					 *
+	    					 * add to $tbody_data_confirmed_appointment only if no eguidance session has been found
+	    					 */
+	    					if (!is_array($dh->get_last_eguidance_session($id_course_instance))) {
+			    				$tbody_data_proposed_appointment[] = array($event_time_tmpAr[$i]['date'].' - '.$event_time_tmpAr[$i]['time'], $propType, $report_link->getHtml());
+
+	    					}
 					    }
 //					}
 				    }
@@ -286,7 +297,6 @@ else {
 			    if ($agenda_instance_tmp == $id_course_instance) {
 				if (($agenda_flag_tmp & ADA_EVENT_CONFIRMED) ) {
 				    $isConfirmedAppointment = true;
-				    if ($agenda_time_send_tmp >= time()) {
 					$isFutureConfirmedAppointment = true;
 
 
@@ -297,8 +307,8 @@ else {
 					 *
 					 * generate create report link
 					 */
-					$href = HTTP_ROOT_DIR . '/tutor/eguidance_tutor_form.php?event_token=' . $event_token_tmp .
-					'&ts='.$event_time_tmpAr[$i]['timestamp'];
+					$href = HTTP_ROOT_DIR . '/tutor/eguidance_tutor_form.php?event_token=' . $agenda_token_tmp.
+					'&ts='.$agenda_time_send_tmp;
 					if (isset($tutorObj)) $href .= '&tutorID='.$tutorObj->getId();
 					if (time() >= $event_time_tmpAr[$i]['timestamp'] && ($userObj->getType() == AMA_TYPE_SWITCHER ||
 					    ($userObj->getType() == AMA_TYPE_TUTOR && !$userObj->isSuper()  &&
@@ -321,9 +331,23 @@ else {
 
 
 // 			        $tbody_data_confirmed_appointment[] = array(Abstract_AMA_DataHandler::ts_to_date($agenda_time_send_tmp, ADA_DATE_FORMAT.' - %R'), ADAEventProposal::removeEventToken($agenda_title_tmp));
-					$tbody_data_confirmed_appointment[] = array(Abstract_AMA_DataHandler::ts_to_date($agenda_time_send_tmp, ADA_DATE_FORMAT.' - %R'), $propType, $report_link->getHtml());
 
-				    }
+					/**
+					 * @author giorgio 16/mar/2017
+					 *
+					 * On WISP/UNIMC only:
+					 *
+					 * add to $tbody_data_confirmed_appointment only if no eguidance session has been found and no token
+					 */
+					if (strlen($event_token_tmp)<=0  && !is_array($dh->get_last_eguidance_session($id_course_instance))) {
+						if ($agenda_time_send_tmp >= time()) {
+							$tbody_data_confirmed_appointment[] = array(Abstract_AMA_DataHandler::ts_to_date($agenda_time_send_tmp, ADA_DATE_FORMAT.' - %R'), $propType, $report_link->getHtml());
+						} else {
+							$isFutureProposedAppointment = true;
+							$tbody_data_proposed_appointment[] = array(Abstract_AMA_DataHandler::ts_to_date($agenda_time_send_tmp, ADA_DATE_FORMAT.' - %R'), $propType, $report_link->getHtml());
+						}
+					}
+
 //				    for ($i = 0; $i < count($event_time_tmpAr); $i++) {
 //					if (!$isFutureConfirmedAppointment) {
 //					    $agenda_time_tmpAr[$i]['timestamp'] = Abstract_AMA_DataHandler::date_to_ts($agenda_time_tmpAr[$i]['date'],$agenda_time_tmpAr[$i]['time']);
@@ -352,13 +376,21 @@ else {
    */
 
   $eguidance_sessionsAr = $dh->get_eguidance_sessions($id_course_instance);
-  $thead_data = array(translateFN('Eguidance sessions conducted'), '', '','');
+  $thead_data = array(translateFN('Eguidance sessions conducted'), translateFN('Appointment type'), translateFN('Azioni'), translateFN('CSV'));
   $tbody_data = array();
   if(AMA_DataHandler::isError($eguidance_sessionsAr) || count($eguidance_sessionsAr) == 0) {
-      $tbody_data[] = array(new CText(translateFN('Nessuna Sessione effettuata')));
-//      $eguidance_data = new CText('');
+      // $tbody_data[] = array(new CText(translateFN('Nessuna Sessione effettuata')));
+     $eguidance_data = new CText('');
   }
   else {
+  	/**
+  	 * @author giorgio 16/mar/2017
+  	 *
+  	 * On WISP/UNIMC only: get a message handler
+  	 *
+  	 * @var MessageHandler $mh
+  	 */
+  	$mh = MessageHandler::instance(MultiPort::getDSN($_SESSION['sess_selected_tester']));
     foreach($eguidance_sessionsAr as $eguidance_sessionAr) {
 	if ($eguidance_sessionAr['event_token'] != '') {
 
@@ -368,13 +400,44 @@ else {
 //	    $confirmedAppointment = $mh->
 
 //	    $eguidance_date = Abstract_AMA_DataHandler::ts_to_date(ADAEventProposal::extractTimeFromThisToken($eguidance_sessionAr['event_token']), ADA_DATE_FORMAT.' - %R');
-	    $eguidance_type = EguidanceSession::textForEguidanceType($eguidance_sessionAr['tipo_eguidance']);
+// 	    $eguidance_type = EguidanceSession::textForEguidanceType($eguidance_sessionAr['tipo_eguidance']);
+
+	    /**
+	     * @author giorgio 16/mar/2017
+	     *
+	     * On WISP/UNIMC only: get the message flags to know the appointment type
+	     *
+	     * @var MessageHandler $mh
+	     */
+	    $fields_list_Ar = array('flags');
+	    $clause         = 'titolo LIKE \''.$eguidance_sessionAr['event_token'].'#%\'';
+	    $msgs_ha = $mh->find_messages($eguidance_sessionAr['id_utente'],ADA_MSG_AGENDA,$fields_list_Ar,$clause);
+
+	    $eguidance_type = translateFN('Sconosciuto');
+	    if (!AMA_DB::isError($msgs_ha) && is_array($msgs_ha) && count($msgs_ha)>0) {
+	    	$flag = intval(reset($msgs_ha));
+	    	if ($flag & ADA_VIDEOCHAT_EVENT)
+	    		$eguidance_type= translateFN ( 'Appuntamento in videochat' );
+    		else if ($flag & ADA_CHAT_EVENT)
+    			$eguidance_type= translateFN ( 'Appuntamento in chat' );
+    		else if ($flag & ADA_PHONE_EVENT)
+    			$eguidance_type= translateFN ( 'Appuntamento telefonico' );
+    		else if ($flag & ADA_IN_PLACE_EVENT)
+	    		$eguidance_type= translateFN ( 'Appuntamento in presenza' );
+	    }
+
 	    $href = 'eguidance_tutor_form.php?event_token=' . $eguidance_sessionAr['event_token'].$href_suffix;
-	    if ($userObj->getType() == AMA_TYPE_SWITCHER && isset($tutorObj)) $href .= '&tutorID='.$tutorObj->getId();
+	    if (in_array($userObj->getType(), array(AMA_TYPE_SWITCHER, AMA_TYPE_TUTOR)) && isset($tutorObj)) $href .= '&tutorID='.$tutorObj->getId();
 	    $eguidance_form = CDOMElement::create('a', "href:$href");
 	    $eguidance_form->setAttribute('target', '_blank');
-	    $eguidance_form->addChild(new CText('edit'));
-
+	    $eguidance_form_lbl = translateFN('vedi');
+	    if ($userObj->getType() == AMA_TYPE_SWITCHER ||
+	    	($userObj->getType() == AMA_TYPE_TUTOR && !$userObj->isSuper()  &&
+	    	 $dh->is_tutor_of_instance($userObj->getId(), $id_course_instance))) {
+    		$eguidance_form_lbl = translateFN('edit');
+    		$extraPath = ' In questa sezione Il docente tutor può modificare lo status del servizio (in corso, terminato, fissare appuntamento).';
+    	}
+	    $eguidance_form->addChild(new CText($eguidance_form_lbl));
 	    $href = 'user_service_detail.php?op=csv&event_token=' . $eguidance_sessionAr['event_token'];
 	    $download_csv = CDOMElement::create('a', "href:$href");
 	    $download_csv->addChild(new CText('download csv'));
@@ -385,9 +448,11 @@ else {
 //    $eguidance_data = BaseHtmlLib::tableElement('',$thead_data,$tbody_data);
   }
     if (count($tbody_data) == 0) {
-	$tbody_data[] = array(new CText(translateFN('Nessuna Sessione effettuata (o non è stato compilato il modulo di valutazione, o la sessione è stata fatta senza un appuntamento)')));
+    	$eguidance_data = new CText('');
+		// $tbody_data[] = array(new CText(translateFN('Nessuna Sessione effettuata (o non è stato compilato il modulo di valutazione, o la sessione è stata fatta senza un appuntamento)')));
+    } else {
+	    $eguidance_data = BaseHtmlLib::tableElement('',$thead_data,$tbody_data);
     }
-    $eguidance_data = BaseHtmlLib::tableElement('',$thead_data,$tbody_data);
 
   /*
    * Future appointments with this user
@@ -425,7 +490,7 @@ else {
 
    */
 
-  if (!$isFutureConfirmedAppointment) {
+  if (!$isFutureConfirmedAppointment || count($tbody_data_confirmed_appointment)<=0) {
     $appointments_data = new CText('');
   }
   else {
@@ -433,7 +498,7 @@ else {
     $appointments_data = BaseHtmlLib::tableElement('', $thead_data, $tbody_data_confirmed_appointment);
   }
 
-  if (!$isFutureProposedAppointment) {
+  if (!$isFutureProposedAppointment || count($tbody_data_proposed_appointment)<=0) {
     $appointments_proposed_data = new CText('');
   }
   else {
@@ -450,6 +515,9 @@ else {
 }
 
 $label = translateFN('user service details');
+// set a default extraPath here if needed
+if (!isset($extraPath)) $extraPath = '';
+$label .= translateFN($extraPath);
 $help  = translateFN("Details");
 
 $home_link = CDOMElement::create('a','href:tutor.php');
