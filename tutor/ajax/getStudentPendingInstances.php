@@ -46,13 +46,13 @@ if (isset($_SERVER['REQUEST_METHOD']) && $_SERVER['REQUEST_METHOD'] == 'GET' && 
 
 	if (!AMA_DB::isError($instancesRES) && is_array($instancesRES) && count($instancesRES)>0) {
 		// sort by data_inizio desc
-		uasort($instancesRES, function ($a, $b) { return $a["data_inizio"] - $b["data_inizio"]; });
+		uasort($instancesRES, function ($a, $b) { return $a["data_iscrizione"] - $b["data_iscrizione"]; });
 		$tbody = array();
 		foreach ($instancesRES as $anInstance) {
 			$actions = array();
 			// show only instances having a course with ADA_SERVICE_HELP or ADA_SERVICE_IN_ITINERE as tipo_servizio
 			if (in_array((int)$anInstance['tipo_servizio'], array(ADA_SERVICE_HELP, ADA_SERVICE_IN_ITINERE))) {
-				if ($anInstance['instance_status'] != ADA_INSTANCE_CLOSED) {
+				if ($anInstance['data_inizio']>0 && $anInstance['instance_status'] != ADA_INSTANCE_CLOSED) {
 
 					$id_node   = $anInstance['id_corso'].'_'.ADA_DEFAULT_NODE;
 					$href = HTTP_ROOT_DIR.'/browsing/sview.php?id_course='.$anInstance['id_corso'].'&id_node='.$id_node.'&id_course_instance='.$anInstance['id_istanza_corso'];
