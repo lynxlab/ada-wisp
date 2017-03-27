@@ -10321,7 +10321,7 @@ abstract class AMA_Tester_DataHandler extends Abstract_AMA_DataHandler {
     public function &get_preassigned_students_for_tutor ($tutor_id, $course_id=null, $aa_iscr_desc=null, $anno_corso=null) {
     	$queryParams = array('tutor_id'=>$tutor_id, 'student_type'=>AMA_TYPE_STUDENT);
 
-    	$sql = 'SELECT U.`id_utente` FROM `utente` U '.
+    	$sql = 'SELECT DISTINCT(U.`id_utente`) AS `id_utente` FROM `utente` U '.
       		   'JOIN `tutor_student_preassigned` PRE ON U.`id_utente`=PRE.`id_student` ';
     	if (strlen($aa_iscr_desc)>0 && strlen($anno_corso)>0) {
     		$sql .= 'JOIN `studente` STU ON (U.`id_utente`=STU.`id_utente_studente` '.
