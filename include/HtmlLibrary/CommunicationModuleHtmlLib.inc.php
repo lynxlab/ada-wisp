@@ -1493,7 +1493,7 @@ static public function getRecipientsFromAgenda($data_Ar) {
             $action_link = CDOMElement::create('a');
             if ($javascript_ok) {
             	$action_link->setAttribute('href', 'javascript:void(0);');
-            	$action_link->setAttribute('onclick',"window.opener.document.location.replace('" . urlencode($href) . "');window.close(); return false;");
+            	$action_link->setAttribute('onclick',"window.opener.document.location.href='" . $href . "';window.close(); return false;");
             } else {
             	$action_link->setAttribute('href', $href);
             }
@@ -1560,7 +1560,7 @@ static public function getRecipientsFromAgenda($data_Ar) {
         $option_value = sprintf('%02d:%02d',$hours,$minutes);
 
         $option = CDOMElement::create('option');
-        $option->addChild(new CTExt($option_value));
+        $option->addChild(new CText($option_value));
         if($preselect_time_value == $option_value) {
           $option->setAttribute('selected','selected');
         }
