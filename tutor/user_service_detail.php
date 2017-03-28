@@ -257,11 +257,18 @@ else {
 	    					 *
 	    					 * On WISP/UNIMC only:
 	    					 *
-	    					 * add to $tbody_data_confirmed_appointment only if no eguidance session has been found
+	    					 * add to $tbody_data_proposed_appointment only if no eguidance session has been found
 	    					 */
-	    					if (!is_array($dh->get_last_eguidance_session($id_course_instance))) {
-			    				$tbody_data_proposed_appointment[] = array($event_time_tmpAr[$i]['date'].' - '.$event_time_tmpAr[$i]['time'], $propType, $report_link->getHtml());
-
+	    					$tmpEguidanceSession = $dh->get_eguidance_session($id_course_instance);
+	    					if (is_array($tmpEguidanceSession)) {
+	    						$filteredTmp = array_filter($tmpEguidanceSession, function($element) use ($event_token_tmp) {
+	    							return is_array($element) && array_key_exists('event_token', $element) && $element['event_token'] == $event_token_tmp;
+	    						});
+	    					} else {
+	    						$filteredTmp = array();
+	    					}
+	    					if (!is_array($tmpEguidanceSession) || count($filteredTmp)<=0) {
+	    	    				$tbody_data_proposed_appointment[] = array($event_time_tmpAr[$i]['date'].' - '.$event_time_tmpAr[$i]['time'], $propType, $report_link->getHtml());
 	    					}
 					    }
 //					}
@@ -502,7 +509,7 @@ else {
     $appointments_proposed_data = new CText('');
   }
   else {
-    $thead_data = array(translateFN('Prossime proposte di appuntamento'), translateFN('Appointment type'), translateFN('Azioni'));
+    $thead_data = array(translateFN('Appuntamenti'), translateFN('Appointment type'), translateFN('Azioni'));
     $appointments_proposed_data = BaseHtmlLib::tableElement('', $thead_data, $tbody_data_proposed_appointment);
   }
 
