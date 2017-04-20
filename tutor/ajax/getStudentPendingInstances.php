@@ -50,8 +50,9 @@ if (isset($_SERVER['REQUEST_METHOD']) && $_SERVER['REQUEST_METHOD'] == 'GET' && 
 		$tbody = array();
 		foreach ($instancesRES as $anInstance) {
 			$actions = array();
-			// show only instances having a course with ADA_SERVICE_HELP or ADA_SERVICE_IN_ITINERE as tipo_servizio
-			if (in_array((int)$anInstance['tipo_servizio'], array(ADA_SERVICE_HELP, ADA_SERVICE_IN_ITINERE))) {
+			$tutorOwnStudent = $dh->is_tutor_of_instance($userObj->getId(), $anInstance['id_istanza_corso']);
+			// show only instances for which $tutorOwnStudent and having a course with ADA_SERVICE_HELP or ADA_SERVICE_IN_ITINERE as tipo_servizio
+			if ($tutorOwnStudent && in_array((int)$anInstance['tipo_servizio'], array(ADA_SERVICE_HELP, ADA_SERVICE_IN_ITINERE))) {
 				if ($anInstance['data_inizio']>0 && $anInstance['instance_status'] != ADA_INSTANCE_CLOSED) {
 
 					$id_node   = $anInstance['id_corso'].'_'.ADA_DEFAULT_NODE;
@@ -62,7 +63,6 @@ if (isset($_SERVER['REQUEST_METHOD']) && $_SERVER['REQUEST_METHOD'] == 'GET' && 
 					$timeline_span = CDOMElement::create('span','class:pending service descr');
 					$timeline_span->addChild(new CText('('.translateFN($instanceStatusDescription[$anInstance['instance_status']]).')'));
 
-					$tutorOwnStudent = $dh->is_tutor_of_instance($userObj->getId(), $anInstance['id_istanza_corso']);
 					$row = array(
 							count($tbody)+1,
 							AMA_Common_DataHandler::ts_to_date($anInstance['data_iscrizione']),
