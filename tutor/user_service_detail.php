@@ -317,7 +317,7 @@ else {
 					$href = HTTP_ROOT_DIR . '/tutor/eguidance_tutor_form.php?event_token=' . $agenda_token_tmp.
 					'&ts='.$agenda_time_send_tmp;
 					if (isset($tutorObj)) $href .= '&tutorID='.$tutorObj->getId();
-					if (time() >= $event_time_tmpAr[$i]['timestamp'] && ($userObj->getType() == AMA_TYPE_SWITCHER ||
+					if (time() >= $agenda_time_send_tmp && ($userObj->getType() == AMA_TYPE_SWITCHER ||
 					    ($userObj->getType() == AMA_TYPE_TUTOR && !$userObj->isSuper()  &&
 						 $dh->is_tutor_of_instance($userObj->getId(), $id_course_instance)))) {
 						 $report_link = CDOMElement::create('a', "href:$href");
@@ -344,9 +344,9 @@ else {
 					 *
 					 * On WISP/UNIMC only:
 					 *
-					 * add to $tbody_data_confirmed_appointment only if no eguidance session has been found and no token
+					 * add to $tbody_data_confirmed_appointment only if no eguidance session has been found
 					 */
-					if (strlen($event_token_tmp)<=0  && !is_array($dh->get_last_eguidance_session($id_course_instance))) {
+					if (!is_array($dh->get_last_eguidance_session($id_course_instance))) {
 						if ($agenda_time_send_tmp >= time()) {
 							$tbody_data_confirmed_appointment[] = array(Abstract_AMA_DataHandler::ts_to_date($agenda_time_send_tmp, ADA_DATE_FORMAT.' - %R'), $propType, $report_link->getHtml());
 						} else {
