@@ -620,7 +620,7 @@ switch ($op) {
 					$tutorsAr = array();
 					if (!AMA_DB::isError($instancesRES)) {
 						foreach ($instancesRES as $anInstance) {
-							$tutorOwnStudent = $dh->is_tutor_of_instance($userObj->getId(), $anInstance['id_istanza_corso']);
+							$tutorOwnStudent = $isSuperTutor || $dh->is_tutor_of_instance($userObj->getId(), $anInstance['id_istanza_corso']);
 							// count only instances for which $tutorOwnStudent and having a course with ADA_SERVICE_HELP or ADA_SERVICE_IN_ITINERE as tipo_servizio
 							if ($tutorOwnStudent && in_array((int)$anInstance['tipo_servizio'], array(ADA_SERVICE_HELP, ADA_SERVICE_IN_ITINERE))) {
 								$countInstances++;
