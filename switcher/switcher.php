@@ -41,6 +41,9 @@ $self = 'switcher'; //whoami();  // = switcher!
 include_once 'include/'.$self.'_functions.inc.php';
 if ($_REQUEST[op] == NULL) $op='all';
 
+ini_set('memory_limit','1024M');
+set_time_limit(300);
+
 /*
  * YOUR CODE HERE
  */
@@ -150,7 +153,7 @@ if (is_array($annoCorsoAr) && count($annoCorsoAr)>0) {
 }
 
 
-
+$studentsCache = array();
 $numRequiredHelp = 0;
 if ($op=='not_started' or $op=='all') {
     $not_startedAr = $dh->get_tester_services_not_started();
@@ -159,7 +162,13 @@ if ($op=='not_started' or $op=='all') {
       foreach($not_startedAr as $not_startedKey => $user_registration) {
 
       	// load the user from the db and do not loop if their AA_ISCR_DESC and ANNO_CORSO does not match the passed ones
-      	$studentObj = MultiPort::findUser($user_registration['id_utente']);
+      	if (array_key_exists($user_registration['id_utente'], $studentsCache)) {
+      		$studentObj = $studentsCache[$user_registration['id_utente']];
+      	} else {
+      		$studentObj = MultiPort::findUser($user_registration['id_utente']);
+      		$studentsCache[$user_registration['id_utente']] = $studentObj;
+      	}
+
         if (!is_null($aa_iscr_desc) && property_exists($studentObj, 'AA_ISCR_DESC') && $studentObj->AA_ISCR_DESC != $aa_iscr_desc &&
         	!is_null($anno_corso) && property_exists($studentObj, 'ANNO_CORSO') && $studentObj->ANNO_CORSO != $anno_corso) {
         	unset ($not_startedAr[$not_startedKey]);
@@ -217,7 +226,13 @@ if ($op=='started' || $op=='all' || $op=='open' || $op=='closed') {
       foreach($startedAr as $startedKey => $user_registration) {
 
       	// load the user from the db and do not loop if their AA_ISCR_DESC and ANNO_CORSO does not match the passed ones
-      	$studentObj = MultiPort::findUser($user_registration['id_utente']);
+      	if (array_key_exists($user_registration['id_utente'], $studentsCache)) {
+      		$studentObj = $studentsCache[$user_registration['id_utente']];
+      	} else {
+      		$studentObj = MultiPort::findUser($user_registration['id_utente']);
+      		$studentsCache[$user_registration['id_utente']] = $studentObj;
+      	}
+
       	if (!is_null($aa_iscr_desc) && property_exists($studentObj, 'AA_ISCR_DESC') && $studentObj->AA_ISCR_DESC != $aa_iscr_desc &&
       		!is_null($anno_corso) && property_exists($studentObj, 'ANNO_CORSO') && $studentObj->ANNO_CORSO != $anno_corso) {
       		unset($startedAr[$startedKey]);
@@ -330,6 +345,11 @@ if(!isset($status)) {
 $imgAvatar = $userObj->getAvatar();
 $avatar = CDOMElement::create('img','src:'.$imgAvatar);
 $avatar->setAttribute('class', 'img_user_avatar');
+
+foreach ($user_messagesAr as $x=>$y)$user_messagesAr[$x] = array_slice($y, 0 ,5);
+foreach ($user_agendaAr as $x=>$y)$user_agendaAr[$x] = array_slice($y, 0, 5);
+$user_messages = CommunicationModuleHtmlLib::getMessagesAsTable($user_messagesAr, $testers_dataAr);
+$user_agenda = CommunicationModuleHtmlLib::getAgendaAsTable($user_agendaAr, $testers_dataAr);
 
 $content_dataAr = array(
   'user_name' => $user_name,

@@ -46,6 +46,9 @@ include_once 'include/'.$self.'_functions.inc.php';
 include_once ROOT_DIR.'/include/HtmlLibrary/BaseHtmlLib.inc.php';
 include_once 'include/tutor.inc.php';
 
+ini_set('memory_limit','1024M');
+set_time_limit(300);
+
 if (!isset($_GET['mode'])) {
   $mode = "load";
 }
@@ -286,6 +289,7 @@ switch ($op) {
 		$thead_data = array(translateFN('utente'),translateFN('azioni'),translateFN('servizio'),translateFN('stato'),translateFN('data inizio'));
 		//$thead_data = array(translateFN('utente'),translateFN('azioni'),translateFN('servizio'),translateFN('stato'),translateFN('data inizio'),translateFN('durata servizio'), translateFN('data fine'));
 		$tbody_data = array();
+		$studentsCache = array();
 		if (is_array($clients_list) && sizeof($clients_list) > 0) {
 
 		  /**
@@ -608,7 +612,12 @@ switch ($op) {
 
 			foreach ($listStudentIds as $key=>$student_id) {
 				// load the user from the db
-				$studentObj = MultiPort::findUser($student_id);
+				if (array_key_exists($student_id, $studentsCache)) {
+					$studentObj = $studentsCache[$student_id];
+				} else {
+					$studentObj = MultiPort::findUser($student_id);
+					$studentsCache[$student_id] = $studentObj;
+				}
 				if (is_object($studentObj) && $studentObj instanceof ADAUser &&
 					($isSuperTutor || (!$isSuperTutor && $studentObj->getStatus()==ADA_STATUS_REGISTERED))) {
 
