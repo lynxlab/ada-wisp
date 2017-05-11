@@ -39,7 +39,7 @@ require_once ROOT_DIR.'/include/module_init.inc.php';
 $self = 'switcher'; //whoami();  // = switcher!
 
 include_once 'include/'.$self.'_functions.inc.php';
-if ($_REQUEST[op] == NULL) $op='all';
+if (!array_key_exists('op', $_REQUEST) || $_REQUEST['op'] == NULL) $op='all';
 
 ini_set('memory_limit','1024M');
 set_time_limit(300);
@@ -152,28 +152,19 @@ if (is_array($annoCorsoAr) && count($annoCorsoAr)>0) {
 	$annoCorsoEl = BaseHtmlLib::selectElement2('id:annocorso-select', $annoCorsoSelect, $selected);
 }
 
+$filterAr = null;
+if (!is_null($aa_iscr_desc) || !is_null($anno_corso)) {
+	$filterAr = array('studente'=>array());
+	if (!is_null($aa_iscr_desc)) $filterAr['studente']['AA_ISCR_DESC'] = $aa_iscr_desc;
+	if (!is_null($anno_corso)) $filterAr['studente']['ANNO_CORSO'] = $anno_corso;
+}
 
-$studentsCache = array();
 $numRequiredHelp = 0;
 if ($op=='not_started' or $op=='all') {
-    $not_startedAr = $dh->get_tester_services_not_started();
+    $not_startedAr = $dh->get_tester_services_not_started($filterAr);
 
     if (is_array($not_startedAr) && sizeof($not_startedAr) > 0) {
-      foreach($not_startedAr as $not_startedKey => $user_registration) {
-
-      	// load the user from the db and do not loop if their AA_ISCR_DESC and ANNO_CORSO does not match the passed ones
-      	if (array_key_exists($user_registration['id_utente'], $studentsCache)) {
-      		$studentObj = $studentsCache[$user_registration['id_utente']];
-      	} else {
-      		$studentObj = MultiPort::findUser($user_registration['id_utente']);
-      		$studentsCache[$user_registration['id_utente']] = $studentObj;
-      	}
-
-        if (!is_null($aa_iscr_desc) && property_exists($studentObj, 'AA_ISCR_DESC') && $studentObj->AA_ISCR_DESC != $aa_iscr_desc &&
-        	!is_null($anno_corso) && property_exists($studentObj, 'ANNO_CORSO') && $studentObj->ANNO_CORSO != $anno_corso) {
-        	unset ($not_startedAr[$not_startedKey]);
-        	continue;
-        }
+      foreach($not_startedAr as $user_registration) {
 
         $idLocalService = $user_registration['id_corso'];
         if (in_array((int)$infoServicelHa[$idLocalService]['level'], array(ADA_SERVICE_HELP, ADA_SERVICE_IN_ITINERE))) {
@@ -202,11 +193,11 @@ if ($op=='not_started' or $op=='all') {
 	    $instance_status->addChild($instance_link);
 
             $tbody_data[] = array(
-              $user_link,
-              $service_link,
+              $user_link->getHtml(),
+              $service_link->getHtml(),
               $request_date,
-              $epractitioner_link,
-              $instance_status
+              $epractitioner_link->getHtml(),
+              $instance_status->getHtml()
             );
         }
       }
@@ -220,24 +211,10 @@ if ($op=='not_started' or $op=='all') {
 }
 if ($op=='started' || $op=='all' || $op=='open' || $op=='closed') {
     $getUnassignedServices = true;
-    $startedAr = $dh->get_tester_services_started($getUnassignedServices);
+    $startedAr = $dh->get_tester_services_started($getUnassignedServices, $filterAr);
     if (is_array($startedAr) && sizeof($startedAr) > 0) {
 
-      foreach($startedAr as $startedKey => $user_registration) {
-
-      	// load the user from the db and do not loop if their AA_ISCR_DESC and ANNO_CORSO does not match the passed ones
-      	if (array_key_exists($user_registration['id_utente'], $studentsCache)) {
-      		$studentObj = $studentsCache[$user_registration['id_utente']];
-      	} else {
-      		$studentObj = MultiPort::findUser($user_registration['id_utente']);
-      		$studentsCache[$user_registration['id_utente']] = $studentObj;
-      	}
-
-      	if (!is_null($aa_iscr_desc) && property_exists($studentObj, 'AA_ISCR_DESC') && $studentObj->AA_ISCR_DESC != $aa_iscr_desc &&
-      		!is_null($anno_corso) && property_exists($studentObj, 'ANNO_CORSO') && $studentObj->ANNO_CORSO != $anno_corso) {
-      		unset($startedAr[$startedKey]);
-      		continue;
-      	}
+      foreach($startedAr as $user_registration) {
 
         if (($op == 'closed' &&  time() >= $user_registration['data_fine']) || ($op == 'open' &&  time() < $user_registration['data_fine']) || ($op=='started') || ($op=='all')) {
             $idLocalService = $user_registration['id_corso'];
@@ -296,12 +273,12 @@ if ($op=='started' || $op=='all' || $op=='open' || $op=='closed') {
 
 
                 $tbody_data[] = array(
-                  $user_link,
-                  $service_link,
+                  $user_link->getHtml(),
+                  $service_link->getHtml(),
                   $request_date,
-                  $epractitioner_link,
+                  $epractitioner_link->getHtml(),
 //                  $instance_link
-		  $instance_status
+		  		  $instance_status->getHtml()
 		);
             }
         }
@@ -315,18 +292,35 @@ if ($op=='started' || $op=='all' || $op=='open' || $op=='closed') {
     }
 }
 
-$allServicesRequired = array_merge($not_startedAr,$startedAr);
 $numUsers = 0;
 $userRequiringTmp = array();
-foreach ($allServicesRequired as $oneService) {
+foreach ($not_startedAr as $oneService) {
     if (!in_array($oneService['id_utente'], $userRequiringTmp)) {
-        array_push($userRequiringTmp, $oneService['id_utente']);
+    	$numUsers++;
+    	$userRequiringTmp[] = $oneService['id_utente'];
     }
 }
-$numUsers = count($userRequiringTmp);
+foreach ($startedAr as $oneService) {
+	if (!in_array($oneService['id_utente'], $userRequiringTmp)) {
+		$numUsers++;
+		$userRequiringTmp[] = $oneService['id_utente'];
+	}
+}
 
-//$table = BaseHtmlLib::tableElement('class:sortable',$thead_data, $tbody_data);
-$table = BaseHtmlLib::tableElement('id:table_users_for_service',$thead_data, $tbody_data);
+$thead = '';
+$tbody = '';
+if (is_array($thead_data) && count($thead_data)>0) {
+	$thead = sprintf('<thead class="default_thead" ><tr><th class="default_th">%s</th></tr></thead>', implode('</th><th class="default_th">', $thead_data));
+}
+if (is_array($tbody_data) && count($tbody_data)>0) {
+	$bodyArr = array();
+	foreach ($tbody_data as $index=>$row) {
+		$bodyArr[$index] = sprintf("<tr class='default_tr_%s'><td class='default_td'>%s</td></tr>", (($index%2===0) ? 'even' : 'odd'), implode('</td><td class="default_td" >', $row));
+	}
+	$tbody = sprintf("<tbody>%s</tbody>", implode('', $bodyArr));
+}
+
+$table = sprintf('<table id="table_users_for_service" class="default_table" >%s%s</table>', $thead, $tbody);
 
 // SERVICE:  BANNER, HELP, STATUS
 
@@ -363,7 +357,7 @@ $content_dataAr = array(
   'filter_link' => $filter_link,
   'menu_01' => $menu_01,
   'menu_02' => $menu_02,
-  'data'      => $table->getHtml(),
+  'data'      => $table,
   'user_avatar'=>$avatar->getHtml(),
   'user_modprofilelink' => $userObj->getEditProfilePage()
 );

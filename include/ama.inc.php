@@ -11441,27 +11441,45 @@ public function get_updates_nodes($userObj, $pointer)
 
 
 
-    public function get_tester_services_not_started() {
+    public function get_tester_services_not_started($filterAr = array()) {
         $db =& $this->getConnection();
         if (AMA_DB::isError($db)) return $db;
 
         $sql = 'SELECT U1.id_utente, U1.nome, U1.cognome, MC.titolo, I.status,
                    IC.id_istanza_corso, IC.id_corso, IC.data_inizio_previsto AS data_richiesta,
         		   IC.data_inizio AS data_inizio, IC.data_fine AS data_fine, IC.status AS instance_status
-              FROM utente AS U1, modello_corso AS MC, iscrizioni AS I, istanza_corso AS IC
+              FROM utente AS U1';
+        $filterWhere = '';
+        $filterValues = array();
+        if (!is_null($filterAr) && is_array($filterAr) && count($filterAr)>0) {
+        	foreach ($filterAr as $table=>$fields) {
+        		if (is_array($fields) && count($fields)>0) {
+        			$sql .= ' LEFT JOIN '.$table.' ON U1.id_utente=`'.$table.'`.`id_utente_studente`';
+        			foreach ($fields as $field=>$value) {
+        				$filterWhere .= '`'.$table.'`.`'.$field.'`= :'.$field .' AND ';
+        				$filterValues[$field] = $value;
+        			}
+        			$filterWhere = rtrim($filterWhere, 'AND ');
+        		}
+        	}
+        }
+        $sql .= ', modello_corso AS MC, iscrizioni AS I, istanza_corso AS IC
              WHERE IC.data_inizio = 0 AND MC.id_corso = IC.id_corso
                AND I.id_istanza_corso = IC.id_istanza_corso
                AND U1.id_utente = I.id_utente_studente
-               AND U1.stato=' . ADA_STATUS_REGISTERED
-                .' ORDER BY IC.id_istanza_corso DESC';
+               AND U1.stato=' . ADA_STATUS_REGISTERED;
 
-        $resultAr = $db->getAll($sql, NULL, AMA_FETCH_ASSOC);
+		if (strlen($filterWhere)>0) $sql .= ' AND '.$filterWhere.' ';
+
+        $sql .= ' ORDER BY IC.id_istanza_corso DESC';
+
+        $resultAr = $db->getAll($sql, $filterValues, AMA_FETCH_ASSOC);
         if(AMA_DB::isError($resultAr)) {
             return new AMA_Error(AMA_ERR_GET);
         }
         return $resultAr;
     }
-    public function get_tester_services_started($getUnassignedServices=false) {
+    public function get_tester_services_started($getUnassignedServices=false, $filterAr = array()) {
         $db =& $this->getConnection();
         if (AMA_DB::isError($db)) return $db;
 
@@ -11469,7 +11487,22 @@ public function get_updates_nodes($userObj, $pointer)
                    U2.id_utente AS id_tutor, U2.nome AS nome_t, U2.cognome AS cognome_t, U2.username AS username_t,
                    IC.id_istanza_corso, IC.id_corso, IC.data_inizio_previsto AS data_richiesta,
         		   IC.data_inizio AS data_inizio, IC.data_fine AS data_fine, IC.status AS instance_status
-              FROM utente AS U1, modello_corso AS MC, istanza_corso AS IC, ';
+              FROM utente AS U1';
+        $filterWhere = '';
+        $filterValues = array();
+		if (!is_null($filterAr) && is_array($filterAr) && count($filterAr)>0) {
+			foreach ($filterAr as $table=>$fields) {
+				if (is_array($fields) && count($fields)>0) {
+					$sql .= ' LEFT JOIN '.$table.' ON U1.id_utente=`'.$table.'`.`id_utente_studente`';
+					foreach ($fields as $field=>$value) {
+						$filterWhere .= '`'.$table.'`.`'.$field.'`= :'.$field .' AND ';
+						$filterValues[$field] = $value;
+					}
+					$filterWhere = rtrim($filterWhere, 'AND ');
+				}
+			}
+		}
+        $sql .=',modello_corso AS MC, istanza_corso AS IC, ';
 
         if ($getUnassignedServices===true) {
         	$sql .=  'tutor_studenti AS TS RIGHT JOIN iscrizioni AS I ON I.id_istanza_corso=TS.id_istanza_corso
@@ -11482,6 +11515,8 @@ public function get_updates_nodes($userObj, $pointer)
                AND I.id_istanza_corso = IC.id_istanza_corso
                AND U1.id_utente = I.id_utente_studente ';
 
+        if (strlen($filterWhere)>0) $sql .= ' AND '.$filterWhere.' ';
+
         if ($getUnassignedServices===false) {
         	$sql .= 'AND TS.id_istanza_corso = IC.id_istanza_corso
                AND U2.id_utente = TS.id_utente_tutor ';
@@ -11489,7 +11524,8 @@ public function get_updates_nodes($userObj, $pointer)
 
         $sql .= 'ORDER BY IC.id_istanza_corso DESC';
 
-        $resultAr = $db->getAll($sql, NULL, AMA_FETCH_ASSOC);
+        $resultAr = $db->getAll($sql, $filterValues, AMA_FETCH_ASSOC);
+
         if(AMA_DB::isError($resultAr)) {
             return new AMA_Error(AMA_ERR_GET);
         }
