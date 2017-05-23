@@ -78,7 +78,7 @@ $JS_i18n = array(
 /**
  * GIORGIO, this is not needed and exposes a security hole.
  * Removed and placed here on 13/set/2013
- * 
+ *
  * // var MODULES_DIR='<?php echo MODULES_DIR;?>';
  */
 ?>
@@ -127,6 +127,12 @@ var MEDIA_FINGER_SPELLING = '<?php echo _FINGER_SPELLING;?>';
 var MEDIA_LABIALE = '<?php echo _LABIALE;?>';
 var MEDIA_LIS = '<?php echo _LIS;?>';
 var MEDIA_MONTESSORI = '<?php echo _MONTESSORI;?>';
+
+// calendar
+var SLOT_MINUTES = <?php echo SLOT_MINUTES;?>;
+var DEFAULT_EVENT_MINUTES = <?php echo DEFAULT_EVENT_MINUTES;?>;
+var START_APPOINTMENT_HOUR = <?php echo START_APPOINTMENT_HOUR;?>;
+var END_APPOINTMENT_HOUR =  <?php echo END_APPOINTMENT_HOUR;?>;
 
 //translations
 <?php

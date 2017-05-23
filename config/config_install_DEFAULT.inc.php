@@ -50,16 +50,16 @@ if (MULTIPROVIDER) {
 	 * ID of the public course to get the latest news
 	 */
 	define ('PUBLIC_COURSE_ID_FOR_NEWS', 1);
-        
+
 	/**
 	 * How many news to get from the above mentioned course
 	 */
 	define ('NEWS_COUNT', 3);
-        
+
         /**
          * Provider holidays feed, to be show on fullcalendar. Sample is italian holidays feed
          */
-        define ('GCAL_HOLIDAYS_FEED','http://www.google.com/calendar/feeds/e327d6lm6r2kb555ce82ll4sbs@group.calendar.google.com/public/basic');	
+        define ('GCAL_HOLIDAYS_FEED','http://www.google.com/calendar/feeds/e327d6lm6r2kb555ce82ll4sbs@group.calendar.google.com/public/basic');
 
         /*
          * Maximum number of appointment proposal the tutor can make
@@ -71,6 +71,19 @@ if (MULTIPROVIDER) {
          * proposal is not shown anymore in the tutor's box
          */
         define('DAYS_TO_SHOW_EXPIRED_PROPOSALS', 10);
+
+        /*
+         * Default values for appointments table (calendar)
+         * If NOT MULTIPROVIDER, the same constants must be defined in clients/_/client.config.inc.php
+         */
+        // intervals shown in the first column (minutes)
+        define('SLOT_MINUTES',60);  // *js_import*
+        // available slots (minutes))
+        define ('DEFAULT_EVENT_MINUTES',60); // *js_import*
+        // operators are available from (hours)
+        define ('START_APPOINTMENT_HOUR',9); // *js_import*
+        // ... to (hours)
+        define ('END_APPOINTMENT_HOUR',17); // *js_import*
 }
 
 define('ADA_DEFAULT_AVATAR','default_avatar.png');
@@ -610,7 +623,7 @@ $ADA_ELEMENT_VIEWING_PREFERENCES[AMA_TYPE_AUTHOR][ADA_GROUP_WORD_TYPE][EDIT_OPER
 $ADA_ELEMENT_VIEWING_PREFERENCES[AMA_TYPE_AUTHOR][ADA_PERSONAL_EXERCISE_TYPE][EDIT_OPERATION] = EDITOR_SHOW_NODE_POSITION | EDITOR_SHOW_PARENT_NODE_SELECTOR |
                                                                                     EDITOR_SELECT_EXTERNAL_LINK | EDITOR_SHOW_NODE_LEVEL|
                                                                                     EDITOR_SHOW_NODE_ORDER |
-                                                                                    EDITOR_ALLOW_SWITCHING_BETWEEN_EDITING_MODES;                                                                                    
+                                                                                    EDITOR_ALLOW_SWITCHING_BETWEEN_EDITING_MODES;
 
 //  $ADA_ELEMENT_VIEWING_PREFERENCES[AMA_TYPE_STUDENT][ADA_NOTE_TYPE][ADD_OPERATION]  = 0;
 //  $ADA_ELEMENT_VIEWING_PREFERENCES[AMA_TYPE_STUDENT][ADA_NOTE_TYPE][EDIT_OPERATION] = 0;

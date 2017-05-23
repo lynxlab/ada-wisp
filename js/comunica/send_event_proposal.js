@@ -290,7 +290,10 @@ function initDoc(initDatas, inputProposalNames, max_proposal_count) {
 	        // put your options and callbacks here
 	    	theme 	 : true,	// enables jQuery UI theme
 	    	firstDay : 1,		// monday is the first day
-	    	minTime  : 8,		// events starts at 08AM ,
+	    	minTime : START_APPOINTMENT_HOUR, 			 // defined at client level (clients/_/client_config.php))	
+	    	maxTime : END_APPOINTMENT_HOUR, 			 // defined at client level
+	    	slotMinutes : SLOT_MINUTES, 		 		 // defined at client level
+	    	defaultEventMinutes : DEFAULT_EVENT_MINUTES, // defined at client level
 	    	defaultEventMinutes: 60,
 	    	height : 500,
 	    	editable : true,

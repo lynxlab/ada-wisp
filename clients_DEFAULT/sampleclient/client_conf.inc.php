@@ -57,6 +57,18 @@ if (!MULTIPROVIDER)
 	 * proposal is not shown anymore in the tutor's box
 	 */
 	define('DAYS_TO_SHOW_EXPIRED_PROPOSALS', 10);
+
+	/**
+	 *  Appointments granularity, start hour, end hour
+	 */
+	// intervals shown in the first column (minutes)
+	if (!defined('SLOT_MINUTES')) define('SLOT_MINUTES',30);  // *js_import*
+	// available slots	(minutes)
+	if (!defined('DEFAULT_EVENT_MINUTES')) define ('DEFAULT_EVENT_MINUTES',30); // *js_import*
+	// operators are available from (hours)
+	if (!defined('START_APPOINTMENT_HOUR')) define ('START_APPOINTMENT_HOUR',10); // *js_import*
+	// ... to (hours)
+	if (!defined('END_APPOINTMENT_HOUR')) define ('END_APPOINTMENT_HOUR',17); // *js_import*
 }
 
 /**
