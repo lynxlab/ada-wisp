@@ -586,6 +586,44 @@ class MultiPort
     if (isset($result)) return $result;
   }
 
+  public static function findStudent($id_user, $tester = null) {
+
+  	if (!MULTIPROVIDER && isset($GLOBALS['user_provider']) && strlen($GLOBALS['user_provider'])>0 && is_null($tester)) {
+  		$tester = $GLOBALS['user_provider'];
+  	}
+
+  	$common_dh = $GLOBALS['common_dh'];
+  	$user_dataAr = $common_dh->get_student($id_user);
+  	if(AMA_Common_DataHandler::isError($user_dataAr)) {
+  		$errObj = new ADA_Error($user_dataAr,'An error occurred while retrieving user data in MultiPort::finduser');
+  	}
+  	$userObj = new ADAUser($user_dataAr);
+  	$userObj->setUserId($id_user);
+  	$tester_dh = AMA_DataHandler::instance(MultiPort::getDSN($tester));
+  	//        $userObj->setTesters($user_testersAr) ?? serve?
+
+  	if (!is_null($userObj) && $userObj instanceof ADAUser)
+  	{
+  		/**
+  		 * @author giorgio 06/giu/2013
+  		 *
+  		 * load extra fields from DB, if we have some in this customization (i.e. User->hasExtra is true)
+  		 * Note that this MUST be done after user testers have been set. Forse no??
+  		 *
+  		 */
+  		if ($userObj->hasExtra())
+  		{
+  			$extraAr = $tester_dh->getExtraData($userObj);
+  			if (!AMA_DB::isError($extraAr)) {
+  				$userObj->setExtras($extraAr);
+  				$return = $userObj;
+  			}
+  			$tester_dh->disconnect(); // ?? serve?
+  		}
+  	}
+
+  	return $userObj;
+  }
 
   public static function findUser($id_user, $id_course_instance=NULL) {
     $common_dh = $GLOBALS['common_dh'];
