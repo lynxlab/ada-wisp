@@ -15,7 +15,11 @@ function initDoc() {
 				              { "sType": "date-euro" },
 				              null,
 				              null
-				             ]
+				             ],
+	            "oLanguage": 
+	            {
+	                "sUrl": HTTP_ROOT_DIR + "/js/include/jquery/dataTables/dataTablesLang.php"
+	            }				             
 			}).show();
 		}
 		
@@ -37,7 +41,11 @@ function initDoc() {
 			              null,
 			              null,
 			              { 'sType': "date-eu" }
-			             ]
+			             ],
+            "oLanguage": 
+            {
+                "sUrl": HTTP_ROOT_DIR + "/js/include/jquery/dataTables/dataTablesLang.php"
+            }
 		}).show();
 
 // $j("#content_blocco_uno").addClass("ui-accordion ui-accordion-icons ui-widget ui-helper-reset")
