@@ -51,7 +51,7 @@ require_once ROOT_DIR.'/include/HtmlLibrary/UserModuleHtmlLib.inc.php';
 require_once ROOT_DIR.'/include/Forms/TranslationForm.inc.php';
 require_once ROOT_DIR.'/include/Forms/EditTranslationForm.inc.php';
 /**
- * 
+ *
  * if usertype is switcher assume as client the first element of the testers array
  */
     $languages = Translator::getSupportedLanguages();
@@ -77,7 +77,7 @@ $form=new TranslationForm($languageName);
 $data=$form->getHtml();
 $EditTranslFr=new EditTranslationForm();
 $dataEdtTslFr=$EditTranslFr->getHtml();
-   
+
 $status = translateFN('translation mode');
 
 
@@ -117,20 +117,18 @@ $content_dataAr = array(
 $layout_dataAr['JS_filename'] = array(
 		JQUERY,
 		JQUERY_UI,
-                JQUERY_DATATABLE,
-                JQUERY_DATATABLE_REDRAW,
-                JQUERY_UNIFORM,
-                JQUERY_NO_CONFLICT,
-                JQUERY_MASKEDINPUT,
-                
-                
-                );
+        JQUERY_DATATABLE,
+        SEMANTICUI_DATATABLE,
+        JQUERY_DATATABLE_REDRAW,
+        JQUERY_UNIFORM,
+        JQUERY_NO_CONFLICT
+);
 
 $layout_dataAr['CSS_filename'] = array (
 		JQUERY_UI_CSS,
-                JQUERY_DATATABLE_CSS,
-                JQUERY_UNIFORM_CSS,
-                );
+        SEMANTICUI_DATATABLE_CSS,
+        JQUERY_UNIFORM_CSS,
+);
 
 ARE::render($layout_dataAr,$content_dataAr,NULL, array('onload_func' => "initDoc();"));
 ?>

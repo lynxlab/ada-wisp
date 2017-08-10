@@ -2,19 +2,19 @@
 
 /**
  * List instances - this module provides list instances functionality
- * 
- * 
- * @package		
+ *
+ *
+ * @package
  * @author		Stefano Penge <steve@lynxlab.com>
  * @author		Maurizio "Graffio" Mazzoneschi <graffio@lynxlab.com>
  * @author		Vito Modena <vito@lynxlab.com>
  * @copyright	Copyright (c) 2010, Lynx s.r.l.
  * @license		http://www.gnu.org/licenses/gpl-2.0.html GNU Public License v.2
- * @link					
+ * @link
  * @version		0.1
  */
 /**
- * Base config file 
+ * Base config file
  */
 require_once realpath(dirname(__FILE__)) . '/../config_path.inc.php';
 
@@ -125,7 +125,7 @@ if($courseObj instanceof Course && $courseObj->isFull()) {
                 $actions
             );
         }
-        $data = BaseHtmlLib::tableElement('', $thead_data, $tbody_data);
+        $data = BaseHtmlLib::tableElement('id:list_instances, class:'.ADA_SEMANTICUI_TABLECLASS, $thead_data, $tbody_data);
     } else {
         $data = new CText(translateFN('Non sono state trovate istanze per il corso selezionato'));
     }

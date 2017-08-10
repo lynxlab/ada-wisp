@@ -59,9 +59,7 @@ function createDataTable()
 {
  $j(document).ready(function() {
    oTable= $j('#table_result').dataTable( {
-        "bJQueryUI": true,
-     
-        
+	   "aaSorting": [[ 1, "asc" ]],
         "aoColumnDefs": [
             {
                "aTargets": [ 0 ], 
