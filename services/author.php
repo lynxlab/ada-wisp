@@ -110,23 +110,24 @@ else {
       //translateFN('Elimina')=> "<a href=\"#\" onclick=\"$onclick\"><img src=\"img/delete.png\" border=0></a>"
     );
     if (defined('MODULES_SLIDEIMPORT') && MODULES_SLIDEIMPORT) {
-    	$row['Importa'] = "<a href=\"".MODULES_SLIDEIMPORT_HTTP."/?id_course=$id_course\"><img src=\"".MODULES_SLIDEIMPORT_HTTP."/layout/img/slideimport.png\" border=0></a>";
+    	$row[translateFN('Importa')] = "<a href=\"".MODULES_SLIDEIMPORT_HTTP."/?id_course=$id_course\"><img src=\"".MODULES_SLIDEIMPORT_HTTP."/layout/img/slideimport.png\" border=0></a>";
     }
     array_push($course_dataHa,$row);
   }
   $caption = translateFN("Corsi inviati e attivi il")." $ymdhms";
   $tObj = BaseHtmlLib::tableElement('id:authorTable, class:doDataTable',array_keys(reset($course_dataHa)),$course_dataHa,null,$caption);
-  $tObj->setAttribute('class', 'default_table doDataTable');
+  $tObj->setAttribute('class', 'default_table doDataTable '.ADA_SEMANTICUI_TABLECLASS);
   $total_course_data = $tObj->getHtml();
   $optionsAr['onload_func'] = 'initDoc();';
   $layout_dataAr['CSS_filename'] = array (
   		JQUERY_UI_CSS,
-  		JQUERY_DATATABLE_CSS,
+  		SEMANTICUI_DATATABLE_CSS,
   );
   $layout_dataAr['JS_filename'] = array(
   		JQUERY,
   		JQUERY_UI,
   		JQUERY_DATATABLE,
+  		SEMANTICUI_DATATABLE,
   		JQUERY_DATATABLE_DATE,
   		JQUERY_NO_CONFLICT
   );

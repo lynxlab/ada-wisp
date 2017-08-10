@@ -58,7 +58,7 @@ $courseInstanceHelpAr = array();
 if(!AMA_DataHandler::isError($courseInstances)) {
 	/**
 	 * @author giorgio 23/apr/2015
-	 * 
+	 *
 	 *  filter course instance that are associated to a level of service having nonzero
 	 *  value in isPublic, so that all instances of public courses will not be shown here
 	 */
@@ -66,9 +66,9 @@ if(!AMA_DataHandler::isError($courseInstances)) {
 		if (is_null($courseInstance['tipo_servizio'])) $courseInstance['tipo_servizio'] = DEFAULT_SERVICE_TYPE;
 		return (intval($_SESSION['service_level_info'][$courseInstance['tipo_servizio']]['isPublic'])===0);
 	});
-	
+
     $found = count($courseInstances);
-//    if ($found > 0) 
+//    if ($found > 0)
 //    {
             foreach($courseInstances as $c) {
                 $courseId = $c['id_corso'];
@@ -78,7 +78,7 @@ if(!AMA_DataHandler::isError($courseInstances)) {
                         $courseInstanceHelpAr[] = $c;
                     }elseif ($serviceForInstanceAr[3] == ADA_SERVICE_COMMON || ($serviceForInstanceAr[3] == ADA_SERVICE_COMMON_STUDENT && $userObj->getSerialNumber () != '')) {
                         $courseInstanceCommonAreaAr[] = $c;
-                    } 
+                    }
                 }
             }
 //            if (count($courseInstanceHelpAr) > 0 && $userObj->getSerialNumber() != '') {
@@ -103,12 +103,12 @@ if(!AMA_DataHandler::isError($courseInstances)) {
                         $divAppointments->addChild(new CText(translateFN('Non ci sono appuntamenti')));
                     }
                     $content_dataAr['bloccoUnoAppuntamenti'] = '<h3>'.translateFN('Appuntamenti').'</h3>'.$divAppointments->getHtml();
-                }   
-                
+                }
+
                 foreach($courseInstanceHelpAr as $c) {
-                    
+
                     /* ***********************
-                     * INFO for each instance 
+                     * INFO for each instance
                      */
                     $courseId = $c['id_corso'];
                     $courseDataAr = $dh->get_course($courseId);
@@ -176,15 +176,15 @@ if(!AMA_DataHandler::isError($courseInstances)) {
                                     }
 
                                 }
-                                
+
                                 $lastFiles = $userObj->get_new_files($courseInstanceId);
-                                
+
                                 if (!is_null($lastFiles) && !empty($lastFiles))
                                 {
                                 	$divFiles = CDOMElement::create('div','class:newFiles');
                                 	$divFiles->addChild (new CText('<h4>'.translateFN('documenti recenti').'</h4>'));
                                 	$ulFiles = CDOMElement::create('ul');
-                                	
+
                                 	foreach ($lastFiles as $lastFile)
                                 	{
                                 		$liFile = CDOMElement::create('li');
@@ -196,7 +196,7 @@ if(!AMA_DataHandler::isError($courseInstances)) {
                                 		$aFile->addChild (new CText($lastFile['displaylink']));
                                 		$liFile->addChild ($aFile);
                                 		$ulFiles->addChild ($liFile);
-                                	}                                	
+                                	}
                                 	$divFiles->addChild($ulFiles);
                                 }
                         }
@@ -210,7 +210,7 @@ if(!AMA_DataHandler::isError($courseInstances)) {
 //                        $serviceDOM->addChild($divAppointments)
                         $serviceDOM->addChild(new CText('<h3>'.translateFN('Aiuto per '). $courseName.'</h3>'));
                         $serviceDOM->addChild($service);
-                        
+
                     }
 
             }
@@ -218,13 +218,13 @@ if(!AMA_DataHandler::isError($courseInstances)) {
             $data = new CText(translateFN('Non hai ancora chiesto aiuto per nessun argomento'));
 //            $serviceDOM->addChild($data);
         }
-        
+
         /* *****************
          * COMMON AREA SERVICE
          */
          $CommonTitle = '<h2>'.translateFN('Aree comuni').'</h2>';
          $content_dataAr['bloccoDueTitolo'] = $CommonTitle;
-         
+
          /*
           * COMMON AREA ALREADY SUBSCRIBED
           */
@@ -233,9 +233,9 @@ if(!AMA_DataHandler::isError($courseInstances)) {
          if (count($courseInstanceCommonAreaAr) > 0) {
              foreach ($courseInstanceCommonAreaAr as $singleCommonArea) {
                  $commonAreasSubscribedAr[] = $singleCommonArea['id_istanza_corso'];
-                 
+
                     /* ***********************
-                     * INFO for each instance 
+                     * INFO for each instance
                      */
                     $divCommonNews = '';
                     $courseId = $singleCommonArea['id_corso'];
@@ -280,8 +280,8 @@ if(!AMA_DataHandler::isError($courseInstances)) {
                                 $instancesArray[0]['id_istanza_corso'] = $courseInstanceId;
                                 $new_nodes = $dh->get_new_nodes($userObj->getId(), $maxNodes = 3, $nodeTypesArray,$instancesArray);
                                 if (!AMA_DataHandler::isError($new_nodes) && sizeof($new_nodes) > 0) {
-                                    
-                                    
+
+
                                     foreach ($new_nodes as $new_node) {
                                         $courseOfNewNodeAr = explode('_',$new_node['id_nodo']);
                                         if ($courseId == $courseOfNewNodeAr[0]) {
@@ -299,7 +299,7 @@ if(!AMA_DataHandler::isError($courseInstances)) {
                                         $newsText = translateFN('Novità');
                                         $divCommonNews->addChild(new CText('<h4>'.$newsText.'</h4>'));
                                         $divCommonNews->addChild($ulNews);
-                                        
+
                                     }
                                 }
                         }
@@ -312,7 +312,7 @@ if(!AMA_DataHandler::isError($courseInstances)) {
 //                        $serviceDOM->addChild($divAppointments)
                         $CommonAreaDOM->addChild(new CText('<h3>'. $courseName.'</h3>'));
                         $CommonAreaDOM->addChild($service);
-                        
+
                     }
              }
         } else {
@@ -321,7 +321,7 @@ if(!AMA_DataHandler::isError($courseInstances)) {
         }
          $content_dataAr['bloccoDueContenuto'] = $CommonAreaDOM->getHtml();
 
-         
+
          /*
           * COMMON AREA TO SUBSCRIBED (if the user wish to)
           */
@@ -373,33 +373,33 @@ if(!AMA_DataHandler::isError($courseInstances)) {
 
          }
 //         $id_instance = $course_instanceAr[0][0];
-         
 
-        
+
+
             // @author giorgio 24/apr/2013
 	    // end else... line
                     // @author giorgio 24/apr/2013
                     // adds whats new link if needed
         /*
             if (MultiPort::checkWhatsNew($userObj, $courseInstanceId, $courseId))
-            {				
+            {
                     $link = CDOMElement::create('a','href:user.php?id_node='.$nodeId.'&id_course='.$courseId.'&id_course_instance='.$courseInstanceId);
                     $link->setAttribute("class", "whatsnewlink");
                     $link->addChild(new CText(translateFN('Novit&agrave;')));
-                    $access_link->addChild($link);												
+                    $access_link->addChild($link);
             }
-         * 
+         *
          */
 /*
      } else
      {
                 $data = new CText(translateFN('Non sei iscritto a nessuna classe'));
      }
- * 
+ *
  */
-} 
-                
-        
+}
+
+
         /* ASK SERVICE FORM
          * if student show the ask service form
          */
@@ -417,9 +417,9 @@ if(!AMA_DataHandler::isError($courseInstances)) {
 
                     /**
                      * either the user is anonymous and has the $_GLOBALS['user_provider'] set
-                     * or it is a logged user and then it'll have client0 by default and only 
+                     * or it is a logged user and then it'll have client0 by default and only
                      * the client it's registered into and this info will be index 1 of the returned array
-                     * 
+                     *
                      */
                     if (isset($GLOBALS['user_provider']))
                             $user_provider_name = $GLOBALS['user_provider'];
@@ -443,7 +443,7 @@ if(!AMA_DataHandler::isError($courseInstances)) {
                             $url = HTTP_ROOT_DIR . ((isset($_COOKIE['ada_provider'])) ? '/'.$_COOKIE['ada_provider'].'/info.php' : '');
                             header ('Location: '.$url);
                             die();
-                    }		
+                    }
             } else {
                     $publishedServices = $common_dh->get_published_courses();
             }
@@ -455,7 +455,7 @@ if(!AMA_DataHandler::isError($courseInstances)) {
 
                            $serviceId = $service['id_servizio'];
                            $serviceName = $service['nome'];
-                           $coursesAr = $common_dh->get_courses_for_service($serviceId); 
+                           $coursesAr = $common_dh->get_courses_for_service($serviceId);
                            if (!AMA_DataHandler::isError($coursesAr)) {
                                 $currentTesterId = 0;
                                 $currentTester = '';
@@ -466,20 +466,20 @@ if(!AMA_DataHandler::isError($courseInstances)) {
                                         $courseId = $newTesterId . '_' . $courseData['id_corso'];
                                         $serviceToSubscribeAr[$courseId] = $serviceName;
                                     }
-                                }   
+                                }
                            }
-                      } 
+                      }
 
                 }
                 if(sizeof($serviceToSubscribeAr) > 0) {
                     $AskServiceForm = new AskServiceForm($serviceToSubscribeAr,$user_provider_id);
-                } 
+                }
 
             } else {
                 $data = new CText(translateFN('Non è possibile chiedere aiuto'));
             }
             if (is_object($AskServiceForm)) {
-                
+
                 $askServiceHelp = translateFN('Se non hai ancora chiesto aiuto puoi farlo ora!');
                 $askServiceDiv = CDOMElement::create('div','id:Askservice');
                 $askServiceDiv->setAttribute('class', 'single_service');
@@ -490,12 +490,12 @@ if(!AMA_DataHandler::isError($courseInstances)) {
                 $content_dataAr['bloccoUnoAskService'] = '<h3>'.translateFN('Chiedi aiuto').'</h3>'.$askServiceDiv->getHtml();
             }
             //print_r($content_dataAr);
-            
-            
+
+
         } else {
-            
+
         }
-           
+
         /*******************
          * end Ask Service form
          */
@@ -511,11 +511,11 @@ if(!AMA_DataHandler::isError($courseInstances)) {
                     exit();
                 }
                     else {
-                 * 
+                 *
                  */
                  if (MultiPort::checkWhatsNew($userObj, $courseInstanceId, $courseId)) {
                         $displayWhatsNew = true;
-                 }  
+                 }
                  else {
                  	// resume 'normal' behaviour
                  	$access_link = CDOMElement::create('div');
@@ -534,32 +534,32 @@ if($last_access=='' || is_null($last_access))
 /*
  * Output
  */
-	
+
 	// @author giorgio 24/apr/2013 gocontinue link
 	$last_visited_node_id = $userObj->get_last_accessFN($courseInstanceId,"N");
-	
+
 	if  ((!empty($last_visited_node_id)) AND (!is_object($last_visited_node_id))&& $isStarted && !$isEnded){
 		$last_node_visitedObj = BaseHtmlLib::link("sview.php?id_course=$courseId&id_node=$last_visited_node_id&id_course_instance=$courseInstanceId#$nodeId",translateFN("Continua"));
 		// echo "<!--"; var_dump($last_node_visitedObj);echo "-->";
 		$last_node_visited_link =  $last_node_visitedObj->getHtml();
-	
+
 	} else {
 		//$last_node_visitedObj = BaseHtmlLib::link("sview.php?id_node=$nodeId&id_course=$courseId&id_course_instance=$courseInstanceId",translateFN('Continua'));
 		$last_node_visitedObj = BaseHtmlLib::link("#",translateFN(''));
 		$last_node_visited_link = $last_node_visitedObj->getHtml();
 	}
-	
+
         $imgAvatar = $userObj->getAvatar();
         $avatar = CDOMElement::create('img','src:'.$imgAvatar);
         $avatar->setAttribute('class', 'img_user_avatar');
-        
+
         $content_dataAr['user_modprofilelink'] = $userObj->getEditProfilePage();
 
 	$gochat_link = "";
 	$content_dataAr['gostart'] = $gostart_link;
 	$content_dataAr['gocontinue'] = $last_node_visited_link;
-	$content_dataAr['goindex'] = $goindex_link;		
-	if ($new_nodes_html!=='') $content_dataAr['new_nodes_links'] = $new_nodes_html;	
+	$content_dataAr['goindex'] = $goindex_link;
+	if ($new_nodes_html!=='') $content_dataAr['new_nodes_links'] = $new_nodes_html;
 	// msg forum sono le note in realta'
 	$content_dataAr['msg_forum'] = $msg_forum_count;
 	$content_dataAr['msg_agenda'] =  $msg_agenda_count;
@@ -567,7 +567,7 @@ if($last_access=='' || is_null($last_access))
 	$content_dataAr['goclasse'] = $students_link;
 	$content_dataAr['goforum'] = $goforum_link;
 	$content_dataAr['gochat'] = $gochat_link;
-		
+
 	$content_dataAr['banner'] = $banner;
 	$content_dataAr['today'] = $ymdhms;
 	$content_dataAr['user_name'] = $user_name;
@@ -577,8 +577,8 @@ if($last_access=='' || is_null($last_access))
 	$content_dataAr['message'] = $message;
 	$content_dataAr['course_title'] = translateFN("Home dell'utente");
 	$content_dataAr['submenu_actions'] =  $submenu_actions;
-        
-        $content_dataAr['user_avatar'] = $avatar->getHtml(); 
+
+        $content_dataAr['user_avatar'] = $avatar->getHtml();
         if (is_object($serviceDOM)) {
             $content_dataAr['bloccoUnoContenuto'] =  $serviceDOM->getHtml();
             $content_dataAr['bloccoUnoTitolo'] =  $HelpTitle;
@@ -590,16 +590,17 @@ if($last_access=='' || is_null($last_access))
 //        $content_dataAr['events'] = $user_events_2->getHtml().$user_events->getHtml();
 
 //print_r($content_dataAr);
-        
+
 
 $layout_dataAr['CSS_filename'] = array (
 		JQUERY_UI_CSS,
-		JQUERY_DATATABLE_CSS
+		SEMANTICUI_DATATABLE_CSS
 );
 $layout_dataAr['JS_filename'] = array(
 		JQUERY,
 		JQUERY_UI,
 		JQUERY_DATATABLE,
+		SEMANTICUI_DATATABLE,
 		JQUERY_DATATABLE_DATE,
 		ROOT_DIR.'/js/include/jquery/dataTables/formattedNumberSortPlugin.js',
 		JQUERY_NO_CONFLICT,
