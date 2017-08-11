@@ -254,8 +254,9 @@ if (!AMA_DB::isError($tutors_ar) && is_array($tutors_ar) && count($tutors_ar)>0)
 			}
 		}
 		// add table to main form
-		$theForm->addChild(BaseHtmlLib::tableElement('id:table_preassignment',
-				$tableHead, $tableBody, $tableFoot, $tableCaption));
+		$preAssignTable = BaseHtmlLib::tableElement('id:table_preassignment', $tableHead, $tableBody, $tableFoot, $tableCaption);
+		$preAssignTable->setAttribute('class', $preAssignTable->getAttribute('class').' '.ADA_SEMANTICUI_TABLECLASS);
+		$theForm->addChild($preAssignTable);
 
 	} else {
 		if (isset($addChildOnError) && $addChildOnError) {
@@ -290,11 +291,12 @@ $content_dataAr = array(
 $layout_dataAr['JS_filename'] = array(
 		JQUERY_UI,
 		JQUERY_DATATABLE,
+		SEMANTICUI_DATATABLE,
 		JQUERY_NO_CONFLICT
 );
 $layout_dataAr['CSS_filename']= array(
 		JQUERY_UI_CSS,
-		JQUERY_DATATABLE_CSS
+		SEMANTICUI_DATATABLE_CSS
 );
 $optionsAr['onload_func'] = 'initDoc(\''.$op.'\');';
 ARE::render($layout_dataAr, $content_dataAr, null, $optionsAr);
