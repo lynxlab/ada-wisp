@@ -216,7 +216,7 @@ if(is_array($usersAr) && count($usersAr) > 0) {
         $tbody_data[] = $tmpArray;
     }
     $data = BaseHtmlLib::tableElement('id:table_users', $thead_data, $tbody_data);
-    $data->setAttribute('class', $data->getAttribute('class').' '.$type);
+    $data->setAttribute('class', $data->getAttribute('class').' '.$type.' '.ADA_SEMANTICUI_TABLECLASS);
 } else {
     $data = CDOMElement::create('span');
     $data->addChild(new CText(translateFN('Non sono stati trovati utenti')));
@@ -247,13 +247,14 @@ $layout_dataAr['JS_filename'] = array(
         JQUERY,
         JQUERY_UI,
         JQUERY_DATATABLE,
+		SEMANTICUI_DATATABLE,
         JQUERY_DATATABLE_DATE,
         ROOT_DIR. '/js/include/jquery/dataTables/selectSortPlugin.js',
         JQUERY_NO_CONFLICT
 	);
 $layout_dataAr['CSS_filename']= array(
         JQUERY_UI_CSS,
-        JQUERY_DATATABLE_CSS
+        SEMANTICUI_DATATABLE_CSS
 	);
   $render = null;
   $optionsAr['onload_func'] = 'initDoc(\''.$type.'\');';

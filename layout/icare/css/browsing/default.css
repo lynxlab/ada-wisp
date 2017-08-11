@@ -273,6 +273,14 @@ background: url(../../img/back.png) no-repeat center left; display:block; paddin
 	margin-right: 0.5rem;
 	color: #005D00;
 }
+
+table.historytable .ADA_GROUP_TYPE::before,
+table.historytable .ADA_LEAF_TYPE::before,
+table.historytable .ADA_NOTE_TYPE::before,
+table.historytable .ADA_EXERCISE::before,
+table.historytable .NODE_NOT_VIEWABLE::before {
+	float:left;
+}
 /*
  * classe per l'elemento che contiene un nodo Termine di tipo gruppo
  */
@@ -544,10 +552,11 @@ background: url(../../img/back.png) no-repeat center left; display:block; paddin
    float: left;
    width: 40%;
 }
-#result_AdvancedSearch
+#result_AdvancedSearch,
+#result_SimpleSearch
 {
   float:right;
-  width: 50%;
+  width: 60%;
 }
 
 /*for simple search*/
@@ -561,12 +570,6 @@ background: url(../../img/back.png) no-repeat center left; display:block; paddin
     float: left;
     width: 40%;
 }
-#result_SimpleSearch
-{
-   float:right;
-   width: 50%;
-}
-#table_result A:link { background-color: transparent !important;}
 
 /*for self_instruction*/
  
@@ -598,8 +601,15 @@ background: url(../../img/back.png) no-repeat center left; display:block; paddin
 	padding :0;
 }
 
-#contentcontent div.media.sound div.jp-progress,
 #contentcontent div.media.sound div.jp-time-holder {
+    top: 30px;
+    font-size: 0.85em;
+    line-height: 1em;
+    color: #666;
+    width: 38%;
+    left: 90px;
+}
+#contentcontent div.media.sound div.jp-progress {
 	width: 40%;
 	left: 27%;
 	top: 12px;

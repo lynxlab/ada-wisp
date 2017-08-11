@@ -194,9 +194,9 @@ box-shadow: 0 5px 15px 0 rgba(120, 120, 120, 0.4);
 margin: 5px 0px 5px 0;
 padding: 10px;
 }
-
-#blocco_uno .ui-accordion .ui-accordion-content,
-#blocco_due .ui-accordion .ui-accordion-content
+#contentcontent .ui-widget-content { border:none; }
+#blocco_uno .ui-accordion .ui-accordion-content:not(.ui.message),
+#blocco_due .ui-accordion .ui-accordion-content:not(.ui.message)
 { padding:0; }
 
 #bloccoDueTitoloContenitore {

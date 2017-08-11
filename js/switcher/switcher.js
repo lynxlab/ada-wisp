@@ -56,7 +56,6 @@ function dataTablesExec() {
 
 	var datatable = $j('#table_users_for_service').dataTable( {
 
-                 "bJQueryUI": true,
                 'bLengthChange': true,
 		//'bScrollCollapse': true,
 //		'iDisplayLength': 10,
@@ -83,17 +82,7 @@ function dataTablesExec() {
                 "oLanguage":
                  {
                     "sUrl": HTTP_ROOT_DIR + "/js/include/jquery/dataTables/dataTablesLang.php"
-                 },
-                 "fnDrawCallback":
-                    function () {
-                        // put the sort icon outside of the DataTables_sort_wrapper div
-                        // for better display styling with CSS
-                        $j(this).find("thead th div.DataTables_sort_wrapper").each(function(){
-                                sortIcon = $j(this).find('span').clone();
-                                $j(this).find('span').remove();
-                                $j(this).parents('th').append(sortIcon);
-                                });
-                    }
+                 }
 
 //		'sPaginationType': 'full_numbers'
 	}).show();
@@ -120,7 +109,11 @@ function dataTablesExec() {
                                 { 'sType': "date-euro" }
                             ],
 
-                'bPaginate': false
+                'bPaginate': false,
+                "oLanguage":
+                 {
+                    "sUrl": HTTP_ROOT_DIR + "/js/include/jquery/dataTables/dataTablesLang.php"
+                 }
 //		'sPaginationType': 'full_numbers'
 	}).show();
 
@@ -139,6 +132,10 @@ function initListLservices() {
 			"aTargets" : [ 5 ]
 		} ],
 		"aoColumns" : [ null, null, null, null, null, null ],
-		"bPaginate" : false
+		"bPaginate" : false,
+        "oLanguage":
+         {
+            "sUrl": HTTP_ROOT_DIR + "/js/include/jquery/dataTables/dataTablesLang.php"
+         }
 	}).show();
 }

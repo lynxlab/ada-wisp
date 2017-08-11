@@ -121,7 +121,7 @@ switch ($op) {
 				translateFN('Msg Inv')
 		);
 		$tObj = BaseHtmlLib::tableElement('id:listTutors',$thead,$tableDataAr,null,translateFN('Elenco dei tutors'));
-		$tObj->setAttribute('class', 'default_table doDataTable');
+		$tObj->setAttribute('class', 'default_table doDataTable '.ADA_SEMANTICUI_TABLECLASS);
 		$data = $tObj->getHtml();
 		break;
 	case 'stats':
@@ -225,6 +225,7 @@ switch ($op) {
 			$summary = strip_tags($caption);
 			$tObj->setTable($added_nodesHa,$caption,$summary);
 			$added_notesHa = $tObj->getTable();
+			$added_notesHa= preg_replace('/class="/', 'class="'.ADA_SEMANTICUI_TABLECLASS.' ', $added_notesHa, 1); // replace first occurence of class
 			$data = $added_notesHa;
 		}
 
@@ -392,6 +393,7 @@ switch ($op) {
 				    );
 			  }
 			  $table = BaseHtmlLib::tableElement('class:sortable',$thead_data,$tbody_data);
+			  $table->setAttribute('class', $table->getAttribute('class').' '.ADA_SEMANTICUI_TABLECLASS);
 			  $data  = $table;
 			}
 			else {
@@ -812,9 +814,9 @@ switch ($op) {
 						' '.$_SESSION['service_level'][ADA_SERVICE_HELP].' o '.$_SESSION['service_level'][ADA_SERVICE_IN_ITINERE]));
 			}
 
-			$box_dataAr['dati6'] = ((isset($hiddenElement)) ? $hiddenElement->getHtml() : '').
-			                       BaseHtmlLib::tableElement('id:table_preassigned_students',
-			                       		$tableHead, $tableBody)->getHtml();
+			$dati6Tbl = BaseHtmlLib::tableElement('id:table_preassigned_students',$tableHead, $tableBody);
+			$dati6Tbl->setAttribute('class', $dati6Tbl->getAttribute('class').' '.ADA_SEMANTICUI_TABLECLASS);
+			$box_dataAr['dati6'] = ((isset($hiddenElement)) ? $hiddenElement->getHtml() : '').$dati6Tbl->getHtml();
 		} else {
 			$box_dataAr['dati6'] = translateFN('Non hai studenti assegnati');
 		}
@@ -836,9 +838,15 @@ $banner = include ROOT_DIR.'/include/banner.inc.php';
 if (is_object($user_events)) {
 $divAppointments = CDOMElement::create('div','class:appointments');
 //                    $divAppointments->addChild(new CText('<h3>'.translateFN('Appuntamenti').'</h3>'));
-if (is_object($user_events) && $user_events->getHtml() != '') $divAppointments->addChild($user_events);
+if (is_object($user_events) && $user_events->getHtml() != '') {
+	if (method_exists($user_events, 'setAttribute')) {
+		$user_events->setAttribute('class', $user_events->getAttribute('class').' '.ADA_SEMANTICUI_TABLECLASS);
+	} else $divAppointments->setAttribute('class', $divAppointments->getAttribute('class').' ui small message');
+	$divAppointments->addChild($user_events);
+}
 if ($user_events->getHtml() == '') {
-$divAppointments->addChild(new CText(translateFN('Non ci sono appuntamenti')));
+$divAppointments->setAttribute('class', $divAppointments->getAttribute('class').' ui small message');
+$divAppointments->addChild(new CText(translateFN('Non ci sono appuntamenti').' yyy'));
 }
 }
 
@@ -947,9 +955,13 @@ if (!$isSuperTutor && is_object($user_events_proposed)) {
 
 	$divAppointmentsProposed = CDOMElement::create('div','class:appointments');
 	if (is_object($user_events_proposed) && $user_events_proposed->getHtml() != '') {
+		if (method_exists($user_events_proposed, 'setAttribute')) {
+			$user_events_proposed->setAttribute('class', $user_events_proposed->getAttribute('class').' '.ADA_SEMANTICUI_TABLECLASS);
+		} else $divAppointmentsProposed->setAttribute('class', $divAppointmentsProposed->getAttribute('class').' ui small message');
 		$divAppointmentsProposed->addChild($user_events_proposed);
 	}
 	if ($user_events_proposed->getHtml() == '') {
+		$divAppointmentsProposed->setAttribute('class', $divAppointmentsProposed->getAttribute('class').' ui small message');
 		$divAppointmentsProposed->addChild(new CText(translateFN('Non ci sono appuntamenti')));
 	}
 }
@@ -1005,9 +1017,11 @@ if (!$isSuperTutor) {
 
 	$content_dataAr['bloccoDueAppuntamenti'] .= '<h3>'.translateFN('Appuntamenti').'</h3>';
 	//$content_dataAr['bloccoDueAppuntamenti'] .= $divAppointments->getHtml();
+	$user_agenda->setAttribute('class', $user_agenda->getAttribute('class').' '.ADA_SEMANTICUI_TABLECLASS);
 	$content_dataAr['bloccoDueAppuntamenti'] .= $user_agenda->getHtml();
 
 	$content_dataAr['bloccoQuattroMessaggi'] = '<h3>'.translateFN('Messaggi ricevuti').'</h3>';
+	$user_messages->setAttribute('class', $user_agenda->getAttribute('class').' '.ADA_SEMANTICUI_TABLECLASS);
 	$content_dataAr['bloccoQuattroMessaggi'] .= $user_messages->getHtml();
 }
 $content_dataAr['user_modprofilelink'] = $userObj->getEditProfilePage();
@@ -1016,6 +1030,7 @@ $layout_dataAr['JS_filename'] = array(
 JQUERY,
 JQUERY_UI,
 JQUERY_DATATABLE,
+SEMANTICUI_DATATABLE,
 JQUERY_DATATABLE_DATE,
 ROOT_DIR.'/js/include/jquery/dataTables/formattedNumberSortPlugin.js',
 JQUERY_NO_CONFLICT
@@ -1033,7 +1048,7 @@ define ('IS_SUPERTUTOR', $isSuperTutor);
 define ('NOT_SUPERTUTOR', !$isSuperTutor);
 
 $layout_dataAr['CSS_filename']= array(
-JQUERY_DATATABLE_CSS,
+SEMANTICUI_DATATABLE_CSS,
 JQUERY_UI_CSS
 );
 $render = null;

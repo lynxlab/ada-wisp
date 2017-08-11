@@ -30,23 +30,29 @@
             <!-- / percorso -->
             <!--dati utente-->
             <div id="status_bar">
-                    <template_field class="microtemplate_field" name="user_data_micro">user_data_micro</template_field>
-            <!-- / dati utente -->
-            <!-- label -->
-            <!--div id="label">
-                <div class="topleft">
-                    <div class="topright">
-                        <div class="bottomleft">
-                            <div class="bottomright">
-                                <div class="contentlabel">
-                                    <template_field class="template_field" name="message">message</template_field>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
+            <div id="user_data" class="user_data_default">
+                <i18n>utente: </i18n>
+                <span>
+                    <template_field class="template_field" name="user_name">user_name</template_field>
+                </span>
+                <i18n>tipo: </i18n>
+                <span>
+                    <template_field class="template_field" name="user_type">user_type</template_field>
+                </span>
+                <div class="status">
+                <i18n>status: </i18n>
+                <span>
+                    <template_field class="template_field" name="status">status</template_field>
+                </span>
                 </div>
-            </div>
-            <!-- /label -->
+                                <i18n>ultimo accesso: </i18n>
+                <span>
+                    <template_field class="template_field" name="last_visit">last_visit</template_field>
+                </span>
+                <i18n>livello</i18n>:
+                  <span>
+                    <template_field class="template_field" name="user_level">user_level</template_field>
+                 </span>
             </div>
             <!-- / dati utente -->
             <!-- label -->

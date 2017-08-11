@@ -4,7 +4,6 @@
 /**
  * DataTables styles
  */
-.dataTables_wrapper { width: 100% !important; }
 .dataTables_wrapper caption { width: 20%; margin: -25px auto 0 auto; position: relative; top: -10px; font-weight: bold;   color: #fff; }
 .dataTables_wrapper tbody td { height: 2.5em; border:none; vertical-align: middle; }
 .dataTables_wrapper thead th { padding-right: 5px; }

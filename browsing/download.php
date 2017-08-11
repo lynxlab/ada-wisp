@@ -141,14 +141,14 @@ if (isset($_GET['file'])){
   //          $lista ="<ol>";
         //  for  ($i=0; $i<$fstop; $i++){
 //            $div = CDOMElement::create('div','id:file_sharing');
-            $table = CDOMElement::create('table','id:file_sharing_table');
+            $table = CDOMElement::create('table','id:file_sharing_table,class:'.ADA_SEMANTICUI_TABLECLASS);
 //            $div->addChild($table);
             $thead = CDOMElement::create('thead');
             $tbody = CDOMElement::create('tbody');
             $tfoot = CDOMElement::create('tfoot');
             $table->addChild($thead);
             $table->addChild($tbody);
-            
+
             $trHead = CDOMElement::create('tr');
 
             $thHead = CDOMElement::create('th','class: file');
@@ -162,19 +162,19 @@ if (isset($_GET['file'])){
             $thHead = CDOMElement::create('th','class: date');
             $thHead->addChild(new CText(translateFN('data')));
             $trHead->addChild($thHead);
-            
+
             $thHead = CDOMElement::create('th','class: node');
             $thHead->addChild(new CText(translateFN('nodo')));
             $trHead->addChild($thHead);
-                        
+
             if ($userObj->getType()==AMA_TYPE_TUTOR) {
             	$thHead = CDOMElement::create('th','class: node');
             	$thHead->addChild(new CText(translateFN('azioni')));
-            	$trHead->addChild($thHead);            	
-            }                        
+            	$trHead->addChild($thHead);
+            }
 
             $thead->addChild($trHead);
-            
+
             $i=0;
             foreach ($elencofile as $singleFile) {
                 $i++;
@@ -263,7 +263,7 @@ if (isset($_GET['file'])){
 		}
            } // end foreach
            $html = $table->getHtml();
-        } 
+        }
 }
 
 /**
@@ -329,16 +329,16 @@ $node_data = array(
   HTML page building
   */
 
-
-$layout_dataAr['JS_filename'] = array(		
+$layout_dataAr['JS_filename'] = array(
 		JQUERY,
 		JQUERY_DATATABLE,
+		SEMANTICUI_DATATABLE,
 		JQUERY_UI,
 		JQUERY_NO_CONFLICT
 	);
 $layout_dataAr['CSS_filename']= array(
 		JQUERY_UI_CSS,
-		JQUERY_DATATABLE_CSS,
+		SEMANTICUI_DATATABLE_CSS,
 	);
   $render = null;
   $options['onload_func'] = 'initDoc()';

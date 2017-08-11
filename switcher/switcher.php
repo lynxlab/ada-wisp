@@ -320,7 +320,7 @@ if (is_array($tbody_data) && count($tbody_data)>0) {
 	$tbody = sprintf("<tbody>%s</tbody>", implode('', $bodyArr));
 }
 
-$table = sprintf('<table id="table_users_for_service" class="default_table" >%s%s</table>', $thead, $tbody);
+$table = sprintf('<table id="table_users_for_service" class="default_table %s" >%s%s</table>', ADA_SEMANTICUI_TABLECLASS, $thead, $tbody);
 
 // SERVICE:  BANNER, HELP, STATUS
 
@@ -367,14 +367,15 @@ if (isset($annoCorsoEl)) $content_dataAr['annocorsofilter'] = $annoCorsoEl->getH
 $layout_dataAr['JS_filename'] = array(
 	JQUERY,
 	JQUERY_DATATABLE,
+	SEMANTICUI_DATATABLE,
 	JQUERY_DATATABLE_DATE,
-        ROOT_DIR. '/js/include/jquery/dataTables/selectSortPlugin.js',
+    ROOT_DIR. '/js/include/jquery/dataTables/selectSortPlugin.js',
 	JQUERY_NO_CONFLICT
 );
 
 $layout_dataAr['CSS_filename']= array(
         JQUERY_UI_CSS,
-	JQUERY_DATATABLE_CSS
+	SEMANTICUI_DATATABLE_CSS
     );
   $render = null;
   $options['onload_func'] = 'initDoc()';

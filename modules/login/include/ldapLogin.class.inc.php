@@ -1,7 +1,7 @@
 <?php
 /**
  * LOGIN MODULE
- * 
+ *
  * @package 	login module
  * @author		giorgio <g.consorti@lynxlab.com>
  * @copyright	Copyright (c) 2015, Lynx s.r.l.
@@ -15,15 +15,15 @@
 class ldapLogin extends AbstractLogin
 {
 	const INVALID_USERNAME_EXECEPTION_CODE = 49;
-	
+
 	/**
 	 * class for managing options data
 	 */
 	const MANAGEMENT_CLASS = 'ldapManagement';
-	
+
 	/**
 	 * performs user login using an LDAP server
-	 * 
+	 *
 	 * (non-PHPdoc)
 	 * @see iLogin::doLogin()
 	 */
@@ -76,7 +76,7 @@ class ldapLogin extends AbstractLogin
 			 * If invalid name or password, throw exception
 			 */
 			if ($name === false || $pass === false) throw new Exception(null,self::INVALID_USERNAME_EXECEPTION_CODE);
-			
+
 			/**
 			 * check LDAP configuration in module's option table
 			 */
@@ -91,7 +91,7 @@ class ldapLogin extends AbstractLogin
 						'authuser' => 'Impostare un username per l\'autenticazione',
 						'authpwd'  => 'Impostare una password per l\'autenticazione'
 				);
-				
+
 				foreach ($mandatoryOptions as $optionName=>$errorMessage) {
 					if (!array_key_exists($optionName, $options) || strlen($options[$optionName])<=0) {
 						$errorMessage = translateFN($errorMessage) .
@@ -247,7 +247,7 @@ class ldapLogin extends AbstractLogin
 			return new Exception($e->getMessage().' '.translateFN('di').' '.$options['name']);
 		}
 	}
-	
+
 	/**
 	 * generate HTML for login provider configuration page
 	 */
@@ -259,24 +259,25 @@ class ldapLogin extends AbstractLogin
 		$newButton->setAttribute('onclick', 'javascript:editOptionSet(null);');
 		$newButton->addChild (new CText(translateFN('Nuova Fonte')));
 		$configIndexDIV->addChild($newButton);
+		$configIndexDIV->addChild(CDOMElement::create('div','class:clearfix'));
 		$tableOutData = array();
 		$optionSetList = $this->getAllOptions();
-		
+
 		if (!AMA_DB::isError($optionSetList)) {
-		
+
 			$labels = array (translateFN('nome'), translateFN('host'),  translateFN('stato'),
 					translateFN('azioni'));
 			foreach ($optionSetList as $i=>$elementArr) {
 				$isEnabled = intval($elementArr['enabled'])===1;
 				unset ($elementArr['enabled']);
 				unset ($elementArr['order']);
-				
+
 				$keys = array_keys($elementArr);
 				$values = array_values($elementArr);
-				
+
 				$links = array();
 				$linksHtml = "";
-		
+
 				for ($j=0;$j<5;$j++) {
 					switch ($j) {
 						case 0:
@@ -305,7 +306,7 @@ class ldapLogin extends AbstractLogin
 							$link = 'moveOptionSet($j(this),'.$i.',1);';
 							break;
 					}
-		
+
 					if (isset($type)) {
 						$links[$j] = CDOMElement::create('li','class:liactions');
 						$linkshref = CDOMElement::create('button');
@@ -322,18 +323,19 @@ class ldapLogin extends AbstractLogin
 					foreach ($links as $link) $linksul->addChild ($link);
 					$linksHtml = $linksul->getHtml();
 				} else $linksHtml = '';
-		
+
 				$tableOutData[$i] = array (
 						$labels[0]=>$elementArr['name'],
 						$labels[1]=>$elementArr['host'],
 						$labels[2]=>(($isEnabled) ? translateFN('Abilitata') : translateFN('Disabilitata') ),
 						$labels[3]=>$linksHtml);
 			}
-		
+
 			$OutTable = BaseHtmlLib::tableElement('id:complete'.strtoupper(get_class($this)).'List',
 					$labels,$tableOutData,'',translateFN('Elenco delle fonti '.strtoupper($this->loadProviderName())));
+			$OutTable->setAttribute('class', ADA_SEMANTICUI_TABLECLASS);
 			$configIndexDIV->addChild($OutTable);
-		
+
 			// if there are more than 10 rows, repeat the add new button below the table
 			if (count($optionSetList)>10) {
 				$bottomButton = clone $newButton;

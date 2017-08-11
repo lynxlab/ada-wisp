@@ -503,6 +503,7 @@ else {
   else {
     $thead_data = array(translateFN('Prossime sessioni di orientamento'), translateFN('Appointment type'), translateFN('Azioni'));
     $appointments_data = BaseHtmlLib::tableElement('', $thead_data, $tbody_data_confirmed_appointment);
+    $appointments_data->setAttribute('class', $appointments_data->getAttribute('class').' '.ADA_SEMANTICUI_TABLECLASS);
   }
 
   if (!$isFutureProposedAppointment || count($tbody_data_proposed_appointment)<=0) {

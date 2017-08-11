@@ -305,6 +305,10 @@ define('MEDIA_LOCAL_PATH',''); // default: disabled
  */
 //define('ADA_TEMPLATE_FAMILY', 'standard');   // *js_import*
 define('ADA_TEMPLATE_FAMILY', 'ada_blu');   // *js_import*
+/**
+ * Default class for semantic ui tables class (both datatables and normal tables)
+ */
+define('ADA_SEMANTICUI_TABLECLASS', 'ui padded table');   // *js_import*
 
 // default templates path
 define('ADA_TEMPLATE_PATH', ROOT_DIR.'/templates/main');
