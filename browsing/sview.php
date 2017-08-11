@@ -127,7 +127,7 @@ else {
 	$node_parent = $nodeObj->parent_id;
 	$node_path = $nodeObj->findPathFN();
         $expand = true;
-        $node_index = CourseViewer::displayForumNodes($userObj, $sess_id_course, $expand, 'struct', $sess_id_course_instance, 'structIndex');        
+        $node_index = CourseViewer::displayForumNodes($userObj, $sess_id_course, $expand, 'struct', $sess_id_course_instance, 'structIndex');
 //        print_r($node_index->getHtml());
 
 
@@ -247,7 +247,7 @@ foreach ($keyAr as $keyword){
 	$linksAr [] = "<a href=\"search.php?s_node_title=$keyword&submit=cerca&l_search=all\">$keyword</a>";
 }
 
-$linked_node_keywords = implode(',',$linksAr);                
+$linked_node_keywords = implode(',',$linksAr);
 /**
  * content_data
  * @var array
@@ -368,8 +368,11 @@ if ($com_enabled) {
 	$online_users_listing_mode = 2;
 	$online_users = ADALoggableUser::get_online_usersFN($sess_id_course_instance,$online_users_listing_mode);
 	$content_dataAr['ajax_chat_link'] = $ajax_chat_link;
+	if (method_exists($user_messages, 'setAttribute')) $user_messages->setAttribute('class',$user_messages->getAttribute('class').' '.ADA_SEMANTICUI_TABLECLASS);
 	$content_dataAr['messages'] = $user_messages->getHtml();
+	if (method_exists($user_agenda, 'setAttribute')) $user_agenda->setAttribute('class',$user_agenda->getAttribute('class').' '.ADA_SEMANTICUI_TABLECLASS);
 	$content_dataAr['agenda'] = $user_agenda->getHtml();  // confirmed appointments
+	if (method_exists($user_events, 'setAttribute')) $user_events->setAttribute('class',$user_events->getAttribute('class').' '.ADA_SEMANTICUI_TABLECLASS);
     $content_dataAr['events'] = $user_events->getHtml();  // appointment proposals
 	$content_dataAr['chat_users'] = $online_users;
 } else {
@@ -388,23 +391,24 @@ switch ($op){
 			'portal' => $eportal
 			);
             ARE::render($layout_dataAR,$content_dataAr, ARE_PRINT_RENDER, $PRINT_optionsAr);
-            break;    
+            break;
 	case 'view':
 	default:
 		// Sends data to the rendering engine
-		
+
 		// giorgio 06/set/2013, jquery and flowplayer inclusion
-		
+
 		$layout_dataAR['JS_filename'] = array(
 				JQUERY,
 				JQUERY_UI,
 				JQUERY_NIVOSLIDER,
                 JQUERY_DATATABLE,
+                SEMANTICUI_DATATABLE,
                 JQUERY_DATATABLE_DATE,
                 JQUERY_UNIFORM,
 				JQUERY_NO_CONFLICT,
 				ROOT_DIR. '/external/mediaplayer/flowplayer-5.4.3/flowplayer.js'
-		);		
+		);
 
 		/**
 		 * if the jqueru-ui theme directory is there in the template family,
@@ -419,15 +423,15 @@ switch ($op){
 					JQUERY_UI_CSS
 			);
 		} else $layout_dataAR['CSS_filename'] = array();
-                
-        array_push ($layout_dataAR['CSS_filename'], JQUERY_DATATABLE_CSS);
+
+        array_push ($layout_dataAR['CSS_filename'], SEMANTICUI_DATATABLE_CSS);
         array_push ($layout_dataAR['CSS_filename'], ROOT_DIR.'/external/mediaplayer/flowplayer-5.4.3/skin/minimalist.css');
 		array_push ($layout_dataAR['CSS_filename'], JQUERY_NIVOSLIDER_CSS);
 		array_push ($layout_dataAR['CSS_filename'], ROOT_DIR.'/js/include/jquery/nivo-slider/themes/default/default.css');
 		array_push ($layout_dataAR['CSS_filename'], JQUERY_UNIFORM_CSS);
-		
+
 		$optionsAr['onload_func'] = 'initDoc();';
-		
+
 		$layout_dataAR['widgets']['sviewnews'] = array ("course_id"=>$courseObj->getId());
 
 		ARE::render($layout_dataAR,$content_dataAr, null,$optionsAr);
