@@ -181,8 +181,8 @@ padding: 5px !important;
  * DataTables styles
  */
 .dataTables_wrapper { width: 100% !important; }
-.dataTables_wrapper caption { width: 20%; margin: -25px auto 0 auto; position: relative; top: -10px; font-weight: bold;   color: #fff; }
-.dataTables_wrapper tbody td { height: 2.5em; border:none; vertical-align: middle; }
+.dataTables_wrapper caption { width: 20%; margin: -25px auto 0 auto; position: relative; top: -10px; font-weight: bold; }
+.dataTables_wrapper tbody td { height: 2.5em; vertical-align: middle; }
 .dataTables_wrapper thead th { padding-right: 5px; }
 .dataTables_wrapper .DataTables_sort_wrapper { padding: 5px 0 5px 0; width:90%; }
 .dataTables_wrapper .DataTables_sort_icon { float: right; margin-top: -20px; }
@@ -204,3 +204,5 @@ padding: 5px !important;
 .dataTables_wrapper ul.ulactions > li.liactions > button { height: 1.5em; }
 .dataTables_wrapper table.dataTable td.enabledstate.disabled,
 .dataTables_wrapper ul.ulactions > li.liactions > button.ui-button-disabled { opacity: 0.4; }
+
+#contentcontent .ui-widget-content { border:none; }

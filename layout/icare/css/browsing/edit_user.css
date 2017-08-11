@@ -103,8 +103,8 @@ div.fform form fieldset fieldset label { margin-left:0; width: 45%; display: inl
  * DataTables styles
  */
 .dataTables_wrapper { width: 100% !important; font-size: 0.85em !important; }
-.dataTables_wrapper caption { width: 20%; margin: -25px auto 0 auto; position: relative; top: -10px; font-weight: bold;   color: #fff; }
-.dataTables_wrapper tbody td { height: 2.5em; border:none; vertical-align: middle; }
+.dataTables_wrapper caption { width: 20%; margin: -25px auto 0 auto; position: relative; top: -10px; font-weight: bold; }
+.dataTables_wrapper tbody td { height: 2.5em; vertical-align: middle; }
 .dataTables_wrapper thead th { padding-right: 5px; }
 .dataTables_wrapper .DataTables_sort_wrapper { padding: 5px 0 5px 0; width:100%; text-overflow: ellipsis; white-space: nowrap; overflow: hidden; }
 .dataTables_wrapper th:nth-last-child(1) .DataTables_sort_wrapper { width: 90%; }

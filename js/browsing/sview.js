@@ -59,7 +59,6 @@ function initMessages() {
                 "bSort": true,
                 "bAutoWidth": true,
 		'bDeferRender': true,
-                 "bJQueryUI": true,
                 
                 'aoColumns': [
                                 { 'sType': "date-euro" },
@@ -75,17 +74,7 @@ function initMessages() {
                 "oLanguage": 
                  {
                     "sUrl": HTTP_ROOT_DIR + "/js/include/jquery/dataTables/dataTablesLang.php"
-                 },
-                 "fnDrawCallback":
-                    function () {
-                        // put the sort icon outside of the DataTables_sort_wrapper div
-                        // for better display styling with CSS
-                        $j(this).find("thead th div.DataTables_sort_wrapper").each(function(){
-                                sortIcon = $j(this).find('span').clone();
-                                $j(this).find('span').remove();
-                                $j(this).parents('th').append(sortIcon);
-                                });
-                    } 
+                 }
 
 	}).show();
 
@@ -96,7 +85,6 @@ function initMessages() {
                 "bSort": true,
                 "bAutoWidth": true,
 		'bDeferRender': true,
-                "bJQueryUI": true,
                 "bPaginate" : true,
                 
          
@@ -112,17 +100,7 @@ function initMessages() {
                 "oLanguage": 
                  {
                     "sUrl": HTTP_ROOT_DIR + "/js/include/jquery/dataTables/dataTablesLang.php"
-                 },
-                 "fnDrawCallback":
-                    function () {
-                        // put the sort icon outside of the DataTables_sort_wrapper div
-                        // for better display styling with CSS
-                        $j(this).find("thead th div.DataTables_sort_wrapper").each(function(){
-                                sortIcon = $j(this).find('span').clone();
-                                $j(this).find('span').remove();
-                                $j(this).parents('th').append(sortIcon);
-                                });
-                    } 
+                 }
 
 	}).show();
     
