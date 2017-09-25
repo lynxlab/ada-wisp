@@ -108,12 +108,19 @@ if(count($courseInstanceCommonAreaAr) > 0 || count($courseInstanceHelpAr)> 0) {
 	/**
 	 * @author giorgio 23/apr/2015
 	 *
-	 *  filter course instance that are associated to a level of service having nonzero
-	 *  value in isPublic, so that all instances of public courses will not be shown here
+	 *  filter course instance that are associated to a level of service having:
+	 *  - nonzero value in isPublic, so that all instances of public courses will not be shown here
+	 *  - zero value in IsPublic and the service level in the $GLOBALS['autosubscribeServiceTypes'] array, to hide autosubscription instances
 	 */
 	$courseInstanceCommonAreaAr = array_filter($courseInstanceCommonAreaAr, function($courseInstanceCommonArea) {
 		if (is_null($courseInstanceCommonArea['tipo_servizio'])) $courseInstanceCommonArea['tipo_servizio'] = DEFAULT_SERVICE_TYPE;
-		return (intval($_SESSION['service_level_info'][$courseInstanceCommonArea['tipo_servizio']]['isPublic'])===0);
+		$actualServiceType = !is_null($courseInstanceCommonArea['istanza_tipo_servizio']) ? $courseInstanceCommonArea['istanza_tipo_servizio']: $courseInstanceCommonArea['tipo_servizio'];
+		if (intval($_SESSION['service_level_info'][$actualServiceType]['isPublic'])!==0) {
+			$filter = false;
+		} else if (in_array($actualServiceType, $GLOBALS['autosubscribeServiceTypes'])) {
+			$filter = false;
+		}
+		return (isset($filter) ? $filter : true);
 	});
 	$courseInstanceHelpAr = array_filter($courseInstanceHelpAr, function($courseInstanceHelp) {
 		if (is_null($courseInstanceHelp['tipo_servizio'])) $courseInstanceHelp['tipo_servizio'] = DEFAULT_SERVICE_TYPE;

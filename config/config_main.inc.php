@@ -111,10 +111,19 @@ define('ADA_SERVICE_HELP', 0);
 define('ADA_SERVICE_COMMON', 1);
 define('ADA_SERVICE_COMMON_STUDENT',2);
 define('ADA_SERVICE_COMMON_TUTOR',3);
+define('ADA_SERVICE_AUTOSUBSCRIBE', 5);
 define('ADA_SERVICE_COURSE',9);
 define('ADA_SERVICE_IN_ITINERE',98);
 define('DEFAULT_SERVICE_TYPE', ADA_SERVICE_COMMON);
 define('ADA_SERVICE_TUTORCOMMUNITY', ADA_SERVICE_COMMON_TUTOR);
+
+/**
+ * Take the ADA generic services types defined in config/config_main.inc.php
+ * and group them in onLine and presence service types
+ */
+$GLOBALS['onLineServiceTypes'] = array (ADA_SERVICE_ONLINECOURSE, ADA_SERVICE_TUTORCOMMUNITY);
+$GLOBALS['presenceServiceTypes'] = array (ADA_SERVICE_PRESENCECOURSE, ADA_SERVICE_MIXEDCOURSE);
+$GLOBALS['autosubscribeServiceTypes'] = array(ADA_SERVICE_AUTOSUBSCRIBE);
 
 /**
  * ADA token
