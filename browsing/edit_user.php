@@ -149,7 +149,7 @@ if (!is_null($editUserObj) && isset($_SERVER['REQUEST_METHOD']) && $_SERVER['REQ
 
     	// the extra UserExtraForm is needed as well
     	require_once ROOT_DIR . '/include/Forms/UserExtraForm.inc.php';
-    	$extraForm = new UserExtraForm ($languages);
+    	$extraForm = new UserExtraForm ();
     	$extraForm->fillWithArrayData ($user_dataAr);
     	$extraForm->doNotUniform();
 
@@ -295,7 +295,7 @@ if (!is_null($editUserObj) && isset($_SERVER['REQUEST_METHOD']) && $_SERVER['REQ
 				if (!class_exists($extraTableFormClass)) continue;
 
 				// generate the form
-				$form = new $extraTableFormClass ($languages);
+				$form = new $extraTableFormClass ();
 				$form->fillWithArrayData (array (
 						$extraTableName::getForeignKeyProperty() => $editUserObj->getId ()
 				));
@@ -403,6 +403,7 @@ if (!is_null($editUserObj) && isset($_SERVER['REQUEST_METHOD']) && $_SERVER['REQ
 				$form->fillWithArrayData($user_dataAr);
 			}
 			$data .= $form->render();
+
 		}
 		else $data = 'No form to display :(';
 	}
@@ -434,6 +435,13 @@ $layout_dataAr['CSS_filename'] = array(
 );
 
 $maxFileSize = (int) (ADA_FILE_UPLOAD_MAX_FILESIZE / (1024*1024));
+if($userObj->tipo==AMA_TYPE_STUDENT && ($self_instruction))
+{
+    $layout_dataAr['CSS_filename'][]=  ROOT_DIR.'/layout/'.$template_family.'/css/browsing/edit_user.css';
+    $layout_dataAr['JS_filename'][]=  ROOT_DIR.'/js/browsing/edit_user.js';
+}
+$navigation_history = $_SESSION['sess_navigation_history'];
+$last_visited_node  = $navigation_history->lastModule();
 
 /**
  * do the form have to be submitted with an AJAX call?
