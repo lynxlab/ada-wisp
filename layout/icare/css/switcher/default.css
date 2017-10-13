@@ -37,12 +37,13 @@ ul.inline_menu li {
     margin:0px;
     padding: 5px 0px;
     display:inline-block;
+    border: none;
 }
 
 ul.inline_menu li a:link,
 ul.inline_menu li a:visited{
     color:#222;
-    background:#b7b7b7;
+    /* background:#b7b7b7; */
     padding:1px;
     display:block;
     padding:2px;
