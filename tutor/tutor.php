@@ -636,7 +636,7 @@ switch ($op) {
 					// mod 12/05 steve
 					$tutorRes = $dh->get_tutors_for_student($studentObj->getId());
 					$preassignedTutorRes = $dh->get_tutor_preassigned_to_student_for_course($studentObj->getId());
-					if (!AMA_DB::isError($preassignedTutorRes) && is_array($preassignedTutorRes) && count($preassignedTutorRes)>0) {
+					if (!AMA_DB::isError($preassignedTutorRes) && intval($preassignedTutorRes)>0) {
 						$tutorNames[$preassignedTutorRes] = MultiPort::findUser($preassignedTutorRes)->getFullName();
 					}
 					// end mod
@@ -654,15 +654,20 @@ switch ($op) {
 								$countInstances++;
 								if ($anInstance['instance_status'] == ADA_INSTANCE_CLOSED) $closedInstances++;
 								$lastRequestTime = max(array($anInstance['data_iscrizione'],$lastRequestTime));
-								if ($isSuperTutor) {
-									$tutorRes = $dh->get_tutors_for_student($studentObj->getId());
-									if (!AMA_DB::isError($tutorRes) && is_array($tutorRes) && count($tutorRes)>0) {
-										foreach ($tutorRes as $aTutorRes) {
-											$lookFor = $aTutorRes['nome'].' '.$aTutorRes['cognome'];
-											if (!in_array($lookFor, $tutorsAr)) $tutorsAr[$aTutorRes['id_utente']] = $lookFor;
-										}
-									}
-								}
+								/**
+								 * giorgio, 13/ott/2017
+								 *
+								 * comment out this if block to show the preassigned tutor only, as per customer request
+								 */
+// 								if ($isSuperTutor) {
+// 									$tutorRes = $dh->get_tutors_for_student($studentObj->getId());
+// 									if (!AMA_DB::isError($tutorRes) && is_array($tutorRes) && count($tutorRes)>0) {
+// 										foreach ($tutorRes as $aTutorRes) {
+// 											$lookFor = $aTutorRes['nome'].' '.$aTutorRes['cognome'];
+// 											if (!in_array($lookFor, $tutorsAr)) $tutorsAr[$aTutorRes['id_utente']] = $lookFor;
+// 										}
+// 									}
+// 								}
 							}
 						}
 						if ($isSuperTutor && empty($tutorsAr)) {
@@ -933,7 +938,14 @@ if (!$isSuperTutor && is_object($user_events_proposed)) {
 						unset ($user_events_proposed_exploded[$provider][$evKey]);
 					} else {
 						$user_events_proposed_exploded[$provider][$evKey]['report'] = false;
-						$user_events_proposed_exploded[$provider][$evKey]['crea_report'] = time() >= $eventDate;
+						/**
+						 * giorgio 13/ott/2017
+						 *
+						 * let the crea_report link always be there.
+						 * To have it only for past events use:
+						 * time() >= $eventDate instead of true
+						 */
+						$user_events_proposed_exploded[$provider][$evKey]['crea_report'] = true;
 					}
 				}
 			}
@@ -1017,11 +1029,15 @@ if (!$isSuperTutor) {
 
 	$content_dataAr['bloccoDueAppuntamenti'] .= '<h3>'.translateFN('Appuntamenti').'</h3>';
 	//$content_dataAr['bloccoDueAppuntamenti'] .= $divAppointments->getHtml();
-	$user_agenda->setAttribute('class', $user_agenda->getAttribute('class').' '.ADA_SEMANTICUI_TABLECLASS);
+	if (method_exists($user_agenda, 'setAttribute')) {
+		$user_agenda->setAttribute('class', $user_agenda->getAttribute('class').' '.ADA_SEMANTICUI_TABLECLASS);
+	}
 	$content_dataAr['bloccoDueAppuntamenti'] .= $user_agenda->getHtml();
 
 	$content_dataAr['bloccoQuattroMessaggi'] = '<h3>'.translateFN('Messaggi ricevuti').'</h3>';
-	$user_messages->setAttribute('class', $user_agenda->getAttribute('class').' '.ADA_SEMANTICUI_TABLECLASS);
+	if (method_exists($user_messages, 'setAttribute')) {
+		$user_messages->setAttribute('class', $user_messages->getAttribute('class').' '.ADA_SEMANTICUI_TABLECLASS);
+	}
 	$content_dataAr['bloccoQuattroMessaggi'] .= $user_messages->getHtml();
 }
 $content_dataAr['user_modprofilelink'] = $userObj->getEditProfilePage();

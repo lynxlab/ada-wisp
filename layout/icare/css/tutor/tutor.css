@@ -76,12 +76,16 @@ float: right;
     position: relative;
 }
 
-.appointments:not(.item) 
+#contentcontent .appointments:not(.item) 
 {
-    background:#97adc0;
+    /* background:#97adc0; */
     border-radius: 10px;
-    margin: 5px;
-    padding: 3px;}
+    margin: 0 0 2em 0;
+    padding: 0;
+    overflow: initial; }
+#contentcontent .appointments:not(.item) table tbody {
+	background-color: rgba(200, 190, 177, 0.2); 	
+}
 
 .single_service
 {
