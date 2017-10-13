@@ -249,33 +249,38 @@ if (isset($_SERVER['REQUEST_METHOD']) && $_SERVER['REQUEST_METHOD'] == 'GET' &&
 									if (!AMA_DB::isError($eguidRES) && is_array($eguidRES) && count($eguidRES)>0) {
 										$currentEguidanceTimestamp = intval($eguidRES['lastupdate']);
 										if($currentEguidanceTimestamp == 0) $currentEguidanceTimestamp = intval($eguidRES['data_ora']);
-										if ($currentEguidanceTimestamp > $studentPatto[$aStudent['id_utente']][$anInstance['id_corso']]['lasteguidancets'] && isset($eguidRES['tipo_patto_formativo'])) {
-											if ($eguidRES['tipo_patto_formativo']==0) {
-												$studentPatto[$aStudent['id_utente']][$anInstance['id_corso']]['pattost']=1;
-												$studentPatto[$aStudent['id_utente']][$anInstance['id_corso']]['pattopers']=0;
-												$studentPatto[$aStudent['id_utente']][$anInstance['id_corso']]['personalpatto']='&nbsp;';
-											} else if ($eguidRES['tipo_patto_formativo']>0) {
-												$studentPatto[$aStudent['id_utente']][$anInstance['id_corso']]['pattost']=0;
-												$studentPatto[$aStudent['id_utente']][$anInstance['id_corso']]['pattopers']=1;
-												if (isset($eguidRES['tipo_personalizzazione'])) {
-													$eguidRES['tipo_personalizzazione'] = intval($eguidRES['tipo_personalizzazione']);
-													$studentPatto[$aStudent['id_utente']][$anInstance['id_corso']]['personalpatto'] = '';
-													foreach ($tipoPersonalPattoAr as $tipoPersonal => $tipoPersonalDesc) {
-														if ($eguidRES['tipo_personalizzazione'] & $tipoPersonal) $studentPatto[$aStudent['id_utente']][$anInstance['id_corso']]['personalpatto'] .= '- '.translateFN($tipoPersonalDesc).'<br/>';
+										if ($currentEguidanceTimestamp > $studentPatto[$aStudent['id_utente']][$anInstance['id_corso']]['lasteguidancets']) {
+
+											if (isset($eguidRES['tipo_patto_formativo'])) {
+												if ($eguidRES['tipo_patto_formativo']==0) {
+													$studentPatto[$aStudent['id_utente']][$anInstance['id_corso']]['pattost']=1;
+													$studentPatto[$aStudent['id_utente']][$anInstance['id_corso']]['pattopers']=0;
+													$studentPatto[$aStudent['id_utente']][$anInstance['id_corso']]['personalpatto']='&nbsp;';
+												} else if ($eguidRES['tipo_patto_formativo']>0) {
+													$studentPatto[$aStudent['id_utente']][$anInstance['id_corso']]['pattost']=0;
+													$studentPatto[$aStudent['id_utente']][$anInstance['id_corso']]['pattopers']=1;
+													if (isset($eguidRES['tipo_personalizzazione'])) {
+														$eguidRES['tipo_personalizzazione'] = intval($eguidRES['tipo_personalizzazione']);
+														$studentPatto[$aStudent['id_utente']][$anInstance['id_corso']]['personalpatto'] = '';
+														foreach ($tipoPersonalPattoAr as $tipoPersonal => $tipoPersonalDesc) {
+															if ($eguidRES['tipo_personalizzazione'] & $tipoPersonal) $studentPatto[$aStudent['id_utente']][$anInstance['id_corso']]['personalpatto'] .= '- '.translateFN($tipoPersonalDesc).'<br/>';
+														}
+														$studentPatto[$aStudent['id_utente']][$anInstance['id_corso']]['personalpatto'] = rtrim($studentPatto[$aStudent['id_utente']][$anInstance['id_corso']]['personalpatto'],'<br/>');
 													}
-													$studentPatto[$aStudent['id_utente']][$anInstance['id_corso']]['personalpatto'] = rtrim($studentPatto[$aStudent['id_utente']][$anInstance['id_corso']]['personalpatto'],'<br/>');
 												}
 											}
 
-											if ($eguidRES['tipo_initinere'] == 0) {
-												$studentInItinere[$aStudent['id_utente']][$anInstance['id_corso']]['initinere'] = '&nbsp;';
-											} else {
-												$eguidRES['tipo_initinere'] = intval($eguidRES['tipo_initinere']);
-												$studentInItinere[$aStudent['id_utente']][$anInstance['id_corso']]['initinere'] = '';
-												foreach ($inItinereCheckboxAr as $tipoInItinere => $tipoInItinereDesc) {
-													if ($eguidRES['tipo_initinere'] & $tipoInItinere) $studentInItinere[$aStudent['id_utente']][$anInstance['id_corso']]['initinere'] .= '- '.translateFN($tipoInItinereDesc).'<br/>';
+											if (isset($eguidRES['tipo_initinere'])) {
+												if ($eguidRES['tipo_initinere'] == 0) {
+													$studentInItinere[$aStudent['id_utente']][$anInstance['id_corso']]['initinere'] = '&nbsp;';
+												} else {
+													$eguidRES['tipo_initinere'] = intval($eguidRES['tipo_initinere']);
+													$studentInItinere[$aStudent['id_utente']][$anInstance['id_corso']]['initinere'] = '';
+													foreach ($inItinereCheckboxAr as $tipoInItinere => $tipoInItinereDesc) {
+														if ($eguidRES['tipo_initinere'] & $tipoInItinere) $studentInItinere[$aStudent['id_utente']][$anInstance['id_corso']]['initinere'] .= '- '.translateFN($tipoInItinereDesc).'<br/>';
+													}
+													$studentInItinere[$aStudent['id_utente']][$anInstance['id_corso']]['personalpatto'] = rtrim($studentInItinere[$aStudent['id_utente']][$anInstance['id_corso']]['personalpatto'],'<br/>');
 												}
-												$studentInItinere[$aStudent['id_utente']][$anInstance['id_corso']]['personalpatto'] = rtrim($studentInItinere[$aStudent['id_utente']][$anInstance['id_corso']]['personalpatto'],'<br/>');
 											}
 
 										    $studentPatto[$aStudent['id_utente']][$anInstance['id_corso']]['lasteguidancets'] = $currentEguidanceTimestamp;
