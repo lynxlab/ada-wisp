@@ -498,7 +498,7 @@ border-bottom-right-radius: 10px;}
     background:#d2d2d2;
 }
 
-.sortable {width: 100%;color:#555;}
+table.sortable {width: 100%;color:#555;}
 .sortable A:link { color:#222; padding:1px; display:block; padding:2px; text-decoration:underline;}
 .sortable A:hover {background:#bf236c; color:yellow; text-decoration:none; }
 th.sortcol:hover {background:#bf236c; color:yellow; text-decoration:none;}
