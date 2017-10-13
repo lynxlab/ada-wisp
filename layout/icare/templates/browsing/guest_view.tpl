@@ -120,13 +120,10 @@
 	                    <div class="ui divider"></div>                    
                         <template_field class="template_field" name="text">text</template_field>
                     </div>                    
-                        <template_field class="template_field" name="text">text</template_field>
-                    </div>
-
-                    
                 </div>
+            </div>
 
-            </div> <!--  / contenuto -->
+        </div> <!--  / contenuto -->
             
             <!-- menudestra -->
  <!-- <div id="menuright" class="sottomenu_off menuright_view "> -->
