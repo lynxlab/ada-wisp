@@ -115,7 +115,7 @@ if(is_array($coursesAr) && count($coursesAr) > 0) {
 
         $tbody_data[] = array($courseId, $course[1], $serviceLevelTxt, $course[2], $course[3], $actions);
     }
-    $data = BaseHtmlLib::tableElement('class:sortable', $thead_data, $tbody_data);
+    $data = BaseHtmlLib::tableElement('class:sortable '.ADA_SEMANTICUI_TABLECLASS, $thead_data, $tbody_data);
 } else {
     $data = new CText(translateFN('Non sono stati trovati corsi'));
 }
@@ -148,11 +148,12 @@ $content_dataAr = array(
 $layout_dataAr['JS_filename'] = array(
 		JQUERY,
 		JQUERY_DATATABLE,
+		SEMANTICUI_DATATABLE,
 		JQUERY_NO_CONFLICT
 );
 
 $layout_dataAr['CSS_filename']= array(
-		JQUERY_DATATABLE_CSS
+		SEMANTICUI_DATATABLE_CSS
 );
 
 $render = null;
