@@ -269,7 +269,11 @@ if(count($courseInstanceCommonAreaAr) > 0 || count($courseInstanceHelpAr)> 0) {
 		    }
 		    $service->addChild($access_link);
 		    if (is_object($divNews))  $service->addChild($divNews);
-		    if (is_object($divFiles)) $service->addChild($divFiles);
+		    if (is_object($divFiles)) {
+		    	$service->addChild($divFiles);
+		    	unset($divFiles);
+		    	unset($lastFiles);
+		    }
     //                        $serviceDOM->addChild($divAppointments)
 		    $serviceDOM->addChild(new CText('<h3>'.translateFN('Aiuto per '). $courseName.'</h3>'));
 		    $serviceDOM->addChild($service);
