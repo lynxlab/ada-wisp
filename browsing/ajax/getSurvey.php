@@ -1,7 +1,7 @@
 <?php
-/**  
+/**
  * getSurvey - gets a student Questionnaire with a call to the ESSE3 web service
- * 
+ *
  * @author		Giorgio Consorti <g.consorti@lynxlab.com>
  * @copyright   Copyright (c) 2015, Lynx s.r.l.
  * @license		http://www.gnu.org/licenses/gpl-2.0.html GNU Public License v.2
@@ -44,13 +44,13 @@ $result = false;
 $message = translateFN('Richiesta questionario non valida');
 
 if (defined('SURVEY_API_URL') && defined('SURVEY_API_USER') && defined ('SURVEY_API_PASSWD') &&
-	strlen(SURVEY_API_URL)>0 && strlen(SURVEY_API_USER)>0 && strlen(SURVEY_API_PASSWD)>0) {					
+	strlen(SURVEY_API_URL)>0 && strlen(SURVEY_API_USER)>0 && strlen(SURVEY_API_PASSWD)>0) {
 	if ($_SERVER['REQUEST_METHOD']=='GET' && strlen(trim($_GET['cf']))>0) {
-		
+
 		$cf = trim($_GET['cf']);
-		
+
 		$cookie_file = tempnam(ADA_UPLOAD_PATH, 'unimc-cookie');
-		
+
 		$c = curl_init();
 		curl_setopt($c, CURLOPT_URL, SURVEY_API_URL .'?cod_fis='.$cf);
 		curl_setopt($c, CURLOPT_RETURNTRANSFER, true);
@@ -59,17 +59,17 @@ if (defined('SURVEY_API_URL') && defined('SURVEY_API_USER') && defined ('SURVEY_
 		curl_setopt($c, CURLOPT_HTTPAUTH, CURLAUTH_ANY);
 		curl_setopt($c, CURLOPT_USERPWD, SURVEY_API_USER.":".SURVEY_API_PASSWD);
 		curl_setopt($c, CURLOPT_COOKIEJAR, $cookie_file);
-		
+
 		$response = curl_exec($c);
 		$responseArr = json_decode($response, true);
 		if ($responseArr!==false && is_array($responseArr['results']['risposte']) && count($responseArr['results']['risposte'])>0) {
 			$result = true;
 			$aRow = reset($responseArr['results']['risposte']);
 			$caption = $aRow['usr_ins_id'].' - '.$aRow['matricola'].' - '.$aRow['cod_fis'];
-			$header = array_map('strtoupper',array_keys($aRow));			
-			$message = BaseHtmlLib::tableElement('id:surveys_table',$header,$responseArr['results']['risposte'],null,$caption)->getHtml();
+			$header = array_map('strtoupper',array_keys($aRow));
+			$message = BaseHtmlLib::tableElement('id:surveys_table,class:'.ADA_SEMANTICUI_TABLECLASS,$header,$responseArr['results']['risposte'],null,$caption)->getHtml();
 		}
-	} else $message = translateFN('Codice fiscale non valido');	
+	} else $message = translateFN('Codice fiscale non valido');
 } else $message = translateFN('Endpoint per questionario non configurato');
 
 

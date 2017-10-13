@@ -320,7 +320,7 @@ if (is_array($tbody_data) && count($tbody_data)>0) {
 	$tbody = sprintf("<tbody>%s</tbody>", implode('', $bodyArr));
 }
 
-$table = sprintf('<table id="table_users_for_service" class="default_table %s" >%s%s</table>', ADA_SEMANTICUI_TABLECLASS, $thead, $tbody);
+$table = sprintf('<table id="table_users_for_service" class="%s" >%s%s</table>', ADA_SEMANTICUI_TABLECLASS, $thead, $tbody);
 
 // SERVICE:  BANNER, HELP, STATUS
 

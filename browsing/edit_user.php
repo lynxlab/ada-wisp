@@ -422,6 +422,7 @@ $layout_dataAr['JS_filename'] = array(
 		JQUERY,
 		JQUERY_UI,
 		JQUERY_DATATABLE,
+		SEMANTICUI_DATATABLE,
 		JQUERY_DATATABLE_DATE,
 		JQUERY_MASKEDINPUT,
 		JQUERY_NO_CONFLICT,
@@ -430,7 +431,7 @@ $layout_dataAr['JS_filename'] = array(
 
 $layout_dataAr['CSS_filename'] = array(
 		JQUERY_UI_CSS,
-		JQUERY_DATATABLE_CSS,
+		SEMANTICUI_DATATABLE_CSS,
 		ROOT_DIR.'/js/include/jquery/pekeUpload/pekeUpload.css'
 );
 

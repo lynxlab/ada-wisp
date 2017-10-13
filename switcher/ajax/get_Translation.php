@@ -120,7 +120,7 @@ if (isset($_SERVER['REQUEST_METHOD']) && $_SERVER['REQUEST_METHOD'] == 'POST') {
                     array_push ($total_results,$temp_results);
                 }
 
-                $result_table = BaseHtmlLib::tableElement('id:table_result', $thead_data, $total_results);
+                $result_table = BaseHtmlLib::tableElement('id:table_result,class:'.ADA_SEMANTICUI_TABLECLASS, $thead_data, $total_results);
                 $result_table->setAttribute('class', $result_table->getAttribute('class').' '.ADA_SEMANTICUI_TABLECLASS);
                 $result=$result_table->getHtml();
                 $retArray=array("status"=>"OK","msg"=>  translateFN("Ricerca eseguita con successo"),"html"=>$result);

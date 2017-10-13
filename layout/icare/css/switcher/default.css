@@ -107,6 +107,9 @@ td.default_th a:visited{
     padding:2px;
     text-decoration:none;
 }
+span.instance_status a {
+	display: block;
+}
 td.default_th a:hover {
     color:#222;
     background:#d0d0d0;

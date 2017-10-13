@@ -587,7 +587,6 @@ function loadAPIDetails(targetDIVid, loadingDIVid, errorDIVid) {
 					else if (isHistory) historyLoaded = loadedOK;
 					if (loadedOK) {
 						$j(targetDIVid+' table').dataTable($j.extend(dataTableOptions,{
-							"bJQueryUI": true,
 							"bFilter": true,
 							"bInfo": paginateTable,
 							"bPaginate": paginateTable,

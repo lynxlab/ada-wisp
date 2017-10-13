@@ -32,7 +32,7 @@ function initDataTable()
                       var content=JSONObj.html;
 
                       $j('.translationResults').html(content); 
-                      $j('#table_result').dataTable({"bJQueryUI": true});
+                      $j('#table_result').dataTable();
                   }
                   $j('.translationData').effect('drop', function() {
                           $j('.translationResults').effect('slide');

@@ -100,7 +100,7 @@ if ($_SERVER['REQUEST_METHOD']=='GET' && intval(trim($_GET['userId']))>0) {
 
 			}
 		}
-		$message = BaseHtmlLib::tableElement('id:studentHistoryTable',$header,$tableData)->getHtml();
+		$message = BaseHtmlLib::tableElement('id:studentHistoryTable,class:'.ADA_SEMANTICUI_TABLECLASS,$header,$tableData)->getHtml();
 	}
 	else $message = translateFN('Nessuno storico per lo studente');
 }

@@ -1,7 +1,7 @@
 <?php
-/**  
+/**
  * getCareer - gets a student UNIMC career with a call to the ESSE3 web service
- * 
+ *
  * @author		Giorgio Consorti <g.consorti@lynxlab.com>
  * @copyright   Copyright (c) 2015, Lynx s.r.l.
  * @license		http://www.gnu.org/licenses/gpl-2.0.html GNU Public License v.2
@@ -51,9 +51,9 @@ if (!defined('ESSE3_URL') || !defined('ESSE3_LOGIN') || !defined('ESSE3_PASSWD')
 
 if ($configOK && $_SERVER['REQUEST_METHOD']=='GET' && strlen(trim($_GET['cf']))>0) {
 	$cf = trim($_GET['cf']);
-	
+
 	$languageMappings = array ('it'=>'ita', 'en'=>'eng');
-	
+
 	if (array_key_exists($_SESSION['sess_user_language'], $languageMappings)) {
 		$selLang = $languageMappings[$_SESSION['sess_user_language']];
 	} else $selLang = 'ita';
@@ -61,23 +61,23 @@ if ($configOK && $_SERVER['REQUEST_METHOD']=='GET' && strlen(trim($_GET['cf']))>
 	$soapClient = new SoapClient(ESSE3_URL);
 	$sid = null;
 	$res = $soapClient->fn_dologin(ESSE3_LOGIN,ESSE3_PASSWD);
-	$sid = $res['sid'];	
+	$sid = $res['sid'];
 	$res = $soapClient->fn_retrieve_xml_p ('GET_CV','COD_FISCALE='.$cf.';SESSIONID='.$sid);
 	$soapClient->fn_dologout($sid);
-	
+
 	if (isset($res['xml']) && strlen($res['xml'])>0) {
 		// check XML declared character encoding
 		if (preg_match("/encoding=\"(.[^\"]*)\"/", $res['xml'], $output_array)) {
 			$sourceEncoding = $output_array[1];
 		} else $sourceEncoding = false;
-		
+
 		$xmlArr = simplexml_load_string($res['xml']);
 	}
 	else $xmlArr = null;
-	
-	if (isset($xmlArr->CARRIERE->CARRIERA->ESAMI->ESAME) && 
+
+	if (isset($xmlArr->CARRIERE->CARRIERA->ESAMI->ESAME) &&
 		is_a($xmlArr->CARRIERE->CARRIERA->ESAMI->ESAME, 'SimpleXMLElement')) {
-			
+
 		$tableData = array();
 
 		$header = array (
@@ -91,7 +91,7 @@ if ($configOK && $_SERVER['REQUEST_METHOD']=='GET' && strlen(trim($_GET['cf']))>
 				'AMB_DES',
 				'TIPO_SETT_DES',
 				'DATA_SUP_ESA' );
-		
+
 		/**
 		 * cycle to have values for each header field.
 		 */
@@ -114,7 +114,7 @@ if ($configOK && $_SERVER['REQUEST_METHOD']=='GET' && strlen(trim($_GET['cf']))>
 						}
 					} else if (count($children)==0) {
 						if ($sourceEncoding) {
-							$rowData[$position] = trim(iconv(ADA_CHARSET, $sourceEncoding, $data));							
+							$rowData[$position] = trim(iconv(ADA_CHARSET, $sourceEncoding, $data));
 						} else $rowData[$position] = trim($data);
 						// put VOTO, BASE_VOTO and LODE_FLG together
 						if ($data->getName()=='VOTO') {
@@ -128,12 +128,12 @@ if ($configOK && $_SERVER['REQUEST_METHOD']=='GET' && strlen(trim($_GET['cf']))>
 			}
 			$tableData[] = $rowData;
 		}
-		
-		if (count($tableData)>0) {			
-			$message = BaseHtmlLib::tableElement('id:exams_table',$header,$tableData)->getHtml();
+
+		if (count($tableData)>0) {
+			$message = BaseHtmlLib::tableElement('id:exams_table,class:'.ADA_SEMANTICUI_TABLECLASS,$header,$tableData)->getHtml();
 			$result = true;
 		} else $message = translateFN('Nessun dato tornato da ESSE3');
-		
+
 	} // end check if at least one esame exists and is SimpleXMLElement
 	else $message = translateFN('Nessun dato tornato da ESSE3');
 }
