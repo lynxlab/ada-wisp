@@ -42,7 +42,9 @@ function confirmCriticalOperationBeforeRedirect(message, critical_operation_url)
 
 function closeMeAndReloadParent() {
   window.close();
-  window.opener.location.reload();
+  if (null === window.opener.document.getElementById('dontReload')) {
+	  window.opener.location.reload();
+  }
 }
 
 function closeMe() {

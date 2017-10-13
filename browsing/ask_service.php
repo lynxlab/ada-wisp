@@ -155,6 +155,16 @@ switch ($op) {
         );
         $data = AskServiceModuleHtmlLib::getFeedbackTextHtml($dataAr);
 
+        /**
+         * @author giorgio 13/oct/2017
+         *
+         * On WISP/UNIMC only:
+         * add an hidden field to tell to closeMeAndReloadParent function to not reload the page
+         */
+        if ($_SERVER['REQUEST_METHOD'] === 'POST') {
+        	$data->addChild(CDOMElement::create('hidden','name:dontReload,id:dontReload,value:1'));
+        }
+
         /*
          * Prepare and send message to User
          */
