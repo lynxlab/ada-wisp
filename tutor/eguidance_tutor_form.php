@@ -168,19 +168,20 @@ else {
   		}
   	}
 
+	$event_token = DataValidator::validate_event_token($_GET['event_token']);
+	if($event_token === FALSE) {
+		$errObj = new ADA_Error(NULL,
+			translateFN("Dati in input per il modulo eguidance_tutor_form non corretti"),
+			NULL, NULL, NULL, $userObj->getHomePage());
+    }
+    $id_course_instance = ADAEventProposal::extractCourseInstanceIdFromThisToken($event_token);
+    $idTutorFromToken = ADAEventProposal::extractTutorIdFromThisToken($event_token);
+    $idUserFromToken = ADAEventProposal::extractTutoredIdFromThisToken($event_token);
+
 	foreach (array('agenda' => $agendaToUse, 'proposals' => $proposalToUse) as $key => $currentAr) {
 		$userAgendaForThisProvider = $currentAr[$_SESSION['sess_selected_tester']];
 		if (is_array($userAgendaForThisProvider) && count($userAgendaForThisProvider)>0) {
 			//var_dump($userAgendaForThisProvider);
-			$event_token = DataValidator::validate_event_token($_GET['event_token']);
-			if($event_token === FALSE) {
-				$errObj = new ADA_Error(NULL,
-					translateFN("Dati in input per il modulo eguidance_tutor_form non corretti"),
-					NULL, NULL, NULL, $userObj->getHomePage());
-		    }
-		    $id_course_instance = ADAEventProposal::extractCourseInstanceIdFromThisToken($event_token);
-		    $idTutorFromToken = ADAEventProposal::extractTutorIdFromThisToken($event_token);
-		    $idUserFromToken = ADAEventProposal::extractTutoredIdFromThisToken($event_token);
 	// 	    $appointmentTime = ADAEventProposal::extractTimeFromThisToken($event_token);
 		    $appointmentTime = NULL;
 		    foreach ($userAgendaForThisProvider as $appTmpAr) {
