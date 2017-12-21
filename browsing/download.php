@@ -56,7 +56,7 @@ if (isset($err_msg)) {
 $help = translateFN('Area di condivisione di documenti');
 /**
  * if these vars are set, it means that they have
- * been passed via get and are populated by 
+ * been passed via get and are populated by
  * module_init extracting $_GET vars
  */
 if (!isset($id_node)) $id_node = $_SESSION['sess_id_node'];
@@ -163,10 +163,11 @@ if (isset($_GET['file'])){
             $thHead->addChild(new CText(translateFN('data')));
             $trHead->addChild($thHead);
 
+            /*
             $thHead = CDOMElement::create('th','class: node');
             $thHead->addChild(new CText(translateFN('nodo')));
             $trHead->addChild($thHead);
-
+			*/
             if ($userObj->getType()==AMA_TYPE_TUTOR) {
             	$thHead = CDOMElement::create('th','class: node');
             	$thHead->addChild(new CText(translateFN('azioni')));
@@ -222,6 +223,7 @@ if (isset($_GET['file'])){
                             if (!isset($fid_node) OR ($fid_node == $id_node)) {
                                 $out_fields_ar = array('nome');
                                 $clause = "ID_NODO = '$id_node'";
+                                /*
                                 $nodes = $dh->_find_nodes_list($out_fields_ar, $clause);
                                 if(!AMA_DB::isError($nodes)) {
                                     foreach ($nodes as $single_node) {
@@ -229,13 +231,15 @@ if (isset($_GET['file'])){
                                         $node_name = $single_node[1];
                                     }
                                 }
-				$tr = CDOMElement::create('tr','id:row'.$i);
-				$tbody->addChild($tr);
+                                */
+
+								$tr = CDOMElement::create('tr','id:row'.$i);
+								$tbody->addChild($tr);
 
                                 $td = CDOMElement::create('td');
                                 $td->addChild(new CText('<a href="download.php?file='.$complete_file_name.'" target=_blank>'.$filename.'</a> '));
                                 $tr->addChild($td);
-                                
+
                                 $td = CDOMElement::create('td');
                                 $td->addChild(new CText($user_name_complete_sender));
                                 $tr->addChild($td);
@@ -244,10 +248,12 @@ if (isset($_GET['file'])){
                                 $td->addChild(new CText($data));
                                 $tr->addChild($td);
 
+                                /*
                                 $td = CDOMElement::create('td');
                                 $td->addChild(new CText('<a href=../browsing/view.php?id_node='.$id_node.'>'.$node_name.'</a>'));
                                 $tr->addChild($td);
-                                
+                                */
+
                                 if ($userObj->getType()==AMA_TYPE_TUTOR) {
                                 	$td = CDOMElement::create('td');
                                 	$buttonDel = CDOMElement::create('button','class:deleteButton');
@@ -257,8 +263,8 @@ if (isset($_GET['file'])){
                                 	$td->addChild($buttonDel);
                                 	$tr->addChild($td);
                                 }
-                                
-                            }   
+
+                            }
                         }
 		}
            } // end foreach
@@ -267,15 +273,15 @@ if (isset($_GET['file'])){
 }
 
 
-$divUpload = CDOMElement::create('div','class:uploadDiv');  
+$divUpload = CDOMElement::create('div','class:uploadDiv');
 $uploadLink = CDOMElement::create('a','href:../services/upload.php');
 $uploadLink->addChild(new CText(translateFn('Invia un documento')));
 $divUpload->addChild($uploadLink);
-$html .= $divUpload->getHtml(); 
+$html .= $divUpload->getHtml();
 
   $navigation_history  = $_SESSION['sess_navigation_history'];
   $last_visited_module = $navigation_history->lastModule();
-  
+
 $imgAvatar = $userObj->getAvatar();
 $avatar = CDOMElement::create('img','src:'.$imgAvatar);
 $avatar->setAttribute('class', 'img_user_avatar');
