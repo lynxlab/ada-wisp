@@ -97,6 +97,7 @@ abstract class FForm
      */
     public final function fillWithRequestData($request) {
         foreach($this->_controls as $control) {
+        	if (!($control instanceof FormControl)) continue;
             $control->withData($request->getArgument($control->getId()));
         }
     }
@@ -110,9 +111,9 @@ abstract class FForm
 //                 $control->withData($_POST[$control->getId()]);
 //             }
 //             else if ($control instanceof FCFieldset)
-//             {            	
+//             {
 //             	foreach ($control->getControls() as $field)
-//             	{            		
+//             	{
 //             		if (isset($_POST[$field->getId()]))
 //             		{
 //             			$field->withData($_POST[$field->getId()]);
@@ -126,7 +127,8 @@ abstract class FForm
      */
     public final function fillWithArrayData($formData = array()) {
         foreach($this->_controls as $control) {
-            if(isset($formData[$control->getId()]) && (!($control instanceof FCFieldset)))  
+        	if (!($control instanceof FormControl)) continue;
+            if(isset($formData[$control->getId()]) && (!($control instanceof FCFieldset)))
             {
                 $control->withData($formData[$control->getId()]);
             }
@@ -139,11 +141,11 @@ abstract class FForm
             			$field->withData($formData[$field->getId()]);
             		}
             	}
-            	
+
             }
         }
     }
-    
+
     /**
      * Iterates over each control in the form and uses FormValidator to validate
      * it. If all the controls in the form are valid, the form is valid.
@@ -169,17 +171,17 @@ abstract class FForm
         foreach($this->_controls as $control) {
             if (!$control instanceof FCFieldset) {
                 $formAsArray[$control->getId()] = $control->getData();
-                
+
             } elseif ($control instanceof FCFieldset) {
                 foreach($control->getControls() as $field) {
                     $formAsArray[$field->getId()] = $field->getData();
                 }
             }
-                
+
         }
         return $formAsArray;
     }
-    
+
     public function getControls() {
     	return $this->_controls;
     }
@@ -232,10 +234,10 @@ abstract class FForm
     protected function setSubmitValue($submitValue) {
         $this->_submitValue = $submitValue;
     }
-    
+
     /**
      * @author giorgio 01/lug/2013
-     * 
+     *
      * getter for the form name
      * @return string
      */
@@ -376,7 +378,7 @@ abstract class FForm
      * @param string $id
      * @param string $label
      * @return FormControl
-     */    
+     */
      protected final function addButton($id, $label) {
     	$control = FormControl::create(FormControl::INPUT_BUTTON, $id, $label);
     	return $this->addControl($control);
@@ -440,10 +442,13 @@ abstract class FForm
 
         foreach ($this->_controls as $control) {
 			$hidden = '';
-            if($control->isHidden()) {
-                $hidden =' hidden';
+			if ($control instanceof CBaseAttributesElement) {
+				$html .= '<li class="'.FormControl::DEFAULT_CLASS.$hidden.'">'.$control->getHtml().'</li>';
+			}
+            else if($control instanceof FormControl) {
+            	if ($control->isHidden()) $hidden =' hidden';
+	            $html .= '<li class="'.FormControl::DEFAULT_CLASS.$hidden.'">'.$control->render().'</li>';
             }
-            $html .= '<li class="'.FormControl::DEFAULT_CLASS.$hidden.'">'.$control->render().'</li>';
         }
         $html .= '
    </ol>
@@ -463,7 +468,7 @@ abstract class FForm
     }
 
 
-    public final function getHtml() {
+    public function getHtml() {
         return $this->render();
     }
     
@@ -509,6 +514,7 @@ abstract class FForm
 
 
 		foreach ($this->_controls as $control) {
+			if (!($control instanceof FormControl)) continue;
 			$v = $control->getValidator();
 			if (!is_null($v)) {
 				if (! $control instanceof FCFieldset) {
@@ -518,7 +524,7 @@ abstract class FForm
 				else {
 					foreach ($control->getControls() as $field) {
 						$vField = $field->getValidator();
-						if ($field->isRequired()) { 
+						if ($field->isRequired()) {
 							$jsFields[] = $field->getId();
 							$jsRegexps[] = $validator->getRegexpForValidator($vField);
 						}
@@ -535,7 +541,7 @@ abstract class FForm
 						return validateContent(validateContentFields_'.$this->_name.',validateContentRegexps_'.$this->_name.' , "'.$this->_name.'");
 					}
 				</script>';
-		
+
         return $html;
     }
     /**
@@ -659,7 +665,7 @@ abstract class FForm
      *
      * @var string
      */
-    private $_id;
+    protected $_id;
     /**
      *
      * @var string
@@ -704,7 +710,7 @@ abstract class FForm
      *
      * @var array
      */
-    private $_controls;
+    protected $_controls;
     /**
      *
      * @var string

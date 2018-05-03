@@ -914,7 +914,7 @@ class AMA_Common_DataHandler extends Abstract_AMA_DataHandler {
 
         //ADALogger::log_db('AMA_Common_DataHandler: get instance for main db connection');
     	$callerClassName = get_called_class();
-    	if (get_class(self::$instance) !== $callerClassName) self::$instance = null;
+    	if (!is_null(self::$instance) && get_class(self::$instance) !== $callerClassName) self::$instance = null;
 
         if(self::$instance == null) {
             //ADALogger::log_db('AMA_Common_DataHandler: creating a new instance of AMA_Common_DataHandler');
@@ -1455,10 +1455,11 @@ class AMA_Common_DataHandler extends Abstract_AMA_DataHandler {
 //      }
 //    }
 
+        $where = ' WHERE id_utente=?';
         if(empty($user_ha['password'])) {
             $update_user_sql = 'UPDATE utente SET nome=?, cognome=?, e_mail=?, telefono=?, layout=?, '
                     . 'indirizzo=?, citta=?, provincia=?, nazione=?, codice_fiscale=?, birthdate=?, sesso=?, '
-                    . 'telefono=?, stato=?, lingua=?, timezone=?, cap=?, matricola=?, avatar=?, birthcity=?, birthprovince=? WHERE id_utente=?';
+                    . 'telefono=?, stato=?, lingua=?, timezone=?, cap=?, matricola=?, avatar=?, birthcity=?, birthprovince=?';
 
             $valuesAr = array(
                     $user_ha['nome'],
@@ -1481,14 +1482,13 @@ class AMA_Common_DataHandler extends Abstract_AMA_DataHandler {
                     $user_ha['matricola'],
                     $user_ha['avatar'],
             		$user_ha['birthcity'],
-            		$user_ha['birthprovince'],
-                    $id
+            		$user_ha['birthprovince']
             );
         }
         else {
             $update_user_sql = 'UPDATE utente SET nome=?, cognome=?, e_mail=?, password=?, telefono=?, layout=?, '
                     . 'indirizzo=?, citta=?, provincia=?, nazione=?, codice_fiscale=?, birthdate=?, sesso=?, '
-                    . 'telefono=?, stato=?, lingua=?, timezone=?, cap=?, matricola=?, avatar=?, birthcity=?, birthprovince=? WHERE id_utente=?';
+                    . 'telefono=?, stato=?, lingua=?, timezone=?, cap=?, matricola=?, avatar=?, birthcity=?, birthprovince=?';
 
             $valuesAr = array(
                     $user_ha['nome'],
@@ -1512,11 +1512,19 @@ class AMA_Common_DataHandler extends Abstract_AMA_DataHandler {
                     $user_ha['matricola'],
                     $user_ha['avatar'],
             		$user_ha['birthcity'],
-            		$user_ha['birthprovince'],
-                    $id
+            		$user_ha['birthprovince']
             );
         }
+        /**
+         * UPDATE USERNAME ONLY IF MODULES_GDPR
+         */
+        if (defined('MODULES_GDPR') && MODULES_GDPR===true && array_key_exists('username', $user_ha) && strlen($user_ha['username'])>0 && $user_ha['username']!==$old_values_ha['username']) {
+        	$update_user_sql .= ',username=?';
+        	$valuesAr[] = $user_ha['username'];
+        }
 
+        $update_user_sql .= $where;
+        $valuesAr[] = $id;
 
         $result = $this->queryPrepared($update_user_sql, $valuesAr);
         if(AMA_DB::isError($result)) {
@@ -2948,7 +2956,7 @@ abstract class AMA_Tester_DataHandler extends Abstract_AMA_DataHandler {
      */
     static function instance($dsn = null) {
     	$callerClassName = get_called_class();
-    	if (get_class(self::$instance) !== $callerClassName) self::$instance = null;
+    	if (!is_null(self::$instance) && get_class(self::$instance) !== $callerClassName) self::$instance = null;
 
         if(self::$instance === NULL) {
             self::$instance = new $callerClassName($dsn);
@@ -3317,10 +3325,11 @@ abstract class AMA_Tester_DataHandler extends Abstract_AMA_DataHandler {
             return new AMA_Error(AMA_ERR_NOT_FOUND);
         }
 
+        $where = ' WHERE id_utente=?';
         if(empty($user_ha['password'])) {
             $update_user_sql = 'UPDATE utente SET nome=?, cognome=?, e_mail=?, telefono=?, layout=?, '
                     . 'indirizzo=?, citta=?, provincia=?, nazione=?, codice_fiscale=?, birthdate=?, sesso=?, '
-                    . 'telefono=?, stato=?, lingua=?, timezone=?, cap=?, matricola=?, avatar=?, birthcity=?, birthprovince=? WHERE id_utente=?';
+                    . 'telefono=?, stato=?, lingua=?, timezone=?, cap=?, matricola=?, avatar=?, birthcity=?, birthprovince=?';
 
             $valuesAr = array(
                     $user_ha['nome'],
@@ -3343,14 +3352,13 @@ abstract class AMA_Tester_DataHandler extends Abstract_AMA_DataHandler {
                     $user_ha['matricola'],
                     $user_ha['avatar'],
             		$user_ha['birthcity'],
-            		$user_ha['birthprovince'],
-                    $id
+            		$user_ha['birthprovince']
             );
         }
         else {
             $update_user_sql = 'UPDATE utente SET nome=?, cognome=?, e_mail=?, password=?, telefono=?, layout=?, '
                     . 'indirizzo=?, citta=?, provincia=?, nazione=?, codice_fiscale=?, birthdate=?, sesso=?, '
-                    . 'telefono=?,stato=?, lingua=?, timezone=?, cap=?, matricola=?, avatar=?, birthcity=?, birthprovince=? WHERE id_utente=?';
+                    . 'telefono=?,stato=?, lingua=?, timezone=?, cap=?, matricola=?, avatar=?, birthcity=?, birthprovince=?';
 
             $valuesAr = array(
                     $user_ha['nome'],
@@ -3374,10 +3382,19 @@ abstract class AMA_Tester_DataHandler extends Abstract_AMA_DataHandler {
                     $user_ha['matricola'],
                     $user_ha['avatar'],
             		$user_ha['birthcity'],
-            		$user_ha['birthprovince'],
-                    $id
+            		$user_ha['birthprovince']
             );
         }
+        /**
+         * UPDATE USERNAME ONLY IF MODULES_GDPR
+         */
+        if (defined('MODULES_GDPR') && MODULES_GDPR===true && array_key_exists('username', $user_ha) && strlen($user_ha['username'])>0) {
+        	$update_user_sql .= ',username=?';
+        	$valuesAr[] = $user_ha['username'];
+        }
+
+        $update_user_sql .= $where;
+        $valuesAr[] = $id;
 
         $result = $this->queryPrepared($update_user_sql, $valuesAr);
         if(AMA_DB::isError($result)) {
@@ -4229,7 +4246,7 @@ abstract class AMA_Tester_DataHandler extends Abstract_AMA_DataHandler {
 
 	$status_Ar = array(ADA_STATUS_SUBSCRIBED,ADA_STATUS_REMOVED,ADA_STATUS_VISITOR,ADA_SERVICE_SUBSCRIPTION_STATUS_COMPLETED, ADA_STATUS_TERMINATED);
 
-        $sql = 'SELECT U.*, I.status,I.data_iscrizione';
+        $sql = 'SELECT U.*, I.status,I.data_iscrizione,I.laststatusupdate';
 
          if(defined('MODULES_CODEMAN') && (MODULES_CODEMAN))
         {
@@ -4289,7 +4306,7 @@ abstract class AMA_Tester_DataHandler extends Abstract_AMA_DataHandler {
         $db =& $this->getConnection();
         if ( AMA_DB::isError( $db ) ) return $db;
 
-        $sql = 'SELECT U.*, I.status,I.data_iscrizione';
+        $sql = 'SELECT U.*, I.status,I.data_iscrizione,I.laststatusupdate';
 
         if(defined('MODULES_CODEMAN') && (MODULES_CODEMAN))
         {
@@ -4492,8 +4509,8 @@ abstract class AMA_Tester_DataHandler extends Abstract_AMA_DataHandler {
         }
         $data_iscrizione = time();
         // insert a row into table iscrizioni
-        $sql1 =  "insert into iscrizioni (id_utente_studente, id_istanza_corso, livello, status,data_iscrizione)";
-        $sql1 .= " values ($id_studente, $id_istanza_corso, $livello, 1,$data_iscrizione);";
+        $sql1 =  "insert into iscrizioni (id_utente_studente, id_istanza_corso, livello, status,data_iscrizione,laststatusupdate)";
+        $sql1 .= " values ($id_studente, $id_istanza_corso, $livello, 1,$data_iscrizione,$data_iscrizione);";
         $res = $db->query($sql1);
         // FIXME: usare executeCritical?
         if (AMA_DB::isError($res)) {// || $db->affectedRows()==0)
@@ -4691,7 +4708,7 @@ abstract class AMA_Tester_DataHandler extends Abstract_AMA_DataHandler {
         }
         $n = count($students_ar);
         if($n>0) {
-            while(list($key,$value)=each($students_ar)) {
+        	foreach ($students_ar as $key => $value) {
                 $res_ar[$key]['id_utente_studente'] = $value[0];
                 // $res_ar[$key]['istanza_corso'] = $value[1];
                 $res_ar[$key]['livello'] = $value[2];
@@ -4776,7 +4793,7 @@ abstract class AMA_Tester_DataHandler extends Abstract_AMA_DataHandler {
 
         $n = count($students_ar);
         if($n>0) {
-            while(list($key,$value)=each($students_ar)) {
+        	foreach ($students_ar as $key => $value) {
                 //   $res_ar[$key]['id_utente_studente'] = $value[0];
                 $res_ar[$key]['istanza_corso'] = $value[1];
                 //  $res_ar[$key]['livello'] = $value[2];
@@ -4825,11 +4842,12 @@ abstract class AMA_Tester_DataHandler extends Abstract_AMA_DataHandler {
      * @param $user_level if null than this field is not updated
      * @return unknown_type
      */
-    public function course_instance_student_subscribe($id_course_instance, $student,$status=2, $user_level=1) {
+    public function course_instance_student_subscribe($id_course_instance, $student,$status=2, $user_level=1, $lastupdateTS=null) {
         $db =& $this->getConnection();
         if ( AMA_DB::isError( $db ) ) return $db;
 
-        $sql = "update iscrizioni set status=$status";
+        if (is_null($lastupdateTS)) $lastupdateTS = time();
+        $sql = "update iscrizioni set status=$status, laststatusupdate=$lastupdateTS";
         if (!is_null($user_level)) $sql.=", livello=$user_level";
         $sql.=" where id_istanza_corso=$id_course_instance and id_utente_studente=$student";
         //vito, 2 feb 2009
@@ -4889,7 +4907,8 @@ abstract class AMA_Tester_DataHandler extends Abstract_AMA_DataHandler {
 
         $n = count($studenti_ar);
         if ($n>0) {
-            $sql = "update iscrizioni set status=1 where id_istanza_corso=$id_corso ";
+        	$lastupdateTS = time();
+            $sql = "update iscrizioni set status=1, laststatusupdate=$lastupdateTS where id_istanza_corso=$id_corso ";
         }
         else {
             return 0;
