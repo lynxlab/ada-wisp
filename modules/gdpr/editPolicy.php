@@ -56,6 +56,7 @@ try {
 	} else $policy = new GdprPolicy();
 
 	$form = new GdprPolicyForm('gdprpolicy', null, $policy);
+	$form->doNotUniform();
 	$data = $form->withSubmit()->toSemanticUI()->getHtml();
 	$optionsAr['onload_func'] = 'initDoc(\''.$form->getName().'\');';
 } catch (\Exception $e) {

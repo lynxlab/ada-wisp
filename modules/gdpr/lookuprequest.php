@@ -42,6 +42,7 @@ $self = whoami();
  */
 
 $form = new GdprLookupRequestForm('gdprrequestlookup');
+$form->doNotUniform();
 $data = $form->withSubmit()->toSemanticUI()->getHtml();
 $optionsAr['onload_func'] = 'initDoc(\''.$form->getName().'\',\'checkimg\');';
 

@@ -46,6 +46,7 @@ try {
 	);
 	$form = new GdprRequestForm('gdprrequest', null, $GLOBALS['dh']->findAll('GdprRequestType', array('type'=>'ASC')));
 	$form->fillWithArrayData($formData);
+	$form->doNotUniform();
 	$data = $form->withSubmit()->toSemanticUI()->getHtml();
 	$optionsAr['onload_func'] = 'initDoc(\''.$form->getName().'\');';
 } catch (\Exception $e) {
