@@ -14,6 +14,8 @@ namespace Lynxlab\ADA\Module\GDPR;
  *
  * @author giorgio
  */
+if (!defined('GdprUserClassTable')) define('GdprUserClassTable', AMAGdprDataHandler::PREFIX . 'users');
+
 class GdprUser extends GdprBase {
 
 	/**
@@ -21,7 +23,7 @@ class GdprUser extends GdprBase {
 	 *
 	 * @var string
 	 */
-	const table =  AMAGdprDataHandler::PREFIX . 'users';
+	const table =  GdprUserClassTable;
 	const key = 'id_utente';
 
 	protected $id_utente;
@@ -80,9 +82,10 @@ class GdprUser extends GdprBase {
 	 * @param integer|GdprUserType $type
 	 * @return \Lynxlab\ADA\Module\GDPR\GdprUser
 	 */
-	public function addType($type) {
+	public function addType($type, $dbToUse = null) {
 		if (!($type instanceof GdprUserType)) {
-			$type = (new GdprAPI())->findBy('GdprUserType', array('id' => $type));
+			if (is_null($dbToUse)) $dbToUse = new GdprAPI();
+			$type = $dbToUse->findBy('GdprUserType', array('id' => $type));
 			$type = reset($type);
 		}
 		if ($type->getId() != GdprUserType::NONE) {
@@ -98,10 +101,6 @@ class GdprUser extends GdprBase {
 	 * @return \Lynxlab\ADA\Module\GDPR\GdprUser
 	 */
 	public function removeType($type) {
-		if (!($type instanceof GdprUserType)) {
-			$type = (new GdprAPI())->findBy('GdprUserType', array('id' => $type));
-			$type = reset($type);
-		}
 		foreach ($this->getType() as $key=>$aType) {
 			if ($this->hasType($aType)) unset($this->type[$key]);
 		}

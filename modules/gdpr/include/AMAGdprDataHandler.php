@@ -51,10 +51,7 @@ class AMAGdprDataHandler extends \AMA_DataHandler {
 	 *
 	 * @var array
 	 */
-	private static $objectClasses = array(
-		self::REQUESTCLASSKEY => self::MODELNAMESPACE.self::REQUESTCLASSKEY,
-		self::REQUESTTYPECLASSKEY => self::MODELNAMESPACE.self::REQUESTTYPECLASSKEY
-	);
+	private static $objectClasses = null;
 
 	/**
 	 * save a new gdpr request object
@@ -402,7 +399,7 @@ class AMAGdprDataHandler extends \AMA_DataHandler {
 					$res = $dbToUse->getAllPrepared($sql, $retObj->{$retObj::GETTERPREFIX.ucfirst($retObj::key)}(), AMA_FETCH_ASSOC);
 					if (!\AMA_DB::isError($res)) {
 						foreach ($res as $row) {
-							$retObj->{$retObj::ADDERPREFIX.ucfirst($joinKey)}($row[$joinKey]);
+							$retObj->{$retObj::ADDERPREFIX.ucfirst($joinKey)}($row[$joinKey], $dbToUse);
 						}
 					}
 				}
@@ -494,6 +491,12 @@ class AMAGdprDataHandler extends \AMA_DataHandler {
 	 * @return array|string[]
 	 */
 	public static function getObjectClasses() {
+		if (is_null(self::$objectClasses)) {
+			self::$objectClasses = array(
+				self::REQUESTCLASSKEY => self::MODELNAMESPACE.self::REQUESTCLASSKEY,
+				self::REQUESTTYPECLASSKEY => self::MODELNAMESPACE.self::REQUESTTYPECLASSKEY
+			);
+		}
 		return self::$objectClasses;
 	}
 
