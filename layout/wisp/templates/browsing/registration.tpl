@@ -12,77 +12,39 @@
         </div> <!-- / testata -->
         <!-- menu -->
             <template_field class="microtemplate_field" name="adamenu">adamenu</template_field>  
-        <!-- / menu -->
+        <!-- / menu --> 
+        <div id="help">
+            <template_field class="template_field" name="help">help</template_field>
+        </div>
         <!-- contenitore -->
         <div id="container">
-            <!-- PERCORSO -->
-            <div id="journey" class="ui tertiary inverted teal segment">
-                <i18n>dove sei: </i18n>
-                <span>
-                    <template_field class="template_field" name="course_title">course_title</template_field>
-                </span>
-            </div>
-            <!-- / percorso -->
-            <div id="status_bar">
-                <!--dati utente-->
-                <div id="user_data" class="user_data_default">
-
-                    <span>
-                        <template_field class="template_field" name="message">message</template_field>
-                    </span>
-                    <i18n>utente: </i18n>
-                    <span>
-                        <template_field class="template_field" name="user_name">user_name</template_field>
-                    </span>
-                    <div class="status">
-                    <i18n>status: </i18n>
-                    <span>
-                        <template_field class="template_field" name="status">status</template_field>
-                    </span>
-                </div>
-                </div> <!-- / dati utente -->
-                <!-- label -->
-                <div id="label">
-                    <div class="topleft">
-                        <div class="topright">
-                            <div class="bottomleft">
-                                <div class="bottomright">
-                                    <div class="contentlabel">
-                                        <i18n>Registrazione</i18n>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                </div><!-- /label -->
-            </div>
             <!-- contenuto -->
             <div id="content">
                 <div id="contentcontent" class="contentcontent_default">
-                    <div id="help">
+                    <!--div id="help">
                         <template_field class="template_field" name="help">help</template_field>
-                    </div>
-                    <div id="data">
-						<div id="data_reg">
+                    </div-->
+                    <div id="data" class="first">
                         <template_field class="template_field" name="data">data</template_field>
-						</div>
-						<div id="data_reg_img"></div>
                     </div>                    
                 </div>
                 <div id="bottomcont">
                 </div>
             </div> <!--  / contenuto -->
         </div> <!-- / contenitore -->
-        <div id="push"></div>
+		<div id="push"></div>
 		</div>
-
-        
-		<!-- PIEDE -->
+       	<!-- com_tools -->
+        <div class="clearfix"></div>
+        <div id="com_tools" style="visibility:hidden;">
+            <div id="com_toolscontent">
+                <template_field class="microtemplate_field" name="com_tools">com_tools</template_field>
+            </div>
+        </div>
+        <!-- /com_tools -->			
+        <!-- PIEDE -->
         <div id="footer">
             <template_field class="microtemplate_field" name="footer">footer</template_field>
-        </div>
-        <!-- / piede -->
-		
-		
+        </div> <!-- / piede -->
     </body>
 </html>
