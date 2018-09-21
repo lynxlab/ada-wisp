@@ -50,16 +50,16 @@ if (MULTIPROVIDER) {
 	 * ID of the public course to get the latest news
 	 */
 	define ('PUBLIC_COURSE_ID_FOR_NEWS', 1);
-        
+
 	/**
 	 * How many news to get from the above mentioned course
 	 */
 	define ('NEWS_COUNT', 3);
-        
+
         /**
          * Provider holidays feed, to be show on fullcalendar. Sample is italian holidays feed
          */
-        define ('GCAL_HOLIDAYS_FEED','http://www.google.com/calendar/feeds/e327d6lm6r2kb555ce82ll4sbs@group.calendar.google.com/public/basic');	
+        define ('GCAL_HOLIDAYS_FEED','http://www.google.com/calendar/feeds/e327d6lm6r2kb555ce82ll4sbs@group.calendar.google.com/public/basic');
 
         /*
          * Maximum number of appointment proposal the tutor can make
@@ -299,7 +299,7 @@ define('MEDIA_LOCAL_PATH',''); // default: disabled
  * DO NOT REMOVE the trailing // *js_import*
  */
 //define('ADA_TEMPLATE_FAMILY', 'standard');   // *js_import*
-define('ADA_TEMPLATE_FAMILY', 'ada_blu');   // *js_import*
+define('ADA_TEMPLATE_FAMILY', 'wisp');   // *js_import*
 /**
  * Default class for semantic ui tables class (both datatables and normal tables)
  */
