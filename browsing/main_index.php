@@ -45,6 +45,38 @@ require_once ROOT_DIR.'/include/module_init.inc.php';
 $self = 'index';
 
 include_once 'include/browsing_functions.inc.php';
+
+/**
+ * This will at least import in the current symbol table the following vars.
+ * For a complete list, please var_dump the array returned by the init method.
+ *
+ * @var boolean $reg_enabled
+ * @var boolean $log_enabled
+ * @var boolean $mod_enabled
+ * @var boolean $com_enabled
+ * @var string $user_level
+ * @var string $user_score
+ * @var string $user_name
+ * @var string $user_type
+ * @var string $user_status
+ * @var string $media_path
+ * @var string $template_family
+ * @var string $status
+ * @var array $user_messages
+ * @var array $user_agenda
+ * @var array $user_events
+ * @var array $layout_dataAr
+ * @var History $user_history
+ * @var Course $courseObj
+ * @var Course_Instance $courseInstanceObj
+ * @var ADAPractitioner $tutorObj
+ * @var Node $nodeObj
+ *
+ * WARNING: $media_path is used as a global somewhere else,
+ * e.g.: node_classes.inc.php:990
+ */
+BrowsingHelper::init($neededObjAr);
+
 include_once 'include/cache_manager.inc.php';
 
 
@@ -128,18 +160,19 @@ if (is_object($userObj) && (!AMA_DataHandler::isError($userObj))) {
       */
 
 		$div_link = CDOMElement::create('div');
-		$link_expand = CDOMElement::create('a');
+		$link_expand = CDOMElement::create('a','class:ui small button');
 		$link_expand->setAttribute('id','expandNodes');
 		$link_expand->setAttribute('href','javascript:void(0);');
-		$link_expand->setAttribute('onclick',"toggleVisibilityByDiv('structIndex','show');");
+    $link_expand->setAttribute('onclick',"toggleVisibilityByDiv('structIndex','show');");
+    $link_expand->addChild(CDOMElement::create('i','class:add icon'));
 		$link_expand->addChild(new CText(translateFN('Apri Nodi')));
-		$link_collapse = CDOMElement::create('a');
+		$link_collapse = CDOMElement::create('a','class:ui small button');
 		$link_collapse->setAttribute('href','javascript:void(0);');
-		$link_collapse->setAttribute('onclick',"toggleVisibilityByDiv('structIndex','hide');");
+    $link_collapse->setAttribute('onclick',"toggleVisibilityByDiv('structIndex','hide');");
+    $link_collapse->addChild(CDOMElement::create('i','class:minus icon'));
 		$link_collapse->addChild(new CText(translateFN('Chiudi Nodi')));
 
 		$div_link->addChild($link_expand);
-		$div_link->addChild(new CText(' | '));
 		$div_link->addChild($link_collapse);
 
 		$exp_link = $div_link->getHtml();
@@ -204,17 +237,15 @@ if (is_object($userObj) && (!AMA_DataHandler::isError($userObj))) {
 
         $order_div = CDOMElement::create('div','id:ordering');
         if (isset($order) && $order == 'chrono') {
-          $alfa = CDOMElement::create('span','class:selected');
+          $alfa = CDOMElement::create('span','class:selected ui small button disabled');
           $alfa->addChild(new CText(translateFN('Ordina per data')));
           $order_div->addChild($alfa);
-          $order_div->addChild(new CText('|'));
-          $struct = CDOMElement::create('span','class:not_selected');
+          $struct = CDOMElement::create('span','class:not_selected ui small button');
           $link = CDOMElement::create('a', "href:main_index.php?op=$op&order=struct&expand=$expand");
           $link->addChild(new CText(translateFN('Ordina per struttura')));
           $struct->addChild($link);
           $order_div->addChild($struct);
-          $order_div->addChild(new CText('|'));
-          $struct = CDOMElement::create('span','class:not_selected');
+          $struct = CDOMElement::create('span','class:not_selected ui small button');
           $link = CDOMElement::create('a', "href:main_index.php?op=$op&order=alfa&expand=$expand");
           $link->addChild(new CText(translateFN('Ordina per titolo')));
           $struct->addChild($link);
@@ -223,38 +254,32 @@ if (is_object($userObj) && (!AMA_DataHandler::isError($userObj))) {
         }
         else if (isset($order) && $order == 'alfa') {
           $order = 'alfa';
-          $alfa = CDOMElement::create('span','class:not_selected');
+          $alfa = CDOMElement::create('span','class:not_selected ui small button');
           $link = CDOMElement::create('a', "href:main_index.php?op=$op&order=chrono&expand=$expand");
-          // $link->addChild(new CText(translateFN('Ordina per titolo')));
-		  $link->addChild(new CText(translateFN('Ordina per data')));
+          $link->addChild(new CText(translateFN('Ordina per data')));
           $alfa->addChild($link);
           $order_div->addChild($alfa);
-          $order_div->addChild(new CText('|'));
-          $struct = CDOMElement::create('span','class:not_selected');
+          $struct = CDOMElement::create('span','class:not_selected ui small button');
           $link = CDOMElement::create('a', "href:main_index.php?op=$op&order=struct&expand=$expand");
           $link->addChild(new CText(translateFN('Ordina per struttura')));
           $struct->addChild($link);
           $order_div->addChild($struct);
-          $order_div->addChild(new CText('|'));
-          $struct = CDOMElement::create('span','class:selected');
+          $struct = CDOMElement::create('span','class:selected ui small button disabled');
           $struct->addChild(new CText(translateFN('Ordina per titolo')));
           $order_div->addChild($struct);
           $expand_nodes = true;
         }
         else {
           $order = 'struct';
-          $alfa = CDOMElement::create('span','class:not_selected');
+          $alfa = CDOMElement::create('span','class:not_selected ui small button');
           $link = CDOMElement::create('a', "href:main_index.php?op=$op&order=chrono&expand=$expand");
-          // $link->addChild(new CText(translateFN('Ordina per titolo')));
-		$link->addChild(new CText(translateFN('Ordina per data')));
+          $link->addChild(new CText(translateFN('Ordina per data')));
           $alfa->addChild($link);
           $order_div->addChild($alfa);
-          $order_div->addChild(new CText('|'));
-          $struct = CDOMElement::create('span','class:selected');
+          $struct = CDOMElement::create('span','class:selected ui small button disabled');
           $struct->addChild(new CText(translateFN('Ordina per struttura')));
           $order_div->addChild($struct);
-          $order_div->addChild(new CText('|'));
-          $struct = CDOMElement::create('span','class:not_selected');
+          $struct = CDOMElement::create('span','class:not_selected ui small button');
           $link = CDOMElement::create('a', "href:main_index.php?op=$op&order=alfa&expand=$expand");
           $link->addChild(new CText(translateFN('Ordina per titolo')));
           $struct->addChild($link);
@@ -265,15 +290,13 @@ if (is_object($userObj) && (!AMA_DataHandler::isError($userObj))) {
 
         switch($hide_visits) {
           case 0:
-            $order_div->addChild(new CText('|'));
-            $span = CDOMElement::create('span','class:selected');
+            $span = CDOMElement::create('span','class:selected ui small button disabled');
             $span->addChild(new CText(translateFN('mostra anche le visite')));
             $order_div->addChild($span);
             break;
           case 1:
           default:
-            $order_div->addChild(new CText('|'));
-            $span = CDOMElement::create('span','class:not_selected');
+            $span = CDOMElement::create('span','class:not_selected ui small button');
             $link = CDOMElement::create('a',"href:main_index.php?op=$op&order=$order&hide_visits=0&expand=$expand");
             $link->addChild(new CText(translateFN('mostra anche le visite')));
             $span->addChild($link);
@@ -325,11 +348,10 @@ if (is_object($userObj) && (!AMA_DataHandler::isError($userObj))) {
 
         $order_div = CDOMElement::create('div','id:ordering');
         if (isset($order) && $order == 'alfa') {
-          $alfa = CDOMElement::create('span','class:selected');
+          $alfa = CDOMElement::create('span','class:selected ui small button disabled');
           $alfa->addChild(new CText(translateFN('Ordina per titolo')));
           $order_div->addChild($alfa);
-          $order_div->addChild(new CText('|'));
-          $struct = CDOMElement::create('span','class:not_selected');
+          $struct = CDOMElement::create('span','class:not_selected ui small button');
           $link = CDOMElement::create('a', "href:main_index.php?order=struct&expand=$expand&op=$op");
           $link->addChild(new CText(translateFN('Ordina per struttura')));
           $struct->addChild($link);
@@ -337,13 +359,12 @@ if (is_object($userObj) && (!AMA_DataHandler::isError($userObj))) {
         }
         else {
           $order = 'struct';
-          $alfa = CDOMElement::create('span','class:not_selected');
+          $alfa = CDOMElement::create('span','class:not_selected ui small button');
           $link = CDOMElement::create('a', "href:main_index.php?order=alfa&expand=$expand&op=$op");
           $link->addChild(new CText(translateFN('Ordina per titolo')));
           $alfa->addChild($link);
           $order_div->addChild($alfa);
-          $order_div->addChild(new CText('|'));
-          $struct = CDOMElement::create('span','class:selected');
+          $struct = CDOMElement::create('span','class:selected ui small button disabled');
           $struct->addChild(new CText(translateFN('Ordina per struttura')));
           $order_div->addChild($struct);
         }
@@ -351,15 +372,13 @@ if (is_object($userObj) && (!AMA_DataHandler::isError($userObj))) {
 
         switch($hide_visits) {
           case 0:
-            $order_div->addChild(new CText('|'));
-            $span = CDOMElement::create('span','class:selected');
+            $span = CDOMElement::create('span','class:selected ui small button disabled');
             $span->addChild(new CText(translateFN('mostra anche le visite')));
             $order_div->addChild($span);
             break;
           case 1:
           default:
-            $order_div->addChild(new CText('|'));
-            $span = CDOMElement::create('span','class:not_selected');
+            $span = CDOMElement::create('span','class:not_selected ui small button');
             $link = CDOMElement::create('a',"href:main_index.php?order=$order&hide_visits=0&expand=$expand&op=$op");
             $link->addChild(new CText(translateFN('mostra anche le visite')));
             $span->addChild($link);
@@ -404,24 +423,22 @@ if (is_object($userObj) && (!AMA_DataHandler::isError($userObj))) {
 
         $order_div = CDOMElement::create('div','id:ordering');
         if (isset($order) && $order == 'alfa') {
-          $struct = CDOMElement::create('span','class:not_selected');
+          $struct = CDOMElement::create('span','class:not_selected ui small button');
           $link = CDOMElement::create('a', "href:main_index.php?order=struct&expand=$expand");
           $link->addChild(new CText(translateFN('Ordina per struttura')));
           $struct->addChild($link);
           $order_div->addChild($struct);
-          $order_div->addChild(new CText('|'));
-          $alfa = CDOMElement::create('span','class:selected');
+          $alfa = CDOMElement::create('span','class:selected ui small button disabled');
           $alfa->addChild(new CText(translateFN('Ordina per titolo')));
           $order_div->addChild($alfa);
           $expand_nodes = false;
         }
         else {
           $order = 'struct';
-          $struct = CDOMElement::create('span','class:selected');
+          $struct = CDOMElement::create('span','class:selected ui small button disabled');
           $struct->addChild(new CText(translateFN('Ordina per struttura')));
           $order_div->addChild($struct);
-          $order_div->addChild(new CText('|'));
-          $alfa = CDOMElement::create('span','class:not_selected');
+          $alfa = CDOMElement::create('span','class:not_selected ui small button');
           $link = CDOMElement::create('a', "href:main_index.php?order=alfa&expand=$expand");
           $link->addChild(new CText(translateFN('Ordina per titolo')));
           $alfa->addChild($link);
@@ -432,15 +449,15 @@ if (is_object($userObj) && (!AMA_DataHandler::isError($userObj))) {
 
         switch($hide_visits) {
           case 0:
-            $order_div->addChild(new CText('|'));
-            $span = CDOMElement::create('span','class:selected');
-            $span->addChild(new CText(translateFN('mostra anche le visite')));
+            $span = CDOMElement::create('span','class:not_selected ui small button');
+            $link = CDOMElement::create('a',"href:main_index.php?order=$order&hide_visits=1&expand=$expand");
+            $link->addChild(new CText(translateFN('nascondi le visite')));
+            $span->addChild($link);
             $order_div->addChild($span);
             break;
           case 1:
           default:
-            $order_div->addChild(new CText('|'));
-            $span = CDOMElement::create('span','class:not_selected');
+            $span = CDOMElement::create('span','class:not_selected ui small button');
             $link = CDOMElement::create('a',"href:main_index.php?order=$order&hide_visits=0&expand=$expand");
             $link->addChild(new CText(translateFN('mostra anche le visite')));
             $span->addChild($link);
@@ -600,6 +617,10 @@ $avatar = CDOMElement::create('img','src:'.$imgAvatar);
 $avatar->setAttribute('class', 'img_user_avatar');
 $content_dataAr['user_avatar'] = $avatar->getHtml();
 $content_dataAr['user_modprofilelink'] = $userObj->getEditProfilePage();
+
+ $layout_dataAr['CSS_filename'] = array(
+  'main_index.css'
+);
 
 ARE::render($layout_dataAr, $content_dataAr);
 

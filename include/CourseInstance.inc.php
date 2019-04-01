@@ -104,6 +104,9 @@ class Course_instance extends Course_instance_Old
     public function getServiceLevel() {
     	return $this->service_level;
     }
+    public function isTutorCommunity() {
+        return (int) $this->getServiceLevel() === ADA_SERVICE_TUTORCOMMUNITY;
+    }
 
     static public function add_instance($id_course, $course_instanceAr) {
         $dh = $GLOBALS['dh'];

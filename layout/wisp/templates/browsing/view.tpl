@@ -12,11 +12,11 @@
         </div>
         <!-- / testata -->
         <!-- menu -->
-            <template_field class="microtemplate_field" name="adamenu">adamenu</template_field>  
+            <template_field class="microtemplate_field" name="adamenu">adamenu</template_field>
         <!-- / menu -->
         <!-- help -->
-            <template_field class="template_field" name="help">help</template_field>  
-        <!-- / help -->     
+            <template_field class="template_field" name="help">help</template_field>
+        <!-- / help -->
         <!-- contenitore -->
         <div id="container">
             <!-- percorso -->
@@ -31,6 +31,7 @@
                 </span>
             </div>
             <!-- / percorso -->
+            <template_field class="template_field" name="courseStatus">courseStatus</template_field>
             <!--dati utente-->
             <div id="status_bar">
                     <template_field class="microtemplate_field" name="user_data_micro">user_data_micro</template_field>
@@ -99,7 +100,7 @@
                 </div>
                   <!-- accordion -->
                   <div class="ui attached segment accordion">
-                  
+
 			       <div class="title" onClick="showIndex();">
 			         <i class="icon dropdown"></i>
 			         <i18n>indice</i18n><i class="sitemap icon" style="float:right;"></i>
@@ -158,7 +159,7 @@
                      <template_field class="template_field" name="media">media</template_field>
                    </div>
                   </div>
-                  <!-- /accordion -->  
+                  <!-- /accordion -->
                 </div>
               </div>
             <!-- / menudestra  -->
@@ -195,7 +196,7 @@
             </div>
         </div>
         <!-- /com_tools -->
-                
+
         <!-- piede -->
         <div id="footer">
             <template_field class="microtemplate_field" name="footer">footer</template_field>
