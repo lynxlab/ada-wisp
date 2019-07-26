@@ -290,6 +290,7 @@ else {
 		$dh->add_node_history($sess_id_user, $sess_id_course_instance, $sess_id_node, $remote_address, HTTP_ROOT_DIR, $accessed_from);
 		if (isset($courseObj) && isset($courseInstanceObj)) {
 			BrowsingHelper::checkServiceComplete($userObj, $courseObj, $courseInstanceObj);
+			BrowsingHelper::checkRewardedBadges($userObj, $courseObj, $courseInstanceObj);
 		}
 	}
 }
@@ -337,7 +338,7 @@ if ($id_profile == AMA_TYPE_AUTHOR && $mod_enabled) {
 
 	$add_exercise = "<a href=\"$http_root_dir/services/add_exercise.php?id_node=$sess_id_node\">" .
 			translateFN('aggiungi esercizio') . "</a>";
-        
+
         $add_node = "<a href=\"$http_root_dir/services/addnode.php?id_parent=$sess_id_node&id_course=$sess_id_course&type=LEAF\">" .
 			translateFN('aggiungi nodo') . "</a>";
 
@@ -394,15 +395,18 @@ switch($id_profile) {
 // keywords linked to search separately
 $linksAr  = array();
 $keyAr = explode(',',$node_keywords); // or space?
+$keyAr = array_map('trim', $keyAr);
 foreach ($keyAr as $keyword){
-	$linksAr [] = "<a href=\"search.php?s_node_title=$keyword&submit=cerca&l_search=all\">$keyword</a>";
+	if (strlen($keyword)>0) {
+		$linksAr [] = "<a href=\"search.php?s_node_title=$keyword&submit=cerca&l_search=all\">$keyword</a>";
+	}
 }
+$linked_node_keywords = implode(',',$linksAr);
 
 $imgAvatar = $userObj->getAvatar();
 $avatar = CDOMElement::create('img','src:'.$imgAvatar);
 $avatar->setAttribute('class', 'img_user_avatar');
 
-$linked_node_keywords = implode(',',$linksAr);                
 /**
  * content_data
  * @var array
@@ -449,7 +453,7 @@ $content_dataAr['user_media'] = $data['user_media'];
 $content_dataAr['exercises'] = $data['exercises'];
 $content_dataAr['notes'] = strlen($data['notes'])>0 ? $data['notes'] : translateFN('Nessuna');
 $content_dataAr['personal'] = strlen($data['private_notes'])>0 ? $data['private_notes'] : translateFN('Nessuna');
-$content_dataAr['user_avatar'] = $avatar->getHtml(); 
+$content_dataAr['user_avatar'] = $avatar->getHtml();
 $content_dataAr['user_modprofilelink'] = $userObj->getEditProfilePage();
 
 if ($node_type == ADA_GROUP_WORD_TYPE OR $node_type == ADA_LEAF_WORD_TYPE) {
@@ -558,9 +562,9 @@ switch ($op){
 				JQUERY_NO_CONFLICT,
 				ROOT_DIR. '/external/mediaplayer/flowplayer-5.4.3/flowplayer.js'
 		);
-              if($userObj->tipo==AMA_TYPE_STUDENT && ($self_instruction)) {
+              if($userObj->tipo==AMA_TYPE_STUDENT && $self_instruction) {
                 //$self='viewSelfInstruction';
-                $layout_dataAR['JS_filename'][] = ROOT_DIR.'/js/browsing/view.js';
+				$layout_dataAR['JS_filename'][] = ROOT_DIR.'/js/browsing/view.js';
               }
 		/**
 		 * if the jquery-ui theme directory is there in the template family,
@@ -582,10 +586,25 @@ switch ($op){
 		array_push ($layout_dataAR['CSS_filename'], JQUERY_JPLAYER_CSS);
 
 		if ($userObj->getType() == AMA_TYPE_STUDENT) {
-			$layout_dataAR['widgets']['courseStatus'] = ['isActive'=>0,
-														'courseId' => $courseObj->getId(),
-														 'courseInstanceId' => $courseInstanceObj->getId(),
-														 'userId' => $userObj->getId()];
+			$layout_dataAR['widgets']['courseStatus'] = [
+				/*
+				 * use commented condition to activate the widget in all non public courses
+				 * for students not having the status to completed or terminated
+				 */
+				'isActive' => 0, // !$courseObj->getIsPublic() && !in_array($user_status, array(ADA_STATUS_COMPLETED, ADA_STATUS_TERMINATED)),
+				'courseId' => $courseObj->getId(),
+				'courseInstanceId' => $courseInstanceObj->getId(),
+				'userId' => $userObj->getId()
+			];
+
+			if ($self_instruction) {
+				//$self='viewSelfInstruction';
+				$layout_dataAR['JS_filename'][] = ROOT_DIR . '/js/browsing/view.js';
+			}
+		} else {
+			$layout_dataAR['widgets']['courseStatus'] = [
+				'isActive' => 0
+			];
 		}
 
 		$optionsAr['onload_func'] = 'initDoc();';
