@@ -121,8 +121,8 @@ define('ADA_SERVICE_TUTORCOMMUNITY', ADA_SERVICE_COMMON_TUTOR);
  * Take the ADA generic services types defined in config/config_main.inc.php
  * and group them in onLine and presence service types
  */
-$GLOBALS['onLineServiceTypes'] = array (ADA_SERVICE_ONLINECOURSE, ADA_SERVICE_TUTORCOMMUNITY);
-$GLOBALS['presenceServiceTypes'] = array (ADA_SERVICE_PRESENCECOURSE, ADA_SERVICE_MIXEDCOURSE);
+// $GLOBALS['onLineServiceTypes'] = array (ADA_SERVICE_ONLINECOURSE, ADA_SERVICE_TUTORCOMMUNITY);
+// $GLOBALS['presenceServiceTypes'] = array (ADA_SERVICE_PRESENCECOURSE, ADA_SERVICE_MIXEDCOURSE);
 $GLOBALS['autosubscribeServiceTypes'] = array(ADA_SERVICE_AUTOSUBSCRIBE);
 $GLOBALS['userHiddenServiceTypes'] = array(ADA_SERVICE_AUTOSUBSCRIBE);
 
