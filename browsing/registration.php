@@ -126,7 +126,10 @@ if(isset($_SERVER['REQUEST_METHOD']) && $_SERVER['REQUEST_METHOD'] == 'POST') {
         $id_user = Multiport::addUser($userObj,$regProvider);
         if($id_user < 0) {
             $message = translateFN('Impossibile procedere. Un utente con questi dati esiste?')
-                     . ' ' . urlencode($userObj->getEmail());
+                     . ' ' . urlencode(
+						(defined('MODULES_SECRETQUESTION') && MODULES_SECRETQUESTION === true) ?
+						$userObj->getUserName() :
+						$userObj->getEmail());
             header('Location:'.HTTP_ROOT_DIR.'/browsing/registration.php?message='.$message);
             exit();
         }
@@ -328,6 +331,10 @@ $layout_dataAr['CSS_filename'][] = JQUERY_UNIFORM_CSS;
 
 if (isset($gdprApi)) {
     $layout_dataAr['JS_filename'][] =  MODULES_GDPR_PATH . '/js/acceptPolicies.js';
+}
+
+if (defined('MODULES_SECRETQUESTION') && MODULES_SECRETQUESTION === true) {
+	$layout_dataAr['JS_filename'][] = MODULES_SECRETQUESTION_PATH . '/js/modules_define.js.php';
 }
 
 $optionsAr['onload_func'] = 'initDateField(); initRegistration();';
