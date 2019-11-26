@@ -56,10 +56,16 @@ function get_courses_tutorFN($id_user, $isSuper=false) {
 
 	                    if (defined('MODULES_TEST') && MODULES_TEST) {
 	                    	$survey_title=translateFN('Report Sondaggi');
-	                    	$survey_img= CDOMElement::create('img', 'src:img/_exer.png,alt:view,class:tooltip,title:'.$survey_title);
+	                    	$survey_img= CDOMElement::create('img', 'src:img/_exer.png,alt:'.$survey_title.',class:tooltip,title:'.$survey_title);
 	                    	$survey_link = BaseHtmlLib::link(MODULES_TEST_HTTP.'/surveys_report.php?id_course_instance='.$id_instance.'&id_course='.$id_course, $survey_img->getHtml());
 	                    	$dati_corso[$num_courses][$azioni_key] .= $survey_link->getHtml();
-	                    }
+                        }
+                        if (defined('MODULES_BADGES') && MODULES_BADGES) {
+                            $badges_title=translateFN('Badges disponibili');
+	                    	$badges_img= CDOMElement::create('img','src:'.MODULES_BADGES_HTTP.'/layout/'.$_SESSION['sess_template_family'].'/img/course-badges.png,alt:'.$badges_title.',class:tooltip,title:'.$badges_title);
+	                    	$badges_link = BaseHtmlLib::link(MODULES_BADGES_HTTP.'/user-badges.php?id_instance='.$id_instance.'&id_course='.$id_course, $badges_img->getHtml());
+	                    	$dati_corso[$num_courses][$azioni_key] .= $badges_link->getHtml();
+                        }
                     }
                 }
             }
@@ -92,11 +98,11 @@ function get_courses_tutorFN($id_user, $isSuper=false) {
 
 // @author giorgio 14/mag/2013
 // added type parameter that defaults to 'xls'
-function get_student_coursesFN($id_course_instance,$id_course,$order="",$type='HTML') {
+function get_student_coursesFN($id_course_instance,$id_course,$order="",$type='HTML',$speed_mode=true) {
 // wrapper for Class Student_class (in courses_class.inc.php)
 	// 2nd parameter empty string means get all students
     $student_classObj = New Student_class($id_course_instance, '');
-    return $student_classObj->get_class_reportFN($id_course,$order,'',$type);
+    return $student_classObj->get_class_reportFN($id_course,$order,'',$type,$speed_mode);
 
 }
 

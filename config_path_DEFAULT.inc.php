@@ -17,7 +17,7 @@
  /**
   *  Root dir relative path
   */
-  define('ROOT_DIR','/var/www/html/ada');
+  define('ROOT_DIR', __DIR__);
 
  /**
   * sets multiprovider flag, true is the default
@@ -25,7 +25,7 @@
   * each with its own home page and anonymous pages
   */
   define ('MULTIPROVIDER',true);
-  
+
  /**
   * Main include file
   */

@@ -6,7 +6,7 @@
  * @author		Stefano Penge <steve@lynxlab.com>
  * @author		Maurizio "Graffio" Mazzoneschi <graffio@lynxlab.com>
  * @author		Vito Modena <vito@lynxlab.com>
- * @copyright	Copyright (c) 2009, Lynx s.r.l.
+ * @copyright	        Copyright (c) 2009-2011, Lynx s.r.l.
  * @license		http://www.gnu.org/licenses/gpl-2.0.html GNU Public License v.2
  * @link
  * @version		0.1
@@ -35,7 +35,7 @@ $neededObjAr = array(
 );
 
 require_once ROOT_DIR.'/include/module_init.inc.php';
-$self =  whoami();  // = tutor!
+$self =  whoami();
 
 include_once 'include/'.$self.'_functions.inc.php';
 
@@ -72,17 +72,16 @@ TutorHelper::init($neededObjAr);
 /*
  * YOUR CODE HERE
  */
-
 include_once ROOT_DIR.'/include/HtmlLibrary/BaseHtmlLib.inc.php';
 include_once 'include/tutor.inc.php';
 
 if (!isset($_GET['mode'])) {
-  $mode = "load";
-}
-else {
+  $mode = 'load';
+} else {
   $mode = $_GET['mode'];
 }
-// ini_set ('display_errors','1'); error_reporting(E_ALL);
+
+$speed_mode = (!isset($_GET['speed_mode']) || (isset($_GET['speed_mode']) && $_GET['speed_mode']!=='false'));
 
 if (!isset($op)) $op = null;
 
@@ -134,8 +133,8 @@ switch ($op) {
 				translateFN('Msg Inv')
 		);
 		$tObj = BaseHtmlLib::tableElement('id:listTutors',$thead,$tableDataAr,null,translateFN('Elenco dei tutors'));
-		$tObj->setAttribute('class', 'default_table doDataTable '.ADA_SEMANTICUI_TABLECLASS);
-		$data = $tObj->getHtml();
+        $tObj->setAttribute('class', 'default_table doDataTable '.ADA_SEMANTICUI_TABLECLASS);
+        $data = $tObj->getHtml();
 		break;
 	case 'stats':
 	case 'student':
@@ -151,7 +150,7 @@ switch ($op) {
 			}
 		}
 		if ($mode=='update') {
-			$courses_student = get_student_coursesFN($id_instance,$id_course,$order);
+			$courses_student = get_student_coursesFN($id_instance,$id_course,$order,$speed_mode);
 		} else {
 			// load
 			$courses_student = get_student_courses_from_dbFN($id_course, $id_instance);
@@ -653,7 +652,6 @@ if (isset($id_course))   $menuOptions['id_course'] = $id_course;
 if (isset($id_instance)) $menuOptions['id_instance'] = $id_instance;
 if (isset($id_instance)) $menuOptions['id_course_instance'] = $id_instance;
 if (isset($id_student))  $menuOptions['id_student'] =$id_student;
-
 /**
  * add a define for the supertutor menu item to appear
  */
