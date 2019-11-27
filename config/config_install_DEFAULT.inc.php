@@ -67,8 +67,6 @@ if (MULTIPROVIDER) {
         define ('MAX_PROPOSAL_COUNT',2);
 }
 
-define('ADA_DEFAULT_AVATAR','default_avatar.png');
-
 /**
  * URL
  * DO NOT REMOVE the trailing // *js_import*
