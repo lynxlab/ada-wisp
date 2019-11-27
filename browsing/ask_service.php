@@ -38,6 +38,7 @@ $neededObjAr = array(
 
 require_once ROOT_DIR . '/include/module_init.inc.php';
 require_once ROOT_DIR . '/browsing/include/browsing_functions.inc.php';
+BrowsingHelper::init($neededObjAr);
 require_once ROOT_DIR . '/comunica/include/ChatRoom.inc.php';
 
 
@@ -58,7 +59,7 @@ if(!$userObj instanceof ADAUser) {
 }
 
 $error_page = $_SERVER['HTTP_REFERER'];
-if ($message == null || !isset($message)) 
+if ($message == null || !isset($message))
     $message = '';
 $id_user = $userObj->getId();
 $name = $userObj->getFirstName();
@@ -70,16 +71,16 @@ switch ($op) {
 //      $idTmpAr = explode($idProviderAndCourse, '_'); // SERVE PER PRODURRE UN ERRORE
       $id_course = $idTmpAr[1];
       $providerId = $idTmpAr[0];
-      
+
       $start_date1 = 0;
       $start_date2 = AMA_DataHandler::date_to_ts("now");
 //      $days = $serviceinfoAr[4];
 //      print_r($_POST);
-      
+
       /*
        * creating course/service instance
        */
-      
+
       /*
        * FIXME: durata must be received from service parameter
        */
@@ -107,9 +108,9 @@ switch ($op) {
            $message = urlencode(translateFN("Errore nella richiesta di servizio: "));
            $errorObj = new ADA_Error($providerInfoAr,$message,NULL,NULL,NULL,$error_page.'?message='.$message);
 //           $errorObj = new ADA_Error($providerInfoAr,$message,NULL,NULL,NULL,$error_page);
-            
+
         }
-             
+
       /*
        *  add an instance to tester db
        */
@@ -119,7 +120,7 @@ switch ($op) {
         // we add an instance OR there already was one with same data
 
           /*
-           * 
+           *
         // get an instance
             $clause = "id_corso = $id_course AND data_inizio_previsto = $start_date2 AND durata  = $days";
             $course_instanceAr = $provider_dh->course_instance_find_list(NULL, $clause);
@@ -138,8 +139,8 @@ switch ($op) {
       } else {
         $message = urlencode(translateFN("Errore nella richiesta di servizio: 1"));
         $errorObj = new ADA_Error($res_inst_add,$message,NULL,NULL,NULL,$error_page.'?message='.$message);
-      }        
-      
+      }
+
       /*
        * Prepare Feeedback
        */
@@ -150,10 +151,10 @@ switch ($op) {
             'name'=> $name,
             'surname'=>$surname,
             'service_name'=> $service_name,
-            'userHomePage' => $userHomePage   
+            'userHomePage' => $userHomePage
         );
         $data = AskServiceModuleHtmlLib::getFeedbackTextHtml($dataAr);
-        
+
         /*
          * Prepare and send message to User
          */
@@ -193,12 +194,12 @@ switch ($op) {
           //NULL,NULL,NULL,$error_page.'?err_msg='.urlencode(translateFN('Impossibile spedire il messaggio')));
         }
 
-        
+
         /*
          * Prepare and send message to Switcher
-         * 
-         * Switcher receive a reminder message 
-         * 
+         *
+         * Switcher receive a reminder message
+         *
          * A message is sent as additional text containing the user question
          * A token is added to the subject
          * The token is generated from:
@@ -234,11 +235,11 @@ switch ($op) {
       /* ****************************
        * ChatRoom creation ended
        */
-        
+
 
           $MailText4User = AskServiceModuleHtmlLib::getFeedbackTextPlain($dataAr);
           /*
-           * 
+           *
           $admtypeAr = array(AMA_TYPE_SWITCHER);
           //$admList = $common_dh->get_users_by_type($admtypeAr);
           $admList = $provider_dh-> get_users_by_type($admtypeAr);
@@ -248,12 +249,12 @@ switch ($op) {
           } else {
                         $adm_uname = ""; // ??? FIXME: serve un superadmin nel file di config?
           }
-           * 
+           *
            */
 
         $subject = PORTAL_NAME . ': '.translateFN('Richiesta di servizio') .' '. $dataAr['service_name'];
         $titolo = AskService::addMessageToken($helpRequiredToken, $subject);
-        
+
         $username = $userObj->getUserName();
         $recipientsAr =  array($adm_uname);
         $message_ha = array();
@@ -271,11 +272,11 @@ switch ($op) {
           // $errObj = new WISP_Error($res,translateFN('Impossibile spedire il messaggio'),
           //NULL,NULL,NULL,$error_page.'?err_msg='.urlencode(translateFN('Impossibile spedire il messaggio')));
         }
-        
+
         /*
          * Reminder message to the switcher
-         */        
-        
+         */
+
         $dataSwitcherText= array (
             'question' => $question,
             'name'=> $adm_name,
@@ -285,7 +286,7 @@ switch ($op) {
             'asking_surname' => $surname,
             'asking_username' => $username
        );
-                        
+
         $dataSwitcherText = AskServiceModuleHtmlLib::getToSwitcherTextHtml($dataSwitcherText);
         $ReminderSubject = PORTAL_NAME . ': '.$name. ' '. $surname . ' ' . translateFN('ha richiesto aiuto per') .' '. $dataAr['service_name'];
         $message_ha = array();
@@ -304,10 +305,10 @@ switch ($op) {
           //NULL,NULL,NULL,$error_page.'?err_msg='.urlencode(translateFN('Impossibile spedire il messaggio')));
         }
         unset ($mh);
-        
 
-        
-        
+
+
+
       break;
     case 'default':
 	/**
@@ -320,12 +321,12 @@ switch ($op) {
 	{
 		// if provider is not set or there's an error loading its id, retirect to home
 		$redirect = false;
-		
+
 		/**
 		 * either the user is anonymous and has the $_GLOBALS['user_provider'] set
-		 * or it is a logged user and then it'll have client0 by default and only 
+		 * or it is a logged user and then it'll have client0 by default and only
 		 * the client it's registered into and this info will be index 1 of the returned array
-		 * 
+		 *
 		 */
 		if (isset($GLOBALS['user_provider']))
 			$user_provider_name = $GLOBALS['user_provider'];
@@ -334,34 +335,34 @@ switch ($op) {
 			$tmpTesters = $userObj->getTesters();
 			if (!empty($tmpTesters)) $user_provider_name = $tmpTesters[1];
 		}
-			 		
+
 		if (isset($user_provider_name))
 		{
 			$userTesterInfo = $common_dh->get_tester_info_from_pointer($user_provider_name);
 			$user_provider_id = (!AMA_DB::isError($userTesterInfo)) ? $userTesterInfo[0] : null;
 			$redirect = is_null($user_provider_id);
 		}
-		 
+
 		else $redirect = true;
-		
+
 		if (!$redirect) $publishedServices = $common_dh->get_published_courses($user_provider_id);
 		else {
 			$url = HTTP_ROOT_DIR . ((isset($_COOKIE['ada_provider'])) ? '/'.$_COOKIE['ada_provider'].'/info.php' : '');
 			header ('Location: '.$url);
 			die();
-		}		
+		}
 	} else {
         	$publishedServices = $common_dh->get_published_courses();
 	}
-        
+
         if(!AMA_Common_DataHandler::isError($publishedServices)) {
             $serviceToSubscribeAr = array();
             foreach($publishedServices as $service) {
                    if ($service['livello'] == ADA_SERVICE_HELP) {
-                       
+
                        $serviceId = $service['id_servizio'];
                        $serviceName = $service['nome'];
-                       $coursesAr = $common_dh->get_courses_for_service($serviceId); 
+                       $coursesAr = $common_dh->get_courses_for_service($serviceId);
                        if (!AMA_DataHandler::isError($coursesAr)) {
                             $currentTesterId = 0;
                             $currentTester = '';
@@ -372,9 +373,9 @@ switch ($op) {
                                     $courseId = $newTesterId . '_' . $courseData['id_corso'];
                                     $serviceToSubscribeAr[$courseId] = $serviceName;
                                 }
-                            }   
+                            }
                        }
-                  } 
+                  }
 
             }
             if(sizeof($serviceToSubscribeAr) > 0) {

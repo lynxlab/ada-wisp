@@ -1,7 +1,7 @@
 <?php
 /**
  *
- * @package		Subscription 
+ * @package		Subscription
  * @author		Stefano Penge <steve@lynxlab.com>
  * @author		Maurizio "Graffio" Mazzoneschi <graffio@lynxlab.com>
  * @author		Vito Modena <vito@lynxlab.com>
@@ -37,6 +37,7 @@ $neededObjAr = array(
 
 require_once ROOT_DIR . '/include/module_init.inc.php';
 require_once ROOT_DIR . '/browsing/include/browsing_functions.inc.php';
+BrowsingHelper::init($neededObjAr);
 require_once ROOT_DIR . '/include/CourseInstance.inc.php';
 
 $courseId = DataValidator::is_uinteger($_REQUEST['id_course']);

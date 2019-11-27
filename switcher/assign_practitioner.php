@@ -37,6 +37,7 @@ require_once ROOT_DIR . '/include/module_init.inc.php';
 $self = whoami();
 //$self =  'switcher';  // = switcher!
 include_once 'include/switcher_functions.inc.php';
+SwitcherHelper::init($neededObjAr);
 
 require_once ROOT_DIR .'/comunica/include/ChatRoom.inc.php';
 require_once ROOT_DIR .'/comunica/include/ChatDataHandler.inc.php';
@@ -65,7 +66,7 @@ if (isset($_SERVER['REQUEST_METHOD']) && $_SERVER['REQUEST_METHOD'] == 'POST'
         if (AMA_DataHandler::isError($result)) {
             $errObj = new ADA_Error($result, translateFN('Errore durante assegnazione del practitioner al client'));
         } else {
-            
+
               /*
                * The practitioner was correctly assigned to this user. Check if service
                * is not started yet, and if it is so, start the service.
@@ -82,7 +83,7 @@ if (isset($_SERVER['REQUEST_METHOD']) && $_SERVER['REQUEST_METHOD'] == 'POST'
                   $errObj = new ADA_Error($result, translateFN('Errore in aggiornamento stato iscrizione utente'));
                   $errorPhase = 'reading user';
                 }
-              
+
               $ci_info = $dh->course_instance_get($id_course_instance,true);
               if($ci_info['data_inizio'] == 0) {
                 /*
@@ -95,7 +96,7 @@ if (isset($_SERVER['REQUEST_METHOD']) && $_SERVER['REQUEST_METHOD'] == 'POST'
                 if(AMA_DataHandler::isError($result)) {
                   $errObj = new ADA_Error($result, translateFN('Errore in aggiornamento dati assegnamento practitioner client'));
                   $errorPhase = 'phase 1';
-                  
+
                 }
 
                 /*
@@ -121,7 +122,7 @@ if (isset($_SERVER['REQUEST_METHOD']) && $_SERVER['REQUEST_METHOD'] == 'POST'
                 /*
                  * Send a message to the selected practitioner informing him of the assignment
                  */
-                $message_text = sprintf(translateFN('Caro %s, ti è stato assegnato un nuovo utente: %s (con username: %s)'), 
+                $message_text = sprintf(translateFN('Caro %s, ti è stato assegnato un nuovo utente: %s (con username: %s)'),
                 		$tutorObj->getFullName(),
                 		$tutoredUserObj->getFullName(),
                 		$tutoredUserObj->getUserName());
@@ -136,28 +137,28 @@ if (isset($_SERVER['REQUEST_METHOD']) && $_SERVER['REQUEST_METHOD'] == 'POST'
                 );
 
                 $mh = MessageHandler::instance(MultiPort::getDSN($sess_selected_tester));
-                
+
                 /**
                  * @author giorgio 15/apr/2014
                  * Must retrieve help message text sent in by the user
                  */
-                
+
                 $messageTokenPart =  $id_student    . '_'
                 		. $id_course_instance . '_';
-                
+
                 /**
                  * @author giorgio 23/apr/2014
                  * switcher is no longer needed in the token, see comment
                  * below where I get all the switchers
                  */
                 //  $userObj->getId() . '_';
-                
+
                 $fields_list_Ar = array('testo');
                 $clause         = ' titolo like \'%' . $messageTokenPart . '%\'';
                 $sort_field     = ' data_ora desc';
-                
+
                 $mh = MessageHandler::instance(MultiPort::getDSN($sess_selected_tester));
-                
+
                 /**
                  * @author giorgio 23/apr/2014
                  *
@@ -182,13 +183,13 @@ if (isset($_SERVER['REQUEST_METHOD']) && $_SERVER['REQUEST_METHOD'] == 'POST'
                 		$clause,
                 		$sort_field);
                 $helpText = reset($helpMsg_ha);
-                
+
                 /**
 				 * append the help message text to the outgoing email
                  */
                 $message_ha['testo'] .= PHP_EOL.sprintf(translateFN('L\'utente ha richiesto aiuto per il servizio: %s'),$courseObj->getTitle()).
                 				 		PHP_EOL.sprintf(translateFN('Ecco il testo della sua richiesta: %s'),$helpText);
-                
+
                 /**
                  * build a note with service name as object and help text as body
                  */
@@ -207,7 +208,7 @@ if (isset($_SERVER['REQUEST_METHOD']) && $_SERVER['REQUEST_METHOD'] == 'POST'
                 if(AMA_DataHandler::isError($result)) {
                 	// FIXME: gestire errore
                 }
-                
+
                 $result = $mh->send_message($message_ha);
                 if(AMA_DataHandler::isError($result)) {
                   // FIXME: gestire errore
@@ -218,10 +219,10 @@ if (isset($_SERVER['REQUEST_METHOD']) && $_SERVER['REQUEST_METHOD'] == 'POST'
                  */
 
                 /* We send the message to all switchers (???) */
-                
+
                 /**
                  * @author giorgio 23/apr/2014
-                 * 
+                 *
                  * send the message only to the logged switcher, code to send to
                  * all switcher is commented.
                  * Variable names are kept for compatibility and to not rewrite all
@@ -244,7 +245,7 @@ if (isset($_SERVER['REQUEST_METHOD']) && $_SERVER['REQUEST_METHOD'] == 'POST'
 								$switcher['nome'], $switcher['cognome'],
 								$tutoredUserObj->getFullName(),
 								$tutorObj->getFullName() );
-						
+
 						$message_ha = array (
 								'tipo' => ADA_MSG_MAIL,
 								'data_ora' => 'now',
@@ -252,23 +253,23 @@ if (isset($_SERVER['REQUEST_METHOD']) && $_SERVER['REQUEST_METHOD'] == 'POST'
 								// 'destinatari' => array($userObj->getUserName()),
 								'destinatari' => array ($switcher_uname),
 								'titolo' => PORTAL_NAME . ': ' . translateFN ( 'a new user has been assigned by you.' ),
-								'testo' => $message_text 
+								'testo' => $message_text
 						);
-						
+
 						$mh = MessageHandler::instance ( MultiPort::getDSN ( $sess_selected_tester ) );
 						$result = $mh->send_message ( $message_ha );
 						if (AMA_DataHandler::isError ( $result )) {
 							// FIXME: gestire errore
 						}
-					
-/*						
+
+/*
 					} // foreach
 				} // isError($switcherList)
-*/				
+*/
 
-              } // if($ci_info['data_inizio'] == 0) 
+              } // if($ci_info['data_inizio'] == 0)
 
-            
+
                /*
                 * For each course instance, a class chatroom with the same duration
                 * is made available. Every time there is an update in the course instance
@@ -299,17 +300,17 @@ if (isset($_SERVER['REQUEST_METHOD']) && $_SERVER['REQUEST_METHOD'] == 'POST'
                }
         }
     }
-    
+
         $dialog_div = CDOMElement::create('DIV', 'id:dialog-message');
         $dialog_div->setAttribute('style', 'text-align:center');
         if ($errorPhase != null) {
             $dialogMessage = translateFN('Qualcosa è andato storto in') . ' ' .$errorPhase;
-            
+
         } else {
 //            $dialogMessage = translateFN('Utente') .' '. $tutoredUserObj->getFullName() .' ' . translateFN('assegnato a') . ' '. $tutorObj->getFullName();
             $dialogMessage = $tutorObj->getFullName() .' ' . translateFN('assegnato a') . ' '. translateFN('Utente') .' '. $tutoredUserObj->getFullName();
-        } 
-            
+        }
+
         $dialog_div->addChild(new CText($dialogMessage));
         $optionsAr['onload_func'] = 'initDoc();';
         $dataDiv = $dialog_div;
@@ -329,7 +330,7 @@ if (isset($_SERVER['REQUEST_METHOD']) && $_SERVER['REQUEST_METHOD'] == 'POST'
             $errObj = new ADA_Error($serviceAr, translateFN('Errore in lettura servizio'));
         }
         $serviceName = $serviceAr['titolo'];
-        
+
         $result = $dh->course_instance_tutor_get($courseInstanceObj->getId());
         if (AMA_DataHandler::isError($result)) {
             // FIXME: verificare che si venga redirezionati alla home page del'utente
@@ -356,7 +357,7 @@ if (isset($_SERVER['REQUEST_METHOD']) && $_SERVER['REQUEST_METHOD'] == 'POST'
         if ($id_tutor_old == 'no') {
             $tutors['no'] = translateFN('Nessun tutor');
         }
-        
+
         $js = '<script type="text/javascript">';
 	$tooltips = '';
         foreach ($tutors_ar as $tutor) {
@@ -372,7 +373,7 @@ if (isset($_SERVER['REQUEST_METHOD']) && $_SERVER['REQUEST_METHOD'] == 'POST'
 //		$tutor_monitoring = $dh->get_tutors_assigned_course_instance($ids_tutor);
 		$tutor_monitoring = $dh->get_list_of_tutored_users($idSingleTutor);
 
-                
+
 		//create tooltips with tutor's assignments (html + javascript)
 		$ul = CDOMElement::create('ul');
                 $studentsId = array();
@@ -394,7 +395,7 @@ if (isset($_SERVER['REQUEST_METHOD']) && $_SERVER['REQUEST_METHOD'] == 'POST'
                                         $li->addChild(new CText($nome_corso));
                                         $ul->addChild($li);
                                 }
-                                 * 
+                                 *
                                  */
                             }
 			}
@@ -432,8 +433,8 @@ if (isset($_SERVER['REQUEST_METHOD']) && $_SERVER['REQUEST_METHOD'] == 'POST'
          * Read User data
          */
         $tutoredUserObj = MultiPort::findUser($id_user);
-        
-        
+
+
           /*
            * Future appointments with this user
            *
@@ -452,19 +453,19 @@ if (isset($_SERVER['REQUEST_METHOD']) && $_SERVER['REQUEST_METHOD'] == 'POST'
            * below where I get all the switchers
            */
                  // . $id_switcher . '_';
-                  
+
           $fields_list_Ar = array('data_ora', 'titolo', 'testo');
           $clause         = ' titolo like \'%' . $messageTokenPart . '%\'';
 //                          . ' AND id_mittente='.$userObj->getId()
 //                          . ' AND (flags & ' . ADA_EVENT_CONFIRMED .')';
 
           $sort_field     = ' data_ora desc';
-          
+
           $mh = MessageHandler::instance(MultiPort::getDSN($sess_selected_tester));
-          
+
           /**
            * @author giorgio 23/apr/2014
-           * 
+           *
            * The provider can have more than one switcher, and could be that the
            * logged one has not the id associated with the message we're trying to load.
            * So, get the switcher list and try to get the message having token like (sql)
@@ -479,7 +480,7 @@ if (isset($_SERVER['REQUEST_METHOD']) && $_SERVER['REQUEST_METHOD'] == 'POST'
           if (!isset($switcherList) || count($switcherList)<=1) {
           	$switcherList = $id_switcher;
           }
-          
+
           $msgs_ha = $mh->find_messages($switcherList,
                                         ADA_MSG_SIMPLE,
                                         $fields_list_Ar,
@@ -488,18 +489,18 @@ if (isset($_SERVER['REQUEST_METHOD']) && $_SERVER['REQUEST_METHOD'] == 'POST'
           if(AMA_DataHandler::isError($msgs_ha) || count($msgs_ha) == 0) {
             $helpRequiredMessage = '';
             //$helpRequiredMessage = new CText('');
-          } else { 
+          } else {
 //              print_r();
             foreach ($msgs_ha as $singleMsg) {
                   $helpRequiredMessage = nl2br($singleMsg[2]);
-              }    
+              }
           }
 
         $info_div = CDOMElement::create('DIV', 'id:info_div');
         $info_div->setAttribute('class', 'info_div');
         $headerSpanText = CDOMElement::create('Div','id_header_info');
         $headerSpanText->setAttribute('class', 'header_info_div');
-        $serviceNameSpan = CDOMElement::create('span','class:strong_text'); 
+        $serviceNameSpan = CDOMElement::create('span','class:strong_text');
         $serviceNameSpan->addchild(new CText($serviceName));
         $ServiceHTML = $serviceNameSpan->getHtml();
         $headerText = $tutoredUserObj->nome . ' ' . $tutoredUserObj->cognome .' '. translateFN('ha chiesto aiuto per il servizio'). ' '. $ServiceHTML. ' ';
@@ -508,14 +509,14 @@ if (isset($_SERVER['REQUEST_METHOD']) && $_SERVER['REQUEST_METHOD'] == 'POST'
         $SpanQuestionText = CDOMElement::create('DIV','id:question_info');
         $SpanQuestionText->addChild(new CText($helpRequiredMessage));
         $info_div->addChild($SpanQuestionText);
-        
-        
+
+
         /*
          * Read User help required question
          */
-        
-        
-        
+
+
+
     } else {
         $data = new CText(translateFN('Classe non trovata'));
     }

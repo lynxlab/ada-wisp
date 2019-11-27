@@ -39,6 +39,7 @@ $neededObjAr = array(
 require_once ROOT_DIR . '/include/module_init.inc.php';
 $self = whoami();
 require_once 'include/switcher_functions.inc.php';
+SwitcherHelper::init($neededObjAr);
 require_once ROOT_DIR . '/include/Forms/CourseRemovalForm.inc.php';
 require_once ROOT_DIR . '/switcher/include/Subscription.inc.php';
 
@@ -64,9 +65,9 @@ if (isset($_SERVER['REQUEST_METHOD']) && $_SERVER['REQUEST_METHOD'] == 'POST') {
                             if ($deletedInstancesProcessOk) {
                                 $deletedInstancesProcessOk = false;
                                 $courseInstanceId = $instance[0];
-                                if(Subscription::deleteAllSubscriptionsToClassRoom($courseInstanceId)) {               
+                                if(Subscription::deleteAllSubscriptionsToClassRoom($courseInstanceId)) {
                                     $result = $dh->course_instance_tutors_unsubscribe($courseInstanceId);
-                                    if($result === true) {                
+                                    if($result === true) {
                                         $result = $dh->course_instance_remove($courseInstanceId);
                                         if(!AMA_DataHandler::isError($result)) {
                                             $deletedInstancesProcessOk = true;
@@ -86,11 +87,11 @@ if (isset($_SERVER['REQUEST_METHOD']) && $_SERVER['REQUEST_METHOD'] == 'POST') {
                         }
                     }
                     /* ***********
-                     * ended  deleting process of instances  
+                     * ended  deleting process of instances
                      */
-                    
+
                     if ($deletedInstancesProcessOk) {
-                        
+
                         $result = $common_dh->delete_service($serviceId);
                         if(!AMA_Common_DataHandler::isError($result)) {
                             $result = $common_dh->unlink_service_from_course($serviceId, $courseId);
@@ -103,11 +104,11 @@ if (isset($_SERVER['REQUEST_METHOD']) && $_SERVER['REQUEST_METHOD'] == 'POST') {
                                     unset($_SESSION['sess_id_course']);
                                     $data = new CText(sprintf(translateFN('La cancellazione del servizio "%s" è riuscita.'), $courseObj->getTitle()));
 
-                                    
+
                                     /*
                                     header('Location: list_courses.php');
                                     exit();
-                                     * 
+                                     *
                                      */
                                 }
                             } else {
@@ -119,11 +120,11 @@ if (isset($_SERVER['REQUEST_METHOD']) && $_SERVER['REQUEST_METHOD'] == 'POST') {
                     } else {
                         $data = new CText(translateFN('Si sono verificati degli errori durante la cancellazione delle istanze del servizio.') . '(5)');
                     }
-                    
+
                 } else {
                     $data = new CText(translateFN('Si sono verificati degli errori durante la cancellazione del servizio.') . '(4)');
                 }
-                
+
             } else {
                 $data = new CText(sprintf(translateFN('La cancellazione del servizio "%s" è stata annullata.'), $courseObj->getTitle()));
             }
@@ -133,12 +134,12 @@ if (isset($_SERVER['REQUEST_METHOD']) && $_SERVER['REQUEST_METHOD'] == 'POST') {
     } else {
         $data = new CText(translateFN('Servizio non trovato'));
     }
-    
-    
+
+
         $dialog_div = CDOMElement::create('DIV', 'id:dialog-message');
         $dialog_div->setAttribute('style', 'text-align:center');
         $dialog_div->addChild($data);
-        
+
 
         $data = $dialog_div;
 
@@ -150,7 +151,7 @@ if (isset($_SERVER['REQUEST_METHOD']) && $_SERVER['REQUEST_METHOD'] == 'POST') {
         );
 //        var_dump($layout_dataAr);
         $optionsAr['onload_func'] = 'initDoc();';
-     
+
         /**
          * if the jqueru-ui theme directory is there in the template family,
          * do not include the default jquery-ui theme but use the one imported
@@ -165,7 +166,7 @@ if (isset($_SERVER['REQUEST_METHOD']) && $_SERVER['REQUEST_METHOD'] == 'POST') {
 
 
 }
-else {    
+else {
     if($courseObj instanceof Course && $courseObj->isFull()) {
         $result = $dh->course_has_instances($courseObj->getId());
         if(AMA_DataHandler::isError($result)) {

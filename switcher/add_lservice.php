@@ -3,19 +3,19 @@
  * File add_course.php
  *
  * The switcher can use this module to create a new course.
- * 
  *
- * @package		
+ *
+ * @package
  * @author		Stefano Penge <steve@lynxlab.com>
  * @author		Maurizio "Graffio" Mazzoneschi <graffio@lynxlab.com>
  * @author		Vito Modena <vito@lynxlab.com>
  * @copyright           Copyright (c) 2012, Lynx s.r.l.
  * @license		http://www.gnu.org/licenses/gpl-2.0.html GNU Public License v.2
- * @link					
+ * @link
  * @version		0.1
  */
 /**
- * Base config file 
+ * Base config file
  */
 require_once realpath(dirname(__FILE__)) . '/../config_path.inc.php';
 
@@ -40,6 +40,7 @@ $self = whoami();  // = admin!
 
 include_once 'include/switcher_functions.inc.php';
 include_once ROOT_DIR . '/services/include/NodeEditing.inc.php';
+SwitcherHelper::init($neededObjAr);
 
 /*
  * YOUR CODE HERE
@@ -60,7 +61,7 @@ if (isset($_SERVER['REQUEST_METHOD']) && $_SERVER['REQUEST_METHOD'] == 'POST') {
     foreach($availableLanguages as $language) {
         $languages[$language['id_lingua']] = $language['nome_lingua'];
     }
-    
+
     $form = new ServiceModelForm($authors,$languages);
     $form->fillWithPostData();
     if ($form->isValid()) {
@@ -80,7 +81,7 @@ if (isset($_SERVER['REQUEST_METHOD']) && $_SERVER['REQUEST_METHOD'] == 'POST') {
             'duration_hours' => $_POST['duration_hours'],
             'service_level' => $_POST['service_level']
         );
-        
+
         $id_course = $dh->add_course($course);
         if(!AMA_DataHandler::isError($id_course)) {
           $node_data = array(
@@ -91,13 +92,13 @@ if (isset($_SERVER['REQUEST_METHOD']) && $_SERVER['REQUEST_METHOD'] == 'POST') {
             'id_nodo_parent' => null,
             'parent_id' => null,
             'text' => $_POST['descrizione'],
-            'id_course'=> $id_course  
+            'id_course'=> $id_course
           );
           $result = NodeEditing::createNode($node_data);
           if(AMA_DataHandler::isError($result)) {
               //
           }
-          
+
           // add a row in common.servizio
           $service_dataAr = array(
             'service_name' => $_POST['titolo'],
@@ -109,7 +110,7 @@ if (isset($_SERVER['REQUEST_METHOD']) && $_SERVER['REQUEST_METHOD'] == 'POST') {
             'service_meeting_duration' => 0
           );
           $id_service = $common_dh->add_service($service_dataAr);
-          if(!AMA_DataHandler::isError($id_service)) {           
+          if(!AMA_DataHandler::isError($id_service)) {
             $tester_infoAr = $common_dh->get_tester_info_from_pointer($sess_selected_tester);
             if(!AMA_DataHandler::isError($tester_infoAr)) {
                 $id_tester = $tester_infoAr[0];
@@ -118,11 +119,11 @@ if (isset($_SERVER['REQUEST_METHOD']) && $_SERVER['REQUEST_METHOD'] == 'POST') {
                     $errObj = new ADA_Error($result);
                 }
                 else {
-                    
+
                     /* *
                      * if needed it creates the instance and chat...
                      */
-                    if ($_POST['service_level'] == ADA_SERVICE_COMMON || $_POST['service_level'] == ADA_SERVICE_COMMON_STUDENT 
+                    if ($_POST['service_level'] == ADA_SERVICE_COMMON || $_POST['service_level'] == ADA_SERVICE_COMMON_STUDENT
                             || $_POST['service_level'] == ADA_SERVICE_COMMON_TUTOR) {
                         $course_instanceAr = array(
                             'data_inizio_previsto' => time(), // dt2tsFN($_POST['data_inizio_previsto']),
@@ -135,7 +136,7 @@ if (isset($_SERVER['REQUEST_METHOD']) && $_SERVER['REQUEST_METHOD'] == 'POST') {
                             'duration_subscription' => '730', //$_POST['duration_subscription'],
                             'start_level_student' => '99', //$_POST['start_level_student'],
                             'open_subscription' => '1', // $_POST['open_subscription']
-			    'service_level' => $_POST['service_level']			    
+			    'service_level' => $_POST['service_level']
 
                         );
                         $id_instance_course = Course_instance::add_instance($id_course, $course_instanceAr);
@@ -145,7 +146,7 @@ if (isset($_SERVER['REQUEST_METHOD']) && $_SERVER['REQUEST_METHOD'] == 'POST') {
                     }
                     header('Location: list_lservices.php');
                     exit();
-                    
+
                 }
             } else {
               $errObj = new ADA_Error($result);
@@ -175,7 +176,7 @@ if (isset($_SERVER['REQUEST_METHOD']) && $_SERVER['REQUEST_METHOD'] == 'POST') {
     foreach($availableLanguages as $language) {
         $languages[$language['id_lingua']] = $language['nome_lingua'];
     }
-    
+
     $form = new ServiceModelForm($authors,$languages);
 }
 

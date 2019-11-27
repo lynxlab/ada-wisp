@@ -4,17 +4,17 @@
  *
  * tutor and user  can add notes.
  *
- * @package		
+ * @package
  * @author		Stefano Penge <steve@lynxlab.com>
  * @author		Maurizio "Graffio" Mazzoneschi <graffio@lynxlab.com>
  * @author		Vito Modena <vito@lynxlab.com>
  * @copyright           Copyright (c) 2012, Lynx s.r.l.
  * @license		http://www.gnu.org/licenses/gpl-2.0.html GNU Public License v.2
- * @link					
+ * @link
  * @version		0.1
  */
 /**
- * Base config file 
+ * Base config file
  */
 require_once realpath(dirname(__FILE__)) . '/../config_path.inc.php';
 
@@ -42,6 +42,7 @@ require_once ROOT_DIR . '/include/module_init.inc.php';
 $self = whoami();  // = admin!
 
 include_once 'include/browsing_functions.inc.php';
+BrowsingHelper::init($neededObjAr);
 include_once ROOT_DIR . '/services/include/NodeEditing.inc.php';
 
 /*

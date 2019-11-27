@@ -2,19 +2,19 @@
 
 /**
  * List users for service - this module provides list of users for service functionality
- * 
- * 
- * @package		
+ *
+ *
+ * @package
  * @author		Stefano Penge <steve@lynxlab.com>
  * @author		Maurizio "Graffio" Mazzoneschi <graffio@lynxlab.com>
  * @author		Vito Modena <vito@lynxlab.com>
  * @copyright	Copyright (c) 2010, Lynx s.r.l.
  * @license		http://www.gnu.org/licenses/gpl-2.0.html GNU Public License v.2
- * @link					
+ * @link
  * @version		0.1
  */
 /**
- * Base config file 
+ * Base config file
  */
 require_once realpath(dirname(__FILE__)) . '/../config_path.inc.php';
 
@@ -39,6 +39,7 @@ require_once ROOT_DIR . '/include/module_init.inc.php';
 $self = 'switcher';  // = admin!
 
 include_once 'include/switcher_functions.inc.php';
+SwitcherHelper::init($neededObjAr);
 /*
  * YOUR CODE HERE
  */

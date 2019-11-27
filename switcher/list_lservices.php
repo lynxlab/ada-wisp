@@ -2,19 +2,19 @@
 
 /**
  * List local services - this module provides list of the provider's services functionality
- * 
- * 
- * @package		
+ *
+ *
+ * @package
  * @author		Stefano Penge <steve@lynxlab.com>
  * @author		Maurizio "Graffio" Mazzoneschi <graffio@lynxlab.com>
  * @author		Vito Modena <vito@lynxlab.com>
  * @copyright	Copyright (c) 2010, Lynx s.r.l.
  * @license		http://www.gnu.org/licenses/gpl-2.0.html GNU Public License v.2
- * @link					
+ * @link
  * @version		0.1
  */
 /**
- * Base config file 
+ * Base config file
  */
 require_once realpath(dirname(__FILE__)) . '/../config_path.inc.php';
 
@@ -39,6 +39,7 @@ require_once ROOT_DIR . '/include/module_init.inc.php';
 $self = 'switcher';  // = admin!
 
 include_once 'include/switcher_functions.inc.php';
+SwitcherHelper::init($neededObjAr);
 /*
  * YOUR CODE HERE
  */
@@ -61,7 +62,7 @@ if(is_array($coursesAr) && count($coursesAr) > 0) {
     foreach($coursesAr as $course) {
         $courseId = $course[0];
         // if ($courseId == PUBLIC_COURSE_ID_FOR_NEWS) continue;
-        
+
         $serviceInfo = $common_dh->get_service_info_from_course($courseId);
 		$isServiceCommonLevel = false;
         if (!AMA_DB::isError($serviceInfo))
@@ -69,14 +70,14 @@ if(is_array($coursesAr) && count($coursesAr) > 0) {
         	$commonLevelArr = array (ADA_SERVICE_COMMON, ADA_SERVICE_COMMON_STUDENT, ADA_SERVICE_COMMON_TUTOR);
         	$isServiceCommonLevel = in_array($serviceInfo[3], $commonLevelArr);
         }
-        
+
         $serviceLevelTxt=null;
         /* if isset $_SESSION['service_level'] it means that the istallation supports course type */
         if(isset($_SESSION['service_level'][$course[4]])){
         	$serviceLevelTxt=$_SESSION['service_level'][$course[4]];
         }
         if(!isset($serviceLevelTxt)){$serviceLevelTxt=DEFAULT_SERVICE_TYPE_NAME;}
-        
+
         if ($isServiceCommonLevel && $dh->course_has_instances($courseId))
         {
         	$instancesList = $dh->course_instance_get_list(null, $courseId);
@@ -88,7 +89,7 @@ if(is_array($coursesAr) && count($coursesAr) > 0) {
 //        $edit_link = BaseHtmlLib::link("edit_lservice.php?id_course=$courseId", $edit_img->getHtml());
         $edit_link = BaseHtmlLib::link("edit_lservice.php?id_course=$courseId", translateFN('Edit'));
         //$view_link = BaseHtmlLib::link("view_course.php?id_course=$courseId", $view_img->getHtml());
-        
+
         // if service is common and has the instance, the 'users' link will be different
         if($isServiceCommonLevel && $instanceId!==-1)
         {
@@ -101,16 +102,16 @@ if(is_array($coursesAr) && count($coursesAr) > 0) {
         	$instances_href = "list_users_service.php?id_course=$courseId";
         	$assign_practitioner_link = null;
         }
-        $instances_link = BaseHtmlLib::link($instances_href, translateFN('Users'));        
+        $instances_link = BaseHtmlLib::link($instances_href, translateFN('Users'));
 //        $instances_link = BaseHtmlLib::link("list_users.php?id_course=$courseId", $instances_img->getHtml());
         //$add_instance_link = BaseHtmlLib::link("add_instance.php?id_course=$courseId", translateFN('Add instance'));
         $delete_course_link = BaseHtmlLib::link("delete_lservice.php?id_course=$courseId", translateFN('Delete'));
-        
+
         // build up the actions array
         $actionsArr = array ($edit_link,$instances_link);
         if (!is_null($assign_practitioner_link)) $actionsArr[] = $assign_practitioner_link;
         $actionsArr[] = $delete_course_link;
-        
+
         $actions = BaseHtmlLib::plainListElement('class:inline_menu', $actionsArr);
 
         $tbody_data[] = array($courseId, $course[1], $serviceLevelTxt, $course[2], $course[3], $actions);

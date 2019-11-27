@@ -44,6 +44,7 @@ else {
   $href_suffix='';
 }
 include_once 'include/tutor_functions.inc.php';
+TutorHelper::init($neededObjAr);
 include_once 'include/eguidance_tutor_form_functions.inc.php';
 
 /*
@@ -53,7 +54,7 @@ include_once ROOT_DIR.'/include/HtmlLibrary/TutorModuleHtmlLib.inc.php';
 
   $id_user = DataValidator::is_uinteger($_GET['id_user']);
   $id_course_instance = DataValidator::is_uinteger($_GET['id_course_instance']);
-  
+
   if($id_user === FALSE || $id_course_instance === FALSE || $id_course === FALSE) {
     $errObj = new ADA_Error(NULL,
                              translateFN("Dati in input per il modulo user_servide_detail non corretti"),
@@ -93,7 +94,7 @@ $content_dataAr = array(
   'label'     => $label,
   'data'      => $service_data->getHtml(),
   'user_avatar'=>$avatar->getHtml(),
-  'user_modprofilelink' => $userObj->getEditProfilePage(),		
+  'user_modprofilelink' => $userObj->getEditProfilePage(),
 );
 
 ARE::render($layout_dataAr, $content_dataAr);

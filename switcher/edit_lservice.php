@@ -5,19 +5,19 @@
  *
  * The switcher can use this module to update the informations about an existing
  * course.
- * 
  *
- * @package		
+ *
+ * @package
  * @author		Stefano Penge <steve@lynxlab.com>
  * @author		Maurizio "Graffio" Mazzoneschi <graffio@lynxlab.com>
  * @author		Vito Modena <vito@lynxlab.com>
  * @copyright	Copyright (c) 2010, Lynx s.r.l.
  * @license		http://www.gnu.org/licenses/gpl-2.0.html GNU Public License v.2
- * @link					
+ * @link
  * @version		0.1
  */
 /**
- * Base config file 
+ * Base config file
  */
 require_once realpath(dirname(__FILE__)) . '/../config_path.inc.php';
 
@@ -41,6 +41,7 @@ require_once ROOT_DIR . '/include/module_init.inc.php';
 $self = whoami();  // = admin!
 
 include_once 'include/switcher_functions.inc.php';
+SwitcherHelper::init($neededObjAr);
 require_once ROOT_DIR . '/switcher/include/Subscription.inc.php';
 include_once ROOT_DIR . '/services/include/NodeEditing.inc.php';
 
@@ -95,7 +96,7 @@ if (isset($_SERVER['REQUEST_METHOD']) && $_SERVER['REQUEST_METHOD'] == 'POST') {
                     'service_min_meetings' => $service_dataAr[5],
                     'service_max_meetings' => $service_dataAr[6],
                     'service_meeting_duration' => $service_dataAr[7]
-                );                
+                );
                 $result = $common_dh->set_service($service_dataAr[0], $update_serviceDataAr);
 //                print_r($update_serviceDataAr);die();
                 if (AMA_Common_DataHandler::isError($result)) {
@@ -120,7 +121,7 @@ if (isset($_SERVER['REQUEST_METHOD']) && $_SERVER['REQUEST_METHOD'] == 'POST') {
                             'duration_subscription' => '730', //$_POST['duration_subscription'],
                             'start_level_student' => '99', //$_POST['start_level_student'],
                             'open_subscription' => '1', // $_POST['open_subscription']
-			    'service_level' => $_POST['service_level']			    
+			    'service_level' => $_POST['service_level']
                         );
                         $id_instance_course = Course_instance::add_instance($id_course, $course_instanceAr);
                         if(!AMA_DataHandler::isError($result)) {
@@ -138,9 +139,9 @@ if (isset($_SERVER['REQUEST_METHOD']) && $_SERVER['REQUEST_METHOD'] == 'POST') {
                                 if ($deletedInstancesProcessOk) {
                                     $deletedInstancesProcessOk = false;
                                     $courseInstanceId = $instance[0];
-                                    if(Subscription::deleteAllSubscriptionsToClassRoom($courseInstanceId)) {               
+                                    if(Subscription::deleteAllSubscriptionsToClassRoom($courseInstanceId)) {
                                         $result = $dh->course_instance_tutors_unsubscribe($courseInstanceId);
-                                        if($result === true) {                
+                                        if($result === true) {
                                             $result = $dh->course_instance_remove($courseInstanceId);
                                             if(!AMA_DataHandler::isError($result)) {
                                                 $deletedInstancesProcessOk = true;
@@ -160,14 +161,14 @@ if (isset($_SERVER['REQUEST_METHOD']) && $_SERVER['REQUEST_METHOD'] == 'POST') {
                             }
                         }
                         /* ***********
-                         * ended  deleting process of instances  
+                         * ended  deleting process of instances
                          */
                     }
-                    
+
                     header('Location: list_lservices.php');
                     exit();
                 }
-            }            
+            }
         } else {
              $form = new CText("Si è verificato un errore durante l'aggiornamento dei dati del corso");
         }
@@ -178,7 +179,7 @@ if (isset($_SERVER['REQUEST_METHOD']) && $_SERVER['REQUEST_METHOD'] == 'POST') {
     if (!($courseObj instanceof Course) || !$courseObj->isFull()) {
         $form = new CText(translateFN('Servizio non trovato (1)'));
     } else {
-        
+
         $service_dataAr = $common_dh->get_service_info_from_course($courseObj->getId());
         if (AMA_Common_DataHandler::isError($service_dataAr) || count($service_dataAr)==0) {
             $form = new CText(translateFN('Servizio non trovato (2)'));
@@ -227,8 +228,8 @@ if (isset($_SERVER['REQUEST_METHOD']) && $_SERVER['REQUEST_METHOD'] == 'POST') {
                 $form = new CText(translateFN('Servizio non trovato (3)'));
             }
         }
-}     
-    
+}
+
 }
 
 $label = translateFN('Modifica dei dati del servizio');
@@ -255,7 +256,7 @@ $help = translateFN('Da qui il provider admin può modificare un servizio esiste
                         $confirmDIV->addChild($confirmCancel);
                         $confirmDIV->addChild($confirmDelSPAN);
                         $confirmDIV->setAttribute('style','display:none;');
-                        
+
                         $confirmDIVHtml = $confirmDIV->getHtml();
 
                         $optionsAr['onload_func'] = 'initDoc();';
@@ -278,12 +279,12 @@ $help = translateFN('Da qui il provider admin può modificare un servizio esiste
             $layout_dataAr['CSS_filename'] = array(
                             JQUERY_UI_CSS
             );
-    }        
+    }
 
     $imgAvatar = $userObj->getAvatar();
     $avatar = CDOMElement::create('img','src:'.$imgAvatar);
-    $avatar->setAttribute('class', 'img_user_avatar');    
-    
+    $avatar->setAttribute('class', 'img_user_avatar');
+
     $content_dataAr = array(
         'user_name' => $user_name,
         'user_type' => $user_type,

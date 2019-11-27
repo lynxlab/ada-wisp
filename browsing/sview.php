@@ -43,6 +43,7 @@ $neededObjAr = array(
 require_once ROOT_DIR . '/include/module_init.inc.php';
 
 include_once 'include/browsing_functions.inc.php';
+BrowsingHelper::init($neededObjAr);
 include_once 'include/cache_manager.inc.php';
 require_once ROOT_DIR.'/include/Forms/addNoteForm.inc.php';
 

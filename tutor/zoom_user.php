@@ -1,17 +1,17 @@
-<?php 
+<?php
 /**
  * ZOOM TUTOR.
- * 
+ *
  * @package
  * @author		Stefano Penge <steve@lynxlab.com>
  * @copyright	Copyright (c) 2009, Lynx s.r.l.
  * @license		http://www.gnu.org/licenses/gpl-2.0.html GNU Public License v.2
- * @link					
+ * @link
  * @version		0.1
  */
 
 /**
- * Base config file 
+ * Base config file
  */
 require_once realpath(dirname(__FILE__)).'/../config_path.inc.php';
 
@@ -28,7 +28,7 @@ $allowedUsersAr = array(AMA_TYPE_SWITCHER,AMA_TYPE_TUTOR);
 /**
  * Performs basic controls before entering this module
  */
-$neededObjAr = array( 
+$neededObjAr = array(
   AMA_TYPE_SWITCHER => array('layout'),
   AMA_TYPE_TUTOR => array('layout')
 );
@@ -37,6 +37,7 @@ $neededObjAr = array(
 require_once ROOT_DIR.'/include/module_init.inc.php';
 
 include_once 'include/tutor_functions.inc.php';
+TutorHelper::init($neededObjAr);
 
 /*
  * YOUR CODE HERE
@@ -62,9 +63,9 @@ if(DataValidator::is_uinteger($id) !== FALSE) {
     translateFN('Nazione')                => $tutoredUserObj->getCountry(),
     translateFN('Codice fiscale')         => $tutoredUserObj->getFiscalCode(),
     translateFN('Data di Nascita')        => $tutoredUserObj->getBirthDate(),
-    translateFN('Sesso')                  => $tutoredUserObj->getGender(),    
-    translateFN('Telefono')               => $tutoredUserObj->getPhoneNumber(),    
-    translateFN('Status')                 => $tutoredUserObj->getStatus() 
+    translateFN('Sesso')                  => $tutoredUserObj->getGender(),
+    translateFN('Telefono')               => $tutoredUserObj->getPhoneNumber(),
+    translateFN('Status')                 => $tutoredUserObj->getStatus()
   );
   $data = BaseHtmlLib::plainListElement('',$user_dataAr);
 }
@@ -94,7 +95,7 @@ $content_dataAr = array(
   'messages'  => $user_messages->getHtml(),
   'agenda'    => $user_agenda->getHtml(),
   'user_avatar'=>$avatar->getHtml(),
-  'user_modprofilelink' => $userObj->getEditProfilePage(),		
+  'user_modprofilelink' => $userObj->getEditProfilePage(),
 );
 
 ARE::render($layout_dataAr, $content_dataAr);
