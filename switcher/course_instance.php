@@ -305,6 +305,11 @@ $buttonSubscription->addChild (new CText(translateFN('Iscrivi studente')));
 $buttonSubscriptions = CDOMElement::create('button','class:Subscription_Button');
 $buttonSubscriptions->setAttribute('onclick', 'javascript:goToSubscription(\'subscriptions\');');
 $buttonSubscriptions->addChild (new CText(translateFN('Upload file')));
+
+$buttondownloadCertificates = CDOMElement::create('button','class:Subscription_Button');
+$buttondownloadCertificates->setAttribute('onclick', 'javascript:downloadCertificates('.$instanceId.');');
+$buttondownloadCertificates->addChild (new CText(translateFN('Download certificati')));
+
 /*
 * OUTPUT
 */
@@ -329,6 +334,9 @@ $content_dataAr = array(
 'messages' => $user_messages->getHtml(),
 'agenda '=> $user_agenda->getHtml()
 );
+if (defined('ADA_PRINT_CERTIFICATE') && (ADA_PRINT_CERTIFICATE === true)) {
+    $content_dataAr['buttondownloadCertificates'] = $buttondownloadCertificates->getHtml();
+}
 $layout_dataAr['CSS_filename'] = array (
             JQUERY_UI_CSS,
             SEMANTICUI_DATATABLE_CSS,
@@ -340,6 +348,7 @@ $layout_dataAr['JS_filename'] = array(
 			SEMANTICUI_DATATABLE,
 			JQUERY_DATATABLE_REDRAW,
             JQUERY_DATATABLE_DATE,
+            ROOT_DIR. '/js/include/jquery/jquery.blockUI.js',
             ROOT_DIR. '/js/include/jquery/dataTables/selectSortPlugin.js',
             JQUERY_NO_CONFLICT
 

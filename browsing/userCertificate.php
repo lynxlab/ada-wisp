@@ -29,55 +29,63 @@ $allowedUsersAr = array(AMA_TYPE_SWITCHER,AMA_TYPE_STUDENT);
  * Get needed objects
  */
 $neededObjAr = array(
-   AMA_TYPE_SWITCHER =>array('layout', 'user','course','course_instance'),
+   AMA_TYPE_SWITCHER =>array('layout', 'user'), // ,'course','course_instance'),
    AMA_TYPE_STUDENT=>array('layout', 'course','course_instance')
 );
 
-/**
- * Performs basic controls before entering this module
- */
+if(isset($_GET['forcereturn'])) {
+    $forcereturn = (bool)intval($_GET['forcereturn']);
+} else $forcereturn = false;
 
-require_once ROOT_DIR . '/include/module_init.inc.php';
+if (!$forcereturn) {
+    /**
+    * Performs basic controls before entering this module
+    */
 
-require_once ROOT_DIR .'/include/Course.inc.php';
-require_once ROOT_DIR .'/include/CourseInstance.inc.php';
+    require_once ROOT_DIR . '/include/module_init.inc.php';
 
-require_once 'include/browsing_functions.inc.php';
+    require_once ROOT_DIR .'/include/Course.inc.php';
+    require_once ROOT_DIR .'/include/CourseInstance.inc.php';
+    
+    require_once 'include/browsing_functions.inc.php';
 
-/**
- * This will at least import in the current symbol table the following vars.
- * For a complete list, please var_dump the array returned by the init method.
- *
- * @var boolean $reg_enabled
- * @var boolean $log_enabled
- * @var boolean $mod_enabled
- * @var boolean $com_enabled
- * @var string $user_level
- * @var string $user_score
- * @var string $user_name
- * @var string $user_type
- * @var string $user_status
- * @var string $media_path
- * @var string $template_family
- * @var string $status
- * @var array $user_messages
- * @var array $user_agenda
- * @var array $user_events
- * @var array $layout_dataAr
- * @var History $user_history
- * @var Course $courseObj
- * @var Course_Instance $courseInstanceObj
- * @var ADAPractitioner $tutorObj
- * @var Node $nodeObj
- *
- * WARNING: $media_path is used as a global somewhere else,
- * e.g.: node_classes.inc.php:990
- */
-BrowsingHelper::init($neededObjAr);
+    /**
+    * This will at least import in the current symbol table the following vars.
+    * For a complete list, please var_dump the array returned by the init method.
+    *
+    * @var boolean $reg_enabled
+    * @var boolean $log_enabled
+    * @var boolean $mod_enabled
+    * @var boolean $com_enabled
+    * @var string $user_level
+    * @var string $user_score
+    * @var string $user_name
+    * @var string $user_type
+    * @var string $user_status
+    * @var string $media_path
+    * @var string $template_family
+    * @var string $status
+    * @var array $user_messages
+    * @var array $user_agenda
+    * @var array $user_events
+    * @var array $layout_dataAr
+    * @var History $user_history
+    * @var Course $courseObj
+    * @var Course_Instance $courseInstanceObj
+    * @var ADAPractitioner $tutorObj
+    * @var Node $nodeObj
+    *
+    * WARNING: $media_path is used as a global somewhere else,
+    * e.g.: node_classes.inc.php:990
+    */
+    BrowsingHelper::init($neededObjAr);    
+    
+    require_once ROOT_DIR.'/switcher/include/switcher_functions.inc.php';
+}
 
-require_once '../switcher/include/switcher_functions.inc.php';
-
-$self = whoami();
+if (!isset($self)) {
+    $self = whoami();
+}
 
 $title =  translateFN('Attestato di frequenza');
 
@@ -101,6 +109,7 @@ if(isset($_GET['id_instance']))
 {
     $id_instance = $_GET['id_instance'];
 }
+
 $codice_corso = $courseObj->getCode();
 
 $UserCertificateObj = Multiport::findUser($id_user,$id_instance);
@@ -160,8 +169,8 @@ $content_dataAr   = array(
  'title'=> $title,
  'logoProvider'=>$logoProvider,
  'userFullName'=>$userFullName,
- 'birthSentence'=>$birthSentence,
- 'CodeFiscSentence'=>$CodeFiscSentence,
+ 'birthSentence'=>isset($birthSentence) ? $birthSentence : null ,
+ 'CodeFiscSentence'=>isset($CodeFiscSentence) ? $CodeFiscSentence : null,
  'mainSentence'=>$mainSentence,
  'timeSentence'=>$timeSentence,
  'data_Sentence'=>$data_Sentence,
@@ -171,6 +180,12 @@ $content_dataAr   = array(
  'courseDescription' => (isset($courseObj) && $courseObj instanceof Course) ? $courseObj->getDescription() : null,
  'courseDurationSentence' => isset($courseDurationSentence) ? $courseDurationSentence : null
  );
-ARE::render($layout_dataAr, $content_dataAr,ARE_PDF_RENDER,array('outputfile'=>translateFN('Attestato').'-['.$codice_corso.']-['.$id_user.']'));
 
-
+ if ($forcereturn) {
+    return [
+        'filename' => translateFN('Attestato').'-['.$codice_corso.']-['.$id_user.'].pdf',
+        'content' => ARE::render($layout_dataAr, $content_dataAr,ARE_PDF_RENDER,array('returnasstring' => true,'outputfile'=>translateFN('Attestato').'-['.$codice_corso.']-['.$id_user.']'))
+    ];
+ } else {
+     ARE::render($layout_dataAr, $content_dataAr,ARE_PDF_RENDER,array('outputfile'=>translateFN('Attestato').'-['.$codice_corso.']-['.$id_user.']'));
+ }
