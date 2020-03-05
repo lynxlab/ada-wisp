@@ -19,11 +19,18 @@ REQUIREMENTS
 - MySql 5.1.6 >
 - PHP 5.3.*> compiled with support for MySql, XML, GD, PDO
 - PEAR::XML_Parser 1.3.x>
-- PEAR 1.9.x> 
+- PEAR 1.9.x>
 - PEAR::XML_Util 1.2.x>
 
 HOW TO INSTALL
 --------------
+### SIMPLE INSTALL, USING THE PROVIDED SCRIPT
+1. Download or clone this repository, unzip or upload its contents in a directory visible by your webserver
+2. Make sure all files and dirs are owned and writable by the webserver user
+3. Point your browser to the webserver directory where ADA is uploaded
+4. Fill the Install form and click the 'Install ADA' button
+
+### ADVANCED INSTALL
 1. copy all files and directory tree in root directory
 
 2. create at least two DB (each courses' provider has his own DB. if you have 2 providers, you need 3 DB.
@@ -75,7 +82,7 @@ HOW TO INSTALL
 
 16. change the permission of the directory ``log/`` the web server must be able to write in it
 
-17. change the informations of the news editing the file: ``browsing/news_language`` (ex.: news_en is the news in english) 
+17. change the informations of the news editing the file: ``browsing/news_language`` (ex.: news_en is the news in english)
     or using edit_news.php after logon as admin
 
 18. configure the widgets loaded in home page
@@ -90,7 +97,7 @@ CUSTOMIZE THE LAYOUT
 --------------
 customize the layout in the directory templates and css.
 
-**The file ``layout/layout_family/header.tpl`` contains the header of all pages. 
+**The file ``layout/layout_family/header.tpl`` contains the header of all pages.
 You can change the logo and the header modifying the file ``layout/layout_family/header.tpl``**
 
 The structure of the directories that contain the layout is:
@@ -153,7 +160,7 @@ You can change the text of the welcome message sended to the user just registere
 the directory docs contains also the help for the user. You can change the help by editing each single file.
 
 ### Public course ###
-You can set **one public course for provider 0** (in case MULTIPROVIDER is set to true, otherwise each provider has his own public course defined in clientX.inc.php by the value of the constant PUBLIC_COURSE_ID_FOR_NEWS).   
+You can set **one public course for provider 0** (in case MULTIPROVIDER is set to true, otherwise each provider has his own public course defined in clientX.inc.php by the value of the constant PUBLIC_COURSE_ID_FOR_NEWS).
 **The default public id course of provider 0 is definied in ``config/config_install.inc.php`` by the value of the constant ``PUBLIC_COURSE_ID_FOR_NEWS``**
 
 SYSTEM SETUP
@@ -191,8 +198,8 @@ Add one provider
 to add a provider, you need to do the following tasks:
 - create a new DB
 - import the sql ada_provider_empty.sql into the new DB
-- follow the steps 11 and 12 
-- login as admin 
+- follow the steps 11 and 12
+- login as admin
 - create a new provider (from menù actions)
   take care to write in the field "Puntatore al database" the same name of the directory contained in clients (ex.: client1)
 - create the new coordinator user for the provider just created
@@ -201,7 +208,7 @@ predefined USERS are:
 --------------
 - adminAda --> Super Admin
 - autoreAda0 --> author of first provider
-- tutorAda0 --> tutor of first provider 
+- tutorAda0 --> tutor of first provider
 - switcherAda0 --> Admin of first provider
 - studenteAda0 --> Student of first provider
 

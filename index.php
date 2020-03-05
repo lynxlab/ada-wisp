@@ -21,7 +21,16 @@
  */
 use Lynxlab\ADA\Module\GDPR\GdprPolicy;
 
-require_once realpath(dirname(__FILE__)).'/config_path.inc.php';
+if (is_file(realpath(dirname(__FILE__)).'/config_path.inc.php')) {
+	require_once realpath(dirname(__FILE__)).'/config_path.inc.php';
+} else {
+	header('Location: install.php', true, 302);
+}
+
+/**
+ * redirect to install if ADA is NOT installed, either with install script or manually
+ */
+if (!is_dir(ROOT_DIR.'/clients')) redirect('install.php');
 
 /**
  * Clear node and layout variable in $_SESSION
@@ -34,7 +43,10 @@ $allowedUsersAr = array(AMA_TYPE_VISITOR, AMA_TYPE_STUDENT,AMA_TYPE_TUTOR, AMA_T
 
 require_once ROOT_DIR.'/include/module_init.inc.php';
 $self = whoami(); // index
-include_once 'include/'.$self.'_functions.inc.php';
+include_once 'include/index_functions.inc.php';
+if (is_file(ROOT_DIR.'/include/'.$self.'_functions.inc.php')) {
+	include_once ROOT_DIR.'/include/'.$self.'_functions.inc.php';
+}
 
 // non serve più...
 // require_once ROOT_DIR.'/include/aut/login.inc.php';

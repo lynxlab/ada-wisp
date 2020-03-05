@@ -95,6 +95,12 @@ if(is_array($coursesAr) && count($coursesAr) > 0) {
     $edit_img = CDOMElement::create('img', 'src:img/edit.png,alt:edit');
     $view_img = CDOMElement::create('img', 'src:img/zoom.png,alt:view');
     $instances_img = CDOMElement::create('img', 'src:img/student.png,alt:view');
+    if (defined('MODULES_BADGES') && MODULES_BADGES) {
+        $coursebadges_img = CDOMElement::create('img','src:'.MODULES_BADGES_HTTP.'/layout/'.$_SESSION['sess_template_family'].'/img/course-badges.png');
+    }
+    if (defined('MODULES_IMPEXPORT') && MODULES_IMPEXPORT && defined('MODULES_IMPEXPORT_REPODIR') && strlen(MODULES_IMPEXPORT_REPODIR)>0) {
+        $exporttorepo_img = CDOMElement::create('img','src:'.MODULES_IMPEXPORT_HTTP.'/layout/'.$_SESSION['sess_template_family'].'/img/export-to-repo.png');
+    }
 
     foreach($coursesAr as $course) {
     	$isPublicCourse = isset($_SESSION['service_level_info'][$course['tipo_servizio']]['isPublic']) &&
@@ -146,6 +152,27 @@ if(is_array($coursesAr) && count($coursesAr) > 0) {
             $div_survey->setAttribute('class', 'tooltip');
             $div_survey->addChild(($survey_link));
             $actions[] = $div_survey;
+        }
+
+        if (!$isPublicCourse) {
+            if (defined('MODULES_BADGES') && MODULES_BADGES) {
+                $badges_link = BaseHtmlLib::link(MODULES_BADGES_HTTP.'/course-badges.php?id_course='.$courseId, $coursebadges_img->getHtml());
+                $title=translateFN('Badges');
+                $div_badges = CDOMElement::create('div');
+                $div_badges->setAttribute('title', ucfirst($title));
+                $div_badges->setAttribute('class', 'tooltip');
+                $div_badges->addChild(($badges_link));
+                $actions[] = $div_badges;
+            }
+            if (defined('MODULES_IMPEXPORT') && MODULES_IMPEXPORT && defined('MODULES_IMPEXPORT_REPODIR') && strlen(MODULES_IMPEXPORT_REPODIR)>0) {
+                $extorepo_link = BaseHtmlLib::link(MODULES_IMPEXPORT_HTTP.'/export.php?exporttorepo=1&id_course='.$courseId, $exporttorepo_img->getHtml());
+                $title=translateFN('Esporta nel repository');
+                $div_extorepo = CDOMElement::create('div');
+                $div_extorepo->setAttribute('title', ucfirst($title));
+                $div_extorepo->setAttribute('class', 'tooltip');
+                $div_extorepo->addChild(($extorepo_link));
+                $actions[] = $div_extorepo;
+            }
         }
 
         if(!$isPublicCourse) $add_instance_link = BaseHtmlLib::link("add_instance.php?id_course=$courseId", $add_instance_img->getHtml());

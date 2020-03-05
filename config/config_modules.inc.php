@@ -13,7 +13,8 @@ if (!defined('MODULES_CODEMAN')) {
 if (!defined('MODULES_TEST')) {
 	// defines for modules test
 	define('MODULES_TEST_PATH', MODULES_DIR.'/test');
-	if (file_exists(MODULES_TEST_PATH.'/index.php')
+	if (file_exists(MODULES_TEST_PATH.'/config/config.inc.php')
+	        && file_exists(MODULES_TEST_PATH.'/index.php')
 			&& file_exists(MODULES_TEST_PATH.'/edit_test.php')
 			&& file_exists(MODULES_TEST_PATH.'/tutor.php')) {
 
@@ -67,12 +68,13 @@ if (!defined('MODULES_APPS')) {
 
 if (!defined('MODULES_IMPEXPORT')) {
 	// defines for module impexport
-	define ('MODULES_IMPEXPORT_PATH', MODULES_DIR.'/impexport');
-	if (file_exists(MODULES_IMPEXPORT_PATH.'/import.php')) {
-
-		require_once(MODULES_IMPEXPORT_PATH.'/config/config.inc.php');
-		define('MODULES_IMPEXPORT', true);
-		define('MODULES_IMPEXPORT_HTTP', HTTP_ROOT_DIR.'/modules/impexport');
+	if (file_exists(MODULES_DIR.'/impexport/config/config.inc.php')) {
+		define('MODULES_IMPEXPORT_NAME', 'impexport');
+		define ('MODULES_IMPEXPORT_PATH', MODULES_DIR. DIRECTORY_SEPARATOR. MODULES_IMPEXPORT_NAME);
+		$modEnabled = require_once(MODULES_IMPEXPORT_PATH.'/config/config.inc.php');
+		define('MODULES_IMPEXPORT', $modEnabled);
+		unset($modEnabled);
+		define('MODULES_IMPEXPORT_HTTP', HTTP_ROOT_DIR. str_replace(ROOT_DIR, '', MODULES_DIR) . DIRECTORY_SEPARATOR. MODULES_IMPEXPORT_NAME);
 	} else {
 		define('MODULES_IMPEXPORT', false);
 	}

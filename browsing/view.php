@@ -593,7 +593,7 @@ switch ($op){
 				 */
 				'isActive' => 0, // !$courseObj->getIsPublic() && !in_array($user_status, array(ADA_STATUS_COMPLETED, ADA_STATUS_TERMINATED)),
 				'courseId' => $courseObj->getId(),
-				'courseInstanceId' => $courseInstanceObj->getId(),
+				'courseInstanceId' => (isset($courseInstanceObj) && $courseInstanceObj instanceof Course_instance) ? $courseInstanceObj->getId() : -1,
 				'userId' => $userObj->getId()
 			];
 
